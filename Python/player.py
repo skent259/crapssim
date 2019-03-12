@@ -6,6 +6,8 @@ class Player(object):
     ----------
     bankroll : float
         Starting amount of cash for the player, will be updated during play
+    bet_strategy : function(table, player, unit=5)
+        A function that implements a particular betting strategy.  See betting_strategies.py
     name : string, optional (default = "Player")
         Name of the player 
 
@@ -15,12 +17,11 @@ class Player(object):
         List of betting objects for the player
     total_bet_amount : int
         Sum of bet value for the player
-
-    
     """
 
-    def __init__(self, bankroll, name="Player"):
+    def __init__(self, bankroll, bet_strategy=None, name="Player"):
         self.bankroll = bankroll
+        self.bet_strategy = bet_strategy
         self.name = name
         self.bets_on_table = []
         self.total_bet_amount = 0
@@ -35,14 +36,9 @@ class Player(object):
             pass 
             # can't make the bet
 
-    # def add_odds(self, bet_amount, bet_name, bet_subname=""):
-    #     """ Take a bet_object and add an odds bet based on the winning number """
-    #     bet_object = self._get_bet(bet_name, bet_subname)
-    #     proper_winning_number = [i in [4,5,6,8,9,10] for i in bet_object.winning_numbers] == [True]
-
-    #     if bet_object.name in ["passline", "come"] and proper_winning_number:
-    #         self.bet(odds(bet_amount, bet_object))
-        
+    def add_bet(self, table, *args, **kwargs):
+        """ Implement the given betting strategy """
+        self.bet_strategy(self, table, *args, **kwargs)
 
     def _update_bet(self, table_object, dice_object, verbose = False):
         for b in self.bets_on_table[:]:

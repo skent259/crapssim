@@ -1,6 +1,7 @@
 from dice import Dice
 from player import Player
-from bet import *
+# from bet import *
+import betting_strategies as strat
 import sys
 
 class CrapsTable(object):
@@ -36,7 +37,6 @@ class CrapsTable(object):
         if player_object not in self.players:
             self.players.append(player_object)
             
-
     def run(self, max_rolls, verbose=True, runout=False):
         """
         Runs the craps table until a stopping condition is met. 
@@ -79,58 +79,20 @@ class CrapsTable(object):
             self._update_player_bets(self.dice, verbose)
             self._update_table(self.dice)
             if verbose: print("Point is {} ({})".format(self.point, self.point_number))
-            if verbose: print("Total Player Cash is {}".format(self.total_player_cash))
+            if verbose: print("Total Player Cash is ${}".format(self.total_player_cash))
             
             # evaluate the stopping condition
             if runout:
                 continue_rolling = (self.dice.n_rolls_ < max_rolls and self.total_player_cash > 0) or self.player_has_bets
             else: 
                 continue_rolling = (self.dice.n_rolls_ < max_rolls and self.total_player_cash > 0)
-            
-
-
+         
     def _add_player_bets(self):
+        """ Implement each player's betting strategy """
+        """ TODO: restrict bets that shouldn't be possible based on table"""
+        """ TODO: Make the unit parameter specific to each player, and make it more general """
         for p in self.players:
-            """
-            BETTING STRATEGY
-            TODO: allow for multiple betting strategies
-            TODO: restrict bets that shouldn't be possible based on table
-            """
-            unit = 5
-            # mult = 2
-            
-            # Pass line bet
-            if self.point == "Off" and not p._has_bet("passline"):
-                p.bet(passline(unit))
-
-            # Pass line odds
-            if self.point == "On":
-                if self.point_number in [4,10]:
-                    mult = 3
-                elif self.point_number in [5,9]:
-                    mult = 4
-                elif self.point_number in [6,8]:
-                    mult = 5
-            
-            if self.point == "On" and p._has_bet("passline") and not p._has_bet("odds"):
-                p.bet(odds(mult*unit, p._get_bet("passline")))
-                # p.add_odds(unit, "passline")
-
-            # # Come bet (2)
-            # if self.point == "On" and p._num_bet("come") < 2:
-            #     p.bet(come(5))
-            
-            # Place 6 and 8 when point is ON   
-            # p_has_place_bets = p._has_bet("place4","place5","place6","place8","place9","place10")
-            # if self.point == "On" and not p_has_place_bets:
-            #     if self.point_number == 6:
-            #         p.bet(place8(6))
-            #     elif self.point_number == 8:
-            #         p.bet(place6(6))
-            #     else:
-            #         p.bet(place8(6))
-            #         p.bet(place6(6))
-
+            p.add_bet(self) # unit = 10 to change unit
 
     def _update_player_bets(self, dice, verbose = False):
         """ check bets for wins/losses, payout wins to their bankroll, remove bets that have resolved """
@@ -151,18 +113,16 @@ class CrapsTable(object):
         self.player_has_bets = sum([len(p.bets_on_table) for p in self.players]) >= 1
 
 
-
-
 if __name__ == "__main__":
 
     sim = True
     printout = True
-    
 
-    n_sim = 500000
+    n_sim = 100
     n_roll = 144
     bankroll = 1000
-    strategy_name = "passline-w-345odds" # don't include any "_" in this
+    strategy = strat._strat_passline
+    strategy_name = "passline" # don't include any "_" in this
     runout = True
     runout_str = "-runout" if runout else ""
         
@@ -174,7 +134,7 @@ if __name__ == "__main__":
             f_out.write(str('\n'))
             for i in range(n_sim):
                 table = CrapsTable()
-                table._add_player(Player(500))
+                table._add_player(Player(500, strategy))
                 table.run(n_roll, verbose=False, runout=runout)
                 out = "{},{}".format(table.total_player_cash, table.dice.n_rolls_)
                 f_out.write(str(out))
@@ -186,7 +146,7 @@ if __name__ == "__main__":
         with open(outfile_name, 'w') as f_out:
             sys.stdout = f_out
             table = CrapsTable()
-            table._add_player(Player(500))
+            table._add_player(Player(500, strategy))
             table.run(n_roll, verbose=True)
             # out = table.total_player_cash
             # f_out.write(str(out))
