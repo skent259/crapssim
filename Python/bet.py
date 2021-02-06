@@ -27,6 +27,7 @@ class bet(object):
     winning_numbers = []
     losing_numbers = []
     payoutratio = float(1)
+    # TODO: add whether bet can be removed 
     
     def __init__(self, bet_amount):
         self.bet_amount = float(bet_amount)

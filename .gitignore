@@ -1,5 +1,11 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+
 .vscode
 Articles/
 output/
 R/
+references/
 Python/tempCodeRunnerFile.py

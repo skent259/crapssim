@@ -24,18 +24,24 @@ class CrapsTable(object):
         The point number when point is "On" and None when point is "Off" 
     player_has_bets : bool
         Boolean value for whether any player has a bet on the table.
-    
+    strat_info : dictionary
+        Contains information stored from the strategy, usually mean for strategies that alter based on past information
+    bet_update_info : dictionary
+        Contains information from updating bets, for given player and a bet name, this is status of last bet (win/loss), and win amount.  
     """
     def __init__(self):
         self.players = []
         self.point = "Off"
         self.point_number = None
         self.player_has_bets = False
+        self.strat_info = {}
+        self.bet_update_info = None
 
     def _add_player(self, player_object):
         """ Add player object to the table """
         if player_object not in self.players:
             self.players.append(player_object)
+            self.strat_info[player_object] = None
             
     def run(self, max_rolls, verbose=True, runout=False):
         """
@@ -92,12 +98,15 @@ class CrapsTable(object):
         """ TODO: restrict bets that shouldn't be possible based on table"""
         """ TODO: Make the unit parameter specific to each player, and make it more general """
         for p in self.players:
-            p.add_bet(self) # unit = 10 to change unit
+            self.strat_info[p] = p.add_bet(self, unit=10, strat_info=self.strat_info[p]) # unit = 10 to change unit
+            # TODO: add player.strat_kwargs as optional parameter (currently manually changed in CrapsTable)
 
     def _update_player_bets(self, dice, verbose = False):
         """ check bets for wins/losses, payout wins to their bankroll, remove bets that have resolved """
+        self.bet_update_info = {}
         for p in self.players:
-            p._update_bet(self, dice, verbose)
+            info = p._update_bet(self, dice, verbose)
+            self.bet_update_info[p] = info
 
     def _update_table(self, dice):
         """ update table attributes based on previous dice roll """

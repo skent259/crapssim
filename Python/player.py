@@ -36,11 +36,20 @@ class Player(object):
             pass 
             # can't make the bet
 
+    def remove(self, bet_object):
+        # TODO: add bet attribute for whether a bet can be removed and put condition in here
+        if bet_object in self.bets_on_table:
+            self.bankroll += bet_object.bet_amount
+            self.bets_on_table.remove(bet_object) 
+            self.total_bet_amount -= bet_object.bet_amount  
+            
     def add_bet(self, table, *args, **kwargs):
         """ Implement the given betting strategy """
-        self.bet_strategy(self, table, *args, **kwargs)
+        strat_info = self.bet_strategy(self, table, *args, **kwargs)
+        return strat_info
 
     def _update_bet(self, table_object, dice_object, verbose = False):
+        info = {}
         for b in self.bets_on_table[:]:
             status, win_amount = b._update_bet(table_object, dice_object)
 
@@ -53,10 +62,9 @@ class Player(object):
                 self.total_bet_amount -= b.bet_amount
                 self.bets_on_table.remove(b)
                 if verbose: print("{} lost ${} on {} bet.".format(self.name, b.bet_amount, b.name))
-            else: 
-                pass
             
-            pass
+            info[b.name] = {"status":status, "win_amount":win_amount}
+        return info  
                     
                 
     def _has_bet(self, *bets_to_check):
@@ -70,8 +78,13 @@ class Player(object):
         return sum([i in bets_to_check for i in bet_names])
 
     def _get_bet(self, bet_name, bet_subname=""):
-        """ returns first betting object matching bet_name and bet_subname """
-        bet_name_list = [[b.name, b.subname] for b in self.bets_on_table]
-        ind = bet_name_list.index([bet_name, bet_subname])
+        """ returns first betting object matching bet_name and bet_subname.  
+        If bet_subname="Any", returns first betting object matching bet_name """
+        if bet_subname == "Any":
+            bet_name_list = [b.name for b in self.bets_on_table]
+            ind = bet_name_list.index(bet_name)
+        else:
+            bet_name_list = [[b.name, b.subname] for b in self.bets_on_table]
+            ind = bet_name_list.index([bet_name, bet_subname])
         return self.bets_on_table[ind]
 
