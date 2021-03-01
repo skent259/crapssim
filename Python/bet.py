@@ -171,7 +171,7 @@ class place10(place):
 Field bet 
 """
 class field(bet):
-    """ NOTE: NOT TESTED 
+    """ 
     Parameters
     ----------
     double : list 
@@ -204,3 +204,55 @@ class field(bet):
             status = "lose"
         
         return status, win_amount
+
+"""
+Don't pass and Don't come bets
+"""
+class dontpass(bet):
+    # TODO: make this require that table_object.point = "Off", probably better in the player module
+    def __init__(self, bet_amount):
+        self.name = "dontpass"
+        self.winning_numbers = [2,3]
+        self.losing_numbers = [7,11]
+        self.push_numbers = [12]
+        self.payoutratio = 1.0
+        self.prepoint = True
+        super().__init__(bet_amount)
+    
+    def _update_bet(self, table_object, dice_object):
+        status = None
+        win_amount = 0 
+
+        if dice_object.total_ in self.winning_numbers:
+            status = "win"
+            win_amount = self.payoutratio * self.bet_amount
+        elif dice_object.total_ in self.losing_numbers:
+            status = "lose"
+        elif dice_object.total_ in self.push_numbers:
+            status = "push"
+        elif self.prepoint:
+            self.winning_numbers = [7]
+            self.losing_numbers = [dice_object.total_]
+            self.push_numbers = []
+            self.prepoint = False
+
+        return status, win_amount
+ 
+
+"""
+Don't pass/Don't come lay odds
+"""
+class layodds(bet):
+    def __init__(self, bet_amount, bet_object):
+        super().__init__(bet_amount)
+        self.name = "layodds" 
+        self.subname = "".join(str(e) for e in bet_object.losing_numbers)
+        self.winning_numbers = bet_object.winning_numbers
+        self.losing_numbers = bet_object.losing_numbers
+
+        if self.losing_numbers == [4] or self.losing_numbers == [10]:
+            self.payoutratio = 1/2
+        elif self.losing_numbers == [5] or self.losing_numbers == [9]:
+            self.payoutratio = 2/3
+        elif self.losing_numbers == [6] or self.losing_numbers == [8]:
+            self.payoutratio = 5/6

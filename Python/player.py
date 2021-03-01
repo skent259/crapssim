@@ -62,11 +62,15 @@ class Player(object):
                 self.total_bet_amount -= b.bet_amount
                 self.bets_on_table.remove(b)
                 if verbose: print("{} lost ${} on {} bet.".format(self.name, b.bet_amount, b.name))
+            elif status == "push":
+                self.bankroll += b.bet_amount
+                self.total_bet_amount -= b.bet_amount
+                self.bets_on_table.remove(b)
+                if verbose: print("{} pushed ${} on {} bet.".format(self.name, b.bet_amount, b.name))
             
             info[b.name] = {"status":status, "win_amount":win_amount}
         return info  
                     
-                
     def _has_bet(self, *bets_to_check):
         """ returns True if bets_to_check and self.bets_on_table has at least one thing in common """
         bet_names = {b.name for b in self.bets_on_table}
@@ -87,4 +91,8 @@ class Player(object):
             bet_name_list = [[b.name, b.subname] for b in self.bets_on_table]
             ind = bet_name_list.index([bet_name, bet_subname])
         return self.bets_on_table[ind]
+
+    def _remove_if_present(self, bet_name, bet_subname=""):   
+        if self._has_bet(bet_name):
+            self.remove(self._get_bet(bet_name, bet_subname))        
 
