@@ -1,7 +1,4 @@
-from dice import Dice
-from player import Player
-from bet import *
-
+import crapssim as cs 
 
 if __name__ == "__main__":
 
@@ -29,16 +26,16 @@ if __name__ == "__main__":
     # print("Sean's total bet amount: {}".format(sum( [b.bet_amount for b in Sean.bets_on_table] )))
     
     # place8 bet
-    Sean = Player(100, "Sean")
-    d = Dice()
+    Sean = cs.player.Player(100, "Sean")
+    d = cs.dice.Dice()
     # Sean.bet(come(5))
     # # d.fixed_roll([4,4])
     # Sean.bet(come(6))
-    Sean.bet(come(5))
+    Sean.bet(cs.bet.come(5))
     
     d.fixed_roll([4,4])
     Sean._update_bet(None, d)
-    Sean.bet(come(10))
+    Sean.bet(cs.bet.come(10))
     print("Sean's current bets: {}".format( {b.name: b.bet_amount for b in Sean.bets_on_table} )) # NTS: this will not show duplicate bets, but they still exist
     print(Sean.bets_on_table)    
     

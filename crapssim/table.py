@@ -1,8 +1,5 @@
-from dice import Dice
-from player import Player
-# from bet import *
-import betting_strategies as strat
-import sys
+from .dice import Dice
+from .player import Player
 
 class CrapsTable(object):
     """
@@ -143,7 +140,8 @@ class CrapsTable(object):
         self.last_roll = dice.total_
 
 if __name__ == "__main__":
-
+    import sys
+    import strategy
      
     sim = True
     printout = True
@@ -152,7 +150,7 @@ if __name__ == "__main__":
     n_roll = 144
     n_shooter = 2
     bankroll = 1000
-    strategy = strat._strat_dicedoctor
+    strategy = strategy.dicedoctor
     strategy_name = "dicedoctor" # don't include any "_" in this
     runout = True
     runout_str = "-runout" if runout else ""
