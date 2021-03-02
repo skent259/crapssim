@@ -1,4 +1,3 @@
-# import numpy as np
 from numpy import random as r
 
 class Dice(object):

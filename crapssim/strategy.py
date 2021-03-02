@@ -1,4 +1,8 @@
-from bet import *
+from .bet import passline, odds, come 
+from .bet import dontpass, layodds
+from .bet import place, place4, place5, place6, place8, place9, place10
+from .bet import field
+
 """
 Various betting strategies that are based on conditions of the CrapsTable.
 Each strategy must take a table and a player_object, and implicitly 
@@ -340,7 +344,7 @@ if __name__ == "__main__":
 
     from player import Player
     from dice import Dice
-    from CrapsTable import CrapsTable
+    from table import CrapsTable
 
     # table = CrapsTable()
     # table._add_player(Player(500, _strat_place68_2come))

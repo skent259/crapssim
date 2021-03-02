@@ -1,6 +1,6 @@
-from player import Player
-from CrapsTable import CrapsTable
-import betting_strategies as strat
+from crapssim import CrapsTable
+from crapssim import Player
+from crapssim import strategy
 import sys 
 import os 
 
@@ -94,11 +94,11 @@ if __name__ == "__main__":
     sim = True 
     printout = False
 
-    n_sim = 1000000
+    n_sim = 10
     n_roll = float('inf')
     n_shooter = 1
     bankrolls= [10000]
-    strategies = {"passline": strat._strat_passline}
+    strategies = {"passline": strategy._strat_passline}
     name = "rolls_per_shooter"
     # strategy = strat._strat_place68
     # strategy_name = "place68" # don't include any "_" in this

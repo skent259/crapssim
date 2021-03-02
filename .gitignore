@@ -9,4 +9,7 @@ output/
 R/
 references/
 Python/tempCodeRunnerFile.py
-Python/__pycache__
+*/__pycache__
+/dist/
+/build/
+/*.egg-info
