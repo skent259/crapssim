@@ -1,4 +1,4 @@
-class bet(object):
+class Bet(object):
     """
     A generic bet for the craps table
 
@@ -49,10 +49,10 @@ class bet(object):
 """
 Passline and Come bets
 """
-class passline(bet):
+class PassLine(Bet):
     # TODO: make this require that table_object.point = "Off", probably better in the player module
     def __init__(self, bet_amount):
-        self.name = "passline"
+        self.name = "PassLine"
         self.winning_numbers = [7,11]
         self.losing_numbers = [2,3,12]
         self.payoutratio = 1.0
@@ -75,10 +75,10 @@ class passline(bet):
 
         return status, win_amount
             
-class come(passline):
+class Come(PassLine):
     def __init__(self, bet_amount):
         super().__init__(bet_amount)
-        self.name = "come"
+        self.name = "Come"
 
     def _update_bet(self, table_object, dice_object):
         status, win_amount = super()._update_bet(table_object, dice_object)
@@ -90,10 +90,10 @@ class come(passline):
 """
 Passline/Come bet odds
 """
-class odds(bet):
+class Odds(Bet):
     def __init__(self, bet_amount, bet_object):
         super().__init__(bet_amount)
-        self.name = "odds" 
+        self.name = "Odds" 
         self.subname = "".join(str(e) for e in bet_object.winning_numbers)
         self.winning_numbers = bet_object.winning_numbers
         self.losing_numbers = bet_object.losing_numbers
@@ -110,7 +110,7 @@ class odds(bet):
 """
 Place Bets on 4,5,6,8,9,10
 """
-class place(bet):
+class Place(Bet):
     def _update_bet(self, table_object, dice_object):
         # place bets are inactive when point is "Off"
         if table_object.point == "On":
@@ -118,49 +118,49 @@ class place(bet):
         else: 
             return None, 0
 
-class place4(place):
+class Place4(Place):
     def __init__(self, bet_amount): 
-        self.name = "place4"
+        self.name = "Place4"
         self.winning_numbers = [4]
         self.losing_numbers = [7]
         self.payoutratio = 9/5
         super().__init__(bet_amount)
 
-class place5(place):
+class Place5(Place):
     def __init__(self, bet_amount): 
-        self.name = "place5"
+        self.name = "Place5"
         self.winning_numbers = [5]
         self.losing_numbers = [7]
         self.payoutratio = 7/5
         super().__init__(bet_amount)
 
-class place6(place):
+class Place6(Place):
     def __init__(self, bet_amount): 
-        self.name = "place6"
+        self.name = "Place6"
         self.winning_numbers = [6]
         self.losing_numbers = [7]
         self.payoutratio = 7/6
         super().__init__(bet_amount)
 
-class place8(place):
+class Place8(Place):
     def __init__(self, bet_amount): 
-        self.name = "place8"
+        self.name = "Place8"
         self.winning_numbers = [8]
         self.losing_numbers = [7]
         self.payoutratio = 7/6
         super().__init__(bet_amount)
 
-class place9(place):
+class Place9(Place):
     def __init__(self, bet_amount): 
-        self.name = "place9"
+        self.name = "Place9"
         self.winning_numbers = [9]
         self.losing_numbers = [7]
         self.payoutratio = 7/5
         super().__init__(bet_amount)
 
-class place10(place):
+class Place10(Place):
     def __init__(self, bet_amount): 
-        self.name = "place10"
+        self.name = "Place10"
         self.winning_numbers = [10]
         self.losing_numbers = [7]
         self.payoutratio = 9/5
@@ -170,7 +170,7 @@ class place10(place):
 """
 Field bet 
 """
-class field(bet):
+class Field(Bet):
     """ 
     Parameters
     ----------
@@ -180,7 +180,7 @@ class field(bet):
         Set of numbers that pay triple on the field bet (default = [])
     """
     def __init__(self, bet_amount, double=[2,12], triple=[]): 
-        self.name = "field"
+        self.name = "Field"
         self.double_winning_numbers = double
         self.triple_winning_numbers = triple
         self.winning_numbers = [2,3,4,9,10,11,12]
@@ -208,10 +208,10 @@ class field(bet):
 """
 Don't pass and Don't come bets
 """
-class dontpass(bet):
+class DontPass(Bet):
     # TODO: make this require that table_object.point = "Off", probably better in the player module
     def __init__(self, bet_amount):
-        self.name = "dontpass"
+        self.name = "DontPass"
         self.winning_numbers = [2,3]
         self.losing_numbers = [7,11]
         self.push_numbers = [12]
@@ -242,10 +242,10 @@ class dontpass(bet):
 """
 Don't pass/Don't come lay odds
 """
-class layodds(bet):
+class LayOdds(Bet):
     def __init__(self, bet_amount, bet_object):
         super().__init__(bet_amount)
-        self.name = "layodds" 
+        self.name = "LayOdds" 
         self.subname = "".join(str(e) for e in bet_object.losing_numbers)
         self.winning_numbers = bet_object.winning_numbers
         self.losing_numbers = bet_object.losing_numbers
