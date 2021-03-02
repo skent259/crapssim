@@ -98,8 +98,8 @@ if __name__ == "__main__":
     n_roll = float('inf')
     n_shooter = 1
     bankrolls= [10000]
-    strategies = {"passline": strategy._strat_passline}
-    name = "rolls_per_shooter"
+    strategies = {"passline": strategy.passline}
+    name = "testing"
     # strategy = strat._strat_place68
     # strategy_name = "place68" # don't include any "_" in this
     runout = True
