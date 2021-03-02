@@ -150,7 +150,7 @@ if __name__ == "__main__":
     n_roll = 144
     n_shooter = 2
     bankroll = 1000
-    strategy = strategy._strat_dicedoctor
+    strategy = strategy.dicedoctor
     strategy_name = "dicedoctor" # don't include any "_" in this
     runout = True
     runout_str = "-runout" if runout else ""
