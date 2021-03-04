@@ -1,7 +1,7 @@
-from .dice import Dice
-from .player import Player
+from crapssim.dice import Dice
+from crapssim.player import Player
 
-class CrapsTable(object):
+class Table(object):
     """
     Craps Table that contains Dice, Players, the Players' bets, and updates them accordingly.  Main method is run() which should simulate a craps table until a specified number of rolls plays out or all players run out of money.  
 
@@ -28,32 +28,32 @@ class CrapsTable(object):
     """
     def __init__(self):
         self.players = []
-        self.point = "Off"
-        self.point_number = None
         self.player_has_bets = False
-        self.strat_info = {}
+        self.strat_info = {} # TODO: I think this should be attached to each player object
+        self.point = _Point()
+        self.dice = Dice()
         self.bet_update_info = None
         self.payouts = {"fielddouble": [2, 12], "fieldtriple": []}
         self.pass_rolls = 0
         self.last_roll = None
         self.n_shooters = 1
 
+    @classmethod
+    def with_payouts(cls, **kwagrs):
+        table = cls()
+        for name,value in kwagrs.items():
+            table.payouts[name] = value
+        return(table)
+
     def set_payouts(self, name, value):
         self.payouts[name] = value
 
-    def _add_player(self, player_object):
+    def add_player(self, player_object):
         """ Add player object to the table """
         if player_object not in self.players:
             self.players.append(player_object)
             self.strat_info[player_object] = None
 
-    def _get_player(self, player_name):
-        [p for p in self.players if p.name == player_name]
-        for p in self.players:
-            if p.name == player_name:
-                return(p)
-        return(False)
-            
     def run(self, max_rolls, max_shooter=float('inf'), verbose=True, runout=False):
         """
         Runs the craps table until a stopping condition is met. 
@@ -67,12 +67,12 @@ class CrapsTable(object):
         runout : bool
             If true, continue past max_rolls until player has no more bets on the table
         """
-        self.dice = Dice()
+        # self.dice = Dice()
         if verbose: print("Welcome to the Craps Table!")
         
         # make sure at least one player is at table
         if not self.players:
-            self._add_player(Player(500, "Player1"))
+            self.add_player(Player(500, "Player1"))
         if verbose: print("Initial players: {}".format( [p.name for p in self.players] ))
 
         # maybe wrap this into update table or something
@@ -91,25 +91,25 @@ class CrapsTable(object):
             if verbose: print("")
             self.dice.roll()
             if verbose: print("Dice out!")
-            if verbose: print("Shooter rolled {} {}".format(self.dice.total_, self.dice.result_))
+            if verbose: print("Shooter rolled {} {}".format(self.dice.total, self.dice.result))
 
             self._update_player_bets(self.dice, verbose)
             self._update_table(self.dice)
-            if verbose: print("Point is {} ({})".format(self.point, self.point_number))
+            if verbose: print("Point is {} ({})".format(self.point.status, self.point.number))
             if verbose: print("Total Player Cash is ${}".format(self.total_player_cash))
             
             # evaluate the stopping condition
             if runout:
-                continue_rolling = (self.dice.n_rolls_ < max_rolls and self.n_shooters <= max_shooter and self.total_player_cash > 0) or self.player_has_bets
+                continue_rolling = (self.dice.n_rolls < max_rolls and self.n_shooters <= max_shooter and self.total_player_cash > 0) or self.player_has_bets
             else: 
-                continue_rolling = (self.dice.n_rolls_ < max_rolls and self.n_shooters <= max_shooter and self.total_player_cash > 0)
+                continue_rolling = (self.dice.n_rolls < max_rolls and self.n_shooters <= max_shooter and self.total_player_cash > 0)
          
     def _add_player_bets(self):
         """ Implement each player's betting strategy """
         """ TODO: restrict bets that shouldn't be possible based on table"""
         """ TODO: Make the unit parameter specific to each player, and make it more general """
         for p in self.players:
-            self.strat_info[p] = p.add_bet(self, unit=5, strat_info=self.strat_info[p]) # unit = 10 to change unit
+            self.strat_info[p] = p._add_strategy_bets(self, unit=5, strat_info=self.strat_info[p]) # unit = 10 to change unit
             # TODO: add player.strat_kwargs as optional parameter (currently manually changed in CrapsTable)
 
     def _update_player_bets(self, dice, verbose = False):
@@ -122,29 +122,65 @@ class CrapsTable(object):
     def _update_table(self, dice):
         """ update table attributes based on previous dice roll """
         self.pass_rolls += 1
-        if self.point == "On" and dice.total_ == 7:
+        if self.point == "On" and dice.total == 7:
             self.n_shooters += 1
-
-        if self.point == "Off" and dice.total_ in [4,5,6,8,9,10]:
-            self.point = "On"
-            self.point_number = dice.total_
-        elif self.point == "On" and (dice.total_ == 7 or dice.total_ == self.point_number):
-            self.point = "Off"
-            self.point_number = None 
+        if self.point == "On" and (dice.total == 7 or dice.total == self.point.number):
             self.pass_rolls = 0
+
+        self.point.update(self.dice)
 
         self.total_player_cash = sum([p.total_bet_amount+p.bankroll for p in self.players]) 
 
         self.player_has_bets = sum([len(p.bets_on_table) for p in self.players]) >= 1
 
-        self.last_roll = dice.total_
+        self.last_roll = dice.total
+
+    def _get_player(self, player_name):
+        [p for p in self.players if p.name == player_name]
+        for p in self.players:
+            if p.name == player_name:
+                return(p)
+        return(False)
+
+class _Point(object):
+    """
+    The point on a craps table.  
+
+    Parameters
+    ----------
+    NONE
+
+    Attributes
+    ----------
+    status : str
+        Either 'On' or 'Off', depending on whether a point is set
+    number : int
+        The point number (in [4, 5, 6, 8, 9, 10]) is status == 'On'
+    """
+    def __init__(self):
+        self.status = "Off"
+        self.number = None
+
+    def __eq__(self, other):
+        return self.status == other
+
+    def update(self, dice_object: Dice):
+        if self.status == "Off" and dice_object.total in [4, 5, 6, 8, 9, 10]:
+            self.status = "On"
+            self.number = dice_object.total
+        elif self.status == "On" and (dice_object.total == 7 or dice_object.total == self.number):
+            self.status = "Off"
+            self.number = None
+
+
 
 if __name__ == "__main__":
     import sys
-    import strategy
+    # import strategy
+    from crapssim import strategy
      
-    sim = True
-    printout = True
+    sim = False
+    printout = False
 
     n_sim = 100
     n_roll = 144
@@ -162,10 +198,10 @@ if __name__ == "__main__":
             f_out.write("total_cash,n_rolls")
             f_out.write(str('\n'))
             for i in range(n_sim):
-                table = CrapsTable()
-                table._add_player(Player(bankroll, strategy))
+                table = Table()
+                table.add_player(Player(bankroll, strategy))
                 table.run(n_roll, n_shooter, verbose=False, runout=runout)
-                out = "{},{}".format(table.total_player_cash, table.dice.n_rolls_)
+                out = "{},{}".format(table.total_player_cash, table.dice.n_rolls)
                 f_out.write(str(out))
                 f_out.write(str('\n'))
 
@@ -174,14 +210,20 @@ if __name__ == "__main__":
         outfile_name = "./output/printout/{}_roll-{}_br-{}{}.txt".format(strategy_name, n_roll, bankroll, runout_str)
         with open(outfile_name, 'w') as f_out:
             sys.stdout = f_out
-            table = CrapsTable()
-            table._add_player(Player(bankroll, strategy))
+            table = Table()
+            table.add_player(Player(bankroll, strategy))
             table.run(n_roll, verbose=True)
             # out = table.total_player_cash
             # f_out.write(str(out))
             # f_out.write(str('\n'))
 
     sys.stdout = sys.__stdout__ # reset stdout
+
+
+    # table = Table().with_payouts(fielddouble=[2], fieldtriple=[12])
+    print(table)
+    print(table.payouts)
+
         
 
         

@@ -1,4 +1,4 @@
-from crapssim import CrapsTable
+from crapssim import Table
 from crapssim import Player
 from crapssim import strategy
 import sys 
@@ -14,8 +14,8 @@ def run_printout(n_roll, n_shooter, bankroll, strategy, strategy_name, runout):
     # print("Running printout for {}_sim-{}_roll-{}_br-{}{}.txt".format(strategy_name, n_sim, n_roll, bankroll, runout_str))
     with open(outfile_name, 'w') as f_out:
         sys.stdout = f_out
-        table = CrapsTable()
-        table._add_player(Player(bankroll, strategy))
+        table = CTable()
+        table.add_player(Player(bankroll, strategy))
         table.run(n_roll, n_shooter, verbose=True)
     sys.stdout = sys.__stdout__ # reset stdout
 
@@ -29,8 +29,8 @@ def run_simulation(n_sim, n_roll, bankroll, strategy, strategy_name, runout):
         f_out.write("total_cash,bankroll,n_rolls") 
         f_out.write(str('\n'))
         for _ in range(n_sim):
-            table = CrapsTable()
-            table._add_player(Player(bankroll, strategy))
+            table = CTable()
+            table.add_player(Player(bankroll, strategy))
             table.run(n_roll, verbose=False, runout=runout)
             # write data to file
             out = "{},{},{}".format(table.total_player_cash, bankroll, table.dice.n_rolls_)
@@ -47,8 +47,8 @@ def run_simulation_burnin(n_sim, n_roll, bankroll, strategy, strategy_name, burn
         f_out.write("total_cash,bankroll,n_rolls") 
         f_out.write(str('\n'))
         for _ in range(n_sim):
-            table = CrapsTable()
-            table._add_player(Player(bankroll, strategy))
+            table = Table()
+            table.add_player(Player(bankroll, strategy))
 
             table.run(burn_in, verbose=False, runout=False)
             burn_in_bankroll = table.total_player_cash
@@ -70,11 +70,11 @@ def run_multi_simulation(n_sim, n_roll, n_shooter, bankroll, strategy, name, run
         for i in range(n_sim):
             if i % 1000 == 0:
                 print(f"i: {i}")
-            table = CrapsTable() 
+            table = Table() 
             table.set_payouts("fielddouble", [2])
             table.set_payouts("fieldtriple", [12])
             for bank, s in zip(bankroll, strategy):
-                table._add_player(Player(bank, strategy[s], s))
+                table.add_player(Player(bank, strategy[s], s))
 
             # table.run(burn_in, verbose=False, runout=False)
             # burn_in_bankroll = table.total_player_cash
@@ -82,7 +82,7 @@ def run_multi_simulation(n_sim, n_roll, n_shooter, bankroll, strategy, name, run
             # write data to file
             # TODO: get actual player cash 
             for bank, s in zip(bankroll, strategy):
-                out = f"{i},{s},{table._get_player(s).bankroll},{bank},{table.dice.n_rolls_}"
+                out = f"{i},{s},{table._get_player(s).bankroll},{bank},{table.dice.n_rolls}"
                 # out = "{},{},{},{}".format(s, table.total_player_cash, bank, table.dice.n_rolls_)
                 f_out.write(str(out))
                 f_out.write(str('\n'))
@@ -92,7 +92,7 @@ def run_multi_simulation(n_sim, n_roll, n_shooter, bankroll, strategy, name, run
 if __name__ == "__main__":
     
     sim = True 
-    printout = False
+    printout = True
 
     n_sim = 10
     n_roll = float('inf')

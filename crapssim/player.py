@@ -32,9 +32,6 @@ class Player(object):
             self.bankroll -= bet_object.bet_amount
             self.bets_on_table.append(bet_object) # TODO: make sure this only happens if that bet isn't on the table, otherwise wager amount gets updated
             self.total_bet_amount += bet_object.bet_amount    
-        else: 
-            pass 
-            # can't make the bet
 
     def remove(self, bet_object):
         # TODO: add bet attribute for whether a bet can be removed and put condition in here
@@ -43,10 +40,34 @@ class Player(object):
             self.bets_on_table.remove(bet_object) 
             self.total_bet_amount -= bet_object.bet_amount  
             
-    def add_bet(self, table, *args, **kwargs):
+    def has_bet(self, *bets_to_check):
+        """ returns True if bets_to_check and self.bets_on_table has at least one thing in common """
+        bet_names = {b.name for b in self.bets_on_table}
+        return bool(bet_names.intersection(bets_to_check))
+
+    def get_bet(self, bet_name, bet_subname=""):
+            """ returns first betting object matching bet_name and bet_subname.  
+            If bet_subname="Any", returns first betting object matching bet_name """
+            if bet_subname == "Any":
+                bet_name_list = [b.name for b in self.bets_on_table]
+                ind = bet_name_list.index(bet_name)
+            else:
+                bet_name_list = [[b.name, b.subname] for b in self.bets_on_table]
+                ind = bet_name_list.index([bet_name, bet_subname])
+            return self.bets_on_table[ind]
+
+    def num_bet(self, *bets_to_check):
+        """ returns the total number of bets in self.bets_on_table that match bets_to_check """
+        bet_names = [b.name for b in self.bets_on_table]
+        return sum([i in bets_to_check for i in bet_names])
+
+    def remove_if_present(self, bet_name, bet_subname=""):   
+        if self.has_bet(bet_name):
+            self.remove(self.get_bet(bet_name, bet_subname))        
+
+    def _add_strategy_bets(self, table, *args, **kwargs):
         """ Implement the given betting strategy """
-        strat_info = self.bet_strategy(self, table, *args, **kwargs)
-        return strat_info
+        return self.bet_strategy(self, table, *args, **kwargs)
 
     def _update_bet(self, table_object, dice_object, verbose = False):
         info = {}
@@ -71,28 +92,3 @@ class Player(object):
             info[b.name] = {"status":status, "win_amount":win_amount}
         return info  
                     
-    def _has_bet(self, *bets_to_check):
-        """ returns True if bets_to_check and self.bets_on_table has at least one thing in common """
-        bet_names = {b.name for b in self.bets_on_table}
-        return bool(bet_names.intersection(bets_to_check))
-
-    def _num_bet(self, *bets_to_check):
-        """ returns the total number of bets in self.bets_on_table that match bets_to_check """
-        bet_names = [b.name for b in self.bets_on_table]
-        return sum([i in bets_to_check for i in bet_names])
-
-    def _get_bet(self, bet_name, bet_subname=""):
-        """ returns first betting object matching bet_name and bet_subname.  
-        If bet_subname="Any", returns first betting object matching bet_name """
-        if bet_subname == "Any":
-            bet_name_list = [b.name for b in self.bets_on_table]
-            ind = bet_name_list.index(bet_name)
-        else:
-            bet_name_list = [[b.name, b.subname] for b in self.bets_on_table]
-            ind = bet_name_list.index([bet_name, bet_subname])
-        return self.bets_on_table[ind]
-
-    def _remove_if_present(self, bet_name, bet_subname=""):   
-        if self._has_bet(bet_name):
-            self.remove(self._get_bet(bet_name, bet_subname))        
-

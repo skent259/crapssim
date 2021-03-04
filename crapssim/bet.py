@@ -1,3 +1,5 @@
+from crapssim.dice import Dice
+
 class Bet(object):
     """
     A generic bet for the craps table
@@ -34,14 +36,14 @@ class Bet(object):
     # def __eq__(self, other):
     #     return self.name == other.name
 
-    def _update_bet(self, table_object, dice_object):
+    def _update_bet(self, table_object, dice_object: Dice):
         status = None
         win_amount = 0
 
-        if dice_object.total_ in self.winning_numbers:
+        if dice_object.total in self.winning_numbers:
             status = "win"
             win_amount = self.payoutratio * self.bet_amount
-        elif dice_object.total_ in self.losing_numbers:
+        elif dice_object.total in self.losing_numbers:
             status = "lose"
         
         return status, win_amount
@@ -63,18 +65,19 @@ class PassLine(Bet):
         status = None
         win_amount = 0 
 
-        if dice_object.total_ in self.winning_numbers:
+        if dice_object.total in self.winning_numbers:
             status = "win"
             win_amount = self.payoutratio * self.bet_amount
-        elif dice_object.total_ in self.losing_numbers:
+        elif dice_object.total in self.losing_numbers:
             status = "lose"
         elif self.prepoint:
-            self.winning_numbers = [dice_object.total_]
+            self.winning_numbers = [dice_object.total]
             self.losing_numbers = [7]
             self.prepoint = False
 
         return status, win_amount
-            
+
+
 class Come(PassLine):
     def __init__(self, bet_amount):
         super().__init__(bet_amount)
@@ -191,16 +194,16 @@ class Field(Bet):
         status = None
         win_amount = 0
 
-        if dice_object.total_ in self.triple_winning_numbers:
+        if dice_object.total in self.triple_winning_numbers:
             status = "win"
             win_amount = 3 * self.bet_amount
-        elif dice_object.total_ in self.double_winning_numbers:
+        elif dice_object.total in self.double_winning_numbers:
             status = "win"
             win_amount = 2 * self.bet_amount  
-        elif dice_object.total_ in self.winning_numbers:
+        elif dice_object.total in self.winning_numbers:
             status = "win"
             win_amount = 1 * self.bet_amount
-        elif dice_object.total_ in self.losing_numbers:
+        elif dice_object.total in self.losing_numbers:
             status = "lose"
         
         return status, win_amount
@@ -223,16 +226,16 @@ class DontPass(Bet):
         status = None
         win_amount = 0 
 
-        if dice_object.total_ in self.winning_numbers:
+        if dice_object.total in self.winning_numbers:
             status = "win"
             win_amount = self.payoutratio * self.bet_amount
-        elif dice_object.total_ in self.losing_numbers:
+        elif dice_object.total in self.losing_numbers:
             status = "lose"
-        elif dice_object.total_ in self.push_numbers:
+        elif dice_object.total in self.push_numbers:
             status = "push"
         elif self.prepoint:
             self.winning_numbers = [7]
-            self.losing_numbers = [dice_object.total_]
+            self.losing_numbers = [dice_object.total]
             self.push_numbers = []
             self.prepoint = False
 
