@@ -25,11 +25,11 @@ def passline_odds(player, table, unit=5, strat_info=None, mult=1):
     # Pass line odds
     if mult == "345":
         if table.point == "On":
-            if table.point_number in [4, 10]:
+            if table.point.number in [4, 10]:
                 mult = 3
-            elif table.point_number in [5, 9]:
+            elif table.point.number in [5, 9]:
                 mult = 4
-            elif table.point_number in [6, 8]:
+            elif table.point.number in [6, 8]:
                 mult = 5
     else:
         mult = float(mult)
@@ -61,7 +61,7 @@ def pass2come(player, table, unit=5, strat_info=None):
 def place(player, table, unit=5, strat_info={"numbers": {6, 8}}, skip_point=True):
     strat_info["numbers"] = set(strat_info["numbers"]).intersection({4, 5, 6, 8, 9, 10})
     if skip_point:
-        strat_info["numbers"] -= {table.point_number}
+        strat_info["numbers"] -= {table.point.number}
 
     # Place the provided numbers when point is ON
     if table.point == "On":
@@ -80,17 +80,17 @@ def place(player, table, unit=5, strat_info={"numbers": {6, 8}}, skip_point=True
 
     # Move the bets off the point number if it shows up later
     if skip_point and table.point == "On":
-        if player.has_bet("Place4") and table.point_number == 4:
+        if player.has_bet("Place4") and table.point.number == 4:
             player.remove(player.get_bet("Place4"))
-        if player.has_bet("Place5") and table.point_number == 5:
+        if player.has_bet("Place5") and table.point.number == 5:
             player.remove(player.get_bet("Place5"))
-        if player.has_bet("Place6") and table.point_number == 6:
+        if player.has_bet("Place6") and table.point.number == 6:
             player.remove(player.get_bet("Place6"))
-        if player.has_bet("Place8") and table.point_number == 8:
+        if player.has_bet("Place8") and table.point.number == 8:
             player.remove(player.get_bet("Place8"))
-        if player.has_bet("Place9") and table.point_number == 9:
+        if player.has_bet("Place9") and table.point.number == 9:
             player.remove(player.get_bet("Place9"))
-        if player.has_bet("Place10") and table.point_number == 10:
+        if player.has_bet("Place10") and table.point.number == 10:
             player.remove(player.get_bet("Place10"))
 
 
@@ -101,9 +101,9 @@ def place68(player, table, unit=5, strat_info=None):
         "Place4", "Place5", "Place6", "Place8", "Place9", "Place10"
     )
     if table.point == "On" and not p_has_place_bets:
-        if table.point_number == 6:
+        if table.point.number == 6:
             player.bet(Place8(6 / 5 * unit))
-        elif table.point_number == 8:
+        elif table.point.number == 8:
             player.bet(Place6(6 / 5 * unit))
         else:
             player.bet(Place8(6 / 5 * unit))
@@ -128,11 +128,11 @@ def layodds(player, table, unit=5, strat_info=None, win_mult=1):
     else:
         win_mult = float(win_mult)
         if table.point == "On":
-            if table.point_number in [4, 10]:
+            if table.point.number in [4, 10]:
                 mult = 2 * win_mult
-            elif table.point_number in [5, 9]:
+            elif table.point.number in [5, 9]:
                 mult = 3 / 2 * win_mult
-            elif table.point_number in [6, 8]:
+            elif table.point.number in [6, 8]:
                 mult = 6 / 5 * win_mult
 
     if (
@@ -222,7 +222,7 @@ def hammerlock(player, table, unit=5, strat_info=None):
         if isinstance(bet, Place):
             place_nums.add(bet.winning_numbers[0])
     place_point_nums = place_nums.copy()
-    place_point_nums.add(table.point_number)
+    place_point_nums.add(table.point.number)
 
     has_place68 = (6 in place_nums) or (8 in place_nums)
     has_place5689 = (
@@ -305,14 +305,14 @@ def risk12(player, table, unit=5, strat_info=None):
         if table.last_roll == 7:
             for bet_nm in ["Place6", "Place8"]:
                 player.remove_if_present(bet_nm)
-    elif table.point_number in [4, 9, 10]:
+    elif table.point.number in [4, 9, 10]:
         place(player, table, unit, strat_info={"numbers": {6, 8}})
-    elif table.point_number in [5, 6, 8]:
+    elif table.point.number in [5, 6, 8]:
         # lost field bet, so can't automatically cover the 6/8 bets.  Need to rely on potential early winnings
         if strat_info["winnings"] >= 2 * unit:
             place(player, table, unit, strat_info={"numbers": {6, 8}})
         elif strat_info["winnings"] >= 1 * unit:
-            if table.point_number != 6:
+            if table.point.number != 6:
                 place(player, table, unit, strat_info={"numbers": {6}})
             else:
                 place(player, table, unit, strat_info={"numbers": {8}})
