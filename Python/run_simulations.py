@@ -14,7 +14,7 @@ def run_printout(n_roll, n_shooter, bankroll, strategy, strategy_name, runout):
     # print("Running printout for {}_sim-{}_roll-{}_br-{}{}.txt".format(strategy_name, n_sim, n_roll, bankroll, runout_str))
     with open(outfile_name, 'w') as f_out:
         sys.stdout = f_out
-        table = CTable()
+        table = Table()
         table.add_player(Player(bankroll, strategy))
         table.run(n_roll, n_shooter, verbose=True)
     sys.stdout = sys.__stdout__ # reset stdout
@@ -29,7 +29,7 @@ def run_simulation(n_sim, n_roll, bankroll, strategy, strategy_name, runout):
         f_out.write("total_cash,bankroll,n_rolls") 
         f_out.write(str('\n'))
         for _ in range(n_sim):
-            table = CTable()
+            table = Table()
             table.add_player(Player(bankroll, strategy))
             table.run(n_roll, verbose=False, runout=runout)
             # write data to file
