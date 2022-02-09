@@ -32,9 +32,16 @@ You can install crapssim with
 pip install crapssim
 ```
 
-This requires Python >=3.6 and pip to be installed on your computer.
+This requires Python >=3.6 and pip to be installed on your computer.  You will also need a recent version of numpy, which can be installed by `pip install numpy`.  
 
 ## Getting Started
+
+There's a few good resources for getting started:
+
+1. Try the interactive [google collab notebook](https://github.com/skent259/crapssim/blob/master/crapssim_sandbox.ipynb) to test a single strategy and see how the interface works 
+2. Check out Corey Brown's scripts to define strategies and compare them: https://github.com/coreyabrown/CoreyCrapsSim 
+3. Looks at the minimal working examples below
+
 
 To see how a single session might play out for you using a pass line bet with double odds, over 20 rolls, one might run:
 
