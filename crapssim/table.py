@@ -104,12 +104,13 @@ class Table(object):
                     print(f"{p.name}'s current bets: {bets}")
 
             self.dice.roll()
-            self._update_player_bets(self.dice, verbose)
-            self._update_table(self.dice)
             if verbose:
                 print("")
                 print("Dice out!")
                 print(f"Shooter rolled {self.dice.total} {self.dice.result}")
+            self._update_player_bets(self.dice, verbose)
+            self._update_table(self.dice)
+            if verbose:
                 print(f"Point is {self.point.status} ({self.point.number})")
                 print(f"Total Player Cash is ${self.total_player_cash}")
 
