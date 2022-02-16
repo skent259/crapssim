@@ -1,4 +1,6 @@
 # :game_die::chart_with_upwards_trend: crapssim
+![PyPI](https://img.shields.io/pypi/v/crapssim)
+![GitHub Repo stars](https://img.shields.io/github/stars/skent259/crapssim?style=social)
 
 A python package to run all of the necessary elements of a Craps table.  The package follows some natural logic: 
 
@@ -20,6 +22,7 @@ These powerful options can lead to some unique analysis of the game of craps, su
 I will post results from this simulator on my site: http://pages.stat.wisc.edu/~kent/blog.  
 
 Current blog posts include:
+- [One Surprising Feature of Dark Side Betting](https://pages.stat.wisc.edu/~kent/blog/2021.10.24/dark-side-surprises.html)
 - [5 Systems to Try at the Craps Table](http://pages.stat.wisc.edu/~kent/blog/2021.02.22/five_craps_systems.html)
 - [Craps: Best Strategies on a Budget](http://pages.stat.wisc.edu/~kent/blog/2019.07.31_Craps_Budget/craps_best-strategies-on-a-budget.html)
 - [All Bets Are Off: Re-learning the Pass Line Bet in Craps](http://pages.stat.wisc.edu/~kent/blog/2019.02.28_Craps_Passline/passline-and-odds.html)
