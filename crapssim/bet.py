@@ -1,7 +1,9 @@
+from abc import ABC
+
 from crapssim.dice import Dice
 
 
-class Bet(object):
+class Bet(ABC):
     """
     A generic bet for the craps table
 
@@ -25,18 +27,15 @@ class Bet(object):
 
     """
 
-    name = None
-    subname = ""
-    winning_numbers = []
-    losing_numbers = []
-    payoutratio = float(1)
     # TODO: add whether bet can be removed
 
     def __init__(self, bet_amount):
         self.bet_amount = float(bet_amount)
-
-    # def __eq__(self, other):
-    #     return self.name == other.name
+        self.name = None
+        self.subname = ""
+        self.winning_numbers = []
+        self.losing_numbers = []
+        self.payoutratio = float(1)
 
     def _update_bet(self, table_object, dice_object: Dice):
         status = None
@@ -133,56 +132,56 @@ class Place(Bet):
 
 class Place4(Place):
     def __init__(self, bet_amount):
+        super().__init__(bet_amount)
         self.name = "Place4"
         self.winning_numbers = [4]
         self.losing_numbers = [7]
         self.payoutratio = 9 / 5
-        super().__init__(bet_amount)
 
 
 class Place5(Place):
     def __init__(self, bet_amount):
+        super().__init__(bet_amount)
         self.name = "Place5"
         self.winning_numbers = [5]
         self.losing_numbers = [7]
         self.payoutratio = 7 / 5
-        super().__init__(bet_amount)
 
 
 class Place6(Place):
     def __init__(self, bet_amount):
+        super().__init__(bet_amount)
         self.name = "Place6"
         self.winning_numbers = [6]
         self.losing_numbers = [7]
         self.payoutratio = 7 / 6
-        super().__init__(bet_amount)
 
 
 class Place8(Place):
     def __init__(self, bet_amount):
+        super().__init__(bet_amount)
         self.name = "Place8"
         self.winning_numbers = [8]
         self.losing_numbers = [7]
         self.payoutratio = 7 / 6
-        super().__init__(bet_amount)
 
 
 class Place9(Place):
     def __init__(self, bet_amount):
+        super().__init__(bet_amount)
         self.name = "Place9"
         self.winning_numbers = [9]
         self.losing_numbers = [7]
         self.payoutratio = 7 / 5
-        super().__init__(bet_amount)
 
 
 class Place10(Place):
     def __init__(self, bet_amount):
+        super().__init__(bet_amount)
         self.name = "Place10"
         self.winning_numbers = [10]
         self.losing_numbers = [7]
         self.payoutratio = 9 / 5
-        super().__init__(bet_amount)
 
 
 """
@@ -201,12 +200,12 @@ class Field(Bet):
     """
 
     def __init__(self, bet_amount, double=[2, 12], triple=[]):
+        super().__init__(bet_amount)
         self.name = "Field"
         self.double_winning_numbers = double
         self.triple_winning_numbers = triple
         self.winning_numbers = [2, 3, 4, 9, 10, 11, 12]
         self.losing_numbers = [5, 6, 7, 8]
-        super().__init__(bet_amount)
 
     def _update_bet(self, table_object, dice_object):
         status = None
@@ -310,6 +309,7 @@ class Any7(Bet):
         self.losing_numbers = [2, 3, 4, 5, 6, 8, 9, 10, 11, 12]
         self.payoutratio = 4
 
+
 class Two(Bet):
     def __init__(self, bet_amount):
         super().__init__(bet_amount)
@@ -317,6 +317,7 @@ class Two(Bet):
         self.winning_numbers = [2]
         self.losing_numbers = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
         self.payoutratio = 30
+
 
 class Three(Bet):
     def __init__(self, bet_amount):
@@ -326,13 +327,15 @@ class Three(Bet):
         self.losing_numbers = [2, 4, 5, 6, 7, 8, 9, 10, 11, 12]
         self.payoutratio = 15
 
+
 class Yo(Bet):
     def __init__(self, bet_amount):
+        super().__init__(bet_amount)
         self.name = "Yo"
         self.winning_numbers = [11]
         self.losing_numbers = [2, 3, 4, 5, 6, 7, 8, 9, 10, 12]
         self.payoutratio = 15
-        super().__init__(bet_amount)
+
 
 class Boxcars(Bet):
     def __init__(self, bet_amount):
@@ -342,6 +345,7 @@ class Boxcars(Bet):
         self.losing_numbers = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
         self.payoutratio = 30
 
+
 class AnyCraps(Bet):
     def __init__(self, bet_amount):
         super().__init__(bet_amount)
@@ -349,6 +353,7 @@ class AnyCraps(Bet):
         self.winning_numbers = [2, 3, 12]
         self.losing_numbers = [4, 5, 6, 7, 8, 9, 10, 11]
         self.payoutratio = 7
+
 
 class CAndE(Bet):
     def __init__(self, bet_amount):
@@ -373,6 +378,7 @@ class CAndE(Bet):
 
         return status, win_amount
 
+
 class Hardway(Bet):
     """
     Attributes
@@ -382,22 +388,24 @@ class Hardway(Bet):
     winnings_combination : list(int)
         The combination of dice the bet wins on
     """
+
     def __init__(self, bet_amount):
         super().__init__(bet_amount)
-        self.number = None 
+        self.number = None
         self.winning_result = [None, None]
 
     def _update_bet(self, table_object, dice_object: Dice):
-        status = None 
+        status = None
         win_amount = 0
 
         if dice_object.result == self.winning_result:
             status = "win"
             win_amount = self.payoutratio * self.bet_amount
-        elif dice_object.total in [self.number, 7]: 
+        elif dice_object.total in [self.number, 7]:
             status = "lose"
 
-        return status, win_amount 
+        return status, win_amount
+
 
 class Hard4(Hardway):
     def __init__(self, bet_amount):
@@ -407,6 +415,7 @@ class Hard4(Hardway):
         self.number = 4
         self.payoutratio = 7
 
+
 class Hard6(Hardway):
     def __init__(self, bet_amount):
         super().__init__(bet_amount)
@@ -414,6 +423,7 @@ class Hard6(Hardway):
         self.winning_result = [3, 3]
         self.number = 6
         self.payoutratio = 9
+
 
 class Hard8(Hardway):
     def __init__(self, bet_amount):
@@ -423,10 +433,11 @@ class Hard8(Hardway):
         self.number = 8
         self.payoutratio = 9
 
+
 class Hard10(Hardway):
     def __init__(self, bet_amount):
         super().__init__(bet_amount)
         self.name = "Hard10"
         self.winning_result = [5, 5]
         self.number = 10
-        self.payoutratio= 7
+        self.payoutratio = 7
