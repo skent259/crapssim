@@ -1,26 +1,24 @@
 from numpy import random as r
 
 
-class Dice(object):
+class Dice:
     """
     Simulate the rolling of a dice
 
-    Parameters
-    ----------
-    NONE
-
     Attributes
     ----------
-    n_rolls_ : int
+    n_rolls : int
         Number of rolls for the dice
-    result_ : array, shape = [2]
+    result : array, shape = [2]
         Most recent outcome of the roll of two dice
-    total_ : int
+    total : int
         Sum of dice outcome
 
     """
 
     def __init__(self):
+        self.total = None
+        self.result = None
         self.n_rolls = 0
 
     def roll(self):
