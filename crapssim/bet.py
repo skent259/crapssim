@@ -1,8 +1,9 @@
 from abc import ABC
-from typing import SupportsFloat
-
-from crapssim import Table
+import typing
 from crapssim.dice import Dice
+
+if typing.TYPE_CHECKING:
+    from crapssim.table import Table
 
 
 class Bet(ABC):
@@ -31,15 +32,15 @@ class Bet(ABC):
 
     # TODO: add whether bet can be removed
 
-    def __init__(self, bet_amount: SupportsFloat):
+    def __init__(self, bet_amount: typing.SupportsFloat):
         self.bet_amount: float = float(bet_amount)
-        self.name: str | None = None
-        self.subname: str = ""
+        self.name: str = str()
+        self.subname: str = str()
         self.winning_numbers: list[int] = []
         self.losing_numbers: list[int] = []
         self.payoutratio: float = float(1)
 
-    def _update_bet(self, table_object: Table, dice_object: Dice) -> tuple[str | None, float]:
+    def _update_bet(self, table_object: "Table", dice_object: Dice) -> tuple[str | None, float]:
         status: str | None = None
         win_amount: float = 0.0
 
@@ -68,7 +69,7 @@ class PassLine(Bet):
         self.prepoint: bool = True
         super().__init__(bet_amount)
 
-    def _update_bet(self, table_object: Table, dice_object: Dice) -> tuple[str | None, float]:
+    def _update_bet(self, table_object: "Table", dice_object: Dice) -> tuple[str | None, float]:
         status: str | None = None
         win_amount: float = 0.0
 
@@ -90,7 +91,7 @@ class Come(PassLine):
         super().__init__(bet_amount)
         self.name: str = "Come"
 
-    def _update_bet(self, table_object: Table, dice_object: Dice) -> tuple[str | None, float]:
+    def _update_bet(self, table_object: "Table", dice_object: Dice) -> tuple[str | None, float]:
         status, win_amount = super()._update_bet(table_object, dice_object)
         if not self.prepoint and self.subname == "":
             self.subname = "".join(str(e) for e in self.winning_numbers)
@@ -103,8 +104,12 @@ Passline/Come bet odds
 
 
 class Odds(Bet):
-    def __init__(self, bet_amount: float, bet_object: Bet):
+    def __init__(self, bet_amount: typing.SupportsFloat, bet_object: Bet):
         super().__init__(bet_amount)
+
+        if not isinstance(bet_object, PassLine) and not isinstance(bet_object, Come):
+            raise TypeError('bet_object must be either a PassLine or Come Bet.')
+
         self.name: str = "Odds"
         self.subname: str = "".join(str(e) for e in bet_object.winning_numbers)
         self.winning_numbers: list[int] = bet_object.winning_numbers
@@ -124,7 +129,7 @@ Place Bets on 4,5,6,8,9,10
 
 
 class Place(Bet):
-    def _update_bet(self, table_object: Table, dice_object: Dice) -> tuple[str | None, float]:
+    def _update_bet(self, table_object: "Table", dice_object: Dice) -> tuple[str | None, float]:
         # place bets are inactive when point is "Off"
         if table_object.point == "On":
             return super()._update_bet(table_object, dice_object)
@@ -209,7 +214,7 @@ class Field(Bet):
         self.winning_numbers: list[int] = [2, 3, 4, 9, 10, 11, 12]
         self.losing_numbers: list[int] = [5, 6, 7, 8]
 
-    def _update_bet(self, table_object: Table, dice_object: Dice) -> tuple[str | None, float]:
+    def _update_bet(self, table_object: "Table", dice_object: Dice) -> tuple[str | None, float]:
         status: str | None = None
         win_amount: float = 0
 
@@ -245,7 +250,7 @@ class DontPass(Bet):
         self.prepoint: bool = True
         super().__init__(bet_amount)
 
-    def _update_bet(self, table_object: Table, dice_object: Dice) -> tuple[str | None, float]:
+    def _update_bet(self, table_object: "Table", dice_object: Dice) -> tuple[str | None, float]:
         status: str | None = None
         win_amount: float = 0.0
 
@@ -270,7 +275,7 @@ class DontCome(DontPass):
         super().__init__(bet_amount)
         self.name: str = "DontCome"
 
-    def _update_bet(self, table_object: Table, dice_object: Dice) -> tuple[str | None, float]:
+    def _update_bet(self, table_object: "Table", dice_object: Dice) -> tuple[str | None, float]:
         status, win_amount = super()._update_bet(table_object, dice_object)
         if not self.prepoint and self.subname == "":
             self.subname = "".join(str(e) for e in self.losing_numbers)
@@ -364,7 +369,7 @@ class CAndE(Bet):
         self.winning_numbers: list[int] = [2, 3, 11, 12]
         self.losing_numbers: list[int] = [4, 5, 6, 7, 8, 9, 10]
 
-    def _update_bet(self, table_object: Table, dice_object: Dice) -> tuple[str | None, float]:
+    def _update_bet(self, table_object: "Table", dice_object: Dice) -> tuple[str | None, float]:
         status: str | None = None
         win_amount: float = 0
 
@@ -396,7 +401,7 @@ class Hardway(Bet):
         self.number: int | None = None
         self.winning_result: list[int | None] = [None, None]
 
-    def _update_bet(self, table_object: Table, dice_object: Dice) -> tuple[str | None, float]:
+    def _update_bet(self, table_object: "Table", dice_object: Dice) -> tuple[str | None, float]:
         status: str | None = None
         win_amount: float = 0.0
 

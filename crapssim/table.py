@@ -1,3 +1,5 @@
+import typing
+
 from crapssim.dice import Dice
 from crapssim.player import Player
 
@@ -34,41 +36,44 @@ class Table(object):
         name, this is status of last bet (win/loss), and win amount.
     """
 
-    def __init__(self):
-        self.players = []
-        self.player_has_bets = False
+    def __init__(self) -> None:
+        self.players: list[Player] = []
+        self.player_has_bets: bool = False
         # TODO: I think strat_info should be attached to each player object
-        self.strat_info = {}
-        self.point = _Point()
-        self.dice = Dice()
-        self.bet_update_info = None
-        self.payouts = {"fielddouble": [2, 12], "fieldtriple": []}
-        self.pass_rolls = 0
-        self.last_roll = None
-        self.n_shooters = 1
+        self.strat_info: dict[Player, typing.Any] = {}
+        self.point: _Point = _Point()
+        self.dice: Dice = Dice()
+        self.bet_update_info: dict | None = None
+        self.payouts: dict[str, list[int]] = {"fielddouble": [2, 12], "fieldtriple": []}
+        self.pass_rolls: int = 0
+        self.last_roll: int | None = None
+        self.n_shooters: int = 1
 
     @classmethod
-    def with_payouts(cls, **kwagrs):
+    def with_payouts(cls, **kwargs: list[int]) -> 'Table':
         table = cls()
-        for name, value in kwagrs.items():
+        for name, value in kwargs.items():
             table.payouts[name] = value
         return table
 
-    def set_payouts(self, name, value):
+    def set_payouts(self, name: str, value: list[int]) -> None:
         self.payouts[name] = value
 
-    def add_player(self, player_object):
+    def add_player(self, player_object: Player) -> None:
         """ Add player object to the table """
         if player_object not in self.players:
             self.players.append(player_object)
             self.strat_info[player_object] = None
 
-    def run(self, max_rolls, max_shooter=float("inf"), verbose=True, runout=False):
+    def run(self, max_rolls: int, max_shooter: float | int = float("inf"),
+            verbose: bool = True, runout: bool = False) -> None:
         """
         Runs the craps table until a stopping condition is met.
 
         Parameters
         ----------
+        max_shooter : float | int
+            Maximum number of shooters to run for
         max_rolls : int
             Maximum number of rolls to run for
         verbose : bool
@@ -80,11 +85,12 @@ class Table(object):
         if verbose:
             print("Welcome to the Craps Table!")
 
+        # TODO: This initial player would require a strategy to pass as a parameter
         # make sure at least one player is at table
-        if not self.players:
-            self.add_player(Player(500, "Player1"))
-        if verbose:
-            print(f"Initial players: {[p.name for p in self.players]}")
+        # if not self.players:
+        #     self.add_player(Player(500, "Player1"))
+        # if verbose:
+        #     print(f"Initial players: {[p.name for p in self.players]}")
 
         # maybe wrap this into update table or something
         self.total_player_cash = sum(
@@ -128,24 +134,24 @@ class Table(object):
                     and self.total_player_cash > 0
                 )
 
-    def _add_player_bets(self):
+    def _add_player_bets(self) -> None:
         """ Implement each player's betting strategy """
         """ TODO: restrict bets that shouldn't be possible based on table"""
         """ TODO: Make the unit parameter specific to each player, and make it more general """
         for p in self.players:
-            self.strat_info[p] = p._add_strategy_bets(
+            p._add_strategy_bets(
                 self, unit=5, strat_info=self.strat_info[p]
-            )  # unit = 10 to change unit
+            )
             # TODO: add player.strat_kwargs as optional parameter (currently manually changed in CrapsTable)
 
-    def _update_player_bets(self, dice, verbose=False):
+    def _update_player_bets(self, dice: Dice, verbose: bool = False) -> None:
         """ check bets for wins/losses, payout wins to their bankroll, remove bets that have resolved """
         self.bet_update_info = {}
         for p in self.players:
             info = p._update_bet(self, dice, verbose)
             self.bet_update_info[p] = info
 
-    def _update_table(self, dice):
+    def _update_table(self, dice: Dice) -> None:
         """ update table attributes based on previous dice roll """
         self.pass_rolls += 1
         if self.point == "On" and dice.total == 7:
@@ -160,15 +166,14 @@ class Table(object):
         self.player_has_bets = sum([len(p.bets_on_table) for p in self.players]) >= 1
         self.last_roll = dice.total
 
-    def _get_player(self, player_name):
-        [p for p in self.players if p.name == player_name]
+    def _get_player(self, player_name: str) -> typing.Union['Player', bool]:
         for p in self.players:
             if p.name == player_name:
                 return p
         return False
 
 
-class _Point(object):
+class _Point:
     """
     The point on a craps table.
 
@@ -184,14 +189,14 @@ class _Point(object):
         The point number (in [4, 5, 6, 8, 9, 10]) is status == 'On'
     """
 
-    def __init__(self):
-        self.status = "Off"
-        self.number = None
+    def __init__(self) -> None:
+        self.status: str = "Off"
+        self.number: int | None = None
 
-    def __eq__(self, other):
+    def __eq__(self, other: object) -> bool:
         return self.status == other
 
-    def update(self, dice_object: Dice):
+    def update(self, dice_object: Dice) -> None:
         if self.status == "Off" and dice_object.total in [4, 5, 6, 8, 9, 10]:
             self.status = "On"
             self.number = dice_object.total
@@ -204,7 +209,7 @@ if __name__ == "__main__":
     import sys
 
     # import strategy
-    from crapssim import strategy
+    from crapssim.strategy import dicedoctor
 
     sim = False
     printout = True
@@ -213,7 +218,7 @@ if __name__ == "__main__":
     n_roll = 144
     n_shooter = 2
     bankroll = 1000
-    strategy = strategy.dicedoctor
+    strategy = dicedoctor
     strategy_name = "dicedoctor"  # don't include any "_" in this
     runout = True
     runout_str = "-runout" if runout else ""

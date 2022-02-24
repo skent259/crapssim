@@ -27,6 +27,7 @@ from crapssim.table import Table, _Point
     (crapssim.bet.Hard10(1), -0.0278),
 ])
 
+
 def test_ev_oneroll(bet, ev):
     d = Dice()
     t = Table()

@@ -1,4 +1,6 @@
-from numpy import random as r
+import typing
+
+from numpy import random as r, int32
 
 
 class Dice:
@@ -16,17 +18,17 @@ class Dice:
 
     """
 
-    def __init__(self):
-        self.total = None
-        self.result = None
-        self.n_rolls = 0
+    def __init__(self) -> None:
+        self.total: int = 0
+        self.result: typing.Iterable[int] | None = None
+        self.n_rolls: int = 0
 
-    def roll(self):
+    def roll(self) -> None:
         self.n_rolls += 1
         self.result = r.randint(1, 7, size=2)
         self.total = sum(self.result)
 
-    def fixed_roll(self, outcome):
+    def fixed_roll(self, outcome: typing.Iterable[int]) -> None:
         self.n_rolls += 1
         self.result = outcome
         self.total = sum(self.result)
