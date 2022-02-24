@@ -1,9 +1,9 @@
 import typing
 
-from crapssim.bet import PassLine, Odds, Come, Bet
 from crapssim.bet import DontPass, LayOdds, DontCome
-from crapssim.bet import Place, Place4, Place5, Place6, Place8, Place9, Place10
 from crapssim.bet import Field
+from crapssim.bet import PassLine, Odds, Come, Bet
+from crapssim.bet import Place, Place4, Place5, Place6, Place8, Place9, Place10
 
 if typing.TYPE_CHECKING:
     from crapssim.player import Player

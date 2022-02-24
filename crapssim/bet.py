@@ -1,5 +1,6 @@
-from abc import ABC
 import typing
+from abc import ABC
+
 from crapssim.dice import Dice
 
 if typing.TYPE_CHECKING:

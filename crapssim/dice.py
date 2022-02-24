@@ -1,6 +1,6 @@
 import typing
 
-from numpy import random as r, int32
+from numpy import random as r
 
 
 class Dice:
