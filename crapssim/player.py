@@ -1,7 +1,7 @@
 import typing
 
 from crapssim.bet import Bet
-from crapssim.strategy import STRATEGY_TYPE
+from crapssim.strategy import STRATEGY_TYPE, passline
 
 if typing.TYPE_CHECKING:
     from crapssim.table import Table
@@ -30,14 +30,13 @@ class Player:
     """
 
     def __init__(self, bankroll: float,
-                 bet_strategy: STRATEGY_TYPE | None = None,
+                 bet_strategy: STRATEGY_TYPE = passline,
                  name: str = "Player"):
         self.bankroll: float = bankroll
-        self.bet_strategy: STRATEGY_TYPE | None = bet_strategy
+        self.bet_strategy: STRATEGY_TYPE = bet_strategy
         self.name: str = name
         self.bets_on_table: list[Bet] = []
         self.total_bet_amount: float = 0.0
-        # TODO: initial betting strategy
 
     def bet(self, bet_object: Bet) -> None:
         if self.bankroll >= bet_object.bet_amount:
