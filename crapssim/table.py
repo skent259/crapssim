@@ -85,12 +85,10 @@ class Table(object):
         if verbose:
             print("Welcome to the Craps Table!")
 
-        # TODO: This initial player would require a strategy to pass as a parameter
-        # make sure at least one player is at table
-        # if not self.players:
-        #     self.add_player(Player(500, "Player1"))
-        # if verbose:
-        #     print(f"Initial players: {[p.name for p in self.players]}")
+        self.ensure_one_player()
+
+        if verbose:
+            print(f"Initial players: {[p.name for p in self.players]}")
 
         # maybe wrap this into update table or something
         self.total_player_cash = sum(
@@ -133,6 +131,11 @@ class Table(object):
                     and self.n_shooters <= max_shooter
                     and self.total_player_cash > 0
                 )
+
+    def ensure_one_player(self) -> None:
+        # make sure at least one player is at table
+        if len(self.players) == 0:
+            self.add_player(Player(500.0, name="Player1"))
 
     def _add_player_bets(self) -> None:
         """ Implement each player's betting strategy """
