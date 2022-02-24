@@ -1,5 +1,6 @@
 import pytest
-import crapssim as craps 
+import crapssim as craps
+
 
 def test_first_chunk():
     table = craps.Table()
@@ -14,12 +15,12 @@ def test_second_chunk():
     n_sim = 10
     bankroll = 300
     strategies = {
-        "place68": craps.strategy.place68, 
-        "ironcross": craps.strategy.ironcross 
+        "place68": craps.strategy.place68,
+        "ironcross": craps.strategy.ironcross
     }
 
     for i in range(n_sim):
-        table = craps.Table() 
+        table = craps.Table()
         for s in strategies:
             table.add_player(craps.Player(bankroll, strategies[s], s))
 
