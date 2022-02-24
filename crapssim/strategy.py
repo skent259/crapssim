@@ -23,13 +23,14 @@ STRATEGY_TYPE = typing.Union[typing.Callable[['Player', 'Table', int, dict[str, 
                              typing.Callable[['Player', 'Table', int, None], None]]
 
 
-def passline(player: 'Player', table: 'Table', **strat_info: typing.Any) -> None:
+def passline(player: 'Player', table: 'Table', **strat_info: typing.Any) -> dict[str, typing.Any]:
     # Pass line bet
     if table.point == "Off" and not player.has_bet("PassLine"):
         player.bet(PassLine(player.unit), table)
+    return strat_info
 
 
-def passline_odds(player: 'Player', table: 'Table', **strat_info: typing.Any) -> None:
+def passline_odds(player: 'Player', table: 'Table', **strat_info: typing.Any) -> dict[str, typing.Any]:
     passline(player, table)
 
     if 'mult' in strat_info:
@@ -56,24 +57,29 @@ def passline_odds(player: 'Player', table: 'Table', **strat_info: typing.Any) ->
     ):
         player.bet(Odds(float(mult * player.unit), player.get_bet("PassLine")), table)
 
+    return strat_info
 
-def passline_odds2(player: 'Player', table: 'Table', **strat_info: typing.Any) -> None:
+
+def passline_odds2(player: 'Player', table: 'Table', **strat_info: typing.Any) -> dict[str, typing.Any]:
     passline_odds(player, table, mult=2)
+    return strat_info
 
 
-def passline_odds345(player: 'Player', table: 'Table', **strat_info: typing.Any) -> None:
+def passline_odds345(player: 'Player', table: 'Table', **strat_info: typing.Any) -> dict[str, typing.Any]:
     passline_odds(player, table, mult='345')
+    return strat_info
 
 
-def pass2come(player: 'Player', table: 'Table', **strat_info: typing.Any) -> None:
+def pass2come(player: 'Player', table: 'Table', **strat_info: typing.Any) -> dict[str, typing.Any]:
     passline(player, table)
 
     # Come bet (2)
     if table.point == "On" and player.num_bet("Come") < 2:
         player.bet(Come(player.unit), table)
+    return strat_info
 
 
-def place(player: 'Player', table: 'Table', **strat_info: typing.Any) -> None:
+def place(player: 'Player', table: 'Table', **strat_info: typing.Any) -> dict[str, typing.Any]:
     if 'skip_point' in strat_info:
         skip_point: bool = strat_info['skip_point']
     else:
@@ -119,8 +125,10 @@ def place(player: 'Player', table: 'Table', **strat_info: typing.Any) -> None:
         if player.has_bet("Place10") and table.point.number == 10:
             player.remove(player.get_bet("Place10"))
 
+    return strat_info
 
-def place68(player: 'Player', table: 'Table', **strat_info: typing.Any) -> None:
+
+def place68(player: 'Player', table: 'Table', **strat_info: typing.Any) -> dict[str, typing.Any]:
     passline(player, table)
     # Place 6 and 8 when point is ON
     p_has_place_bets = player.has_bet(
@@ -135,14 +143,18 @@ def place68(player: 'Player', table: 'Table', **strat_info: typing.Any) -> None:
             player.bet(Place8(6 / 5 * player.unit), table)
             player.bet(Place6(6 / 5 * player.unit), table)
 
+    return strat_info
 
-def dontpass(player: 'Player', table: 'Table', **strat_info: typing.Any) -> None:
+
+def dontpass(player: 'Player', table: 'Table', **strat_info: typing.Any) -> dict[str, typing.Any]:
     # Don't pass bet
     if table.point == "Off" and not player.has_bet("DontPass"):
         player.bet(DontPass(player.unit), table)
 
+    return strat_info
 
-def layodds(player: 'Player', table: 'Table', **strat_info) -> None:
+
+def layodds(player: 'Player', table: 'Table', **strat_info) -> dict[str, typing.Any]:
     if 'win_mult' in strat_info:
         win_mult: int | str = 1
     else:
@@ -172,13 +184,14 @@ def layodds(player: 'Player', table: 'Table', **strat_info) -> None:
     ):
         player.bet(LayOdds(mult * player.unit, player.get_bet("DontPass")), table)
 
+    return strat_info
 
 """
 Detailed Strategies
 """
 
 
-def place68_2come(player: 'Player', table: 'Table', **strat_info) -> None:
+def place68_2come(player: 'Player', table: 'Table', **strat_info) -> dict[str, typing.Any]:
     """
     Once point is established, place 6 and 8, with 2 additional come bets.
     The goal is to be on four distinct numbers, moving place bets if necessary
@@ -226,6 +239,8 @@ def place68_2come(player: 'Player', table: 'Table', **strat_info) -> None:
         elif 9 not in current_numbers:
             player.bet(Place9(player.unit), table)
 
+    return strat_info
+
 
 def ironcross(player: 'Player', table: 'Table', **strat_info) -> None:
     passline(player, table)
@@ -242,8 +257,10 @@ def ironcross(player: 'Player', table: 'Table', **strat_info) -> None:
                 ), table
             )
 
+    return strat_info
 
-def hammerlock(player: 'Player', table: 'Table', **strat_info) -> dict[str, str] | None:
+
+def hammerlock(player: 'Player', table: 'Table', **strat_info) -> dict[str, str]:
     passline(player, table)
     layodds(player, table, win_mult="345")
 
@@ -339,9 +356,10 @@ def risk12(player: 'Player', table: 'Table', **strat_info) -> dict[str, int]:
     return strat_info
 
 
-def knockout(player: 'Player', table: 'Table', **strat_info) -> None:
+def knockout(player: 'Player', table: 'Table', **strat_info) -> dict[str, typing.Any]:
     passline_odds345(player, table)
     dontpass(player, table)
+    return strat_info
 
 
 def dicedoctor(player: 'Player', table: 'Table', **strat_info) -> dict[str, int]:
@@ -431,7 +449,7 @@ def dicedoctor(player: 'Player', table: 'Table', **strat_info) -> dict[str, int]
 #     return strat_info
 
 
-def place68_dontcome2odds(player: 'Player', table: 'Table', **strat_info) -> None:
+def place68_dontcome2odds(player: 'Player', table: 'Table', **strat_info) -> dict[str, typing.Any]:
     place(player, table, numbers={6, 8}, skip_point=False)
 
     current_numbers = []
@@ -481,6 +499,8 @@ def place68_dontcome2odds(player: 'Player', table: 'Table', **strat_info) -> Non
 
         if not player.has_bet("LayOdds") and not dc.prepoint:
             player.bet(LayOdds(mult * player.unit, dc), table)
+
+    return strat_info
 
 
 if __name__ == "__main__":
