@@ -24,6 +24,22 @@ STRATEGY_TYPE = typing.Union[typing.Callable[['Player', 'Table', int, dict[str, 
 
 
 def passline(player: 'Player', table: 'Table', **strat_info: typing.Any) -> dict[str, typing.Any]:
+    """ If the point is off place a bet on the Pass Line.
+
+    Parameters
+    ----------
+    player
+        Player object that is using the strategy.
+    table
+        Table object that the strategy is being used on.
+    **strat_info
+        Keyword arguments for the strategy that are returned.
+
+    Returns
+    -------
+    dict[str, typing.Any]
+        Dictionary of strategy info.
+    """
     # Pass line bet
     if table.point == "Off" and not player.has_bet("PassLine"):
         player.bet(PassLine(player.unit), table)
@@ -31,6 +47,28 @@ def passline(player: 'Player', table: 'Table', **strat_info: typing.Any) -> dict
 
 
 def passline_odds(player: 'Player', table: 'Table', **strat_info: typing.Any) -> dict[str, typing.Any]:
+    """ If the point is off place a bet on the Pass Line. If the point is on, bet the Pass Line Odds.
+
+        Parameters
+        ----------
+        player
+            Player object that is using the strategy.
+        table
+            Table object that the strategy is being used on.
+        **strat_info
+            Keyword arguments for the strategy that are returned, see Other Parameters.
+
+        Other Parameters
+        ----------------
+        mult: int | str
+            If '345' bet the table like it has 345x odds, otherwise it's what to multiply the players unit by for
+            the bet.
+
+        Returns
+        -------
+        dict[str, typing.Any]
+            Dictionary of strategy info.
+        """
     passline(player, table)
 
     if 'mult' in strat_info:
@@ -61,16 +99,64 @@ def passline_odds(player: 'Player', table: 'Table', **strat_info: typing.Any) ->
 
 
 def passline_odds2(player: 'Player', table: 'Table', **strat_info: typing.Any) -> dict[str, typing.Any]:
+    """ Pass Line bet when point is off, 2x odds bet when point is on.
+
+        Parameters
+        ----------
+        player
+            Player object that is using the strategy.
+        table
+            Table object that the strategy is being used on.
+        **strat_info
+            Keyword arguments for the strategy that are returned.
+
+        Returns
+        -------
+        dict[str, typing.Any]
+            Dictionary of strategy info.
+        """
     passline_odds(player, table, mult=2)
     return strat_info
 
 
 def passline_odds345(player: 'Player', table: 'Table', **strat_info: typing.Any) -> dict[str, typing.Any]:
+    """ Pass Line bet when point is off, 345x odds bet when point is on.
+
+        Parameters
+        ----------
+        player
+            Player object that is using the strategy.
+        table
+            Table object that the strategy is being used on.
+        **strat_info
+            Keyword arguments for the strategy that are returned.
+
+        Returns
+        -------
+        dict[str, typing.Any]
+            Dictionary of strategy info.
+        """
     passline_odds(player, table, mult='345')
     return strat_info
 
 
 def pass2come(player: 'Player', table: 'Table', **strat_info: typing.Any) -> dict[str, typing.Any]:
+    """ Pass Line bet followed by 2 come bets when point is on.
+
+        Parameters
+        ----------
+        player
+            Player object that is using the strategy.
+        table
+            Table object that the strategy is being used on.
+        **strat_info
+            Keyword arguments for the strategy that are returned.
+
+        Returns
+        -------
+        dict[str, typing.Any]
+            Dictionary of strategy info.
+        """
     passline(player, table)
 
     # Come bet (2)
@@ -80,6 +166,29 @@ def pass2come(player: 'Player', table: 'Table', **strat_info: typing.Any) -> dic
 
 
 def place(player: 'Player', table: 'Table', **strat_info: typing.Any) -> dict[str, typing.Any]:
+    """ Place bets, ie 3, 4, 5, 6, 8, 9, 10
+
+        Parameters
+        ----------
+        player
+            Player object that is using the strategy.
+        table
+            Table object that the strategy is being used on.
+        **strat_info
+            Keyword arguments for the strategy that are returned, see Other Parameters.
+
+        Other Parameters
+        ----------------
+        skip_point: bool
+            If True, don't bet when the point is the given number.
+        numbers: set
+            Point numbers to place bets on.
+
+        Returns
+        -------
+        dict[str, typing.Any]
+            Dictionary of strategy info.
+        """
     if 'skip_point' in strat_info:
         skip_point: bool = strat_info['skip_point']
     else:
@@ -129,6 +238,22 @@ def place(player: 'Player', table: 'Table', **strat_info: typing.Any) -> dict[st
 
 
 def place68(player: 'Player', table: 'Table', **strat_info: typing.Any) -> dict[str, typing.Any]:
+    """ Place the 6 and the 8.
+
+        Parameters
+        ----------
+        player
+            Player object that is using the strategy.
+        table
+            Table object that the strategy is being used on.
+        **strat_info
+            Keyword arguments for the strategy that are returned.
+
+        Returns
+        -------
+        dict[str, typing.Any]
+            Dictionary of strategy info.
+        """
     passline(player, table)
     # Place 6 and 8 when point is ON
     p_has_place_bets = player.has_bet(
@@ -147,6 +272,22 @@ def place68(player: 'Player', table: 'Table', **strat_info: typing.Any) -> dict[
 
 
 def dontpass(player: 'Player', table: 'Table', **strat_info: typing.Any) -> dict[str, typing.Any]:
+    """ Place a bet on the Don't Pass line.
+
+        Parameters
+        ----------
+        player
+            Player object that is using the strategy.
+        table
+            Table object that the strategy is being used on.
+        **strat_info
+            Keyword arguments for the strategy that are returned.
+
+        Returns
+        -------
+        dict[str, typing.Any]
+            Dictionary of strategy info.
+        """
     # Don't pass bet
     if table.point == "Off" and not player.has_bet("DontPass"):
         player.bet(DontPass(player.unit), table)
@@ -155,8 +296,29 @@ def dontpass(player: 'Player', table: 'Table', **strat_info: typing.Any) -> dict
 
 
 def layodds(player: 'Player', table: 'Table', **strat_info) -> dict[str, typing.Any]:
+    """ Place a lay bet.
+
+        Parameters
+        ----------
+        player
+            Player object that is using the strategy.
+        table
+            Table object that the strategy is being used on.
+        **strat_info
+            Keyword arguments for the strategy that are returned, see Other Parameters.
+
+        Other Parameters
+        ----------------
+        win_mult: str | int
+            Either '345' or an integer that will be multiplied against the odds to calculate bet.
+
+        Returns
+        -------
+        dict[str, typing.Any]
+            Dictionary of strategy info.
+        """
     if 'win_mult' in strat_info:
-        win_mult: int | str = 1
+        win_mult: int | str = strat_info['win_mult']
     else:
         win_mult = 1
     # Assume that someone tries to win the `win_mult` times the unit on each bet, which corresponds
@@ -192,9 +354,25 @@ Detailed Strategies
 
 
 def place68_2come(player: 'Player', table: 'Table', **strat_info) -> dict[str, typing.Any]:
+    """ Once point is established, place 6 and 8, with 2 additional come bets.
+        The goal is to be on four distinct numbers, moving place bets if necessary
+
+        Parameters
+        ----------
+        player
+            Player object that is using the strategy.
+        table
+            Table object that the strategy is being used on.
+        strat_info
+            Keyword arguments for the strategy that are returned.
+
+        Returns
+        -------
+        dict[str, typing.Any]
+            Dictionary of strategy info.
+        """
     """
-    Once point is established, place 6 and 8, with 2 additional come bets.
-    The goal is to be on four distinct numbers, moving place bets if necessary
+
     """
     current_numbers = []
     for bet in player.bets_on_table:
@@ -243,8 +421,25 @@ def place68_2come(player: 'Player', table: 'Table', **strat_info) -> dict[str, t
 
 
 def ironcross(player: 'Player', table: 'Table', **strat_info) -> None:
+    """ Bet the Pass Line, the Pass Line Odds, and Place on 5, 6, and 8. If point is on and no bet on the field, place
+        a bet on the field.
+
+        Parameters
+        ----------
+        player
+            Player object that is using the strategy.
+        table
+            Table object that the strategy is being used on.
+        **strat_info
+            Keyword arguments for the strategy that are returned.
+
+        Returns
+        -------
+        dict[str, typing.Any]
+            Dictionary of strategy info.
+        """
     passline(player, table)
-    passline_odds(player, table)
+    passline_odds(player, table, **strat_info)
     place(player, table, numbers={5, 6, 8})
 
     if table.point == "On":
@@ -261,6 +456,23 @@ def ironcross(player: 'Player', table: 'Table', **strat_info) -> None:
 
 
 def hammerlock(player: 'Player', table: 'Table', **strat_info) -> dict[str, str]:
+    """ Pass Line Bet, Don't Pass bet with a lay of odds. A phased place bet approach, starting inside and then
+        shifting outside eventually taking bet down if two place bets win.
+
+        Parameters
+        ----------
+        player
+            Player object that is using the strategy.
+        table
+            Table object that the strategy is being used on.
+        strat_info
+            Keyword arguments for the strategy that are returned.
+
+        Returns
+        -------
+        dict[str, typing.Any]
+            Dictionary of strategy info.
+        """
     passline(player, table)
     layodds(player, table, win_mult="345")
 
@@ -312,13 +524,30 @@ def hammerlock(player: 'Player', table: 'Table', **strat_info) -> dict[str, str]
 
 
 def risk12(player: 'Player', table: 'Table', **strat_info) -> dict[str, int]:
+    """ Pass line and field bet before the point is established. Once the point is established place the 6 and 8.
+
+        Parameters
+        ----------
+        player
+            Player object that is using the strategy.
+        table
+            Table object that the strategy is being used on.
+        strat_info
+            Keyword arguments for the strategy that are returned.
+
+        Returns
+        -------
+        dict[str, typing.Any]
+            Dictionary of strategy info.
+        """
     passline(player, table)
 
     if strat_info is None:
         strat_info = dict()
 
-    if table.pass_rolls == 0:
+    if table.pass_rolls == 0 or 'winnings' not in strat_info:
         strat_info = {"winnings": 0}
+
     elif table.point == "Off":
         if table.last_roll in table.payouts["fielddouble"]:
             # win double from the field, lose pass line, for a net of 1 unit win
@@ -357,12 +586,44 @@ def risk12(player: 'Player', table: 'Table', **strat_info) -> dict[str, int]:
 
 
 def knockout(player: 'Player', table: 'Table', **strat_info) -> dict[str, typing.Any]:
+    """ Pass line bet, don't pass bet, 345x odds behind the pass line bet.
+
+        Parameters
+        ----------
+        player
+            Player object that is using the strategy.
+        table
+            Table object that the strategy is being used on.
+        strat_info
+            Keyword arguments for the strategy that are returned.
+
+        Returns
+        -------
+        dict[str, typing.Any]
+            Dictionary of strategy info.
+        """
     passline_odds345(player, table)
     dontpass(player, table)
     return strat_info
 
 
 def dicedoctor(player: 'Player', table: 'Table', **strat_info) -> dict[str, int]:
+    """ Field bet with a progression if you win.
+
+        Parameters
+        ----------
+        player
+            Player object that is using the strategy.
+        table
+            Table object that the strategy is being used on.
+        strat_info
+            Keyword arguments for the strategy that are returned.
+
+        Returns
+        -------
+        dict[str, typing.Any]
+            Dictionary of strategy info.
+        """
     if strat_info is None or table.last_roll in Field(0).losing_numbers:
         strat_info = {"progression": 0}
     else:
@@ -450,6 +711,22 @@ def dicedoctor(player: 'Player', table: 'Table', **strat_info) -> dict[str, int]
 
 
 def place68_dontcome2odds(player: 'Player', table: 'Table', **strat_info) -> dict[str, typing.Any]:
+    """ Place the 6 and 8, bet don't come with 2x odds.
+
+        Parameters
+        ----------
+        player
+            Player object that is using the strategy.
+        table
+            Table object that the strategy is being used on.
+        strat_info
+            Keyword arguments for the strategy that are returned.
+
+        Returns
+        -------
+        dict[str, typing.Any]
+            Dictionary of strategy info.
+        """
     place(player, table, numbers={6, 8}, skip_point=False)
 
     current_numbers = []
