@@ -69,7 +69,7 @@ def pass2come(player: 'Player', table: 'Table', unit: int = 5, strat_info: None 
 
 
 def place(player: 'Player', table: 'Table', unit: int | float = 5,
-          strat_info: dict[str, set] = None, skip_point: bool = True) -> None:
+          strat_info: dict[str, set] | None = None, skip_point: bool = True) -> None:
     if strat_info is None:
         strat_info = {"numbers": {6, 8}}
     strat_info["numbers"] = set(strat_info["numbers"]).intersection({4, 5, 6, 8, 9, 10})
@@ -227,7 +227,7 @@ def ironcross(player: 'Player', table: 'Table', unit: int = 5, strat_info: None 
             )
 
 
-def hammerlock(player: 'Player', table: 'Table', unit: int = 5, strat_info: dict[str, str] = None) \
+def hammerlock(player: 'Player', table: 'Table', unit: int = 5, strat_info: dict[str, str] | None = None) \
         -> dict[str, str] | None:
     passline(player, table, unit)
     layodds(player, table, unit, win_mult="345")

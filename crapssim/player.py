@@ -30,7 +30,7 @@ class Player:
     """
 
     def __init__(self, bankroll: float,
-                 bet_strategy: STRATEGY_TYPE = None,
+                 bet_strategy: STRATEGY_TYPE | None = None,
                  name: str = "Player"):
         self.bankroll: float = bankroll
         self.bet_strategy: STRATEGY_TYPE | None = bet_strategy
