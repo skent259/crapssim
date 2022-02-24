@@ -140,10 +140,8 @@ class Table(object):
 
     def _add_player_bets(self) -> None:
         """ Implement each player's betting strategy """
-        """ TODO: restrict bets that shouldn't be possible based on table"""
-        """ TODO: Make the unit parameter specific to each player, and make it more general """
         for p in self.players:
-            p._add_strategy_bets(self, unit=5, strat_info=self.strat_info[p])
+            p._add_strategy_bets(self, strat_info=self.strat_info[p])
             # TODO: add player.strat_kwargs as optional parameter (currently manually changed in CrapsTable)
 
     def _update_player_bets(self, dice: Dice, verbose: bool = False) -> None:

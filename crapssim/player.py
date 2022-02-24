@@ -29,12 +29,13 @@ class Player:
         Sum of bet value for the player
     """
 
-    def __init__(self, bankroll: float,
-                 bet_strategy: STRATEGY_TYPE = passline,
-                 name: str = "Player"):
+    def __init__(self, bankroll: float, bet_strategy: STRATEGY_TYPE = passline, name: str = "Player",
+                 unit: typing.SupportsFloat = 5):
         self.bankroll: float = bankroll
         self.bet_strategy: STRATEGY_TYPE = bet_strategy
         self.name: str = name
+        self.unit: typing.SupportsFloat = unit
+
         self.bets_on_table: list[Bet] = []
         self.total_bet_amount: float = 0.0
 
