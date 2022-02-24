@@ -51,8 +51,7 @@ class Player:
             self.total_bet_amount += bet_object.bet_amount
 
     def remove(self, bet_object: Bet) -> None:
-        # TODO: add bet attribute for whether a bet can be removed and put condition in here
-        if bet_object in self.bets_on_table:
+        if bet_object in self.bets_on_table and bet_object.removable:
             self.bankroll += bet_object.bet_amount
             self.bets_on_table.remove(bet_object)
             self.total_bet_amount -= bet_object.bet_amount
