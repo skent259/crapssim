@@ -495,9 +495,9 @@ if __name__ == "__main__":
 
     d = Dice()
     p = Player(500, place68_2come)
-    table = Table()
-    p.bet(PassLine(5), table)
-    p.bet(Place6(6), table)
+    t = Table()
+    p.bet(PassLine(5), t)
+    p.bet(Place6(6), t)
     print(p.bets_on_table)
     print(p.bankroll)
     print(p.total_bet_amount)
