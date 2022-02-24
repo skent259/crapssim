@@ -12,7 +12,8 @@ def test_default_strategy():
 def test_irremovable_bet():
     player = Player(100)
     bet = PassLine(50)
-    player.bet(bet)
+    table = Table()
+    player.bet(bet, table)
     table = Table()
     dice = Dice()
     dice.fixed_roll([2, 2])
@@ -20,12 +21,14 @@ def test_irremovable_bet():
     player.remove_if_present('PassLine')
     assert len(player.bets_on_table) == 1
 
+
 def test_existing_bet():
     player = Player(100)
+    table = Table()
     bet_one = PassLine(50)
-    player.bet(bet_one)
+    player.bet(bet_one, table)
     bet_two = PassLine(50)
-    player.bet(bet_two)
+    player.bet(bet_two, table)
 
     bet_count = len(player.bets_on_table)
     bet_amount = player.bets_on_table[0].bet_amount

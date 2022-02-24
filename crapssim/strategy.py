@@ -26,7 +26,7 @@ STRATEGY_TYPE = typing.Union[typing.Callable[['Player', 'Table', int, dict[str, 
 def passline(player: 'Player', table: 'Table', unit: int = 5, strat_info: None = None) -> None:
     # Pass line bet
     if table.point == "Off" and not player.has_bet("PassLine"):
-        player.bet(PassLine(unit))
+        player.bet(PassLine(unit), table)
 
 
 def passline_odds(player: 'Player', table: 'Table', unit: int = 5, strat_info: None = None,
@@ -49,7 +49,7 @@ def passline_odds(player: 'Player', table: 'Table', unit: int = 5, strat_info: N
             and player.has_bet("PassLine")
             and not player.has_bet("Odds")
     ):
-        player.bet(Odds(float(mult * unit), player.get_bet("PassLine")))
+        player.bet(Odds(float(mult * unit), player.get_bet("PassLine")), table)
 
 
 def passline_odds2(player: 'Player', table: 'Table', unit: int = 5, strat_info: None = None) -> None:
@@ -65,7 +65,7 @@ def pass2come(player: 'Player', table: 'Table', unit: int = 5, strat_info: None 
 
     # Come bet (2)
     if table.point == "On" and player.num_bet("Come") < 2:
-        player.bet(Come(unit))
+        player.bet(Come(unit), table)
 
 
 def place(player: 'Player', table: 'Table', unit: int | float = 5,
@@ -79,17 +79,17 @@ def place(player: 'Player', table: 'Table', unit: int | float = 5,
     # Place the provided numbers when point is ON
     if table.point == "On":
         if not player.has_bet("Place4") and 4 in strat_info["numbers"]:
-            player.bet(Place4(unit))
+            player.bet(Place4(unit), table)
         if not player.has_bet("Place5") and 5 in strat_info["numbers"]:
-            player.bet(Place5(unit))
+            player.bet(Place5(unit), table)
         if not player.has_bet("Place6") and 6 in strat_info["numbers"]:
-            player.bet(Place6(6 / 5 * unit))
+            player.bet(Place6(6 / 5 * unit), table)
         if not player.has_bet("Place8") and 8 in strat_info["numbers"]:
-            player.bet(Place8(6 / 5 * unit))
+            player.bet(Place8(6 / 5 * unit), table)
         if not player.has_bet("Place9") and 9 in strat_info["numbers"]:
-            player.bet(Place9(unit))
+            player.bet(Place9(unit), table)
         if not player.has_bet("Place10") and 10 in strat_info["numbers"]:
-            player.bet(Place10(unit))
+            player.bet(Place10(unit), table)
 
     # Move the bets off the point number if it shows up later
     if skip_point and table.point == "On":
@@ -115,18 +115,18 @@ def place68(player: 'Player', table: 'Table', unit: int = 5, strat_info: None = 
     )
     if table.point == "On" and not p_has_place_bets:
         if table.point.number == 6:
-            player.bet(Place8(6 / 5 * unit))
+            player.bet(Place8(6 / 5 * unit), table)
         elif table.point.number == 8:
-            player.bet(Place6(6 / 5 * unit))
+            player.bet(Place6(6 / 5 * unit), table)
         else:
-            player.bet(Place8(6 / 5 * unit))
-            player.bet(Place6(6 / 5 * unit))
+            player.bet(Place8(6 / 5 * unit), table)
+            player.bet(Place6(6 / 5 * unit), table)
 
 
 def dontpass(player: 'Player', table: 'Table', unit: int = 5, strat_info: None = None) -> None:
     # Don't pass bet
     if table.point == "Off" and not player.has_bet("DontPass"):
-        player.bet(DontPass(unit))
+        player.bet(DontPass(unit), table)
 
 
 def layodds(player: 'Player', table: 'Table', unit: int = 5, strat_info: None = None,
@@ -135,7 +135,7 @@ def layodds(player: 'Player', table: 'Table', unit: int = 5, strat_info: None = 
     # well to the max_odds on a table.
     # For `win_mult` = "345", this assumes max of 3-4-5x odds
     dontpass(player, table, unit)
-
+    mult = 1
     # Lay odds for don't pass
     if win_mult == "345":
         mult = 6.0
@@ -154,7 +154,7 @@ def layodds(player: 'Player', table: 'Table', unit: int = 5, strat_info: None = 
             and player.has_bet("DontPass")
             and not player.has_bet("LayOdds")
     ):
-        player.bet(LayOdds(mult * unit, player.get_bet("DontPass")))
+        player.bet(LayOdds(mult * unit, player.get_bet("DontPass")), table)
 
 
 """
@@ -175,18 +175,18 @@ def place68_2come(player: 'Player', table: 'Table', unit: int = 5, strat_info: N
     if table.point == "On" and len(player.bets_on_table) < 4:
         # always place 6 and 8 when they aren't come bets or place bets already
         if 6 not in current_numbers:
-            player.bet(Place6(6 / 5 * unit))
+            player.bet(Place6(6 / 5 * unit), table)
         if 8 not in current_numbers:
-            player.bet(Place8(6 / 5 * unit))
+            player.bet(Place8(6 / 5 * unit), table)
 
     # add come of passline bets to get on 4 numbers
     if player.num_bet("Come", "PassLine") < 2 and len(player.bets_on_table) < 4:
         if table.point == "On":
-            player.bet(Come(unit))
+            player.bet(Come(unit), table)
         if table.point == "Off" and (
                 player.has_bet("Place6") or player.has_bet("Place8")
         ):
-            player.bet(PassLine(unit))
+            player.bet(PassLine(unit), table)
 
     # if come bet or passline goes to 6 or 8, move place bets to 5 or 9
     pass_come_winning_numbers = []
@@ -199,16 +199,16 @@ def place68_2come(player: 'Player', table: 'Table', unit: int = 5, strat_info: N
         if player.has_bet("Place6"):
             player.remove(player.get_bet("Place6"))
         if 5 not in current_numbers:
-            player.bet(Place5(unit))
+            player.bet(Place5(unit), table)
         elif 9 not in current_numbers:
-            player.bet(Place9(unit))
+            player.bet(Place9(unit), table)
     elif 8 in pass_come_winning_numbers:
         if player.has_bet("Place8"):
             player.remove(player.get_bet("Place8"))
         if 5 not in current_numbers:
-            player.bet(Place5(unit))
+            player.bet(Place5(unit), table)
         elif 9 not in current_numbers:
-            player.bet(Place9(unit))
+            player.bet(Place9(unit), table)
 
 
 def ironcross(player: 'Player', table: 'Table', unit: int = 5, strat_info: None = None) -> None:
@@ -223,7 +223,7 @@ def ironcross(player: 'Player', table: 'Table', unit: int = 5, strat_info: None 
                     unit,
                     double=table.payouts["fielddouble"],
                     triple=table.payouts["fieldtriple"],
-                )
+                ), table
             )
 
 
@@ -322,7 +322,7 @@ def risk12(player: 'Player', table: 'Table', unit: int = 5, strat_info: None | d
                 unit,
                 double=table.payouts["fielddouble"],
                 triple=table.payouts["fieldtriple"],
-            )
+            ), table
         )
         if table.last_roll == 7:
             for bet_nm in ["Place6", "Place8"]:
@@ -369,7 +369,7 @@ def dicedoctor(player: 'Player', table: 'Table', unit: int = 5, strat_info: None
             amount,
             double=table.payouts["fielddouble"],
             triple=table.payouts["fieldtriple"],
-        )
+        ), table
     )
 
     return strat_info
@@ -452,22 +452,22 @@ def place68_dontcome2odds(player: 'Player', table: 'Table', unit: int | float = 
         if player.has_bet("Place6"):
             player.remove(player.get_bet("Place6"))
         if 5 not in current_numbers:
-            player.bet(Place5(unit))
+            player.bet(Place5(unit), table)
     elif 8 in dont_come_losing_numbers:
         if player.has_bet("Place8"):
             player.remove(player.get_bet("Place8"))
         if 9 not in current_numbers:
-            player.bet(Place9(unit))
+            player.bet(Place9(unit), table)
 
     if table.point == "On" and player.num_bet("DontCome") < 1:
-        player.bet(DontCome(unit))
+        player.bet(DontCome(unit), table)
 
     if player.has_bet("DontCome"):
         dc: Bet = player.get_bet("DontCome", "Any")
 
         if not isinstance(dc, DontCome):
             raise TypeError
-
+        mult = 1
         win_mult: int | float = 2
         # Lay odds for don't come
         if win_mult == "345":
@@ -485,7 +485,7 @@ def place68_dontcome2odds(player: 'Player', table: 'Table', unit: int | float = 
                     mult = 6 / 5 * win_mult
 
         if not player.has_bet("LayOdds") and not dc.prepoint:
-            player.bet(LayOdds(mult * unit, dc))
+            player.bet(LayOdds(mult * unit, dc), table)
 
 
 if __name__ == "__main__":
@@ -500,8 +500,9 @@ if __name__ == "__main__":
 
     d = Dice()
     p = Player(500, place68_2come)
-    p.bet(PassLine(5))
-    p.bet(Place6(6))
+    table = Table()
+    p.bet(PassLine(5), table)
+    p.bet(Place6(6), table)
     print(p.bets_on_table)
     print(p.bankroll)
     print(p.total_bet_amount)

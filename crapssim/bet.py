@@ -39,6 +39,8 @@ class Bet(ABC):
         self.losing_numbers: list[int] = []
         self.payoutratio: float = float(1)
         self.removable: bool = True
+        self.can_be_placed_point_on = True
+        self.can_be_placed_point_off = True
 
     def _update_bet(self, table_object: "Table", dice_object: Dice) -> tuple[str | None, float]:
         status: str | None = None
@@ -59,7 +61,6 @@ Passline and Come bets
 
 
 class PassLine(Bet):
-    # TODO: make this require that table_object.point = "Off",
     # probably better in the player module
     def __init__(self, bet_amount: float):
         super().__init__(bet_amount)
@@ -68,6 +69,7 @@ class PassLine(Bet):
         self.losing_numbers: list[int] = [2, 3, 12]
         self.payoutratio: float = 1.0
         self.prepoint: bool = True
+        self.can_be_placed_point_on = False
 
     def _update_bet(self, table_object: "Table", dice_object: Dice) -> tuple[str | None, float]:
         status: str | None = None
@@ -91,6 +93,7 @@ class Come(PassLine):
     def __init__(self, bet_amount: float):
         super().__init__(bet_amount)
         self.name: str = "Come"
+        self.can_be_placed_point_off = False
 
     def _update_bet(self, table_object: "Table", dice_object: Dice) -> tuple[str | None, float]:
         status, win_amount = super()._update_bet(table_object, dice_object)
@@ -110,6 +113,8 @@ class Odds(Bet):
 
         if not isinstance(bet_object, PassLine) and not isinstance(bet_object, Come):
             raise TypeError('bet_object must be either a PassLine or Come Bet.')
+        if isinstance(bet_object, PassLine):
+            self.can_be_placed_point_off = False
 
         self.name: str = "Odds"
         self.subname: str = "".join(str(e) for e in bet_object.winning_numbers)
@@ -240,16 +245,15 @@ Don't pass and Don't come bets
 
 
 class DontPass(Bet):
-    # TODO: make this require that table_object.point = "Off",
-    #  probably better in the player module
     def __init__(self, bet_amount: float):
+        super().__init__(bet_amount)
         self.name: str = "DontPass"
         self.winning_numbers: list[int] = [2, 3]
         self.losing_numbers: list[int] = [7, 11]
         self.push_numbers: list[int] = [12]
         self.payoutratio: float = 1.0
         self.prepoint: bool = True
-        super().__init__(bet_amount)
+        self.can_be_placed_point_on = False
 
     def _update_bet(self, table_object: "Table", dice_object: Dice) -> tuple[str | None, float]:
         status: str | None = None
@@ -275,6 +279,7 @@ class DontCome(DontPass):
     def __init__(self, bet_amount: float):
         super().__init__(bet_amount)
         self.name: str = "DontCome"
+        self.can_be_placed_point_off = False
 
     def _update_bet(self, table_object: "Table", dice_object: Dice) -> tuple[str | None, float]:
         status, win_amount = super()._update_bet(table_object, dice_object)
