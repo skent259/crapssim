@@ -31,8 +31,6 @@ class Bet(ABC):
 
     """
 
-    # TODO: add whether bet can be removed
-
     def __init__(self, bet_amount: typing.SupportsFloat):
         self.bet_amount: float = float(bet_amount)
         self.name: str = str()
@@ -40,6 +38,7 @@ class Bet(ABC):
         self.winning_numbers: list[int] = []
         self.losing_numbers: list[int] = []
         self.payoutratio: float = float(1)
+        self.removable: bool = True
 
     def _update_bet(self, table_object: "Table", dice_object: Dice) -> tuple[str | None, float]:
         status: str | None = None
@@ -63,12 +62,12 @@ class PassLine(Bet):
     # TODO: make this require that table_object.point = "Off",
     # probably better in the player module
     def __init__(self, bet_amount: float):
+        super().__init__(bet_amount)
         self.name: str = "PassLine"
         self.winning_numbers: list[int] = [7, 11]
         self.losing_numbers: list[int] = [2, 3, 12]
         self.payoutratio: float = 1.0
         self.prepoint: bool = True
-        super().__init__(bet_amount)
 
     def _update_bet(self, table_object: "Table", dice_object: Dice) -> tuple[str | None, float]:
         status: str | None = None
@@ -83,6 +82,7 @@ class PassLine(Bet):
             self.winning_numbers = [dice_object.total]
             self.losing_numbers = [7]
             self.prepoint = False
+            self.removable = False
 
         return status, win_amount
 
