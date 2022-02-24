@@ -41,9 +41,13 @@ class Player:
     def bet(self, bet_object: Bet) -> None:
         if self.bankroll >= bet_object.bet_amount:
             self.bankroll -= bet_object.bet_amount
-            self.bets_on_table.append(
-                bet_object
-            )  # TODO: make sure this only happens if that bet isn't on the table, otherwise wager amount gets updated
+
+            if (bet_object.name, bet_object.subname) in [(b.name, b.subname) for b in self.bets_on_table]:
+                existing_bet: Bet = self.get_bet(bet_object.name, bet_object.subname)
+                existing_bet.bet_amount += bet_object.bet_amount
+            else:
+                self.bets_on_table.append(bet_object)
+
             self.total_bet_amount += bet_object.bet_amount
 
     def remove(self, bet_object: Bet) -> None:
