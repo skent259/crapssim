@@ -124,7 +124,7 @@ class Table(object):
                 continue_rolling = (
                     self.dice.n_rolls < max_rolls
                     and self.n_shooters <= max_shooter
-                    and all(x.bankroll + x.total_bet_amount > x.unit for x in self.players)
+                    and all(x.bankroll > x.unit for x in self.players)
                 ) or self.player_has_bets
             else:
                 continue_rolling = (
