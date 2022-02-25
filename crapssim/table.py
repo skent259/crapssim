@@ -40,7 +40,6 @@ class Table(object):
     def __init__(self) -> None:
         self.players: list[Player] = []
         self.player_has_bets: bool = False
-        # TODO: I think strat_info should be attached to each player object
         self.strat_info: dict[Player, typing.Any] = {}
         self.point: _Point = _Point()
         self.dice: Dice = Dice()
@@ -124,7 +123,7 @@ class Table(object):
                 continue_rolling = (
                     self.dice.n_rolls < max_rolls
                     and self.n_shooters <= max_shooter
-                    and all(x.bankroll + x.total_bet_amount > x.unit for x in self.players)
+                    and all(x.bankroll > x.unit for x in self.players)
                 ) or self.player_has_bets
             else:
                 continue_rolling = (
