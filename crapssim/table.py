@@ -40,7 +40,6 @@ class Table(object):
     def __init__(self) -> None:
         self.players: list[Player] = []
         self.player_has_bets: bool = False
-        # TODO: I think strat_info should be attached to each player object
         self.strat_info: dict[Player, typing.Any] = {}
         self.point: _Point = _Point()
         self.dice: Dice = Dice()
@@ -124,13 +123,13 @@ class Table(object):
                 continue_rolling = (
                     self.dice.n_rolls < max_rolls
                     and self.n_shooters <= max_shooter
-                    and self.total_player_cash > 0
+                    and all(x.bankroll > x.unit for x in self.players)
                 ) or self.player_has_bets
             else:
                 continue_rolling = (
                     self.dice.n_rolls < max_rolls
                     and self.n_shooters <= max_shooter
-                    and self.total_player_cash > 0
+                    and all(x.bankroll > x.unit for x in self.players)
                 )
 
     def ensure_one_player(self) -> None:
@@ -140,10 +139,8 @@ class Table(object):
 
     def _add_player_bets(self) -> None:
         """ Implement each player's betting strategy """
-        """ TODO: restrict bets that shouldn't be possible based on table"""
-        """ TODO: Make the unit parameter specific to each player, and make it more general """
         for p in self.players:
-            p._add_strategy_bets(self, unit=5, strat_info=self.strat_info[p])
+            p._add_strategy_bets(self, **self.strat_info[p] or dict())
             # TODO: add player.strat_kwargs as optional parameter (currently manually changed in CrapsTable)
 
     def _update_player_bets(self, dice: Dice, verbose: bool = False) -> None:
