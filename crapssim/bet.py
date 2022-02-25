@@ -94,6 +94,7 @@ class Come(PassLine):
         super().__init__(bet_amount)
         self.name: str = "Come"
         self.can_be_placed_point_off = False
+        self.can_be_placed_point_on = True
 
     def _update_bet(self, table_object: "Table", dice_object: Dice) -> tuple[str | None, float]:
         status, win_amount = super()._update_bet(table_object, dice_object)
@@ -280,6 +281,7 @@ class DontCome(DontPass):
         super().__init__(bet_amount)
         self.name: str = "DontCome"
         self.can_be_placed_point_off = False
+        self.can_be_placed_point_on = True
 
     def _update_bet(self, table_object: "Table", dice_object: Dice) -> tuple[str | None, float]:
         status, win_amount = super()._update_bet(table_object, dice_object)
