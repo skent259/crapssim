@@ -94,15 +94,15 @@ def compare_bets(bets, correct_bets):
            [(b.name, b.subname, b.bet_amount) if isinstance(b, Bet) else b for b in correct_bets]
 
 
-# @pytest.mark.parametrize(['numbers', 'skip_point', 'point', 'correct_bets'], [
-#     ({6, 8}, False, 4, [Place6(6), Place8(6)]),
-#     ({4}, True, 4, []),
-#     ({4}, False, 4, [Place4(5)])
-# ])
-# def test_place(numbers, skip_point, point, correct_bets, get_added_bets):
-#     def strat(player, table, **strat_info):
-#         place(player, table, skip_point=skip_point, numbers=numbers)
-#
-#     d1, d2 = point_to_dice(point)
-#     bets = get_added_bets(strat, [Roll([], d1, d2)])
-#     compare_bets(bets, correct_bets)
+@pytest.mark.parametrize(['numbers', 'skip_point', 'point', 'correct_bets'], [
+    ({6, 8}, False, 4, [Place6(6), Place8(6)]),
+    ({4}, True, 4, []),
+    ({4}, False, 4, [Place4(5)])
+])
+def test_place(numbers, skip_point, point, correct_bets, get_added_bets):
+    def strat(player, table, **strat_info):
+        place(player, table, skip_point=skip_point, numbers=numbers)
+
+    d1, d2 = point_to_dice(point)
+    bets = get_added_bets(strat, [Roll([], d1, d2)])
+    compare_bets(bets, correct_bets)
