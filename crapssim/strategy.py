@@ -454,7 +454,7 @@ def ironcross(player: 'Player', table: 'Table', **strat_info) -> None:
 
     return strat_info
 
-
+# TODO: I don't think hammerlock bets are taken down correctly.
 def hammerlock(player: 'Player', table: 'Table', **strat_info) -> dict[str, str]:
     """ Pass Line Bet, Don't Pass bet with a lay of odds. A phased place bet approach, starting inside and then
         shifting outside eventually taking bet down if two place bets win.
@@ -467,6 +467,11 @@ def hammerlock(player: 'Player', table: 'Table', **strat_info) -> dict[str, str]
             Table object that the strategy is being used on.
         strat_info
             Keyword arguments for the strategy that are returned.
+
+        Other Parameters
+        ----------------
+        mode: str
+            Current phase of the Hammerlock, either "place68", "place_inside" or "takedown"
 
         Returns
         -------
@@ -491,9 +496,8 @@ def hammerlock(player: 'Player', table: 'Table', **strat_info) -> dict[str, str]
     has_place5689 = (
             (5 in place_nums) or (6 in place_nums) or (8 in place_nums) or (9 in place_nums)
     )
-
     # 3 phases, place68, place_inside, takedown
-    if strat_info is None or table.point == "Off":
+    if strat_info is None or "mode" not in strat_info or table.point == "Off":
         strat_info = {"mode": "place68"}
         for bet_nm in ["Place5", "Place6", "Place8", "Place9"]:
             player.remove_if_present(bet_nm)
@@ -535,15 +539,17 @@ def risk12(player: 'Player', table: 'Table', **strat_info) -> dict[str, int]:
         strat_info
             Keyword arguments for the strategy that are returned.
 
+        Other Parameters
+        ----------------
+        winnings: float
+            Amount that has been won thus far.
+
         Returns
         -------
         dict[str, typing.Any]
             Dictionary of strategy info.
         """
     passline(player, table)
-
-    if strat_info is None:
-        strat_info = dict()
 
     if table.pass_rolls == 0 or 'winnings' not in strat_info:
         strat_info = {"winnings": 0}
