@@ -1,6 +1,5 @@
 import typing
 
-from crapssim.bet import Bet, Come, DontCome
 from crapssim.dice import Dice
 from crapssim.player import Player
 
