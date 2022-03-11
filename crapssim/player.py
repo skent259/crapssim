@@ -91,7 +91,7 @@ class Player:
     def _add_strategy_bets(self, table: 'Table') -> None:
         """ Implement the given betting strategy """
         if self.bet_strategy:
-            self.strat_info = self.bet_strategy(self, table, **self.strat_info)
+            self.bet_strategy(self, table, **self.strat_info)
 
     def _update_bet(self, table_object: 'Table', dice_object: 'Dice', verbose: bool = False) -> \
             dict[str, dict[str, str | None | float]]:

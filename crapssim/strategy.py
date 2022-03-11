@@ -41,7 +41,6 @@ def passline(player: 'Player', table: 'Table') -> dict[str, typing.Any]:
     # Pass line bet
     if table.point == "Off" and not player.has_bet("PassLine"):
         player.bet(PassLine(player.unit), table)
-    return dict()
 
 
 def passline_odds(player: 'Player', table: 'Table', mult: int | str = 1) -> dict[str, typing.Any]:
@@ -82,8 +81,6 @@ def passline_odds(player: 'Player', table: 'Table', mult: int | str = 1) -> dict
     ):
         player.bet(Odds(float(mult * player.unit), player.get_bet("PassLine")), table)
 
-    return dict()
-
 
 def passline_odds2(player: 'Player', table: 'Table') -> dict[str, typing.Any]:
     """ Pass Line bet when point is off, 2x odds bet when point is on.
@@ -101,7 +98,6 @@ def passline_odds2(player: 'Player', table: 'Table') -> dict[str, typing.Any]:
             Dictionary of strategy info.
         """
     passline_odds(player, table, mult=2)
-    return dict()
 
 
 def passline_odds345(player: 'Player', table: 'Table') -> dict[str, typing.Any]:
@@ -120,7 +116,6 @@ def passline_odds345(player: 'Player', table: 'Table') -> dict[str, typing.Any]:
             Dictionary of strategy info.
         """
     passline_odds(player, table, mult='345')
-    return dict()
 
 
 def pass2come(player: 'Player', table: 'Table') -> dict[str, typing.Any]:
@@ -143,7 +138,6 @@ def pass2come(player: 'Player', table: 'Table') -> dict[str, typing.Any]:
     # Come bet (2)
     if table.point == "On" and player.num_bet("Come") < 2:
         player.bet(Come(player.unit), table)
-    return dict()
 
 
 def place(player: 'Player', table: 'Table', skip_point: bool = True, numbers: set[int] | None = None) -> \
@@ -205,8 +199,6 @@ def place(player: 'Player', table: 'Table', skip_point: bool = True, numbers: se
         if player.has_bet("Place10") and table.point.number == 10:
             player.remove(player.get_bet("Place10"))
 
-    return {'skip_point': skip_point, 'numbers': numbers}
-
 
 def place68(player: 'Player', table: 'Table') -> dict[str, typing.Any]:
     """ Place the 6 and the 8.
@@ -237,8 +229,6 @@ def place68(player: 'Player', table: 'Table') -> dict[str, typing.Any]:
             player.bet(Place8(6 / 5 * player.unit), table)
             player.bet(Place6(6 / 5 * player.unit), table)
 
-    return dict()
-
 
 def dontpass(player: 'Player', table: 'Table') -> dict[str, typing.Any]:
     """ Place a bet on the Don't Pass line.
@@ -258,8 +248,6 @@ def dontpass(player: 'Player', table: 'Table') -> dict[str, typing.Any]:
     # Don't pass bet
     if table.point == "Off" and not player.has_bet("DontPass"):
         player.bet(DontPass(player.unit), table)
-
-    return dict()
 
 
 def layodds(player: 'Player', table: 'Table', win_mult: int | str = 1) -> dict[str, typing.Any]:
@@ -303,8 +291,6 @@ def layodds(player: 'Player', table: 'Table', win_mult: int | str = 1) -> dict[s
             and not player.has_bet("LayOdds")
     ):
         player.bet(LayOdds(mult * player.unit, player.get_bet("DontPass")), table)
-
-    return {'win_mult': win_mult}
 
 
 """
@@ -374,8 +360,6 @@ def place68_2come(player: 'Player', table: 'Table') -> dict[str, typing.Any]:
         elif 9 not in current_numbers:
             player.bet(Place9(player.unit), table)
 
-    return dict()
-
 
 def ironcross(player: 'Player', table: 'Table', mult: int | str = 1) -> None:
     """ Bet the Pass Line, the Pass Line Odds, and Place on 5, 6, and 8. If point is on and no bet on the field, place
@@ -408,8 +392,6 @@ def ironcross(player: 'Player', table: 'Table', mult: int | str = 1) -> None:
                     triple=table.payouts["fieldtriple"],
                 ), table
             )
-
-    return dict()
 
 
 # TODO: I don't think hammerlock bets are taken down correctly.
@@ -474,7 +456,7 @@ def hammerlock(player: 'Player', table: 'Table', mode: str | None = None) -> dic
     elif mode == "takedown" and table.point == "Off":
         mode = None
 
-    return {'mode': mode}
+    player.strat_info['mode'] = mode
 
 
 def risk12(player: 'Player', table: 'Table', winnings: typing.SupportsFloat = 0) -> dict[str, int]:
@@ -533,7 +515,7 @@ def risk12(player: 'Player', table: 'Table', winnings: typing.SupportsFloat = 0)
             else:
                 place(player, table, numbers={8})
 
-    return {'winnings': winnings}
+    player.strat_info['winnings'] = winnings
 
 
 def knockout(player: 'Player', table: 'Table') -> dict[str, typing.Any]:
@@ -553,7 +535,6 @@ def knockout(player: 'Player', table: 'Table') -> dict[str, typing.Any]:
         """
     passline_odds345(player, table)
     dontpass(player, table)
-    return dict()
 
 
 def dicedoctor(player: 'Player', table: 'Table', progression: int = 0) -> dict[str, int]:
@@ -595,7 +576,7 @@ def dicedoctor(player: 'Player', table: 'Table', progression: int = 0) -> dict[s
 
     progression += 1
 
-    return {'progression': progression}
+    player.strat_info['progression'] = progression
 
 
 # def place68_cpr(player: 'Player', table: 'Table', unit: int = 5, strat_info: dict[]=None) -> dict[str, str]:
@@ -722,8 +703,6 @@ def place68_dontcome2odds(player: 'Player', table: 'Table') -> dict[str, typing.
 
         if not player.has_bet("LayOdds") and not dc.prepoint:
             player.bet(LayOdds(mult * player.unit, dc), table)
-
-    return dict()
 
 
 if __name__ == "__main__":
