@@ -28,9 +28,6 @@ class Table(object):
         The point number when point is "On" and None when point is "Off"
     player_has_bets : bool
         Boolean value for whether any player has a bet on the table.
-    strat_info : dictionary
-        Contains information stored from the strategy, usually mean for
-        strategies that alter based on past information
     bet_update_info : dictionary
         Contains information from updating bets, for given player and a bet
         name, this is status of last bet (win/loss), and win amount.
@@ -39,7 +36,6 @@ class Table(object):
     def __init__(self) -> None:
         self.players: list[Player] = []
         self.player_has_bets: bool = False
-        self.strat_info: dict[Player, typing.Any] = {}
         self.point: _Point = _Point()
         self.dice: Dice = Dice()
         self.bet_update_info: dict | None = None
@@ -62,7 +58,6 @@ class Table(object):
         """ Add player object to the table """
         if player_object not in self.players:
             self.players.append(player_object)
-            self.strat_info[player_object] = None
 
     def run(self, max_rolls: int, max_shooter: float | int = float("inf"),
             verbose: bool = True, runout: bool = False) -> None:
@@ -139,7 +134,7 @@ class Table(object):
     def _add_player_bets(self) -> None:
         """ Implement each player's betting strategy """
         for p in self.players:
-            p._add_strategy_bets(self, **self.strat_info[p] or dict())
+            p._add_strategy_bets(self)
             # TODO: add player.strat_kwargs as optional parameter (currently manually changed in CrapsTable)
 
     def _update_player_bets(self, dice: Dice, verbose: bool = False) -> None:
