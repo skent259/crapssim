@@ -52,6 +52,21 @@ class Table(object):
         if player_object not in self.players:
             self.players.append(player_object)
 
+    def _setup_run(self, verbose: bool) -> None:
+        """
+        Setup the table to run and ensure that there is at least one player.
+
+        Parameters
+        ----------
+        verbose
+            If True prints a welcome message and the initial players.
+        """
+        if verbose:
+            print("Welcome to the Craps Table!")
+        self.ensure_one_player()
+        if verbose:
+            print(f"Initial players: {[p.name for p in self.players]}")
+
     def run(self, max_rolls: int,
             max_shooter: float | int = float("inf"),
             verbose: bool = True,
@@ -70,42 +85,53 @@ class Table(object):
         runout : bool
             If true, continue past max_rolls until player has no more bets on the table
         """
-        # self.dice = Dice()
-        if verbose:
-            print("Welcome to the Craps Table!")
 
-        self.ensure_one_player()
-
-        if verbose:
-            print(f"Initial players: {[p.name for p in self.players]}")
+        self._setup_run(verbose)
 
         continue_rolling = True
         while continue_rolling:
 
-            # players make their bets
-            self.add_player_bets()
-            for p in self.players:
-                bets = [
-                    f"{b.name}{b.subname}, ${b.bet_amount}" for b in p.bets_on_table
-                ]
-                if verbose:
-                    print(f"{p.name}'s current bets: {bets}")
+            self.add_player_bets(verbose=verbose)
+            self.roll(verbose=verbose)
+            self.update_player_bets(verbose=verbose)
+            self.update_table(verbose=verbose)
 
-            self.dice.roll()
-            if verbose:
-                print("")
-                print("Dice out!")
-                print(f"Shooter rolled {self.dice.total} {self.dice.result}")
-
-            self.update_player_bets(verbose)
-            self.update_table()
-
-            if verbose:
-                print(f"Point is {self.point.status} ({self.point.number})")
-                print(f"Total Player Cash is ${self.total_player_cash}")
-
-            # evaluate the stopping condition
             continue_rolling = self.should_keep_rolling(max_rolls, max_shooter, runout)
+
+    def roll(self, verbose: bool = False) -> None:
+        """
+        Convenience method to roll the dice with two random numbers.
+
+        Parameters
+        ----------
+        verbose
+            If true, prints out that the Dice are out and what number the shooter rolled.
+
+        """
+        self.dice.roll()
+
+        if verbose:
+            print("")
+            print("Dice out!")
+            print(f"Shooter rolled {self.dice.total} {self.dice.result}")
+
+    def fixed_roll(self, outcome: typing.Iterable[int], verbose=False) -> None:
+        """
+        Convenience method to roll the dice with two fixed numbers.
+
+        Parameters
+        ----------
+        verbose
+            If true, prints out that the Dice are out and what number the shooter rolled.
+        outcome
+            Iterable of two integers representing the chosen dice faces.
+        """
+        self.dice.fixed_roll(outcome)
+
+        if verbose:
+            print("")
+            print("Dice out!")
+            print(f"Shooter rolled {self.dice.total} {self.dice.result}")
 
     def should_keep_rolling(self, max_rolls: int, max_shooter: int, runout: bool) -> bool:
         """
@@ -141,11 +167,21 @@ class Table(object):
         if len(self.players) == 0:
             self.add_player(Player(500.0, name="Player1"))
 
-    def add_player_bets(self) -> None:
-        """ Implement each player's betting strategy """
+    def add_player_bets(self, verbose: bool = False) -> None:
+        """ Implement each player's betting strategy.
+
+        Parameters
+        ----------
+        verbose
+            If True, print the players current bets.
+        """
         for p in self.players:
             p.add_strategy_bets(self)
-            # TODO: add player.strat_kwargs as optional parameter (currently manually changed in CrapsTable)
+
+            if verbose:
+                bets = [f"{b.name}{b.subname}: ${b.bet_amount}" for b in p.bets_on_table]
+                if verbose:
+                    print(f"{p.name}'s current bets: {bets}")
 
     def update_player_bets(self, verbose: bool = False) -> None:
         """ check bets for wins/losses, payout wins to their bankroll, remove bets that have resolved """
@@ -154,8 +190,14 @@ class Table(object):
             info = p.update_bet(self, self.dice, verbose)
             self.bet_update_info[p] = info
 
-    def update_table(self) -> None:
-        """ update table attributes based on previous dice roll """
+    def update_table(self, verbose: bool = False) -> None:
+        """ update table attributes based on previous dice roll
+
+        Parameters
+        ----------
+        verbose
+            If true, prints out
+        """
         self.pass_rolls += 1
         if self.point == "On" and self.dice.total == 7:
             self.n_shooters += 1
@@ -164,6 +206,10 @@ class Table(object):
 
         self.point.update(self.dice)
         self.last_roll = self.dice.total
+
+        if verbose:
+            print(f"Point is {self.point.status} ({self.point.number})")
+            print(f"Total Player Cash is ${self.total_player_cash}")
 
     def get_player(self, player_name: str) -> typing.Union['Player', bool]:
         for p in self.players:
