@@ -187,16 +187,40 @@ class Point:
         self.number: int | None = None
 
     def __eq__(self, other: object) -> bool:
-        if isinstance(other, str) and other.lower() in ('on', 'off'):
-            return self.status.lower() == other.lower()
-        elif isinstance(other, str) and other in ('4', '5', '6', '8', '9', '10'):
-            return str(self.number) == other
+        if isinstance(other, str):
+            return self.status.lower() == other.lower() or str(self.number) == other
         elif isinstance(other, int) and other in (4, 5, 6, 8, 9, 10):
             return other == self.number
         elif isinstance(other, Point):
             return other.status == self.status and other.number == self.number
         else:
             raise NotImplementedError
+
+    def __gt__(self, other: object) -> bool:
+        if isinstance(other, str):
+            return self.number > int(other)
+        elif isinstance(other, int):
+            return self.number > other
+        elif isinstance(other, Point):
+            return self.number > other.number
+        else:
+            raise NotImplementedError
+
+    def __lt__(self, other: object) -> bool:
+        if isinstance(other, str):
+            return self.number < int(other)
+        elif isinstance(other, int):
+            return self.number < other
+        elif isinstance(other, Point):
+            return self.number < other.number
+        else:
+            raise NotImplementedError
+
+    def __ge__(self, other: object) -> bool:
+        return self.__eq__(other) or self.__gt__(other)
+
+    def __le__(self, other: object) -> bool:
+        return self.__eq__(other) or self.__lt__(other)
 
     def update(self, dice_object: Dice) -> None:
         if self.status == "Off" and dice_object.total in [4, 5, 6, 8, 9, 10]:
