@@ -151,7 +151,7 @@ class Table(object):
         """ check bets for wins/losses, payout wins to their bankroll, remove bets that have resolved """
         self.bet_update_info = {}
         for p in self.players:
-            info = p._update_bet(self, dice, verbose)
+            info = p.update_bet(self, dice, verbose)
             self.bet_update_info[p] = info
 
     def _update_table(self, dice: Dice) -> None:

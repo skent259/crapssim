@@ -93,7 +93,7 @@ class Player:
         if self.bet_strategy:
             self.bet_strategy(self, table, **self.strat_info)
 
-    def _update_bet(self, table_object: 'Table', dice_object: 'Dice', verbose: bool = False) -> \
+    def update_bet(self, table_object: 'Table', dice_object: 'Dice', verbose: bool = False) -> \
             dict[str, dict[str, str | None | float]]:
         info = {}
         for b in self.bets_on_table[:]:
