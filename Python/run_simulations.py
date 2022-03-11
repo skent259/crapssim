@@ -82,7 +82,7 @@ def run_multi_simulation(n_sim, n_roll, n_shooter, bankroll, strategy, name, run
             # write data to file
             # TODO: get actual player cash 
             for bank, s in zip(bankroll, strategy):
-                out = f"{i},{s},{table._get_player(s).bankroll},{bank},{table.dice.n_rolls}"
+                out = f"{i},{s},{table.get_player(s).bankroll},{bank},{table.dice.n_rolls}"
                 # out = "{},{},{},{}".format(s, table.total_player_cash, bank, table.dice.n_rolls_)
                 f_out.write(str(out))
                 f_out.write(str('\n'))

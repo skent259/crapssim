@@ -83,7 +83,7 @@ class Table(object):
         while continue_rolling:
 
             # players make their bets
-            self._add_player_bets()
+            self.add_player_bets()
             for p in self.players:
                 bets = [
                     f"{b.name}{b.subname}, ${b.bet_amount}" for b in p.bets_on_table
@@ -97,8 +97,8 @@ class Table(object):
                 print("Dice out!")
                 print(f"Shooter rolled {self.dice.total} {self.dice.result}")
 
-            self._update_player_bets(self.dice, verbose)
-            self._update_table(self.dice)
+            self.update_player_bets(verbose)
+            self.update_table()
 
             if verbose:
                 print(f"Point is {self.point.status} ({self.point.number})")
@@ -141,31 +141,31 @@ class Table(object):
         if len(self.players) == 0:
             self.add_player(Player(500.0, name="Player1"))
 
-    def _add_player_bets(self) -> None:
+    def add_player_bets(self) -> None:
         """ Implement each player's betting strategy """
         for p in self.players:
             p.add_strategy_bets(self)
             # TODO: add player.strat_kwargs as optional parameter (currently manually changed in CrapsTable)
 
-    def _update_player_bets(self, dice: Dice, verbose: bool = False) -> None:
+    def update_player_bets(self, verbose: bool = False) -> None:
         """ check bets for wins/losses, payout wins to their bankroll, remove bets that have resolved """
         self.bet_update_info = {}
         for p in self.players:
-            info = p.update_bet(self, dice, verbose)
+            info = p.update_bet(self, self.dice, verbose)
             self.bet_update_info[p] = info
 
-    def _update_table(self, dice: Dice) -> None:
+    def update_table(self) -> None:
         """ update table attributes based on previous dice roll """
         self.pass_rolls += 1
-        if self.point == "On" and dice.total == 7:
+        if self.point == "On" and self.dice.total == 7:
             self.n_shooters += 1
-        if self.point == "On" and (dice.total == 7 or dice.total == self.point.number):
+        if self.point == "On" and (self.dice.total == 7 or self.dice.total == self.point.number):
             self.pass_rolls = 0
 
         self.point.update(self.dice)
-        self.last_roll = dice.total
+        self.last_roll = self.dice.total
 
-    def _get_player(self, player_name: str) -> typing.Union['Player', bool]:
+    def get_player(self, player_name: str) -> typing.Union['Player', bool]:
         for p in self.players:
             if p.name == player_name:
                 return p
