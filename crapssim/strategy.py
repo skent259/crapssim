@@ -23,7 +23,7 @@ STRATEGY_TYPE = typing.Union[typing.Callable[['Player', 'Table', int, dict[str, 
                              typing.Callable[['Player', 'Table', int, None], None]]
 
 
-def passline(player: 'Player', table: 'Table') -> None:
+def passline(player: 'Player', table: 'Table'):
     """ If the point is off place a bet on the Pass Line.
 
     Parameters
