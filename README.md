@@ -52,23 +52,23 @@ table.run(max_rolls=20)
 To evaluate a couple of strategies across many table sessions, you can run:
 
 ```python
-import crapssim as craps 
+import crapssim as craps
 
 n_sim = 20
 bankroll = 300
 strategies = {
-    "place68": craps.strategy.place68, 
-    "ironcross": craps.strategy.ironcross 
+    "place68": craps.strategy.place68,
+    "ironcross": craps.strategy.ironcross
 }
 
 for i in range(n_sim):
-    table = craps.Table() 
+    table = craps.Table()
     for s in strategies:
         table.add_player(craps.Player(bankroll, strategies[s], s))
 
     table.run(max_rolls=float("inf"), max_shooter=10, verbose=False)
     for s in strategies:
-        print(f"{i}, {s}, {table._get_player(s).bankroll}, {bankroll}, {table.dice.n_rolls}")
+        print(f"{i}, {s}, {table.get_player(s).bankroll}, {bankroll}, {table.dice.n_rolls}")
 ```
 
 For more advanced strategies, you need to write a custom function that can perform the strategy.  Some building blocks and examples can be found in [strategy.py](./crapssim/strategy.py)
