@@ -1,6 +1,9 @@
+import pytest
+
 from crapssim import Table, Player
 from crapssim.bet import Come, PassLine
 from crapssim.strategy import passline
+from crapssim.table import Point
 
 
 def test_ensure_one_player():
@@ -28,3 +31,41 @@ def test_wrong_point_on():
     player = Player(500)
     player.bet(PassLine(100), table)
     assert (len(player.bets_on_table), player.bankroll) == (0, 500)
+
+
+@pytest.mark.parametrize(['status', 'number', 'comparison'], [
+    ('Off', None, 'Off'),
+    ('Off', None, 'off'),
+    ('On', 6, 6),
+    ('On', 6, '6'),
+    ('On', 8, 'on')
+])
+def test_point_equality(status, number, comparison):
+    point = Point()
+    point.status = status
+    point.number = number
+    assert point == comparison
+
+
+@pytest.mark.parametrize(['number', 'comparison'], [
+    (8, 6),
+    (8, '6')
+])
+def test_point_greater_than(number, comparison):
+    point = Point()
+    point.status = 'On'
+    point.number = number
+    assert point > comparison
+
+
+@pytest.mark.parametrize(['number', 'comparison'], [
+    (4, 6),
+    (4, '10')
+])
+def test_point_less_than(number, comparison):
+    point = Point()
+    point.status = 'On'
+    point.number = number
+    assert point < comparison
+
+
