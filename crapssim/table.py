@@ -98,6 +98,22 @@ class Table(object):
 
             continue_rolling = self.should_keep_rolling(max_rolls, max_shooter, runout)
 
+    def fixed_run(self, dice_outcomes: typing.Iterable[typing.Iterable], verbose: bool = False) -> None:
+        """
+        Give a series of fixed dice outcome and run as if that is what was rolled.
+
+        Parameters
+        ----------
+        dice_outcomes
+            Iterable with two integers representing the dice faces.
+        verbose
+            If true, print results from table during each roll
+        """
+
+        for dice_outcome in dice_outcomes:
+            self.add_player_bets(verbose=verbose)
+            self.fixed_roll_and_update(dice_outcome)
+
     def roll_and_update(self, verbose: bool = False) -> None:
         """
         Roll dice, update player bets, and update table.
@@ -111,18 +127,18 @@ class Table(object):
         self.update_player_bets(verbose=verbose)
         self.update_table(verbose=verbose)
 
-    def fixed_roll_and_update(self, outcome: typing.Iterable[int], verbose: bool = False) -> None:
+    def fixed_roll_and_update(self, dice_outcome: typing.Iterable[int], verbose: bool = False) -> None:
         """
-        Roll dice with fixed outcome, update player bets, and update table.
+        Roll dice with fixed dice_outcome, update player bets, and update table.
 
         Parameters
         ----------
-        outcome
+        dice_outcome
             Iterable of the two integers representing the chosen dice faces.
         verbose
             If true, prints out information about the roll and the bets
         """
-        self.fixed_roll(outcome=outcome, verbose=verbose)
+        self.fixed_roll(dice_outcome=dice_outcome, verbose=verbose)
         self.update_player_bets(verbose=verbose)
         self.update_table(verbose=verbose)
 
@@ -143,7 +159,7 @@ class Table(object):
             print("Dice out!")
             print(f"Shooter rolled {self.dice.total} {self.dice.result}")
 
-    def fixed_roll(self, outcome: typing.Iterable[int], verbose=False) -> None:
+    def fixed_roll(self, dice_outcome: typing.Iterable[int], verbose=False) -> None:
         """
         Convenience method to roll the dice with two fixed numbers.
 
@@ -151,10 +167,10 @@ class Table(object):
         ----------
         verbose
             If true, prints out that the Dice are out and what number the shooter rolled.
-        outcome
+        dice_outcome
             Iterable of two integers representing the chosen dice faces.
         """
-        self.dice.fixed_roll(outcome)
+        self.dice.fixed_roll(dice_outcome)
 
         if verbose:
             print("")
