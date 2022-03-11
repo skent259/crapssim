@@ -88,7 +88,7 @@ class Player:
         if self.has_bet(bet_name):
             self.remove(self.get_bet(bet_name, bet_subname))
 
-    def _add_strategy_bets(self, table: 'Table') -> None:
+    def add_strategy_bets(self, table: 'Table') -> None:
         """ Implement the given betting strategy """
         if self.bet_strategy:
             self.bet_strategy(self, table, **self.strat_info)
