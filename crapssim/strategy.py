@@ -394,7 +394,6 @@ def ironcross(player: 'Player', table: 'Table', mult: int | str = 1) -> None:
             )
 
 
-# TODO: I don't think hammerlock bets are taken down correctly.
 def hammerlock(player: 'Player', table: 'Table', mode: str | None = None) -> dict[str, str]:
     """ Pass Line Bet, Don't Pass bet with a lay of odds. A phased place bet approach, starting inside and then
         shifting outside eventually taking bet down if two place bets win.
