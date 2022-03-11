@@ -24,8 +24,6 @@ class Table(object):
     point : string
         The point for the table.  It is either "Off" when point is off or "On"
         when point is on.
-    player_has_bets : bool
-        Boolean value for whether any player has a bet on the table.
     bet_update_info : dictionary
         Contains information from updating bets, for given player and a bet
         name, this is status of last bet (win/loss), and win amount.
@@ -80,11 +78,6 @@ class Table(object):
 
         if verbose:
             print(f"Initial players: {[p.name for p in self.players]}")
-
-        # maybe wrap this into update table or something
-        self.total_player_cash = sum(
-            [p.total_bet_amount + p.bankroll for p in self.players]
-        )
 
         continue_rolling = True
         while continue_rolling:
@@ -150,9 +143,6 @@ class Table(object):
             self.pass_rolls = 0
 
         self.point.update(self.dice)
-        self.total_player_cash = sum(
-            [p.total_bet_amount + p.bankroll for p in self.players]
-        )
         self.last_roll = dice.total
 
     def _get_player(self, player_name: str) -> typing.Union['Player', bool]:
@@ -168,11 +158,21 @@ class Table(object):
 
         Returns
         -------
-        bool
-            True if any of the players have bets on the table, otherwise False.
+        True if any of the players have bets on the table, otherwise False.
 
         """
         return sum([len(p.bets_on_table) for p in self.players]) > 0
+
+    @property
+    def total_player_cash(self) -> float:
+        """
+        Returns the total sum of all players total_bet_amounts and bankroll.
+
+        Returns
+        -------
+        The total sum of all players total_bet_amounts and bankroll.
+        """
+        return sum([p.total_bet_amount + p.bankroll for p in self.players])
 
 
 class Point:
