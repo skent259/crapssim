@@ -630,7 +630,7 @@ def dicedoctor(player: 'Player', table: 'Table', **strat_info) -> dict[str, int]
         dict[str, typing.Any]
             Dictionary of strategy info.
         """
-    if strat_info is None or table.last_roll in Field(0).losing_numbers:
+    if strat_info is None or "progression" not in strat_info or table.last_roll in Field(0).losing_numbers:
         strat_info = {"progression": 0}
     else:
         strat_info["progression"] += 1
