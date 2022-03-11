@@ -33,6 +33,7 @@ class Player:
                  unit: typing.SupportsFloat = 5):
         self.bankroll: float = bankroll
         self.bet_strategy: STRATEGY_TYPE = bet_strategy
+        self.strat_info: dict[str, typing.Any] = {}
         self.name: str = name
         self.unit: typing.SupportsFloat = unit
 
@@ -90,7 +91,7 @@ class Player:
     def _add_strategy_bets(self, table: 'Table', *args: typing.Any, **kwargs: typing.Any) -> None:
         """ Implement the given betting strategy """
         if self.bet_strategy:
-            self.bet_strategy(self, table, *args, **kwargs)
+            self.strat_info = self.bet_strategy(self, table, **self.strat_info)
 
     def _update_bet(self, table_object: 'Table', dice_object: 'Dice', verbose: bool = False) -> \
             dict[str, dict[str, str | None | float]]:
