@@ -8,7 +8,7 @@ def test_first_chunk():
     you = craps.Player(bankroll=200, bet_strategy=your_strat)
 
     table.add_player(you)
-    table.run(max_rolls=20)
+    table.run(max_rolls=20, verbose=False)
 
 
 def test_second_chunk():
