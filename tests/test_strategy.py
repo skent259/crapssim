@@ -108,11 +108,8 @@ def test_strategies_compare_bets(strategy, strategy_info, rolls: list[tuple[int,
     player = Player(100, bet_strategy=strat)
     table.add_player(player)
 
-    table.add_player_bets()
-
-    for d1, d2 in rolls:
-        table.fixed_roll_and_update((d1, d2))
-        table.add_player_bets()
+    table.fixed_run(rolls)
+    table.add_player_bets(verbose=False)
 
     bets = table.players[0].bets_on_table
 
