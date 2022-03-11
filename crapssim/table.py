@@ -92,11 +92,37 @@ class Table(object):
         while continue_rolling:
 
             self.add_player_bets(verbose=verbose)
-            self.roll(verbose=verbose)
-            self.update_player_bets(verbose=verbose)
-            self.update_table(verbose=verbose)
+            self.roll_and_update(verbose)
 
             continue_rolling = self.should_keep_rolling(max_rolls, max_shooter, runout)
+
+    def roll_and_update(self, verbose: bool = False) -> None:
+        """
+        Roll dice, update player bets, and update table.
+
+        Parameters
+        ----------
+        verbose
+            If true, prints out information about the roll and the bets
+        """
+        self.roll(verbose=verbose)
+        self.update_player_bets(verbose=verbose)
+        self.update_table(verbose=verbose)
+
+    def fixed_roll_and_update(self, outcome: typing.Iterable[int], verbose: bool = False) -> None:
+        """
+        Roll dice with fixed outcome, update player bets, and update table.
+
+        Parameters
+        ----------
+        outcome
+            Iterable of the two integers representing the chosen dice faces.
+        verbose
+            If true, prints out information about the roll and the bets
+        """
+        self.fixed_roll(outcome=outcome, verbose=verbose)
+        self.update_player_bets(verbose=verbose)
+        self.update_table(verbose=verbose)
 
     def roll(self, verbose: bool = False) -> None:
         """
