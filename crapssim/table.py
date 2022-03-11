@@ -146,7 +146,7 @@ class Table(object):
     def _add_player_bets(self) -> None:
         """ Implement each player's betting strategy """
         for p in self.players:
-            p._add_strategy_bets(self)
+            p.add_strategy_bets(self)
             # TODO: add player.strat_kwargs as optional parameter (currently manually changed in CrapsTable)
 
     def _update_player_bets(self, dice: Dice, verbose: bool = False) -> None:
