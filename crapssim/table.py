@@ -24,8 +24,6 @@ class Table(object):
     point : string
         The point for the table.  It is either "Off" when point is off or "On"
         when point is on.
-    point_number : int
-        The point number when point is "On" and None when point is "Off"
     player_has_bets : bool
         Boolean value for whether any player has a bet on the table.
     bet_update_info : dictionary
@@ -35,7 +33,6 @@ class Table(object):
 
     def __init__(self) -> None:
         self.players: list[Player] = []
-        self.player_has_bets: bool = False
         self.point: Point = Point()
         self.dice: Dice = Dice()
         self.bet_update_info: dict | None = None
@@ -156,7 +153,6 @@ class Table(object):
         self.total_player_cash = sum(
             [p.total_bet_amount + p.bankroll for p in self.players]
         )
-        self.player_has_bets = sum([len(p.bets_on_table) for p in self.players]) >= 1
         self.last_roll = dice.total
 
     def _get_player(self, player_name: str) -> typing.Union['Player', bool]:
@@ -164,6 +160,19 @@ class Table(object):
             if p.name == player_name:
                 return p
         return False
+
+    @property
+    def player_has_bets(self) -> bool:
+        """
+        Returns whether any of the players on the table have any active bets.
+
+        Returns
+        -------
+        bool
+            True if any of the players have bets on the table, otherwise False.
+
+        """
+        return sum([len(p.bets_on_table) for p in self.players]) > 0
 
 
 class Point:
