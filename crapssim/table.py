@@ -19,8 +19,6 @@ class Table(object):
     ----------
     players : list
         List of player objects at the table
-    total_player_cash : float
-        Sum of all players bankroll and bets on table
     point : string
         The point for the table.  It is either "Off" when point is off or "On"
         when point is on.
@@ -54,8 +52,10 @@ class Table(object):
         if player_object not in self.players:
             self.players.append(player_object)
 
-    def run(self, max_rolls: int, max_shooter: float | int = float("inf"),
-            verbose: bool = True, runout: bool = False) -> None:
+    def run(self, max_rolls: int,
+            max_shooter: float | int = float("inf"),
+            verbose: bool = True,
+            runout: bool = False) -> None:
         """
         Runs the craps table until a stopping condition is met.
 
@@ -96,25 +96,45 @@ class Table(object):
                 print("")
                 print("Dice out!")
                 print(f"Shooter rolled {self.dice.total} {self.dice.result}")
+
             self._update_player_bets(self.dice, verbose)
             self._update_table(self.dice)
+
             if verbose:
                 print(f"Point is {self.point.status} ({self.point.number})")
                 print(f"Total Player Cash is ${self.total_player_cash}")
 
             # evaluate the stopping condition
-            if runout:
-                continue_rolling = (
+            continue_rolling = self.should_keep_rolling(max_rolls, max_shooter, runout)
+
+    def should_keep_rolling(self, max_rolls: int, max_shooter: int, runout: bool) -> bool:
+        """
+        Determines whether the program should keep running or not.
+
+        Parameters
+        ----------
+        max_rolls
+            Maximum number of rolls to run for
+        max_shooter
+            Maximum number of shooters to run for
+        runout
+            If true, continue past max_rolls until player has no more bets on the table
+
+        Returns
+        -------
+        If True, the program should continue running. If False the program should stop running.
+        """
+        if runout:
+            return (self.dice.n_rolls < max_rolls
+                    and self.n_shooters <= max_shooter
+                    and all(x.bankroll > x.unit for x in self.players)
+                    ) or self.player_has_bets
+        else:
+            return (
                     self.dice.n_rolls < max_rolls
                     and self.n_shooters <= max_shooter
                     and all(x.bankroll > x.unit for x in self.players)
-                ) or self.player_has_bets
-            else:
-                continue_rolling = (
-                    self.dice.n_rolls < max_rolls
-                    and self.n_shooters <= max_shooter
-                    and all(x.bankroll > x.unit for x in self.players)
-                )
+            )
 
     def ensure_one_player(self) -> None:
         # make sure at least one player is at table
