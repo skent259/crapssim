@@ -554,7 +554,7 @@ def risk12(player: 'Player', table: 'Table', **strat_info) -> dict[str, int]:
     if table.pass_rolls == 0 or 'winnings' not in strat_info:
         strat_info = {"winnings": 0}
 
-    elif table.point == "Off":
+    if table.point == "Off":
         if table.last_roll in table.payouts["fielddouble"]:
             # win double from the field, lose pass line, for a net of 1 unit win
             strat_info["winnings"] += player.unit
