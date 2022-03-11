@@ -23,7 +23,7 @@ STRATEGY_TYPE = typing.Union[typing.Callable[['Player', 'Table', int, dict[str, 
                              typing.Callable[['Player', 'Table', int, None], None]]
 
 
-def passline(player: 'Player', table: 'Table') -> dict[str, typing.Any]:
+def passline(player: 'Player', table: 'Table') -> None:
     """ If the point is off place a bet on the Pass Line.
 
     Parameters
@@ -35,7 +35,7 @@ def passline(player: 'Player', table: 'Table') -> dict[str, typing.Any]:
 
     Returns
     -------
-    dict[str, typing.Any]
+    None
         Dictionary of strategy info.
     """
     # Pass line bet
@@ -43,7 +43,7 @@ def passline(player: 'Player', table: 'Table') -> dict[str, typing.Any]:
         player.bet(PassLine(player.unit), table)
 
 
-def passline_odds(player: 'Player', table: 'Table', mult: int | str = 1) -> dict[str, typing.Any]:
+def passline_odds(player: 'Player', table: 'Table', mult: int | str = 1) -> None:
     """ If the point is off place a bet on the Pass Line. If the point is on, bet the Pass Line Odds.
 
         Parameters
@@ -57,7 +57,7 @@ def passline_odds(player: 'Player', table: 'Table', mult: int | str = 1) -> dict
 
         Returns
         -------
-        dict[str, typing.Any]
+        None
             Dictionary of strategy info.
         """
     passline(player, table)
@@ -82,7 +82,7 @@ def passline_odds(player: 'Player', table: 'Table', mult: int | str = 1) -> dict
         player.bet(Odds(float(mult * player.unit), player.get_bet("PassLine")), table)
 
 
-def passline_odds2(player: 'Player', table: 'Table') -> dict[str, typing.Any]:
+def passline_odds2(player: 'Player', table: 'Table') -> None:
     """ Pass Line bet when point is off, 2x odds bet when point is on.
 
         Parameters
@@ -94,13 +94,13 @@ def passline_odds2(player: 'Player', table: 'Table') -> dict[str, typing.Any]:
 
         Returns
         -------
-        dict[str, typing.Any]
+        None
             Dictionary of strategy info.
         """
     passline_odds(player, table, mult=2)
 
 
-def passline_odds345(player: 'Player', table: 'Table') -> dict[str, typing.Any]:
+def passline_odds345(player: 'Player', table: 'Table') -> None:
     """ Pass Line bet when point is off, 345x odds bet when point is on.
 
         Parameters
@@ -112,13 +112,13 @@ def passline_odds345(player: 'Player', table: 'Table') -> dict[str, typing.Any]:
 
         Returns
         -------
-        dict[str, typing.Any]
+        None
             Dictionary of strategy info.
         """
     passline_odds(player, table, mult='345')
 
 
-def pass2come(player: 'Player', table: 'Table') -> dict[str, typing.Any]:
+def pass2come(player: 'Player', table: 'Table') -> None:
     """ Pass Line bet followed by 2 come bets when point is on.
 
         Parameters
@@ -130,7 +130,7 @@ def pass2come(player: 'Player', table: 'Table') -> dict[str, typing.Any]:
 
         Returns
         -------
-        dict[str, typing.Any]
+        None
             Dictionary of strategy info.
         """
     passline(player, table)
@@ -141,7 +141,7 @@ def pass2come(player: 'Player', table: 'Table') -> dict[str, typing.Any]:
 
 
 def place(player: 'Player', table: 'Table', skip_point: bool = True, numbers: set[int] | None = None) -> \
-        dict[str, typing.Any]:
+        None:
     """ Place bets, ie 3, 4, 5, 6, 8, 9, 10
 
         Parameters
@@ -157,7 +157,7 @@ def place(player: 'Player', table: 'Table', skip_point: bool = True, numbers: se
 
         Returns
         -------
-        dict[str, typing.Any]
+        None
             Dictionary of strategy info.
         """
 
@@ -200,7 +200,7 @@ def place(player: 'Player', table: 'Table', skip_point: bool = True, numbers: se
             player.remove(player.get_bet("Place10"))
 
 
-def place68(player: 'Player', table: 'Table') -> dict[str, typing.Any]:
+def place68(player: 'Player', table: 'Table') -> None:
     """ Place the 6 and the 8.
 
         Parameters
@@ -212,7 +212,7 @@ def place68(player: 'Player', table: 'Table') -> dict[str, typing.Any]:
 
         Returns
         -------
-        dict[str, typing.Any]
+        None
             Dictionary of strategy info.
         """
     passline(player, table)
@@ -230,7 +230,7 @@ def place68(player: 'Player', table: 'Table') -> dict[str, typing.Any]:
             player.bet(Place6(6 / 5 * player.unit), table)
 
 
-def dontpass(player: 'Player', table: 'Table') -> dict[str, typing.Any]:
+def dontpass(player: 'Player', table: 'Table') -> None:
     """ Place a bet on the Don't Pass line.
 
         Parameters
@@ -242,7 +242,7 @@ def dontpass(player: 'Player', table: 'Table') -> dict[str, typing.Any]:
 
         Returns
         -------
-        dict[str, typing.Any]
+        None
             Dictionary of strategy info.
         """
     # Don't pass bet
@@ -250,7 +250,7 @@ def dontpass(player: 'Player', table: 'Table') -> dict[str, typing.Any]:
         player.bet(DontPass(player.unit), table)
 
 
-def layodds(player: 'Player', table: 'Table', win_mult: int | str = 1) -> dict[str, typing.Any]:
+def layodds(player: 'Player', table: 'Table', win_mult: int | str = 1) -> None:
     """ Place a lay bet.
 
         Parameters
@@ -264,7 +264,7 @@ def layodds(player: 'Player', table: 'Table', win_mult: int | str = 1) -> dict[s
 
         Returns
         -------
-        dict[str, typing.Any]
+        None
             Dictionary of strategy info.
         """
     # Assume that someone tries to win the `win_mult` times the unit on each bet, which corresponds
@@ -298,7 +298,7 @@ Detailed Strategies
 """
 
 
-def place68_2come(player: 'Player', table: 'Table') -> dict[str, typing.Any]:
+def place68_2come(player: 'Player', table: 'Table') -> None:
     """ Once point is established, place 6 and 8, with 2 additional come bets.
         The goal is to be on four distinct numbers, moving place bets if necessary
 
@@ -311,7 +311,7 @@ def place68_2come(player: 'Player', table: 'Table') -> dict[str, typing.Any]:
 
         Returns
         -------
-        dict[str, typing.Any]
+        None
             Dictionary of strategy info.
         """
     """
@@ -376,7 +376,7 @@ def ironcross(player: 'Player', table: 'Table', mult: int | str = 1) -> None:
 
         Returns
         -------
-        dict[str, typing.Any]
+        None
             Dictionary of strategy info.
         """
     passline(player, table)
@@ -394,7 +394,6 @@ def ironcross(player: 'Player', table: 'Table', mult: int | str = 1) -> None:
             )
 
 
-# TODO: I don't think hammerlock bets are taken down correctly.
 def hammerlock(player: 'Player', table: 'Table', mode: str | None = None) -> dict[str, str]:
     """ Pass Line Bet, Don't Pass bet with a lay of odds. A phased place bet approach, starting inside and then
         shifting outside eventually taking bet down if two place bets win.
@@ -410,7 +409,7 @@ def hammerlock(player: 'Player', table: 'Table', mode: str | None = None) -> dic
 
         Returns
         -------
-        dict[str, typing.Any]
+        None
             Dictionary of strategy info.
         """
     passline(player, table)
@@ -473,7 +472,7 @@ def risk12(player: 'Player', table: 'Table', winnings: typing.SupportsFloat = 0)
 
         Returns
         -------
-        dict[str, typing.Any]
+        None
             Dictionary of strategy info.
         """
     passline(player, table)
@@ -518,7 +517,7 @@ def risk12(player: 'Player', table: 'Table', winnings: typing.SupportsFloat = 0)
     player.strat_info['winnings'] = winnings
 
 
-def knockout(player: 'Player', table: 'Table') -> dict[str, typing.Any]:
+def knockout(player: 'Player', table: 'Table') -> None:
     """ Pass line bet, don't pass bet, 345x odds behind the pass line bet.
 
         Parameters
@@ -530,7 +529,7 @@ def knockout(player: 'Player', table: 'Table') -> dict[str, typing.Any]:
 
         Returns
         -------
-        dict[str, typing.Any]
+        None
             Dictionary of strategy info.
         """
     passline_odds345(player, table)
@@ -551,7 +550,7 @@ def dicedoctor(player: 'Player', table: 'Table', progression: int = 0) -> dict[s
 
         Returns
         -------
-        dict[str, typing.Any]
+        None
             Dictionary of strategy info.
         """
     if table.last_roll in Field(0).losing_numbers:
@@ -639,7 +638,7 @@ def dicedoctor(player: 'Player', table: 'Table', progression: int = 0) -> dict[s
 #     return strat_info
 
 
-def place68_dontcome2odds(player: 'Player', table: 'Table') -> dict[str, typing.Any]:
+def place68_dontcome2odds(player: 'Player', table: 'Table') -> None:
     """ Place the 6 and 8, bet don't come with 2x odds.
 
         Parameters
@@ -651,7 +650,7 @@ def place68_dontcome2odds(player: 'Player', table: 'Table') -> dict[str, typing.
 
         Returns
         -------
-        dict[str, typing.Any]
+        None
             Dictionary of strategy info.
         """
     place(player, table, numbers={6, 8}, skip_point=False)
