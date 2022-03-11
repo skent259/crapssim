@@ -36,7 +36,7 @@ class Table(object):
     def __init__(self) -> None:
         self.players: list[Player] = []
         self.player_has_bets: bool = False
-        self.point: _Point = _Point()
+        self.point: Point = Point()
         self.dice: Dice = Dice()
         self.bet_update_info: dict | None = None
         self.payouts: dict[str, list[int]] = {"fielddouble": [2, 12], "fieldtriple": []}
@@ -166,7 +166,7 @@ class Table(object):
         return False
 
 
-class _Point:
+class Point:
     """
     The point on a craps table.
 
@@ -187,7 +187,16 @@ class _Point:
         self.number: int | None = None
 
     def __eq__(self, other: object) -> bool:
-        return self.status == other
+        if isinstance(other, str) and other.lower() in ('on', 'off'):
+            return self.status.lower() == other.lower()
+        elif isinstance(other, str) and other in ('4', '5', '6', '8', '9', '10'):
+            return str(self.number) == other
+        elif isinstance(other, int) and other in (4, 5, 6, 8, 9, 10):
+            return other == self.number
+        elif isinstance(other, Point):
+            return other.status == self.status and other.number == self.number
+        else:
+            raise NotImplementedError
 
     def update(self, dice_object: Dice) -> None:
         if self.status == "Off" and dice_object.total in [4, 5, 6, 8, 9, 10]:

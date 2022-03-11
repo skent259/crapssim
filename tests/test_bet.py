@@ -2,7 +2,7 @@ import pytest
 import crapssim
 import numpy as np
 from crapssim.dice import Dice
-from crapssim.table import Table, _Point
+from crapssim.table import Table, Point
 
 
 # Check EV of bets on a "per-roll" basis
