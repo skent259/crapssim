@@ -1,4 +1,4 @@
-from crapssim.bet import PassLine, Odds, Come
+from crapssim.bet import PassLine, Odds, Come, DontCome
 from crapssim.bet import DontPass, LayOdds
 from crapssim.bet import Place, Place4, Place5, Place6, Place8, Place9, Place10
 from crapssim.bet import Field
@@ -410,6 +410,26 @@ def place68_cpr(player, table, unit=5, strat_info=None):
 
     print(strat_info)
     return strat_info
+
+
+def dontpass_2come_dontcome(player, table, unit=5, strat_info=None):
+    # start with dontpass bet
+    # once the point is established, place come bet twice
+    # finally place a dont come bet
+    # whenever there is less than 2 come bet replenish it.
+    dontpass(player, table, unit)
+
+    if table.point == "On":
+        total_come_bets = player.has_bet("Come")
+        total_dont_come_bets = player.has_bet("DontCome")
+        if not player.has_bet("Come") and len(total_come_bets) < 2:
+            player.bet(
+                Come(unit)
+            )
+        elif not player.has_bet("DontCome") and len(total_dont_come_bets) == 0:
+            player.bet(
+                DontCome(unit)
+            )
 
 
 if __name__ == "__main__":

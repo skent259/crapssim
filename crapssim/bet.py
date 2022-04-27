@@ -264,6 +264,18 @@ class DontPass(Bet):
         return status, win_amount
 
 
+class DontCome(PassLine):
+    def __init__(self, bet_amount):
+        super().__init__(bet_amount)
+        self.name = "DontCome"
+
+    def _update_bet(self, table_object, dice_object):
+        status, win_amount = super()._update_bet(table_object, dice_object)
+        if not self.prepoint and self.subname == "":
+            self.subname = "".join(str(e) for e in self.winning_numbers)
+        return status, win_amount
+
+
 """
 Don't pass/Don't come lay odds
 """
