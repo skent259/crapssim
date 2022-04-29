@@ -1,5 +1,5 @@
-from crapssim.bet import PassLine, Odds, Come, DontCome
-from crapssim.bet import DontPass, LayOdds
+from crapssim.bet import PassLine, Odds, Come
+from crapssim.bet import DontPass, LayOdds, DontCome
 from crapssim.bet import Place, Place4, Place5, Place6, Place8, Place9, Place10
 from crapssim.bet import Field
 
@@ -410,6 +410,75 @@ def place68_cpr(player, table, unit=5, strat_info=None):
 
     print(strat_info)
     return strat_info
+
+def place68_dontcome2odds(player, table, unit=5, strat_info=None): 
+    
+    place(player, table, unit, strat_info={"numbers": {6, 8}}, skip_point=False)
+
+    current_numbers = []
+    for bet in player.bets_on_table:
+        current_numbers += bet.winning_numbers
+    current_numbers = list(set(current_numbers))
+
+    dont_come_losing_numbers = []
+    if player.has_bet("DontCome"):
+        dont_come_losing_numbers += player.get_bet("DontCome", "Any").losing_numbers
+    
+    if 6 in dont_come_losing_numbers:
+        if player.has_bet("Place6"):
+            player.remove(player.get_bet("Place6"))
+        if 5 not in current_numbers:
+            player.bet(Place5(unit))
+    elif 8 in dont_come_losing_numbers:
+        if player.has_bet("Place8"):
+            player.remove(player.get_bet("Place8"))
+        if 9 not in current_numbers:
+            player.bet(Place9(unit))
+    
+    
+    if table.point == "On" and player.num_bet("DontCome") < 1:
+        player.bet(DontCome(unit))
+
+    if player.has_bet("DontCome"):
+        dc = player.get_bet("DontCome", "Any")
+
+        win_mult = 2
+        # Lay odds for don't come
+        if win_mult == "345":
+            mult = 6.0
+        else:
+            win_mult = float(win_mult)
+            # print([[b.name, b.subname] for b in player.bets_on_table])
+            if not dc.prepoint:
+                lose_num = dc.losing_numbers[0]
+                if lose_num in [4, 10]:
+                    mult = 2 * win_mult
+                elif lose_num in [5, 9]:
+                    mult = 3 / 2 * win_mult
+                elif lose_num in [6, 8]:
+                    mult = 6 / 5 * win_mult
+
+        if not player.has_bet("LayOdds") and not dc.prepoint:
+            player.bet(LayOdds(mult * unit, dc))
+
+def dontpass_2come_dontcome(player, table, unit=5, strat_info=None):
+    # start with dontpass bet
+    # once the point is established, place come bet twice
+    # finally place a dont come bet
+    # whenever there is less than 2 come bet replenish it.
+    dontpass(player, table, unit)
+
+    if table.point == "On":
+        total_come_bets = player.has_bet("Come")
+        total_dont_come_bets = player.has_bet("DontCome")
+        if not player.has_bet("Come") and len(total_come_bets) < 2:
+            player.bet(
+                Come(unit)
+            )
+        elif not player.has_bet("DontCome") and len(total_dont_come_bets) == 0:
+            player.bet(
+                DontCome(unit)
+            )
 
 
 def dontpass_2come_dontcome(player, table, unit=5, strat_info=None):
