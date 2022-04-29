@@ -1,4 +1,5 @@
 import typing
+from dataclasses import dataclass
 
 from crapssim.dice import Dice
 from crapssim.player import Player
