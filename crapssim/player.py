@@ -39,9 +39,7 @@ class Player:
         self.total_bet_amount: float = 0.0
 
     def bet(self, bet_object: Bet, table: 'Table') -> None:
-        if table.point.status == 'Off' and not bet_object.can_be_placed_point_off:
-            return
-        if table.point.status == 'On' and not bet_object.can_be_placed_point_on:
+        if not bet_object.bet_allowed[table.point.status]:
             return
 
         if self.bankroll >= bet_object.bet_amount:
