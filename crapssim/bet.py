@@ -13,11 +13,13 @@ class Bet(ABC):
 
     Parameters
     ----------
-    bet_amount : float
+    bet_amount : typing.SupportsFloat
         Wagered amount for the bet
 
     Attributes
     ----------
+    bet_amount: float
+        Wagered amount for the bet
     name : string
         Name for the bet
     subname : string
@@ -28,7 +30,12 @@ class Bet(ABC):
         Numbers to roll that cause this bet to lose
     payoutratio : float
         Ratio that bet pays out on a win
-
+    removable : bool
+        Whether the bet can be removed or not
+    can_be_placed_point_on : bool
+        Whether the bet can be placed when the point is on
+    can_be_placed_point_off : bool
+        Whether the bet can be placed when the point is off
     """
 
     def __init__(self, bet_amount: typing.SupportsFloat):
@@ -43,6 +50,21 @@ class Bet(ABC):
         self.can_be_placed_point_off = True
 
     def _update_bet(self, table_object: "Table", dice_object: Dice) -> tuple[str | None, float]:
+        """
+        Returns whether the bets status is win, lose or None and if win the amount won.
+
+        Parameters
+        ----------
+        table_object : Table
+            The table to check the bet was made on.
+        dice_object : Dice
+            The dice to check the bet against.
+
+        Returns
+        -------
+        tuple[str | None, float]
+            The status of the bet and the amount of the winnings.
+        """
         status: str | None = None
         win_amount: float = 0.0
 
@@ -61,7 +83,6 @@ Passline and Come bets
 
 
 class PassLine(Bet):
-    # probably better in the player module
     def __init__(self, bet_amount: float):
         super().__init__(bet_amount)
         self.name: str = "PassLine"

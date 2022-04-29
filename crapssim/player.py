@@ -14,22 +14,36 @@ class Player:
 
     Parameters
     ----------
-    bankroll : float
-        Starting amount of cash for the player, will be updated during play
+    bankroll : typing.SupportsFloat
+        Starting amount of cash for the player
     bet_strategy : function(table, player, unit=5)
         A function that implements a particular betting strategy.  See betting_strategies.py
-    name : string, optional (default = "Player")
+    name : string, default = "Player"
         Name of the player
+    unit : typing.SupportsFloat, default=5
+        Standard amount of bet to be used by bet_strategy
 
     Attributes
     ----------
+    bankroll : typing.SupportsFloat
+        Current amount of cash for the player
+    name : str
+        Name of the player
+    bet_strategy :
+        A function that implements a particular betting strategy. See betting_strategies.py.
+    strat_info : dict[str, typing.Any]
+        Variables to be used by the players bet_strategy
+    unit : typing.SupportsFloat
+        Standard amount of bet to be used by bet_strategy
     bets_on_table : list
         List of betting objects for the player
     total_bet_amount : int
         Sum of bet value for the player
     """
 
-    def __init__(self, bankroll: float, bet_strategy: STRATEGY_TYPE = passline, name: str = "Player",
+    def __init__(self, bankroll: typing.SupportsFloat,
+                 bet_strategy: STRATEGY_TYPE = passline,
+                 name: str = "Player",
                  unit: typing.SupportsFloat = 5):
         self.bankroll: float = bankroll
         self.bet_strategy: STRATEGY_TYPE = bet_strategy
