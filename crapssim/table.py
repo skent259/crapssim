@@ -11,10 +11,6 @@ class Table(object):
     table until a specified number of rolls plays out or all players run out
     of money.
 
-    Parameters
-    ----------
-    NONE
-
     Attributes
     ----------
     players : list
@@ -27,6 +23,16 @@ class Table(object):
     bet_update_info : dictionary
         Contains information from updating bets, for given player and a bet
         name, this is status of last bet (win/loss), and win amount.
+    dice : Dice
+        Dice for the table
+    payouts : dice[str, list[int]]
+        Field payouts for the table
+    pass_rolls : int
+        Number of rolls for the current pass
+    last_roll : int
+        Total of the last roll for the table
+    n_shooters : int
+        How many shooters the table has had.
     """
 
     def __init__(self) -> None:
@@ -41,16 +47,44 @@ class Table(object):
 
     @classmethod
     def with_payouts(cls, **kwargs: list[int]) -> 'Table':
+        """ Return a table with the payouts specified in **kwargs.
+
+        Parameters
+        ----------
+        **kwargs : list[int]
+            The tables payouts.
+
+        Returns
+        -------
+        Table
+            The table with the specified payouts.
+
+        """
         table = cls()
         for name, value in kwargs.items():
             table.payouts[name] = value
         return table
 
     def set_payouts(self, name: str, value: list[int]) -> None:
+        """ Set a payout.
+
+        Parameters
+        ----------
+        name : str
+            Name of the payout.
+        value : list[int]
+            Rolls for the payout.
+        """
         self.payouts[name] = value
 
     def add_player(self, player_object: Player) -> None:
-        """ Add player object to the table """
+        """ Add player object to the table
+
+        Parameters
+        ----------
+        player_object : Player
+            Player object to add to the table.
+        """
         if player_object not in self.players:
             self.players.append(player_object)
 
@@ -207,7 +241,8 @@ class Table(object):
             )
 
     def ensure_one_player(self) -> None:
-        # make sure at least one player is at table
+        """ Make sure there is at least one player at the table
+        """
         if len(self.players) == 0:
             self.add_player(Player(500.0, name="Player1"))
 
@@ -228,7 +263,13 @@ class Table(object):
                     print(f"{p.name}'s current bets: {bets}")
 
     def update_player_bets(self, verbose: bool = False) -> None:
-        """ check bets for wins/losses, payout wins to their bankroll, remove bets that have resolved """
+        """ Check bets for wins/losses, payout wins to their bankroll, remove bets that have resolved
+
+        Parameters
+        ----------
+        verbose : bool
+            If True, prints whether the player won, lost, etc and the amount
+        """
         self.bet_update_info = {}
         for p in self.players:
             info = p.update_bet(self, self.dice, verbose)
@@ -240,7 +281,7 @@ class Table(object):
         Parameters
         ----------
         verbose
-            If true, prints out
+            If true, prints out the point and the players total cash
         """
         self.pass_rolls += 1
         if self.point == "On" and self.dice.total == 7:
@@ -256,6 +297,20 @@ class Table(object):
             print(f"Total Player Cash is ${self.total_player_cash}")
 
     def get_player(self, player_name: str) -> typing.Union['Player', bool]:
+        """
+        Given the name of a player return the player object.
+
+        Parameters
+        ----------
+        player_name : str
+            Name of the player
+
+        Returns
+        -------
+        Player, bool
+            If player is found return player, otherwise return False
+
+        """
         for p in self.players:
             if p.name == player_name:
                 return p
@@ -342,6 +397,14 @@ class Point:
         return self.__eq__(other) or self.__lt__(other)
 
     def update(self, dice_object: Dice) -> None:
+        """
+        Given a Dice object update the points status and number.
+
+        Parameters
+        ----------
+        dice_object : Dice
+            The Dice you want to update the point with
+        """
         if self.status == "Off" and dice_object.total in [4, 5, 6, 8, 9, 10]:
             self.status = "On"
             self.number = dice_object.total
