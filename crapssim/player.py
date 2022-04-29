@@ -117,17 +117,15 @@ class Player:
             dict[str, dict[str, str | None | float]]:
         info = {}
         for b in self.bets_on_table[:]:
-            status, win_amount = b._update_bet(self.table, self.table.dice)
+            status, win_amount, remove = b._update_bet(self.table, self.table.dice)
 
             if status == "win":
                 self.bankroll += win_amount + b.bet_amount
                 self.total_bet_amount -= b.bet_amount
-                self.bets_on_table.remove(b)
                 if verbose:
                     print(f"{self.name} won ${win_amount} on {b.name} bet!")
             elif status == "lose":
                 self.total_bet_amount -= b.bet_amount
-                self.bets_on_table.remove(b)
                 if verbose:
                     print(f"{self.name} lost ${b.bet_amount} on {b.name} bet.")
             elif status == "push":
@@ -136,6 +134,9 @@ class Player:
                 self.bets_on_table.remove(b)
                 if verbose:
                     print(f"{self.name} pushed ${b.bet_amount} on {b.name} bet.")
+
+            if remove:
+                self.bets_on_table.remove(b)
 
             info[b.name] = {"status": status, "win_amount": win_amount}
         return info
