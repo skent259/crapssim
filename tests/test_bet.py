@@ -1,6 +1,8 @@
 import pytest
 import crapssim
 import numpy as np
+
+from crapssim.bet import AllSmall, AllTall, AllOrNothingAtAll
 from crapssim.dice import Dice
 from crapssim.table import Table, Point
 
@@ -41,3 +43,58 @@ def test_ev_oneroll(bet, ev):
             outcomes.append(win_amt if status == "win" else -1 if status == "lose" else 0)
 
     assert round(np.mean(outcomes), 4) == ev
+
+
+@pytest.mark.parametrize('rolls, correct_status, correct_win_amount', [
+    ([(2, 2)], None, 0.0),
+    ([(1, 1), (1, 2), (2, 2), (2, 3), (3, 3)], 'win', 34),
+    ([(1, 1), (1, 2), (2, 2), (2, 3), (3, 4)], 'lose', 0.0)
+])
+def test_all_small(rolls: list[tuple[int]], correct_status: str | None, correct_win_amount: float):
+    table = Table()
+    dice = Dice()
+    bet = AllSmall(1)
+
+    status, win_amt = None, None
+    for roll in rolls:
+        dice.fixed_roll(roll)
+        status, win_amt = bet._update_bet(table, dice)
+    assert (status, win_amt) == (correct_status, correct_win_amount)
+
+
+@pytest.mark.parametrize('rolls, correct_status, correct_win_amount', [
+    ([(2, 2)], None, 0.0),
+    ([(10, 1), (10, 2), (7, 2), (5, 5), (2, 6)], 'win', 34),
+    ([(1, 1), (1, 2), (2, 2), (2, 3), (3, 4)], 'lose', 0.0)
+])
+def test_all_tall(rolls: list[tuple[int]], correct_status: str | None, correct_win_amount: float):
+    table = Table()
+    dice = Dice()
+    bet = AllTall(1)
+
+    status, win_amt = None, None
+    for roll in rolls:
+        dice.fixed_roll(roll)
+        status, win_amt = bet._update_bet(table, dice)
+    assert (status, win_amt) == (correct_status, correct_win_amount)
+
+
+@pytest.mark.parametrize('rolls, correct_status, correct_win_amount', [
+    ([(2, 2)], None, 0.0),
+    ([(10, 1), (10, 2), (7, 2), (5, 5), (2, 6),
+      (1, 1), (1, 2), (2, 2), (2, 3), (3, 3)], 'win', 175),
+    ([(1, 1), (1, 2), (2, 2), (2, 3), (3, 4)], 'lose', 0.0)
+])
+def test_all_or_nothing_at_all(rolls: list[tuple[int]],
+                               correct_status: str | None,
+                               correct_win_amount: float):
+    table = Table()
+    dice = Dice()
+    bet = AllOrNothingAtAll(1)
+
+    status, win_amt = None, None
+    for roll in rolls:
+        dice.fixed_roll(roll)
+        status, win_amt = bet._update_bet(table, dice)
+    assert (status, win_amt) == (correct_status, correct_win_amount)
+
