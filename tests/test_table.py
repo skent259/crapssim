@@ -19,8 +19,8 @@ def test_ensure_one_player():
 def test_wrong_point_off():
     table = Table()
     table.point.status = 'Off'
-    player = Player(500)
-    player.bet(Come(100), table)
+    player = Player(500, table=table)
+    player.bet(Come(100))
     assert (len(player.bets_on_table), player.bankroll) == (0, 500)
 
 
@@ -28,8 +28,8 @@ def test_wrong_point_on():
     table = Table()
     table.point.status = 'On'
     table.point.number = 4
-    player = Player(500)
-    player.bet(PassLine(100), table)
+    player = Player(500, table=table)
+    player.bet(PassLine(100))
     assert (len(player.bets_on_table), player.bankroll) == (0, 500)
 
 

@@ -87,6 +87,7 @@ class Table(object):
         """
         if player_object not in self.players:
             self.players.append(player_object)
+        player_object.table = self
 
     def _setup_run(self, verbose: bool) -> None:
         """
@@ -255,7 +256,7 @@ class Table(object):
             If True, print the players current bets.
         """
         for p in self.players:
-            p.add_strategy_bets(self)
+            p.add_strategy_bets()
 
             if verbose:
                 bets = [f"{b.name}{b.subname}: ${b.bet_amount}" for b in p.bets_on_table]
@@ -272,7 +273,7 @@ class Table(object):
         """
         self.bet_update_info = {}
         for p in self.players:
-            info = p.update_bet(self, self.dice, verbose)
+            info = p.update_bet(verbose)
             self.bet_update_info[p] = info
 
     def update_table(self, verbose: bool = False) -> None:

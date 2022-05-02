@@ -38,7 +38,7 @@ if __name__ == "__main__":
     Sean.bet(craps.bet.Come(5))
 
     d.fixed_roll([4, 4])
-    Sean.update_bet(None, d)
+    Sean.update_bet()
     Sean.bet(craps.bet.Come(10))
     print("Sean's current bets: {}".format(
         {b.name: b.bet_amount for b in Sean.bets_on_table}

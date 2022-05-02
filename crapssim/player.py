@@ -5,7 +5,6 @@ from crapssim.strategy import STRATEGY_TYPE, passline
 
 if typing.TYPE_CHECKING:
     from crapssim.table import Table
-    from crapssim.dice import Dice
 
 
 class Player:
@@ -44,20 +43,27 @@ class Player:
     def __init__(self, bankroll: typing.SupportsFloat,
                  bet_strategy: STRATEGY_TYPE = passline,
                  name: str = "Player",
-                 unit: typing.SupportsFloat = 5):
+                 unit: typing.SupportsFloat = 5,
+                 table: 'Table' = None):
         self.bankroll: float = bankroll
         self.bet_strategy: STRATEGY_TYPE = bet_strategy
         self.strat_info: dict[str, typing.Any] = {}
         self.name: str = name
         self.unit: typing.SupportsFloat = unit
+        self.table = None
+        if table is not None:
+            self.sit_at_table(table)
 
         self.bets_on_table: list[Bet] = []
         self.total_bet_amount: float = 0.0
 
-    def bet(self, bet_object: Bet, table: 'Table') -> None:
-        if table.point.status == 'Off' and not bet_object.can_be_placed_point_off:
+    def sit_at_table(self, table: "Table"):
+        table.add_player(self)
+
+    def bet(self, bet_object: Bet) -> None:
+        if self.table.point.status == 'Off' and not bet_object.can_be_placed_point_off:
             return
-        if table.point.status == 'On' and not bet_object.can_be_placed_point_on:
+        if self.table.point.status == 'On' and not bet_object.can_be_placed_point_on:
             return
 
         if self.bankroll >= bet_object.bet_amount:
@@ -102,16 +108,16 @@ class Player:
         if self.has_bet(bet_name):
             self.remove(self.get_bet(bet_name, bet_subname))
 
-    def add_strategy_bets(self, table: 'Table') -> None:
+    def add_strategy_bets(self) -> None:
         """ Implement the given betting strategy """
         if self.bet_strategy:
-            self.bet_strategy(self, table, **self.strat_info)
+            self.bet_strategy(self, self.table, **self.strat_info)
 
-    def update_bet(self, table_object: 'Table', dice_object: 'Dice', verbose: bool = False) -> \
+    def update_bet(self, verbose: bool = False) -> \
             dict[str, dict[str, str | None | float]]:
         info = {}
         for b in self.bets_on_table[:]:
-            status, win_amount = b._update_bet(table_object, dice_object)
+            status, win_amount = b._update_bet(self.table, self.table.dice)
 
             if status == "win":
                 self.bankroll += win_amount + b.bet_amount
