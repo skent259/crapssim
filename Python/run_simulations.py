@@ -19,6 +19,7 @@ def run_printout(n_roll, n_shooter, bankroll, strategy, strategy_name, runout):
         table.run(n_roll, n_shooter, verbose=True)
     sys.stdout = sys.__stdout__ # reset stdout
 
+
 def run_simulation(n_sim, n_roll, bankroll, strategy, strategy_name, runout):
     runout_str = "_runout" if runout else ""
     # Run simulation of n_roll rolls (estimated rolls/hour with 5 players) 1000 times

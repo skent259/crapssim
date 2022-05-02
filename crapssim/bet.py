@@ -550,3 +550,53 @@ class Fire(Bet):
 
     def allowed(self, table: 'Table') -> bool:
         return table.new_shooter
+
+
+class AllBet(Bet):
+    def __init__(self, bet_amount: float):
+        super().__init__(bet_amount)
+        self.numbers = []
+        self.rolled_numbers: list[int] = []
+
+    def _update_bet(self, table_object: "Table", dice_object: Dice) -> tuple[str | None, float]:
+        status: str | None = None
+        win_amount: float = 0.0
+
+        if dice_object.total in self.numbers and dice_object.total not in self.rolled_numbers:
+            self.rolled_numbers.append(dice_object.total)
+            self.rolled_numbers.sort()
+
+        if self.numbers == self.rolled_numbers:
+            status = 'win'
+            win_amount = self.bet_amount * self.payoutratio
+        elif dice_object.total == 7:
+            status = 'lose'
+
+        return status, win_amount
+
+
+class AllTall(AllBet):
+    def __init__(self, bet_amount):
+        super().__init__(bet_amount)
+        self.name = 'AllTall'
+        self.bet_amount = bet_amount
+        self.numbers = [8, 9, 10, 11, 12]
+        self.payoutratio = 34
+
+
+class AllSmall(AllBet):
+    def __init__(self, bet_amount):
+        super().__init__(bet_amount)
+        self.name = 'AllSmall'
+        self.bet_amount = bet_amount
+        self.numbers = [2, 3, 4, 5, 6]
+        self.payoutratio = 34
+
+
+class AllOrNothingAtAll(AllBet):
+    def __init__(self, bet_amount):
+        super().__init__(bet_amount=bet_amount)
+        self.name = 'AllOrNothingAtAll'
+        self.bet_amount = bet_amount
+        self.numbers = [2, 3, 4, 5, 6, 8, 9, 10, 11, 12]
+        self.payoutratio = 175
