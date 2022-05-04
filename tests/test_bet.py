@@ -3,7 +3,7 @@ import crapssim
 import numpy as np
 
 from crapssim import Player
-from crapssim.bet import Fire
+from crapssim.bet import Fire, Bet, PassLine, Come, Odds, DontPass, DontCome, Field
 from crapssim.dice import Dice
 from crapssim.table import Table, Point
 
@@ -68,3 +68,28 @@ def test_fire(rolls, correct_status, correct_win_amt, correct_remove):
         status, win_amt, remove = bet._update_bet(table, dice)
 
     assert (status, win_amt, remove) == (correct_status, correct_win_amt, correct_remove)
+
+
+@pytest.mark.parametrize('bet, point_number, allowed', [
+    (PassLine(5), None, True),
+    (PassLine(5), 6, False),
+    (Come(5), None, False),
+    (Come(5), 6, True),
+    (DontPass(5), None, True),
+    (DontPass(5), 4, False),
+    (DontCome(5), None, False),
+    (DontCome(5), 8, True),
+    (Field(5), None, True),
+    (Field(5), 4, True)
+])
+def test_bet_allowed_point(bet, point_number, allowed):
+    table = Table()
+    dice = Dice()
+    dice.total = point_number
+
+    point = Point()
+    point.update(dice)
+
+    table.point = point
+
+    assert bet.allowed(table) == allowed
