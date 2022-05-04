@@ -538,11 +538,11 @@ class Fire(Bet):
             if self.current_point not in self.points_made:
                 self.points_made = list(set(self.points_made + [dice_object.total]))
                 if len(self.points_made) == 4:
-                    status, win_amount, remove = 'win', 25 * self.bet_amount, False
+                    status, win_amount, remove = 'win', 24 * self.bet_amount, False
                 elif len(self.points_made) == 5:
-                    status, win_amount, remove = 'win', 250 * self.bet_amount, False
+                    status, win_amount, remove = 'win', 249 * self.bet_amount, False
                 elif len(self.points_made) == 6:
-                    status, win_amount, remove = 'win', 1000 * self.bet_amount, True
+                    status, win_amount, remove = 'win', 999 * self.bet_amount, True
             self.current_point = None
         elif self.current_point is not None and dice_object.total == 7:
             status, win_amount, remove = 'lose', 0.0, True
