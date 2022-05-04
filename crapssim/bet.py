@@ -558,9 +558,10 @@ class AllBet(Bet):
         self.numbers = []
         self.rolled_numbers: list[int] = []
 
-    def _update_bet(self, table_object: "Table", dice_object: Dice) -> tuple[str | None, float]:
+    def _update_bet(self, table_object: "Table", dice_object: Dice) -> tuple[str | None, float, bool]:
         status: str | None = None
         win_amount: float = 0.0
+        remove = False
 
         if dice_object.total in self.numbers and dice_object.total not in self.rolled_numbers:
             self.rolled_numbers.append(dice_object.total)
@@ -569,10 +570,15 @@ class AllBet(Bet):
         if self.numbers == self.rolled_numbers:
             status = 'win'
             win_amount = self.bet_amount * self.payoutratio
+            remove = True
         elif dice_object.total == 7:
             status = 'lose'
+            remove = True
 
-        return status, win_amount
+        return status, win_amount, remove
+
+    def allowed(self, table: 'Table') -> bool:
+        return table.new_shooter
 
 
 class AllTall(AllBet):

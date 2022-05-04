@@ -112,56 +112,63 @@ def test_bet_allowed_new_shooter(bet, new_shooter, allowed):
     assert bet.allowed(table) == allowed
 
 
-@pytest.mark.parametrize('rolls, correct_status, correct_win_amount', [
-    ([(2, 2)], None, 0.0),
-    ([(1, 1), (1, 2), (2, 2), (2, 3), (3, 3)], 'win', 34),
-    ([(1, 1), (1, 2), (2, 2), (2, 3), (3, 4)], 'lose', 0.0)
+@pytest.mark.parametrize('rolls, correct_status, correct_win_amount, correct_remove', [
+    ([(2, 2)], None, 0.0, False),
+    ([(1, 1), (1, 2), (2, 2), (2, 3), (3, 3)], 'win', 34, True),
+    ([(1, 1), (1, 2), (2, 2), (2, 3), (3, 4)], 'lose', 0.0, True)
 ])
-def test_all_small(rolls: list[tuple[int]], correct_status: str | None, correct_win_amount: float):
+def test_all_small(rolls: list[tuple[int]],
+                   correct_status: str | None,
+                   correct_win_amount: float,
+                   correct_remove: bool):
     table = Table()
     dice = Dice()
     bet = AllSmall(1)
 
-    status, win_amt = None, None
+    status, win_amt, remove = None, None, None
     for roll in rolls:
         dice.fixed_roll(roll)
-        status, win_amt = bet._update_bet(table, dice)
-    assert (status, win_amt) == (correct_status, correct_win_amount)
+        status, win_amt, remove = bet._update_bet(table, dice)
+    assert (status, win_amt, remove) == (correct_status, correct_win_amount, correct_remove)
 
 
-@pytest.mark.parametrize('rolls, correct_status, correct_win_amount', [
-    ([(2, 2)], None, 0.0),
-    ([(10, 1), (10, 2), (7, 2), (5, 5), (2, 6)], 'win', 34),
-    ([(1, 1), (1, 2), (2, 2), (2, 3), (3, 4)], 'lose', 0.0)
+@pytest.mark.parametrize('rolls, correct_status, correct_win_amount, correct_remove', [
+    ([(2, 2)], None, 0.0, False),
+    ([(10, 1), (10, 2), (7, 2), (5, 5), (2, 6)], 'win', 34, True),
+    ([(1, 1), (1, 2), (2, 2), (2, 3), (3, 4)], 'lose', 0.0, True)
 ])
-def test_all_tall(rolls: list[tuple[int]], correct_status: str | None, correct_win_amount: float):
+def test_all_tall(rolls: list[tuple[int]],
+                  correct_status: str | None,
+                  correct_win_amount: float,
+                  correct_remove: bool):
     table = Table()
     dice = Dice()
     bet = AllTall(1)
 
-    status, win_amt = None, None
+    status, win_amt, remove = None, None, None
     for roll in rolls:
         dice.fixed_roll(roll)
-        status, win_amt = bet._update_bet(table, dice)
-    assert (status, win_amt) == (correct_status, correct_win_amount)
+        status, win_amt, remove = bet._update_bet(table, dice)
+    assert (status, win_amt, remove) == (correct_status, correct_win_amount, correct_remove)
 
 
-@pytest.mark.parametrize('rolls, correct_status, correct_win_amount', [
-    ([(2, 2)], None, 0.0),
+@pytest.mark.parametrize('rolls, correct_status, correct_win_amount, correct_remove', [
+    ([(2, 2)], None, 0.0, False),
     ([(10, 1), (10, 2), (7, 2), (5, 5), (2, 6),
-      (1, 1), (1, 2), (2, 2), (2, 3), (3, 3)], 'win', 175),
-    ([(1, 1), (1, 2), (2, 2), (2, 3), (3, 4)], 'lose', 0.0)
+      (1, 1), (1, 2), (2, 2), (2, 3), (3, 3)], 'win', 175, True),
+    ([(1, 1), (1, 2), (2, 2), (2, 3), (3, 4)], 'lose', 0.0, True)
 ])
 def test_all_or_nothing_at_all(rolls: list[tuple[int]],
                                correct_status: str | None,
-                               correct_win_amount: float):
+                               correct_win_amount: float,
+                               correct_remove: bool):
     table = Table()
     dice = Dice()
     bet = AllOrNothingAtAll(1)
 
-    status, win_amt = None, None
+    status, win_amt, remove = None, None, None
     for roll in rolls:
         dice.fixed_roll(roll)
-        status, win_amt = bet._update_bet(table, dice)
-    assert (status, win_amt) == (correct_status, correct_win_amount)
+        status, win_amt, remove = bet._update_bet(table, dice)
+    assert (status, win_amt, remove) == (correct_status, correct_win_amount, correct_remove)
 
