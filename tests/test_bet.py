@@ -2,7 +2,8 @@ import pytest
 import crapssim
 import numpy as np
 from crapssim.dice import Dice
-from crapssim.table import Table, _Point
+from crapssim.table import Table, Point
+
 
 # Check EV of bets on a "per-roll" basis
 
@@ -26,12 +27,11 @@ from crapssim.table import Table, _Point
     (crapssim.bet.Hard8(1), -0.0278),
     (crapssim.bet.Hard10(1), -0.0278),
 ])
-
 def test_ev_oneroll(bet, ev):
     d = Dice()
     t = Table()
-    t.point.status = "On" # for place bets to pay properly
-    
+    t.point.status = "On"  # for place bets to pay properly
+
     outcomes = []
     for d1 in range(1, 7):
         for d2 in range(1, 7):
@@ -39,6 +39,5 @@ def test_ev_oneroll(bet, ev):
             status, win_amt = bet._update_bet(t, d)
 
             outcomes.append(win_amt if status == "win" else -1 if status == "lose" else 0)
-    
-    assert round(np.mean(outcomes), 4) == ev
 
+    assert round(np.mean(outcomes), 4) == ev
