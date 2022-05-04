@@ -32,6 +32,8 @@ class Table(object):
         Total of the last roll for the table
     n_shooters : int
         How many shooters the table has had.
+    new_shooter : bool
+        Returns True if the previous shooters roll just ended and the next shooter hasn't shot.
     """
 
     def __init__(self) -> None:
