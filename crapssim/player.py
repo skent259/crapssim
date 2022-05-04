@@ -128,12 +128,9 @@ class Player:
                 self.total_bet_amount -= b.bet_amount
                 if verbose:
                     print(f"{self.name} lost ${b.bet_amount} on {b.name} bet.")
-            elif status == "push":
+            elif status is None and remove is True:
                 self.bankroll += b.bet_amount
                 self.total_bet_amount -= b.bet_amount
-                self.bets_on_table.remove(b)
-                if verbose:
-                    print(f"{self.name} pushed ${b.bet_amount} on {b.name} bet.")
 
             if remove:
                 self.bets_on_table.remove(b)

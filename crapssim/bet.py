@@ -297,7 +297,6 @@ class DontPass(Bet):
             status = "lose"
             remove = True
         elif dice_object.total in self.push_numbers:
-            status = "push"
             remove = True
         elif self.prepoint:
             self.winning_numbers = [7]
