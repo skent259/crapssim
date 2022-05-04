@@ -15,8 +15,6 @@ class Table(object):
     ----------
     players : list
         List of player objects at the table
-    total_player_cash : float
-        Sum of all players bankroll and bets on table
     point : string
         The point for the table.  It is either "Off" when point is off or "On"
         when point is on.
