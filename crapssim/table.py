@@ -206,6 +206,7 @@ class Table(object):
         dice_outcome
             Iterable of two integers representing the chosen dice faces.
         """
+        self.new_shooter = False
         self.dice.fixed_roll(dice_outcome)
 
         if verbose:

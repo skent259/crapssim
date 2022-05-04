@@ -547,3 +547,6 @@ class Fire(Bet):
         elif self.current_point is not None and dice_object.total == 7:
             status, win_amount, remove = 'lose', 0.0, True
         return status, win_amount, remove
+
+    def allowed(self, table: 'Table') -> bool:
+        return table.new_shooter
