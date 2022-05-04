@@ -114,7 +114,7 @@ def test_bet_allowed_new_shooter(bet, new_shooter, allowed):
 
 @pytest.mark.parametrize('rolls, correct_status, correct_win_amount, correct_remove', [
     ([(2, 2)], None, 0.0, False),
-    ([(1, 1), (1, 2), (2, 2), (2, 3), (3, 3)], 'win', 34, True),
+    ([(1, 1), (1, 2), (2, 2), (2, 3), (3, 3)], 'win', 30, True),
     ([(1, 1), (1, 2), (2, 2), (2, 3), (3, 4)], 'lose', 0.0, True)
 ])
 def test_all_small(rolls: list[tuple[int]],
@@ -134,7 +134,7 @@ def test_all_small(rolls: list[tuple[int]],
 
 @pytest.mark.parametrize('rolls, correct_status, correct_win_amount, correct_remove', [
     ([(2, 2)], None, 0.0, False),
-    ([(10, 1), (10, 2), (7, 2), (5, 5), (2, 6)], 'win', 34, True),
+    ([(10, 1), (10, 2), (7, 2), (5, 5), (2, 6)], 'win', 30, True),
     ([(1, 1), (1, 2), (2, 2), (2, 3), (3, 4)], 'lose', 0.0, True)
 ])
 def test_all_tall(rolls: list[tuple[int]],
@@ -155,7 +155,7 @@ def test_all_tall(rolls: list[tuple[int]],
 @pytest.mark.parametrize('rolls, correct_status, correct_win_amount, correct_remove', [
     ([(2, 2)], None, 0.0, False),
     ([(10, 1), (10, 2), (7, 2), (5, 5), (2, 6),
-      (1, 1), (1, 2), (2, 2), (2, 3), (3, 3)], 'win', 175, True),
+      (1, 1), (1, 2), (2, 2), (2, 3), (3, 3)], 'win', 150, True),
     ([(1, 1), (1, 2), (2, 2), (2, 3), (3, 4)], 'lose', 0.0, True)
 ])
 def test_all_or_nothing_at_all(rolls: list[tuple[int]],
