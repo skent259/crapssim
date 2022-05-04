@@ -43,6 +43,7 @@ class Table(object):
         self.pass_rolls: int = 0
         self.last_roll: int | None = None
         self.n_shooters: int = 1
+        self.new_shooter: bool = True
 
     @classmethod
     def with_payouts(cls, **kwargs: list[int]) -> 'Table':
@@ -186,6 +187,7 @@ class Table(object):
             If true, prints out that the Dice are out and what number the shooter rolled.
 
         """
+        self.new_shooter = False
         self.dice.roll()
 
         if verbose:
@@ -285,6 +287,7 @@ class Table(object):
         """
         self.pass_rolls += 1
         if self.point == "On" and self.dice.total == 7:
+            self.new_shooter = True
             self.n_shooters += 1
         if self.point == "On" and (self.dice.total == 7 or self.dice.total == self.point.number):
             self.pass_rolls = 0
