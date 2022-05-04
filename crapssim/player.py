@@ -61,9 +61,7 @@ class Player:
         table.add_player(self)
 
     def bet(self, bet_object: Bet) -> None:
-        if self.table.point.status == 'Off' and not bet_object.can_be_placed_point_off:
-            return
-        if self.table.point.status == 'On' and not bet_object.can_be_placed_point_on:
+        if not bet_object.allowed(self.table):
             return
 
         if self.bankroll >= bet_object.bet_amount:
@@ -117,25 +115,23 @@ class Player:
             dict[str, dict[str, str | None | float]]:
         info = {}
         for b in self.bets_on_table[:]:
-            status, win_amount = b._update_bet(self.table, self.table.dice)
+            status, win_amount, remove = b._update_bet(self.table, self.table.dice)
 
             if status == "win":
                 self.bankroll += win_amount + b.bet_amount
                 self.total_bet_amount -= b.bet_amount
-                self.bets_on_table.remove(b)
                 if verbose:
                     print(f"{self.name} won ${win_amount} on {b.name} bet!")
             elif status == "lose":
                 self.total_bet_amount -= b.bet_amount
-                self.bets_on_table.remove(b)
                 if verbose:
                     print(f"{self.name} lost ${b.bet_amount} on {b.name} bet.")
-            elif status == "push":
+            elif status is None and remove is True:
                 self.bankroll += b.bet_amount
                 self.total_bet_amount -= b.bet_amount
+
+            if remove:
                 self.bets_on_table.remove(b)
-                if verbose:
-                    print(f"{self.name} pushed ${b.bet_amount} on {b.name} bet.")
 
             info[b.name] = {"status": status, "win_amount": win_amount}
         return info
