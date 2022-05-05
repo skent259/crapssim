@@ -21,14 +21,11 @@ class Bet(ABC):
         Wagered amount for the bet
     subname : string
         Subname, usually denotes number for a come/don't come bet
-    removable : bool
-        Whether the bet can be removed or not
     """
 
     def __init__(self, bet_amount: typing.SupportsFloat, player=None, table=None):
         self.bet_amount: float = float(bet_amount)
         self.subname: str = str()
-        self.removable: bool = True
         self.player: Player | None = player
         self.table: Table | None = table
 
@@ -39,6 +36,10 @@ class Bet(ABC):
     @property
     def name(self):
         return self.__class__.__name__
+
+    @property
+    def removable(self):
+        return True
 
     def allowed(self, table: 'Table') -> bool:
         """
@@ -135,8 +136,12 @@ class PassLine(WinningLosingNumbersBet):
             remove = True
         elif self.point is None:
             self.point = self.table.dice.total
-            self.removable = False
         return status, win_amount, remove
+
+    @property
+    def removable(self):
+        if self.point is not None:
+            return False
 
     def allowed(self, table: 'Table') -> bool:
         if table.point.status == 'Off':
