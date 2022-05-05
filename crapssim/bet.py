@@ -56,7 +56,7 @@ class Bet(ABC):
         return True
 
 
-class WinningLosingNumbersBet(Bet):
+class WinningLosingNumbersBet(Bet, ABC):
     @property
     @abstractmethod
     def winning_numbers(self):
