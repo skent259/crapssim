@@ -19,8 +19,6 @@ class Bet(ABC):
     ----------
     bet_amount: float
         Wagered amount for the bet
-    name : string
-        Name for the bet
     subname : string
         Subname, usually denotes number for a come/don't come bet
     removable : bool
@@ -29,7 +27,6 @@ class Bet(ABC):
 
     def __init__(self, bet_amount: typing.SupportsFloat, player=None, table=None):
         self.bet_amount: float = float(bet_amount)
-        self.name: str = str()
         self.subname: str = str()
         self.removable: bool = True
         self.player: Player | None = player
@@ -38,6 +35,10 @@ class Bet(ABC):
     @property
     def payout_ratio(self):
         return 1.0
+
+    @property
+    def name(self):
+        return self.__class__.__name__
 
     def allowed(self, table: 'Table') -> bool:
         """
@@ -104,7 +105,6 @@ class PassLine(WinningLosingNumbersBet):
 
     def __init__(self, bet_amount: float):
         super().__init__(bet_amount, None)
-        self.name: str = "PassLine"
         self.point: int | None = None
 
     @property
@@ -145,10 +145,6 @@ class PassLine(WinningLosingNumbersBet):
 
 
 class Come(PassLine):
-    def __init__(self, bet_amount: float):
-        super().__init__(bet_amount)
-        self.name: str = "Come"
-
     def _update_bet(self) -> tuple[str | None, float, bool]:
         status, win_amount, remove = super()._update_bet()
         if self.point is not None and self.subname == "":
@@ -174,7 +170,6 @@ class Odds(WinningLosingNumbersBet):
         if not isinstance(bet_object, PassLine) and not isinstance(bet_object, Come):
             raise TypeError('bet_object must be either a PassLine or Come Bet.')
 
-        self.name: str = "Odds"
         self.subname: str = "".join(str(e) for e in bet_object.winning_numbers)
 
     @property
@@ -221,19 +216,11 @@ class Place4(Place):
     winning_numbers: list[int] = [4]
     losing_numbers: list[int] = [7]
 
-    def __init__(self, bet_amount: float):
-        super().__init__(bet_amount, None)
-        self.name: str = "Place4"
-
 
 class Place5(Place):
     payout_ratio: float = 7 / 5
     winning_numbers: list[int] = [5]
     losing_numbers: list[int] = [7]
-
-    def __init__(self, bet_amount: float):
-        super().__init__(bet_amount, None)
-        self.name: str = "Place5"
 
 
 class Place6(Place):
@@ -241,19 +228,11 @@ class Place6(Place):
     winning_numbers: list[int] = [6]
     losing_numbers: list[int] = [7]
 
-    def __init__(self, bet_amount: float):
-        super().__init__(bet_amount, None)
-        self.name: str = "Place6"
-
 
 class Place8(Place):
     payout_ratio: float = 7 / 6
     winning_numbers: list[int] = [8]
     losing_numbers: list[int] = [7]
-
-    def __init__(self, bet_amount: float):
-        super().__init__(bet_amount, None)
-        self.name: str = "Place8"
 
 
 class Place9(Place):
@@ -261,19 +240,11 @@ class Place9(Place):
     winning_numbers: list[int] = [9]
     losing_numbers: list[int] = [7]
 
-    def __init__(self, bet_amount: float):
-        super().__init__(bet_amount, None)
-        self.name: str = "Place9"
-
 
 class Place10(Place):
     payout_ratio: float = 9 / 5
     winning_numbers: list[int] = [10]
     losing_numbers: list[int] = [7]
-
-    def __init__(self, bet_amount: float):
-        super().__init__(bet_amount, None)
-        self.name: str = "Place10"
 
 
 """
@@ -282,10 +253,6 @@ Field bet
 
 
 class Field(WinningLosingNumbersBet):
-    def __init__(self, bet_amount: float):
-        super().__init__(bet_amount, None)
-        self.name: str = "Field"
-
     @property
     def payout_ratio(self):
         return self.table.payouts['field_payouts'][self.table.dice.total]
@@ -322,7 +289,6 @@ class DontPass(WinningLosingNumbersBet):
 
     def __init__(self, bet_amount: float):
         super().__init__(bet_amount, None)
-        self.name: str = "DontPass"
         self.push_numbers: list[int] = [12]
         self.point: int | None = None
 
@@ -365,10 +331,6 @@ class DontPass(WinningLosingNumbersBet):
 
 
 class DontCome(DontPass):
-    def __init__(self, bet_amount: float):
-        super().__init__(bet_amount)
-        self.name: str = "DontCome"
-
     def _update_bet(self) -> tuple[str | None, float, bool]:
         status, win_amount, remove = super()._update_bet()
         if self.point is not None and self.subname == "":
@@ -390,7 +352,6 @@ class LayOdds(WinningLosingNumbersBet):
     def __init__(self, bet_amount: float, bet_object: DontPass | DontCome):
         super().__init__(bet_amount, None)
         self.bet_object = bet_object
-        self.name: str = "LayOdds"
         self.subname: str = "".join(str(e) for e in bet_object.losing_numbers)
 
     @property
@@ -421,19 +382,11 @@ class Any7(WinningLosingNumbersBet):
     winning_numbers: list[int] = [7]
     losing_numbers: list[int] = [2, 3, 4, 5, 6, 8, 9, 10, 11, 12]
 
-    def __init__(self, bet_amount: float):
-        super().__init__(bet_amount, None)
-        self.name: str = "Any7"
-
 
 class Two(WinningLosingNumbersBet):
     payout_ratio: int = 30
     winning_numbers: list[int] = [2]
     losing_numbers: list[int] = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
-
-    def __init__(self, bet_amount: float):
-        super().__init__(bet_amount, None)
-        self.name: str = "Two"
 
 
 class Three(WinningLosingNumbersBet):
@@ -441,19 +394,11 @@ class Three(WinningLosingNumbersBet):
     winning_numbers: list[int] = [3]
     losing_numbers: list[int] = [2, 4, 5, 6, 7, 8, 9, 10, 11, 12]
 
-    def __init__(self, bet_amount: float):
-        super().__init__(bet_amount, None)
-        self.name: str = "Three"
-
 
 class Yo(WinningLosingNumbersBet):
     payout_ratio: int = 15
     winning_numbers: list[int] = [11]
     losing_numbers: list[int] = [2, 3, 4, 5, 6, 7, 8, 9, 10, 12]
-
-    def __init__(self, bet_amount: float):
-        super().__init__(bet_amount, None)
-        self.name: str = "Yo"
 
 
 class Boxcars(WinningLosingNumbersBet):
@@ -461,28 +406,16 @@ class Boxcars(WinningLosingNumbersBet):
     winning_numbers: list[int] = [12]
     losing_numbers: list[int] = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
 
-    def __init__(self, bet_amount: float):
-        super().__init__(bet_amount, None)
-        self.name: str = "Boxcars"
-
 
 class AnyCraps(WinningLosingNumbersBet):
     payout_ratio: int = 7
     winning_numbers: list[int] = [2, 3, 12]
     losing_numbers: list[int] = [4, 5, 6, 7, 8, 9, 10, 11]
 
-    def __init__(self, bet_amount: float):
-        super().__init__(bet_amount, None)
-        self.name: str = "AnyCraps"
-
 
 class CAndE(WinningLosingNumbersBet):
     winning_numbers: list[int] = [2, 3, 11, 12]
     losing_numbers: list[int] = [4, 5, 6, 7, 8, 9, 10]
-
-    def __init__(self, bet_amount: float):
-        super().__init__(bet_amount, None)
-        self.name: str = "CAndE"
 
     def _update_bet(self) -> tuple[str | None, float, bool]:
         status: str | None = None
@@ -541,7 +474,6 @@ class Hard4(Hardway):
 
     def __init__(self, bet_amount: float):
         super().__init__(bet_amount)
-        self.name: str = "Hard4"
         self.winning_result: list[int | None] = [2, 2]
         self.number: int = 4
 
@@ -551,7 +483,6 @@ class Hard6(Hardway):
 
     def __init__(self, bet_amount: float):
         super().__init__(bet_amount)
-        self.name: str = "Hard6"
         self.winning_result: list[int | None] = [3, 3]
         self.number: int = 6
 
@@ -561,7 +492,6 @@ class Hard8(Hardway):
 
     def __init__(self, bet_amount: float):
         super().__init__(bet_amount)
-        self.name: str = "Hard8"
         self.winning_result: list[int | None] = [4, 4]
         self.number: int = 8
 
@@ -571,7 +501,6 @@ class Hard10(Hardway):
 
     def __init__(self, bet_amount: float):
         super().__init__(bet_amount)
-        self.name: str = "Hard10"
         self.winning_result: list[int | None] = [5, 5]
         self.number: int = 10
 
@@ -579,7 +508,6 @@ class Hard10(Hardway):
 class Fire(Bet):
     def __init__(self, bet_amount: float):
         super().__init__(bet_amount, None)
-        self.name: str = "Fire"
         self.bet_amount: float = bet_amount
         self.points_made: list[int] = []
         self.current_point: int | None = None
