@@ -443,20 +443,18 @@ class CAndE(WinningLosingNumbersBet):
             return 7
 
 
-class Hardway(Bet):
-    """
-    Attributes
-    ----------
-    number : int
-        The relevant number that the bet wins and loses on (for hardways)
-    winning_result : list(int)
-        The combination of dice the bet wins on
-    """
-
+class HardWay(Bet, ABC):
     def __init__(self, bet_amount: float):
         super().__init__(bet_amount, None)
-        self.number: int | None = None
-        self.winning_result: list[int | None] = [None, None]
+
+    @property
+    @abstractmethod
+    def number(self):
+        pass
+
+    @property
+    def winning_result(self):
+        return [self.number / 2, self.number / 2]
 
     def _update_bet(self) -> tuple[str | None, float, bool]:
         status: str | None = None
@@ -474,40 +472,24 @@ class Hardway(Bet):
         return status, win_amount, remove
 
 
-class Hard4(Hardway):
+class Hard4(HardWay):
     payout_ratio: int = 7
-
-    def __init__(self, bet_amount: float):
-        super().__init__(bet_amount)
-        self.winning_result: list[int | None] = [2, 2]
-        self.number: int = 4
+    number: int = 4
 
 
-class Hard6(Hardway):
+class Hard6(HardWay):
     payout_ratio: int = 9
-
-    def __init__(self, bet_amount: float):
-        super().__init__(bet_amount)
-        self.winning_result: list[int | None] = [3, 3]
-        self.number: int = 6
+    number: int = 6
 
 
-class Hard8(Hardway):
+class Hard8(HardWay):
     payout_ratio: int = 9
-
-    def __init__(self, bet_amount: float):
-        super().__init__(bet_amount)
-        self.winning_result: list[int | None] = [4, 4]
-        self.number: int = 8
+    number: int = 8
 
 
-class Hard10(Hardway):
+class Hard10(HardWay):
     payout_ratio: int = 7
-
-    def __init__(self, bet_amount: float):
-        super().__init__(bet_amount)
-        self.winning_result: list[int | None] = [5, 5]
-        self.number: int = 10
+    number: int = 10
 
 
 class Fire(Bet):
