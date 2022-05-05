@@ -27,8 +27,6 @@ class Bet(ABC):
         Numbers to roll for this bet to win
     losing_numbers : list
         Numbers to roll that cause this bet to lose
-    payout_ratio : float
-        Ratio that bet pays out on a win
     removable : bool
         Whether the bet can be removed or not
     """
@@ -263,15 +261,6 @@ Field bet
 
 
 class Field(Bet):
-    """
-    Parameters
-    ----------
-    double : list
-        Set of numbers that pay double on the field bet (default = [2,12])
-    triple : list
-        Set of numbers that pay triple on the field bet (default = [])
-    """
-
     def __init__(self, bet_amount: float):
         super().__init__(bet_amount, None)
         self.name: str = "Field"
