@@ -39,32 +39,6 @@ class Bet(ABC):
     def payout_ratio(self):
         return 1.0
 
-    def _update_bet(self) -> tuple[str | None, float, bool]:
-        """
-        Returns whether the bets status is win, lose or None and if win the amount won.
-
-        Parameters
-        ----------
-
-        Returns
-        -------
-        tuple[str | None, float]
-            The status of the bet and the amount of the winnings.
-        """
-        status: str | None = None
-        win_amount: float = 0.0
-        remove = False
-
-        if self.table.dice.total in self.winning_numbers:
-            status = "win"
-            remove = True
-            win_amount = self.payout_ratio * self.bet_amount
-        elif self.table.dice.total in self.losing_numbers:
-            status = "lose"
-            remove = True
-
-        return status, win_amount, remove
-
     def allowed(self, table: 'Table') -> bool:
         """
         Checks whether the bet is allowed to be placed on the given table.
@@ -92,6 +66,33 @@ class WinningLosingNumbersBet(Bet):
     @abstractmethod
     def losing_numbers(self):
         pass
+
+    def _update_bet(self) -> tuple[str | None, float, bool]:
+        """
+        Returns whether the bets status is win, lose or None and if win the amount won.
+
+        Parameters
+        ----------
+
+        Returns
+        -------
+        tuple[str | None, float]
+            The status of the bet and the amount of the winnings.
+        """
+        status: str | None = None
+        win_amount: float = 0.0
+        remove = False
+
+        if self.table.dice.total in self.winning_numbers:
+            status = "win"
+            remove = True
+            win_amount = self.payout_ratio * self.bet_amount
+        elif self.table.dice.total in self.losing_numbers:
+            status = "lose"
+            remove = True
+
+        return status, win_amount, remove
+
 
 """
 Passline and Come bets
