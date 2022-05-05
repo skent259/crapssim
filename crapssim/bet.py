@@ -447,15 +447,18 @@ class CAndE(Bet):
 
         if self.table.dice.total in self.winning_numbers:
             status = "win"
-            if self.table.dice.total in [2, 3, 12]:
-                payout_ratio = 3
-            elif self.table.dice.total in [11]:
-                payout_ratio = 7
-            win_amount = payout_ratio * self.bet_amount
+            win_amount = self.payout_ratio * self.bet_amount
         elif self.table.dice.total in self.losing_numbers:
             status = "lose"
 
         return status, win_amount, remove
+
+    @property
+    def payout_ratio(self):
+        if self.table.dice.total in [2, 3, 12]:
+            return 3
+        elif self.table.dice.total in [11]:
+            return 7
 
 
 class Hardway(Bet):
