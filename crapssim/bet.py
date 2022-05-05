@@ -1,5 +1,5 @@
 import typing
-from abc import ABC
+from abc import ABC, abstractmethod
 
 if typing.TYPE_CHECKING:
     from crapssim.table import Table
@@ -82,20 +82,43 @@ class Bet(ABC):
         return True
 
 
+class WinningLosingNumbersBet(Bet):
+    @property
+    @abstractmethod
+    def winning_numbers(self):
+        pass
+
+    @property
+    @abstractmethod
+    def losing_numbers(self):
+        pass
+
 """
 Passline and Come bets
 """
 
 
-class PassLine(Bet):
+class PassLine(WinningLosingNumbersBet):
     payout_ratio: float = 1.0
 
     def __init__(self, bet_amount: float):
         super().__init__(bet_amount, None)
         self.name: str = "PassLine"
-        self.winning_numbers: list[int] = [7, 11]
-        self.losing_numbers: list[int] = [2, 3, 12]
-        self.prepoint: bool = True
+        self.point: int | None = None
+
+    @property
+    def winning_numbers(self):
+        if self.point is None:
+            return [7, 11]
+        else:
+            return [self.point]
+
+    @property
+    def losing_numbers(self):
+        if self.point is None:
+            return [2, 3, 12]
+        else:
+            return [7]
 
     def _update_bet(self) -> tuple[str | None, float, bool]:
         status: str | None = None
@@ -109,12 +132,9 @@ class PassLine(Bet):
         elif self.table.dice.total in self.losing_numbers:
             status = "lose"
             remove = True
-        elif self.prepoint:
-            self.winning_numbers = [self.table.dice.total]
-            self.losing_numbers = [7]
-            self.prepoint = False
+        elif self.point is None:
+            self.point = self.table.dice.total
             self.removable = False
-
         return status, win_amount, remove
 
     def allowed(self, table: 'Table') -> bool:
@@ -130,8 +150,8 @@ class Come(PassLine):
 
     def _update_bet(self) -> tuple[str | None, float, bool]:
         status, win_amount, remove = super()._update_bet()
-        if not self.prepoint and self.subname == "":
-            self.subname = "".join(str(e) for e in self.winning_numbers)
+        if self.point is not None and self.subname == "":
+            self.subname = str(self.point)
         return status, win_amount, remove
 
     def allowed(self, table: 'Table') -> bool:
