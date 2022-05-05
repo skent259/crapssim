@@ -280,7 +280,7 @@ Field bet
 """
 
 
-class Field(Bet):
+class Field(WinningLosingNumbersBet):
     def __init__(self, bet_amount: float):
         super().__init__(bet_amount, None)
         self.name: str = "Field"
