@@ -280,21 +280,22 @@ class Field(Bet):
         self.winning_numbers: list[int] = [2, 3, 4, 9, 10, 11, 12]
         self.losing_numbers: list[int] = [5, 6, 7, 8]
 
+    @property
+    def payout_ratio(self):
+        if self.table.dice.total in self.double_winning_numbers:
+            return 2
+        if self.table.dice.total in self.triple_winning_numbers:
+            return 3
+        return 1
+
     def _update_bet(self) -> tuple[str | None, float, bool]:
-        status: str | None = None
-        win_amount: float = 0
+        win_amount: float = 0.0
         remove: bool = True
 
-        if self.table.dice.total in self.triple_winning_numbers:
+        if self.table.dice.total in self.winning_numbers:
             status = "win"
-            win_amount = 3 * self.bet_amount
-        elif self.table.dice.total in self.double_winning_numbers:
-            status = "win"
-            win_amount = 2 * self.bet_amount
-        elif self.table.dice.total in self.winning_numbers:
-            status = "win"
-            win_amount = 1 * self.bet_amount
-        elif self.table.dice.total in self.losing_numbers:
+            win_amount = self.payout_ratio * self.bet_amount
+        else:
             status = "lose"
 
         return status, win_amount, remove
@@ -561,11 +562,11 @@ class Fire(Bet):
             if self.current_point not in self.points_made:
                 self.points_made = list(set(self.points_made + [self.table.dice.total]))
                 if len(self.points_made) == 4:
-                    status, win_amount, remove = 'win', 24 * self.bet_amount, False
+                    status, win_amount, remove = 'win', self.payout_ratio, False
                 elif len(self.points_made) == 5:
-                    status, win_amount, remove = 'win', 249 * self.bet_amount, False
+                    status, win_amount, remove = 'win', self.payout_ratio, False
                 elif len(self.points_made) == 6:
-                    status, win_amount, remove = 'win', 999 * self.bet_amount, True
+                    status, win_amount, remove = 'win', self.payout_ratio, True
             self.current_point = None
         elif self.current_point is not None and self.table.dice.total == 7:
             status, win_amount, remove = 'lose', 0.0, True
@@ -573,3 +574,12 @@ class Fire(Bet):
 
     def allowed(self, table: 'Table') -> bool:
         return table.new_shooter
+
+    @property
+    def payout_ratio(self):
+        if len(self.points_made) == 4:
+            return 24
+        elif len(self.points_made) == 5:
+            return 249
+        elif len(self.points_made) == 6:
+            return 999
