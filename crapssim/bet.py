@@ -316,16 +316,26 @@ Don't pass and Don't come bets
 """
 
 
-class DontPass(Bet):
+class DontPass(WinningLosingNumbersBet):
     payout_ratio: float = 1.0
 
     def __init__(self, bet_amount: float):
         super().__init__(bet_amount, None)
         self.name: str = "DontPass"
-        self.winning_numbers: list[int] = [2, 3]
-        self.losing_numbers: list[int] = [7, 11]
         self.push_numbers: list[int] = [12]
-        self.prepoint: bool = True
+        self.point: int | None = None
+
+    @property
+    def winning_numbers(self):
+        if self.point is None:
+            return [2, 3]
+        return [7]
+
+    @property
+    def losing_numbers(self):
+        if self.point is None:
+            return [7, 11]
+        return [self.point]
 
     def _update_bet(self) -> tuple[str | None, float, bool]:
         status: str | None = None
@@ -339,13 +349,11 @@ class DontPass(Bet):
         elif self.table.dice.total in self.losing_numbers:
             status = "lose"
             remove = True
-        elif self.table.dice.total in self.push_numbers:
+        elif self.point is None and self.table.dice.total == 12:
             remove = True
-        elif self.prepoint:
-            self.winning_numbers = [7]
-            self.losing_numbers = [self.table.dice.total]
+        elif self.point is None:
             self.push_numbers = []
-            self.prepoint = False
+            self.point = self.table.dice.total
 
         return status, win_amount, remove
 
@@ -362,7 +370,7 @@ class DontCome(DontPass):
 
     def _update_bet(self) -> tuple[str | None, float, bool]:
         status, win_amount, remove = super()._update_bet()
-        if not self.prepoint and self.subname == "":
+        if self.point is not None and self.subname == "":
             self.subname = "".join(str(e) for e in self.losing_numbers)
         return status, win_amount, remove
 
