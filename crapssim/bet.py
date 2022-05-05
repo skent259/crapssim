@@ -28,7 +28,7 @@ class Bet(ABC):
         Numbers to roll for this bet to win
     losing_numbers : list
         Numbers to roll that cause this bet to lose
-    payoutratio : float
+    payout_ratio : float
         Ratio that bet pays out on a win
     removable : bool
         Whether the bet can be removed or not
@@ -40,7 +40,7 @@ class Bet(ABC):
         self.subname: str = str()
         self.winning_numbers: list[int] = []
         self.losing_numbers: list[int] = []
-        self.payoutratio: float = float(1)
+        self.payout_ratio: float = float(1)
         self.removable: bool = True
 
     def _update_bet(self, table_object: "Table", dice_object: Dice) -> tuple[str | None, float, bool]:
@@ -66,7 +66,7 @@ class Bet(ABC):
         if dice_object.total in self.winning_numbers:
             status = "win"
             remove = True
-            win_amount = self.payoutratio * self.bet_amount
+            win_amount = self.payout_ratio * self.bet_amount
         elif dice_object.total in self.losing_numbers:
             status = "lose"
             remove = True
@@ -101,7 +101,7 @@ class PassLine(Bet):
         self.name: str = "PassLine"
         self.winning_numbers: list[int] = [7, 11]
         self.losing_numbers: list[int] = [2, 3, 12]
-        self.payoutratio: float = 1.0
+        self.payout_ratio: float = 1.0
         self.prepoint: bool = True
 
     def _update_bet(self, table_object: "Table", dice_object: Dice) -> tuple[str | None, float, bool]:
@@ -112,7 +112,7 @@ class PassLine(Bet):
         if dice_object.total in self.winning_numbers:
             status = "win"
             remove = True
-            win_amount = self.payoutratio * self.bet_amount
+            win_amount = self.payout_ratio * self.bet_amount
         elif dice_object.total in self.losing_numbers:
             status = "lose"
             remove = True
@@ -166,11 +166,11 @@ class Odds(Bet):
         self.losing_numbers: list[int] = bet_object.losing_numbers
 
         if self.winning_numbers == [4] or self.winning_numbers == [10]:
-            self.payoutratio = 2 / 1
+            self.payout_ratio = 2 / 1
         elif self.winning_numbers == [5] or self.winning_numbers == [9]:
-            self.payoutratio = 3 / 2
+            self.payout_ratio = 3 / 2
         elif self.winning_numbers == [6] or self.winning_numbers == [8]:
-            self.payoutratio = 6 / 5
+            self.payout_ratio = 6 / 5
 
     def allowed(self, table: 'Table') -> bool:
         if isinstance(self.bet_object, PassLine):
@@ -199,7 +199,7 @@ class Place4(Place):
         self.name: str = "Place4"
         self.winning_numbers: list[int] = [4]
         self.losing_numbers: list[int] = [7]
-        self.payoutratio: float = 9 / 5
+        self.payout_ratio: float = 9 / 5
 
 
 class Place5(Place):
@@ -208,7 +208,7 @@ class Place5(Place):
         self.name: str = "Place5"
         self.winning_numbers: list[int] = [5]
         self.losing_numbers: list[int] = [7]
-        self.payoutratio: float = 7 / 5
+        self.payout_ratio: float = 7 / 5
 
 
 class Place6(Place):
@@ -217,7 +217,7 @@ class Place6(Place):
         self.name: str = "Place6"
         self.winning_numbers: list[int] = [6]
         self.losing_numbers: list[int] = [7]
-        self.payoutratio: float = 7 / 6
+        self.payout_ratio: float = 7 / 6
 
 
 class Place8(Place):
@@ -226,7 +226,7 @@ class Place8(Place):
         self.name: str = "Place8"
         self.winning_numbers: list[int] = [8]
         self.losing_numbers: list[int] = [7]
-        self.payoutratio: float = 7 / 6
+        self.payout_ratio: float = 7 / 6
 
 
 class Place9(Place):
@@ -235,7 +235,7 @@ class Place9(Place):
         self.name: str = "Place9"
         self.winning_numbers: list[int] = [9]
         self.losing_numbers: list[int] = [7]
-        self.payoutratio: float = 7 / 5
+        self.payout_ratio: float = 7 / 5
 
 
 class Place10(Place):
@@ -244,7 +244,7 @@ class Place10(Place):
         self.name: str = "Place10"
         self.winning_numbers: list[int] = [10]
         self.losing_numbers: list[int] = [7]
-        self.payoutratio: float = 9 / 5
+        self.payout_ratio: float = 9 / 5
 
 
 """
@@ -302,7 +302,7 @@ class DontPass(Bet):
         self.winning_numbers: list[int] = [2, 3]
         self.losing_numbers: list[int] = [7, 11]
         self.push_numbers: list[int] = [12]
-        self.payoutratio: float = 1.0
+        self.payout_ratio: float = 1.0
         self.prepoint: bool = True
 
     def _update_bet(self, table_object: "Table", dice_object: Dice) -> tuple[str | None, float, bool]:
@@ -313,7 +313,7 @@ class DontPass(Bet):
         if dice_object.total in self.winning_numbers:
             status = "win"
             remove = True
-            win_amount = self.payoutratio * self.bet_amount
+            win_amount = self.payout_ratio * self.bet_amount
         elif dice_object.total in self.losing_numbers:
             status = "lose"
             remove = True
@@ -364,11 +364,11 @@ class LayOdds(Bet):
         self.losing_numbers: list[int] = bet_object.losing_numbers
 
         if self.losing_numbers == [4] or self.losing_numbers == [10]:
-            self.payoutratio = 1 / 2
+            self.payout_ratio = 1 / 2
         elif self.losing_numbers == [5] or self.losing_numbers == [9]:
-            self.payoutratio = 2 / 3
+            self.payout_ratio = 2 / 3
         elif self.losing_numbers == [6] or self.losing_numbers == [8]:
-            self.payoutratio = 5 / 6
+            self.payout_ratio = 5 / 6
 
 
 """
@@ -382,7 +382,7 @@ class Any7(Bet):
         self.name: str = "Any7"
         self.winning_numbers: list[int] = [7]
         self.losing_numbers: list[int] = [2, 3, 4, 5, 6, 8, 9, 10, 11, 12]
-        self.payoutratio: int = 4
+        self.payout_ratio: int = 4
 
 
 class Two(Bet):
@@ -391,7 +391,7 @@ class Two(Bet):
         self.name: str = "Two"
         self.winning_numbers: list[int] = [2]
         self.losing_numbers: list[int] = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
-        self.payoutratio: int = 30
+        self.payout_ratio: int = 30
 
 
 class Three(Bet):
@@ -400,7 +400,7 @@ class Three(Bet):
         self.name: str = "Three"
         self.winning_numbers: list[int] = [3]
         self.losing_numbers: list[int] = [2, 4, 5, 6, 7, 8, 9, 10, 11, 12]
-        self.payoutratio: int = 15
+        self.payout_ratio: int = 15
 
 
 class Yo(Bet):
@@ -409,7 +409,7 @@ class Yo(Bet):
         self.name: str = "Yo"
         self.winning_numbers: list[int] = [11]
         self.losing_numbers: list[int] = [2, 3, 4, 5, 6, 7, 8, 9, 10, 12]
-        self.payoutratio: int = 15
+        self.payout_ratio: int = 15
 
 
 class Boxcars(Bet):
@@ -418,7 +418,7 @@ class Boxcars(Bet):
         self.name: str = "Boxcars"
         self.winning_numbers: list[int] = [12]
         self.losing_numbers: list[int] = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
-        self.payoutratio: int = 30
+        self.payout_ratio: int = 30
 
 
 class AnyCraps(Bet):
@@ -427,7 +427,7 @@ class AnyCraps(Bet):
         self.name: str = "AnyCraps"
         self.winning_numbers: list[int] = [2, 3, 12]
         self.losing_numbers: list[int] = [4, 5, 6, 7, 8, 9, 10, 11]
-        self.payoutratio: int = 7
+        self.payout_ratio: int = 7
 
 
 class CAndE(Bet):
@@ -445,10 +445,10 @@ class CAndE(Bet):
         if dice_object.total in self.winning_numbers:
             status = "win"
             if dice_object.total in [2, 3, 12]:
-                payoutratio = 3
+                payout_ratio = 3
             elif dice_object.total in [11]:
-                payoutratio = 7
-            win_amount = payoutratio * self.bet_amount
+                payout_ratio = 7
+            win_amount = payout_ratio * self.bet_amount
         elif dice_object.total in self.losing_numbers:
             status = "lose"
 
@@ -478,7 +478,7 @@ class Hardway(Bet):
         if dice_object.result == self.winning_result:
             status = "win"
             remove = True
-            win_amount = self.payoutratio * self.bet_amount
+            win_amount = self.payout_ratio * self.bet_amount
         elif dice_object.total in [self.number, 7]:
             status = "lose"
             remove = True
@@ -492,7 +492,7 @@ class Hard4(Hardway):
         self.name: str = "Hard4"
         self.winning_result: list[int | None] = [2, 2]
         self.number: int = 4
-        self.payoutratio: int = 7
+        self.payout_ratio: int = 7
 
 
 class Hard6(Hardway):
@@ -501,7 +501,7 @@ class Hard6(Hardway):
         self.name: str = "Hard6"
         self.winning_result: list[int | None] = [3, 3]
         self.number: int = 6
-        self.payoutratio: int = 9
+        self.payout_ratio: int = 9
 
 
 class Hard8(Hardway):
@@ -510,7 +510,7 @@ class Hard8(Hardway):
         self.name: str = "Hard8"
         self.winning_result: list[int | None] = [4, 4]
         self.number: int = 8
-        self.payoutratio: int = 9
+        self.payout_ratio: int = 9
 
 
 class Hard10(Hardway):
@@ -519,7 +519,7 @@ class Hard10(Hardway):
         self.name: str = "Hard10"
         self.winning_result: list[int | None] = [5, 5]
         self.number: int = 10
-        self.payoutratio: int = 7
+        self.payout_ratio: int = 7
 
 
 class Fire(Bet):
