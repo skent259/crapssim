@@ -708,6 +708,10 @@ def dontpass_2come_2dontcome(player: 'Player', table: 'Table', bankroll_min: int
             Player object that is using the strategy.
         table
             Table object that the strategy is being used on.
+        bankroll_min
+            Floor for bankroll on this shooter, which reflects a loss of 4 units from the start.
+        units_left
+            Number of units left to bet for this shooter; initially 4 but depends on current bankroll.
 
         Returns
         -------
@@ -717,11 +721,9 @@ def dontpass_2come_2dontcome(player: 'Player', table: 'Table', bankroll_min: int
     
     # only willing to lose `4 * player.unit` per shooter
     if table.new_shooter:
-        player.strat_info['bankroll_min'] = player.bankroll - 4 * player.unit
-    else:
-        player.strat_info['bankroll_min'] = bankroll_min
+        bankroll_min = player.bankroll - 4 * player.unit
 
-    units_left = (player.bankroll - player.strat_info['bankroll_min']) / player.unit
+    units_left = (player.bankroll - bankroll_min) / player.unit
     
     if (table.point == "Off" and not player.has_bet("DontPass") and units_left > 0):
         player.bet(DontPass(player.unit))
@@ -738,6 +740,7 @@ def dontpass_2come_2dontcome(player: 'Player', table: 'Table', bankroll_min: int
             player.bet(DontCome(player.unit))
             units_left -= 1.0
 
+    player.strat_info['bankroll_min'] = bankroll_min
     player.strat_info['units_left'] = units_left
 
 if __name__ == "__main__":
