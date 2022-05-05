@@ -415,7 +415,7 @@ Center-table Bets
 """
 
 
-class Any7(Bet):
+class Any7(WinningLosingNumbersBet):
     payout_ratio: int = 4
     winning_numbers: list[int] = [7]
     losing_numbers: list[int] = [2, 3, 4, 5, 6, 8, 9, 10, 11, 12]
@@ -425,7 +425,7 @@ class Any7(Bet):
         self.name: str = "Any7"
 
 
-class Two(Bet):
+class Two(WinningLosingNumbersBet):
     payout_ratio: int = 30
     winning_numbers: list[int] = [2]
     losing_numbers: list[int] = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
@@ -435,7 +435,7 @@ class Two(Bet):
         self.name: str = "Two"
 
 
-class Three(Bet):
+class Three(WinningLosingNumbersBet):
     payout_ratio: int = 15
     winning_numbers: list[int] = [3]
     losing_numbers: list[int] = [2, 4, 5, 6, 7, 8, 9, 10, 11, 12]
@@ -445,7 +445,7 @@ class Three(Bet):
         self.name: str = "Three"
 
 
-class Yo(Bet):
+class Yo(WinningLosingNumbersBet):
     payout_ratio: int = 15
     winning_numbers: list[int] = [11]
     losing_numbers: list[int] = [2, 3, 4, 5, 6, 7, 8, 9, 10, 12]
@@ -455,7 +455,7 @@ class Yo(Bet):
         self.name: str = "Yo"
 
 
-class Boxcars(Bet):
+class Boxcars(WinningLosingNumbersBet):
     payout_ratio: int = 30
     winning_numbers: list[int] = [12]
     losing_numbers: list[int] = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
@@ -465,7 +465,7 @@ class Boxcars(Bet):
         self.name: str = "Boxcars"
 
 
-class AnyCraps(Bet):
+class AnyCraps(WinningLosingNumbersBet):
     payout_ratio: int = 7
     winning_numbers: list[int] = [2, 3, 12]
     losing_numbers: list[int] = [4, 5, 6, 7, 8, 9, 10, 11]
@@ -475,7 +475,7 @@ class AnyCraps(Bet):
         self.name: str = "AnyCraps"
 
 
-class CAndE(Bet):
+class CAndE(WinningLosingNumbersBet):
     winning_numbers: list[int] = [2, 3, 11, 12]
     losing_numbers: list[int] = [4, 5, 6, 7, 8, 9, 10]
 
