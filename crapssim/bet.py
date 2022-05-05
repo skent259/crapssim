@@ -165,8 +165,8 @@ Passline/Come bet odds
 """
 
 
-class Odds(Bet):
-    def __init__(self, bet_amount: typing.SupportsFloat, bet_object: Bet):
+class Odds(WinningLosingNumbersBet):
+    def __init__(self, bet_amount: typing.SupportsFloat, bet_object: PassLine | Come):
         super().__init__(bet_amount, None)
         self.bet_object = bet_object
 
@@ -175,8 +175,14 @@ class Odds(Bet):
 
         self.name: str = "Odds"
         self.subname: str = "".join(str(e) for e in bet_object.winning_numbers)
-        self.winning_numbers: list[int] = bet_object.winning_numbers
-        self.losing_numbers: list[int] = bet_object.losing_numbers
+
+    @property
+    def winning_numbers(self):
+        return self.bet_object.winning_numbers
+
+    @property
+    def losing_numbers(self):
+        return self.bet_object.losing_numbers
 
     @property
     def payout_ratio(self):
