@@ -39,10 +39,13 @@ class Bet(ABC):
         self.subname: str = str()
         self.winning_numbers: list[int] = []
         self.losing_numbers: list[int] = []
-        self.payout_ratio: float = float(1)
         self.removable: bool = True
         self.player: Player | None = player
         self.table: Table | None = table
+
+    @property
+    def payout_ratio(self):
+        return 1.0
 
     def _update_bet(self) -> tuple[str | None, float, bool]:
         """
@@ -93,12 +96,13 @@ Passline and Come bets
 
 
 class PassLine(Bet):
+    payout_ratio: float = 1.0
+
     def __init__(self, bet_amount: float):
         super().__init__(bet_amount, None)
         self.name: str = "PassLine"
         self.winning_numbers: list[int] = [7, 11]
         self.losing_numbers: list[int] = [2, 3, 12]
-        self.payout_ratio: float = 1.0
         self.prepoint: bool = True
 
     def _update_bet(self) -> tuple[str | None, float, bool]:
@@ -162,12 +166,14 @@ class Odds(Bet):
         self.winning_numbers: list[int] = bet_object.winning_numbers
         self.losing_numbers: list[int] = bet_object.losing_numbers
 
+    @property
+    def payout_ratio(self):
         if self.winning_numbers == [4] or self.winning_numbers == [10]:
-            self.payout_ratio = 2 / 1
+            return 2 / 1
         elif self.winning_numbers == [5] or self.winning_numbers == [9]:
-            self.payout_ratio = 3 / 2
+            return 3 / 2
         elif self.winning_numbers == [6] or self.winning_numbers == [8]:
-            self.payout_ratio = 6 / 5
+            return 6 / 5
 
     def allowed(self, table: 'Table') -> bool:
         if isinstance(self.bet_object, PassLine):
@@ -175,6 +181,7 @@ class Odds(Bet):
                 return False
             else:
                 return True
+
 
 """
 Place Bets on 4,5,6,8,9,10
@@ -191,57 +198,63 @@ class Place(Bet):
 
 
 class Place4(Place):
+    payout_ratio: float = 9 / 5
+
     def __init__(self, bet_amount: float):
         super().__init__(bet_amount, None)
         self.name: str = "Place4"
         self.winning_numbers: list[int] = [4]
         self.losing_numbers: list[int] = [7]
-        self.payout_ratio: float = 9 / 5
 
 
 class Place5(Place):
+    payout_ratio: float = 7 / 5
+
     def __init__(self, bet_amount: float):
         super().__init__(bet_amount, None)
         self.name: str = "Place5"
         self.winning_numbers: list[int] = [5]
         self.losing_numbers: list[int] = [7]
-        self.payout_ratio: float = 7 / 5
 
 
 class Place6(Place):
+    payout_ratio: float = 7 / 6
+
     def __init__(self, bet_amount: float):
         super().__init__(bet_amount, None)
         self.name: str = "Place6"
         self.winning_numbers: list[int] = [6]
         self.losing_numbers: list[int] = [7]
-        self.payout_ratio: float = 7 / 6
 
 
 class Place8(Place):
+    payout_ratio: float = 7 / 6
+
     def __init__(self, bet_amount: float):
         super().__init__(bet_amount, None)
         self.name: str = "Place8"
         self.winning_numbers: list[int] = [8]
         self.losing_numbers: list[int] = [7]
-        self.payout_ratio: float = 7 / 6
 
 
 class Place9(Place):
+    payout_ratio: float = 7 / 5
+
     def __init__(self, bet_amount: float):
         super().__init__(bet_amount, None)
         self.name: str = "Place9"
         self.winning_numbers: list[int] = [9]
         self.losing_numbers: list[int] = [7]
-        self.payout_ratio: float = 7 / 5
 
 
 class Place10(Place):
+    payout_ratio: float = 9 / 5
+
     def __init__(self, bet_amount: float):
         super().__init__(bet_amount, None)
         self.name: str = "Place10"
         self.winning_numbers: list[int] = [10]
         self.losing_numbers: list[int] = [7]
-        self.payout_ratio: float = 9 / 5
 
 
 """
@@ -293,13 +306,14 @@ Don't pass and Don't come bets
 
 
 class DontPass(Bet):
+    payout_ratio: float = 1.0
+
     def __init__(self, bet_amount: float):
         super().__init__(bet_amount, None)
         self.name: str = "DontPass"
         self.winning_numbers: list[int] = [2, 3]
         self.losing_numbers: list[int] = [7, 11]
         self.push_numbers: list[int] = [12]
-        self.payout_ratio: float = 1.0
         self.prepoint: bool = True
 
     def _update_bet(self) -> tuple[str | None, float, bool]:
@@ -360,12 +374,14 @@ class LayOdds(Bet):
         self.winning_numbers: list[int] = bet_object.winning_numbers
         self.losing_numbers: list[int] = bet_object.losing_numbers
 
+    @property
+    def payout_ratio(self):
         if self.losing_numbers == [4] or self.losing_numbers == [10]:
-            self.payout_ratio = 1 / 2
+            return 1 / 2
         elif self.losing_numbers == [5] or self.losing_numbers == [9]:
-            self.payout_ratio = 2 / 3
+            return 2 / 3
         elif self.losing_numbers == [6] or self.losing_numbers == [8]:
-            self.payout_ratio = 5 / 6
+            return 5 / 6
 
 
 """
@@ -374,57 +390,63 @@ Center-table Bets
 
 
 class Any7(Bet):
+    payout_ratio: int = 4
+
     def __init__(self, bet_amount: float):
         super().__init__(bet_amount, None)
         self.name: str = "Any7"
         self.winning_numbers: list[int] = [7]
         self.losing_numbers: list[int] = [2, 3, 4, 5, 6, 8, 9, 10, 11, 12]
-        self.payout_ratio: int = 4
 
 
 class Two(Bet):
+    payout_ratio: int = 30
+
     def __init__(self, bet_amount: float):
         super().__init__(bet_amount, None)
         self.name: str = "Two"
         self.winning_numbers: list[int] = [2]
         self.losing_numbers: list[int] = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
-        self.payout_ratio: int = 30
 
 
 class Three(Bet):
+    payout_ratio: int = 15
+
     def __init__(self, bet_amount: float):
         super().__init__(bet_amount, None)
         self.name: str = "Three"
         self.winning_numbers: list[int] = [3]
         self.losing_numbers: list[int] = [2, 4, 5, 6, 7, 8, 9, 10, 11, 12]
-        self.payout_ratio: int = 15
 
 
 class Yo(Bet):
+    payout_ratio: int = 15
+
     def __init__(self, bet_amount: float):
         super().__init__(bet_amount, None)
         self.name: str = "Yo"
         self.winning_numbers: list[int] = [11]
         self.losing_numbers: list[int] = [2, 3, 4, 5, 6, 7, 8, 9, 10, 12]
-        self.payout_ratio: int = 15
 
 
 class Boxcars(Bet):
+    payout_ratio: int = 30
+
     def __init__(self, bet_amount: float):
         super().__init__(bet_amount, None)
         self.name: str = "Boxcars"
         self.winning_numbers: list[int] = [12]
         self.losing_numbers: list[int] = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
-        self.payout_ratio: int = 30
 
 
 class AnyCraps(Bet):
+    payout_ratio: int = 7
+
     def __init__(self, bet_amount: float):
         super().__init__(bet_amount, None)
         self.name: str = "AnyCraps"
         self.winning_numbers: list[int] = [2, 3, 12]
         self.losing_numbers: list[int] = [4, 5, 6, 7, 8, 9, 10, 11]
-        self.payout_ratio: int = 7
 
 
 class CAndE(Bet):
@@ -484,39 +506,43 @@ class Hardway(Bet):
 
 
 class Hard4(Hardway):
+    payout_ratio: int = 7
+
     def __init__(self, bet_amount: float):
         super().__init__(bet_amount)
         self.name: str = "Hard4"
         self.winning_result: list[int | None] = [2, 2]
         self.number: int = 4
-        self.payout_ratio: int = 7
 
 
 class Hard6(Hardway):
+    payout_ratio: int = 9
+
     def __init__(self, bet_amount: float):
         super().__init__(bet_amount)
         self.name: str = "Hard6"
         self.winning_result: list[int | None] = [3, 3]
         self.number: int = 6
-        self.payout_ratio: int = 9
 
 
 class Hard8(Hardway):
+    payout_ratio: int = 9
+
     def __init__(self, bet_amount: float):
         super().__init__(bet_amount)
         self.name: str = "Hard8"
         self.winning_result: list[int | None] = [4, 4]
         self.number: int = 8
-        self.payout_ratio: int = 9
 
 
 class Hard10(Hardway):
+    payout_ratio: int = 7
+
     def __init__(self, bet_amount: float):
         super().__init__(bet_amount)
         self.name: str = "Hard10"
         self.winning_result: list[int | None] = [5, 5]
         self.number: int = 10
-        self.payout_ratio: int = 7
 
 
 class Fire(Bet):
