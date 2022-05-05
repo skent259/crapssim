@@ -41,7 +41,7 @@ class Table(object):
         self.point: Point = Point()
         self.dice: Dice = Dice()
         self.bet_update_info: dict | None = None
-        self.payouts: dict[str, typing.Any] = {'field_ratios': {2: 2, 3: 1, 4: 1, 9: 1, 10: 1, 11: 1, 12: 2},
+        self.payouts: dict[str, typing.Any] = {'field_payouts': {2: 2, 3: 1, 4: 1, 9: 1, 10: 1, 11: 1, 12: 2},
                                                'fire_points': {4: 24, 5: 249, 6: 999}}
         self.pass_rolls: int = 0
         self.last_roll: int | None = None
