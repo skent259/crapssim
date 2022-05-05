@@ -4,7 +4,8 @@ import pytest
 
 from crapssim import Player, Table
 from crapssim.strategy import passline, passline_odds, passline_odds2, passline_odds345, pass2come, place, place68, \
-    dontpass, layodds, place68_2come, ironcross, hammerlock, risk12, knockout, dicedoctor, place68_dontcome2odds
+    dontpass, layodds, place68_2come, ironcross, hammerlock, risk12, knockout, dicedoctor, place68_dontcome2odds, \
+    dontpass_2come_2dontcome
 
 
 @pytest.mark.parametrize(['strategy', 'strategy_info', 'rolls', 'correct_bets'], [
@@ -95,7 +96,19 @@ from crapssim.strategy import passline, passline_odds, passline_odds2, passline_
     (place68_dontcome2odds, {}, [(4, 4), (2, 2)], {('Place6', '', 6),
                                                    ('Place8', '', 6),
                                                    ('DontCome', '4', 5),
-                                                   ('LayOdds', '4', 20)})
+                                                   ('LayOdds', '4', 20)}),
+    (dontpass_2come_2dontcome, {}, 
+        [(3, 4), (3, 4), (4, 4), (3, 3), (4, 4), (2, 2), (2, 2)], 
+        {('Come', '6', 5)}),
+    (dontpass_2come_2dontcome, {}, 
+        [(3, 4), (3, 4), (3, 4), (3, 4), (4, 4)], 
+        set()),
+    (dontpass_2come_2dontcome, {}, 
+        [(4, 4), (3, 3), (5, 5), (2, 2)], 
+        {('DontPass', '', 5), ('Come', '6', 5), ('Come', '10', 5), ('DontCome', '4', 5)}),
+    (dontpass_2come_2dontcome, {}, 
+        [(1, 1), (4, 4), (3, 3), (5, 5), (2, 2), (2, 3), (4, 5)], 
+        {('DontPass', '', 5), ('Come', '6', 5), ('Come', '10', 5), ('DontCome', '4', 5), ('DontCome', '5', 5)})
 ])
 def test_strategies_compare_bets(strategy, strategy_info, rolls: list[tuple[int, int]],
                                  correct_bets: {(str, str, float)}):

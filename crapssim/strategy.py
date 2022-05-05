@@ -697,6 +697,48 @@ def place68_dontcome2odds(player: 'Player', table: 'Table') -> None:
         if not player.has_bet("LayOdds") and not dc.prepoint:
             player.bet(LayOdds(mult * player.unit, dc))
 
+def dontpass_2come_2dontcome(player: 'Player', table: 'Table', bankroll_min: int | None = None, units_left: int = 0) -> None:
+    """ Darkside hedging strategy between don't and come.  Start with don't pass, then build 
+        2 come bets, and add up to 2 don't come provided you don't exceed 4 units of 
+        investment
+
+        Parameters
+        ----------
+        player
+            Player object that is using the strategy.
+        table
+            Table object that the strategy is being used on.
+
+        Returns
+        -------
+        None
+            Dictionary of strategy info.
+        """
+    
+    # only willing to lose `4 * player.unit` per shooter
+    if table.new_shooter:
+        player.strat_info['bankroll_min'] = player.bankroll - 4 * player.unit
+    else:
+        player.strat_info['bankroll_min'] = bankroll_min
+
+    units_left = (player.bankroll - player.strat_info['bankroll_min']) / player.unit
+    
+    if (table.point == "Off" and not player.has_bet("DontPass") and units_left > 0):
+        player.bet(DontPass(player.unit))
+        units_left -= 1.0
+    
+    if table.point == "On":
+        num_come = player.num_bet("Come")
+        num_dontcome = player.num_bet("DontCome")
+
+        if (num_come < 2 and units_left > 0):
+            player.bet(Come(player.unit))
+            units_left -= 1.0
+        elif (num_dontcome < 2 and num_come == 2 and units_left > 0):
+            player.bet(DontCome(player.unit))
+            units_left -= 1.0
+
+    player.strat_info['units_left'] = units_left
 
 if __name__ == "__main__":
     # Test a betting strategy
@@ -705,14 +747,21 @@ if __name__ == "__main__":
     from crapssim.dice import Dice
     from crapssim.table import Table
 
-    # table = CrapsTable()
-    # table._add_player(Player(500, place68_2come))
+    strategy = dontpass_2come_2dontcome
+    strategy_info = {}
+    rolls = [(1, 1), (4, 4), (3, 3), (5, 5), (2, 2), (2, 3), (4, 5)]
+    correct_bets = {}
 
-    d = Dice()
-    p = Player(500, place68_2come)
-    t = Table()
-    p.bet(PassLine(5))
-    p.bet(Place6(6))
-    print(p.bets_on_table)
-    print(p.bankroll)
-    print(p.total_bet_amount)
+    def strat(player, table, **strat_info):
+        if strat_info != {}:
+            return strategy(player, table, **strat_info)
+        return strategy(player, table, **strategy_info)
+        
+    table = Table()
+    player = Player(100, bet_strategy=strat)
+    table.add_player(player)
+
+    table.fixed_run(rolls, verbose=True)
+    table.add_player_bets(verbose=True)
+
+    table.players[0].bets_on_table
