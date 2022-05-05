@@ -263,23 +263,11 @@ class Field(WinningLosingNumbersBet):
 
     @property
     def winning_numbers(self):
-        return [x for x in self.table.payouts['field_payouts']]
+        return list(self.table.payouts['field_payouts'])
 
     @property
     def losing_numbers(self):
-        return list(self.table.payouts['field_payouts'])
-
-    def _update_bet(self) -> tuple[str | None, float, bool]:
-        win_amount: float = 0.0
-        remove: bool = True
-
-        if self.table.dice.total in self.winning_numbers:
-            status = "win"
-            win_amount = self.payout_ratio * self.bet_amount
-        else:
-            status = "lose"
-
-        return status, win_amount, remove
+        return list(x for x in [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12] if x not in self.table.payouts['field_payouts'])
 
 
 """
