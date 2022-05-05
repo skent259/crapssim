@@ -288,20 +288,10 @@ class DontPass(WinningLosingNumbersBet):
         return [self.point]
 
     def _update_bet(self) -> tuple[str | None, float, bool]:
-        status: str | None = None
-        win_amount: float = 0.0
-        remove: bool = False
-
-        if self.table.dice.total in self.winning_numbers:
-            status = "win"
+        status, win_amount, remove = super()._update_bet()
+        if self.point is None and self.table.dice.total == 12:
             remove = True
-            win_amount = self.payout_ratio * self.bet_amount
-        elif self.table.dice.total in self.losing_numbers:
-            status = "lose"
-            remove = True
-        elif self.point is None and self.table.dice.total == 12:
-            remove = True
-        elif self.point is None:
+        if self.point is None and remove is False:
             self.push_numbers = []
             self.point = self.table.dice.total
 
@@ -401,19 +391,6 @@ class AnyCraps(WinningLosingNumbersBet):
 class CAndE(WinningLosingNumbersBet):
     winning_numbers: list[int] = [2, 3, 11, 12]
     losing_numbers: list[int] = [4, 5, 6, 7, 8, 9, 10]
-
-    def _update_bet(self) -> tuple[str | None, float, bool]:
-        status: str | None = None
-        win_amount: float = 0
-        remove: bool = True
-
-        if self.table.dice.total in self.winning_numbers:
-            status = "win"
-            win_amount = self.payout_ratio * self.bet_amount
-        elif self.table.dice.total in self.losing_numbers:
-            status = "lose"
-
-        return status, win_amount, remove
 
     @property
     def payout_ratio(self):
