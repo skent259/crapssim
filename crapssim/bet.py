@@ -272,21 +272,15 @@ class Field(Bet):
         Set of numbers that pay triple on the field bet (default = [])
     """
 
-    def __init__(self, bet_amount: float, double: list[int] = [2, 12], triple: list[int] = []):
+    def __init__(self, bet_amount: float):
         super().__init__(bet_amount, None)
         self.name: str = "Field"
-        self.double_winning_numbers: list[int] = double
-        self.triple_winning_numbers: list[int] = triple
         self.winning_numbers: list[int] = [2, 3, 4, 9, 10, 11, 12]
         self.losing_numbers: list[int] = [5, 6, 7, 8]
 
     @property
     def payout_ratio(self):
-        if self.table.dice.total in self.double_winning_numbers:
-            return 2
-        if self.table.dice.total in self.triple_winning_numbers:
-            return 3
-        return 1
+        return self.table.payouts['field_ratios'][self.table.dice.total]
 
     def _update_bet(self) -> tuple[str | None, float, bool]:
         win_amount: float = 0.0
@@ -577,9 +571,5 @@ class Fire(Bet):
 
     @property
     def payout_ratio(self):
-        if len(self.points_made) == 4:
-            return 24
-        elif len(self.points_made) == 5:
-            return 249
-        elif len(self.points_made) == 6:
-            return 999
+        if len(self.points_made) in self.table.payouts['fire_points']:
+            return self.table.payouts['fire_points'][len(self.points_made)]
