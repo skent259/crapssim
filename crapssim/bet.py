@@ -33,7 +33,7 @@ class Bet(ABC):
         Whether the bet can be removed or not
     """
 
-    def __init__(self, bet_amount: typing.SupportsFloat, player, table=None):
+    def __init__(self, bet_amount: typing.SupportsFloat, player=None, table=None):
         self.bet_amount: float = float(bet_amount)
         self.name: str = str()
         self.subname: str = str()
