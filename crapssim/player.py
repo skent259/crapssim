@@ -71,6 +71,8 @@ class Player:
                 existing_bet: Bet = self.get_bet(bet_object.name, bet_object.subname)
                 existing_bet.bet_amount += bet_object.bet_amount
             else:
+                bet_object.player = self
+                bet_object.table = self.table
                 self.bets_on_table.append(bet_object)
 
             self.total_bet_amount += bet_object.bet_amount
@@ -115,7 +117,7 @@ class Player:
             dict[str, dict[str, str | None | float]]:
         info = {}
         for b in self.bets_on_table[:]:
-            status, win_amount, remove = b._update_bet(self.table, self.table.dice)
+            status, win_amount, remove = b._update_bet()
 
             if status == "win":
                 self.bankroll += win_amount + b.bet_amount

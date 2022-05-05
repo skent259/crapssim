@@ -31,15 +31,17 @@ from crapssim.table import Table, Point
     (crapssim.bet.Hard10(1), -0.0278),
 ])
 def test_ev_oneroll(bet, ev):
-    d = Dice()
     t = Table()
+    p = Player(100)
+    p.sit_at_table(t)
     t.point.status = "On"  # for place bets to pay properly
-
     outcomes = []
+    bet.player = p
+    bet.table = t
     for d1 in range(1, 7):
         for d2 in range(1, 7):
-            d.fixed_roll([d1, d2])
-            status, win_amt, remove = bet._update_bet(t, d)
+            t.dice.fixed_roll([d1, d2])
+            status, win_amt, remove = bet._update_bet()
 
             outcomes.append(win_amt if status == "win" else -1 if status == "lose" else 0)
 
@@ -59,13 +61,15 @@ def test_ev_oneroll(bet, ev):
 ])
 def test_fire(rolls, correct_status, correct_win_amt, correct_remove):
     table = Table()
-    dice = Dice()
+    player = Player(100)
     bet = Fire(1)
+    bet.player = player
+    bet.table = table
 
     status, win_amt, remove = None, None, None
     for roll in rolls:
-        dice.fixed_roll(roll)
-        status, win_amt, remove = bet._update_bet(table, dice)
+        table.dice.fixed_roll(roll)
+        status, win_amt, remove = bet._update_bet()
 
     assert (status, win_amt, remove) == (correct_status, correct_win_amt, correct_remove)
 
