@@ -112,15 +112,13 @@ class PassLine(WinningLosingNumbersBet):
     def winning_numbers(self):
         if self.point is None:
             return [7, 11]
-        else:
-            return [self.point]
+        return [self.point]
 
     @property
     def losing_numbers(self):
         if self.point is None:
             return [2, 3, 12]
-        else:
-            return [7]
+        return [7]
 
     def _update_bet(self) -> tuple[str | None, float, bool]:
         status: str | None = None
@@ -142,6 +140,7 @@ class PassLine(WinningLosingNumbersBet):
     def removable(self):
         if self.point is not None:
             return False
+        return True
 
     def allowed(self, table: 'Table') -> bool:
         if table.point.status == 'Off':
@@ -187,19 +186,20 @@ class Odds(WinningLosingNumbersBet):
 
     @property
     def payout_ratio(self):
-        if self.winning_numbers == [4] or self.winning_numbers == [10]:
+        if self.winning_numbers in ([4], [10]):
             return 2 / 1
-        elif self.winning_numbers == [5] or self.winning_numbers == [9]:
+        elif self.winning_numbers in ([5], [9]):
             return 3 / 2
-        elif self.winning_numbers == [6] or self.winning_numbers == [8]:
+        elif self.winning_numbers in ([6], [8]):
             return 6 / 5
+        else:
+            raise NotImplementedError
 
     def allowed(self, table: 'Table') -> bool:
         if isinstance(self.bet_object, PassLine):
             if table.point.status == 'Off':
                 return False
-            else:
-                return True
+            return True
 
 
 """
@@ -212,8 +212,7 @@ class Place(WinningLosingNumbersBet, ABC):
         # place bets are inactive when point is "Off"
         if self.table.point == "On":
             return super()._update_bet()
-        else:
-            return None, 0, False
+        return None, 0, False
 
 
 class Place4(Place):
@@ -268,8 +267,7 @@ class Field(WinningLosingNumbersBet):
 
     @property
     def losing_numbers(self):
-        return [x for x in [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
-                if x not in self.table.payouts['field_payouts']]
+        return list(self.table.payouts['field_payouts'])
 
     def _update_bet(self) -> tuple[str | None, float, bool]:
         win_amount: float = 0.0
@@ -369,12 +367,14 @@ class LayOdds(WinningLosingNumbersBet):
 
     @property
     def payout_ratio(self):
-        if self.losing_numbers == [4] or self.losing_numbers == [10]:
+        if self.losing_numbers in ([4], [10]):
             return 1 / 2
-        elif self.losing_numbers == [5] or self.losing_numbers == [9]:
+        elif self.losing_numbers in ([5], [9]):
             return 2 / 3
-        elif self.losing_numbers == [6] or self.losing_numbers == [8]:
+        elif self.losing_numbers in ([6], [8]):
             return 5 / 6
+        else:
+            raise NotImplementedError
 
 
 """
@@ -441,6 +441,8 @@ class CAndE(WinningLosingNumbersBet):
             return 3
         elif self.table.dice.total in [11]:
             return 7
+        else:
+            raise NotImplementedError
 
 
 class HardWay(Bet, ABC):
@@ -524,3 +526,5 @@ class Fire(Bet):
     def payout_ratio(self):
         if len(self.points_made) in self.table.payouts['fire_points']:
             return self.table.payouts['fire_points'][len(self.points_made)]
+        else:
+            return 0.0
