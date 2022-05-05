@@ -23,10 +23,6 @@ class Bet(ABC):
         Name for the bet
     subname : string
         Subname, usually denotes number for a come/don't come bet
-    winning_numbers : list
-        Numbers to roll for this bet to win
-    losing_numbers : list
-        Numbers to roll that cause this bet to lose
     removable : bool
         Whether the bet can be removed or not
     """
@@ -35,8 +31,6 @@ class Bet(ABC):
         self.bet_amount: float = float(bet_amount)
         self.name: str = str()
         self.subname: str = str()
-        self.winning_numbers: list[int] = []
-        self.losing_numbers: list[int] = []
         self.removable: bool = True
         self.player: Player | None = player
         self.table: Table | None = table
