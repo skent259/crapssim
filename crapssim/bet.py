@@ -121,19 +121,11 @@ class PassLine(WinningLosingNumbersBet):
         return [7]
 
     def _update_bet(self) -> tuple[str | None, float, bool]:
-        status: str | None = None
-        win_amount: float = 0.0
-        remove: bool = False
+        status, win_amount, remove = super()._update_bet()
 
-        if self.table.dice.total in self.winning_numbers:
-            status = "win"
-            remove = True
-            win_amount = self.payout_ratio * self.bet_amount
-        elif self.table.dice.total in self.losing_numbers:
-            status = "lose"
-            remove = True
-        elif self.point is None:
+        if self.point is None and status not in ("win", "lose"):
             self.point = self.table.dice.total
+
         return status, win_amount, remove
 
     @property
