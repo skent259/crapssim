@@ -206,7 +206,7 @@ Place Bets on 4,5,6,8,9,10
 """
 
 
-class Place(Bet):
+class Place(WinningLosingNumbersBet, ABC):
     def _update_bet(self) -> tuple[str | None, float, bool]:
         # place bets are inactive when point is "Off"
         if self.table.point == "On":
