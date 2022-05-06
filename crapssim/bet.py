@@ -30,6 +30,7 @@ class Bet(ABC):
         self.table: Table | None = table
 
     @property
+    @abstractmethod
     def payout_ratio(self):
         return 1.0
 
@@ -57,6 +58,34 @@ class Bet(ABC):
         """
         return True
 
+    @property
+    @abstractmethod
+    def status(self) -> str | bool:
+        pass
+
+    @property
+    def win_amount(self) -> float:
+        if self.status == "win":
+            return self.payout_ratio * self.bet_amount
+        return 0.0
+
+    @property
+    def remove(self) -> bool:
+        if self.status is not None:
+            return True
+        return False
+
+    def _update_bet(self) -> tuple[str | None, float, bool]:
+        """
+        Returns whether the bets status is win, lose or None and if win the amount won.
+
+        Returns
+        -------
+        tuple[str | None, float]
+            The status of the bet and the amount of the winnings.
+        """
+        return self.status, self.win_amount, self.remove
+
 
 class WinningLosingNumbersBet(Bet, ABC):
     @property
@@ -69,31 +98,13 @@ class WinningLosingNumbersBet(Bet, ABC):
     def losing_numbers(self):
         pass
 
-    def _update_bet(self) -> tuple[str | None, float, bool]:
-        """
-        Returns whether the bets status is win, lose or None and if win the amount won.
-
-        Parameters
-        ----------
-
-        Returns
-        -------
-        tuple[str | None, float]
-            The status of the bet and the amount of the winnings.
-        """
-        status: str | None = None
-        win_amount: float = 0.0
-        remove = False
-
+    @property
+    def status(self) -> str | None:
         if self.table.dice.total in self.winning_numbers:
-            status = "win"
-            remove = True
-            win_amount = self.payout_ratio * self.bet_amount
+            return "win"
         elif self.table.dice.total in self.losing_numbers:
-            status = "lose"
-            remove = True
-
-        return status, win_amount, remove
+            return "lose"
+        return None
 
 
 """
@@ -415,20 +426,13 @@ class HardWay(Bet, ABC):
     def winning_result(self):
         return [self.number / 2, self.number / 2]
 
-    def _update_bet(self) -> tuple[str | None, float, bool]:
-        status: str | None = None
-        win_amount: float = 0.0
-        remove: bool = False
-
+    @property
+    def status(self):
         if self.table.dice.result == self.winning_result:
-            status = "win"
-            remove = True
-            win_amount = self.payout_ratio * self.bet_amount
+            return "win"
         elif self.table.dice.total in [self.number, 7]:
-            status = "lose"
-            remove = True
-
-        return status, win_amount, remove
+            return "lose"
+        return None
 
 
 class Hard4(HardWay):
@@ -457,24 +461,39 @@ class Fire(Bet):
         self.bet_amount: float = bet_amount
         self.points_made: list[int] = []
         self.current_point: int | None = None
+        self.new_point_made: bool = False
+
+    @property
+    def status(self):
+        if self.new_point_made and len(self.points_made) in self.table.payouts['fire_points']:
+            return "win"
+        elif self.current_point is not None and self.table.dice.total == 7:
+            return "lose"
+        return None
+
+    @property
+    def win_amount(self) -> float:
+        if self.status == "win":
+            return self.payout_ratio * self.bet_amount
+        else:
+            return 0.0
+
+    @property
+    def remove(self) -> bool:
+        if len(self.points_made) == 6 or self.status == "lose":
+            return True
+        return False
 
     def _update_bet(self) -> tuple[str | None, float, bool]:
-        status, win_amount, remove = None, 0.0, False
+        self.new_point_made = False
         if self.current_point is None and self.table.dice.total in (4, 5, 6, 8, 9, 10):
             self.current_point = self.table.dice.total
         elif self.current_point is not None and self.current_point == self.table.dice.total:
-            if self.current_point not in self.points_made:
-                self.points_made = list(set(self.points_made + [self.table.dice.total]))
-                if len(self.points_made) == 4:
-                    status, win_amount, remove = 'win', self.payout_ratio, False
-                elif len(self.points_made) == 5:
-                    status, win_amount, remove = 'win', self.payout_ratio, False
-                elif len(self.points_made) == 6:
-                    status, win_amount, remove = 'win', self.payout_ratio, True
+            if self.table.dice.total not in self.points_made:
+                self.new_point_made = True
+                self.points_made = self.points_made + [self.table.dice.total]
             self.current_point = None
-        elif self.current_point is not None and self.table.dice.total == 7:
-            status, win_amount, remove = 'lose', 0.0, True
-        return status, win_amount, remove
+        return self.status, self.win_amount, self.remove
 
     def allowed(self, table: 'Table') -> bool:
         return table.new_shooter
