@@ -474,11 +474,11 @@ def risk12(player: 'Player', table: 'Table', winnings: typing.SupportsFloat = 0)
     if table.pass_rolls == 0:
         winnings = 0
 
-    if table.point == "Off" and table.last_roll in table.payouts["field_payouts"]:
-        if table.payouts["field_payouts"][table.last_roll] == 2:
+    if table.point == "Off" and table.last_roll in table.settings["field_payouts"]:
+        if table.settings["field_payouts"][table.last_roll] == 2:
             # win double from the field, lose pass line, for a net of 1 unit win
             winnings += player.unit
-        elif table.payouts["field_payouts"][table.last_roll] == 3:
+        elif table.settings["field_payouts"][table.last_roll] == 3:
             # win triple from the field, lose pass line, for a net of 2 unit win
             winnings += 2 * player.unit
         elif table.last_roll == 11:
@@ -541,7 +541,7 @@ def dicedoctor(player: 'Player', table: 'Table', progression: int = 0) -> dict[s
         None
             Dictionary of strategy info.
         """
-    if table.last_roll not in table.payouts['field_payouts']:
+    if table.last_roll not in table.settings['field_payouts']:
         progression = 0
 
     bet_progression = [10, 20, 15, 30, 25, 50, 35, 70, 50, 100, 75, 150]

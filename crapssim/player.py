@@ -61,7 +61,7 @@ class Player:
         table.add_player(self)
 
     def bet(self, bet_object: Bet) -> None:
-        if not bet_object.allowed(self.table):
+        if not bet_object.allowed(self):
             return
 
         if self.bankroll >= bet_object.bet_amount:
