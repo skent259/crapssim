@@ -262,7 +262,9 @@ Field bet
 class Field(WinningLosingNumbersBet):
     @property
     def payout_ratio(self):
-        return self.table.payouts['field_payouts'][self.table.dice.total]
+        if self.table.dice.total in self.table.payouts['field_payouts']:
+            return self.table.payouts['field_payouts'][self.table.dice.total]
+        return 0
 
     @property
     def winning_numbers(self):
