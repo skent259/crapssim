@@ -71,6 +71,8 @@ def test_fire(rolls, correct_status, correct_win_amt, correct_remove):
         table.dice.fixed_roll(roll)
         status, win_amt, remove = bet._update_bet()
 
+    print(len(bet.points_made) in table.payouts['fire_points'], bet.status)
+
     assert (status, win_amt, remove) == (correct_status, correct_win_amt, correct_remove)
 
 
