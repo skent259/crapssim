@@ -41,7 +41,8 @@ class Table(object):
         self.point: Point = Point()
         self.dice: Dice = Dice()
         self.bet_update_info: dict | None = None
-        self.payouts: dict[str, list[int]] = {"fielddouble": [2, 12], "fieldtriple": []}
+        self.payouts: dict[str, typing.Any] = {'field_ratios': {2: 2, 3: 1, 4: 1, 9: 1, 10: 1, 11: 1, 12: 2},
+                                               'fire_points': {4: 24, 5: 249, 6: 999}}
         self.pass_rolls: int = 0
         self.last_roll: int | None = None
         self.n_shooters: int = 1
@@ -129,7 +130,6 @@ class Table(object):
 
         continue_rolling = True
         while continue_rolling:
-
             self.add_player_bets(verbose=verbose)
             self.roll_and_update(verbose)
 

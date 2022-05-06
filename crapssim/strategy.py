@@ -385,11 +385,7 @@ def ironcross(player: 'Player', table: 'Table', mult: int | str = 1) -> None:
 
     if table.point == "On":
         if not player.has_bet("Field"):
-            player.bet(Field(
-                player.unit,
-                double=table.payouts["fielddouble"],
-                triple=table.payouts["fieldtriple"],
-            ))
+            player.bet(Field(player.unit))
 
 
 def hammerlock(player: 'Player', table: 'Table', mode: str | None = None) -> dict[str, str]:
@@ -478,11 +474,11 @@ def risk12(player: 'Player', table: 'Table', winnings: typing.SupportsFloat = 0)
     if table.pass_rolls == 0:
         winnings = 0
 
-    if table.point == "Off":
-        if table.last_roll in table.payouts["fielddouble"]:
+    if table.point == "Off" and table.last_roll in table.payouts["field_ratios"]:
+        if table.payouts["field_ratios"][table.last_roll] == 2:
             # win double from the field, lose pass line, for a net of 1 unit win
             winnings += player.unit
-        elif table.last_roll in table.payouts["fieldtriple"]:
+        elif table.payouts["field_ratios"][table.last_roll] == 3:
             # win triple from the field, lose pass line, for a net of 2 unit win
             winnings += 2 * player.unit
         elif table.last_roll == 11:
@@ -490,11 +486,7 @@ def risk12(player: 'Player', table: 'Table', winnings: typing.SupportsFloat = 0)
             winnings += 2 * player.unit
 
     if table.point == "Off":
-        player.bet(Field(
-            player.unit,
-            double=table.payouts["fielddouble"],
-            triple=table.payouts["fieldtriple"],
-        ))
+        player.bet(Field(player.unit))
         if table.last_roll == 7:
             for bet_nm in ["Place6", "Place8"]:
                 player.remove_if_present(bet_nm)
@@ -561,11 +553,7 @@ def dicedoctor(player: 'Player', table: 'Table', progression: int = 0) -> dict[s
     else:
         amount = bet_progression[len(bet_progression) - 1] * player.unit / 5
 
-    player.bet(Field(
-        amount,
-        double=table.payouts["fielddouble"],
-        triple=table.payouts["fieldtriple"],
-    ))
+    player.bet(Field(amount))
 
     progression += 1
 
