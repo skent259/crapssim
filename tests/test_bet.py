@@ -41,7 +41,7 @@ def test_ev_oneroll(bet, ev):
     for d1 in range(1, 7):
         for d2 in range(1, 7):
             t.dice.fixed_roll([d1, d2])
-            status, win_amt, remove = bet._update_bet()
+            status, win_amt, remove = bet.status, bet.win_amount, bet.remove
 
             outcomes.append(win_amt if status == "win" else -1 if status == "lose" else 0)
 
@@ -63,15 +63,14 @@ def test_fire(rolls, correct_status, correct_win_amt, correct_remove):
     table = Table()
     player = Player(100)
     bet = Fire(1)
-    bet.player = player
-    bet.table = table
+    player.sit_at_table(table)
+    player.bet(bet)
 
-    status, win_amt, remove = None, None, None
+    # table.fixed_run(rolls)
     for roll in rolls:
-        table.dice.fixed_roll(roll)
-        status, win_amt, remove = bet._update_bet()
+        table.fixed_roll_and_update(roll)
 
-    print(len(bet.points_made) in table.payouts['fire_points'], bet.status)
+    status, win_amt, remove = bet.status, bet.win_amount, bet.remove
 
     assert (status, win_amt, remove) == (correct_status, correct_win_amt, correct_remove)
 

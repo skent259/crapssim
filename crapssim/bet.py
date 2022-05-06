@@ -75,7 +75,7 @@ class Bet(ABC):
             return True
         return False
 
-    def _update_bet(self) -> tuple[str | None, float, bool]:
+    def _update_bet(self) -> None:
         """
         Returns whether the bets status is win, lose or None and if win the amount won.
 
@@ -84,7 +84,7 @@ class Bet(ABC):
         tuple[str | None, float]
             The status of the bet and the amount of the winnings.
         """
-        return self.status, self.win_amount, self.remove
+        pass
 
 
 class WinningLosingNumbersBet(Bet, ABC):
@@ -138,14 +138,13 @@ class PassLine(WinningLosingNumbersBet):
             return False
         return super().remove
 
-    def _update_bet(self) -> tuple[str | None, float, bool]:
+    def _update_bet(self) -> None:
         self.new_point = False
 
         if self.point is None and self.status not in ("win", "lose"):
             self.point = self.table.dice.total
             self.new_point = True
 
-        return self.status, self.win_amount, self.remove
 
     @property
     def removable(self):
@@ -160,11 +159,10 @@ class PassLine(WinningLosingNumbersBet):
 
 
 class Come(PassLine):
-    def _update_bet(self) -> tuple[str | None, float, bool]:
+    def _update_bet(self) -> None:
         super()._update_bet()
         if self.point is not None and self.subname == "":
             self.subname = str(self.point)
-        return self.status, self.win_amount, self.remove
 
     def allowed(self, table: 'Table') -> bool:
         if table.point.status == 'On':
@@ -219,11 +217,10 @@ Place Bets on 4,5,6,8,9,10
 
 
 class Place(WinningLosingNumbersBet, ABC):
-    def _update_bet(self) -> tuple[str | None, float, bool]:
+    def _update_bet(self) -> None:
         # place bets are inactive when point is "Off"
         if self.table.point == "On":
-            return super()._update_bet()
-        return None, 0, False
+            super()._update_bet()
 
 
 class Place4(Place):
@@ -317,12 +314,11 @@ class DontPass(WinningLosingNumbersBet):
             return False
         return super().remove
 
-    def _update_bet(self) -> tuple[str | None, float, bool]:
+    def _update_bet(self) -> None:
         self.new_point = False
         if self.point is None and self.table.dice.total in (4, 5, 6, 8, 9, 10):
             self.point = self.table.dice.total
             self.new_point = True
-        return self.status, self.win_amount, self.remove
 
     def allowed(self, table: 'Table') -> bool:
         if table.point.status == 'Off':
@@ -331,11 +327,10 @@ class DontPass(WinningLosingNumbersBet):
 
 
 class DontCome(DontPass):
-    def _update_bet(self) -> tuple[str | None, float, bool]:
+    def _update_bet(self) -> None:
         super()._update_bet()
         if self.point is not None and self.subname == "":
             self.subname = "".join(str(e) for e in self.losing_numbers)
-        return self.status, self.win_amount, self.remove
 
     def allowed(self, table: 'Table') -> bool:
         if table.point.status == 'On':
@@ -500,13 +495,12 @@ class Fire(Bet):
             return True
         return False
 
-    def _update_bet(self) -> tuple[str | None, float, bool]:
+    def _update_bet(self) -> None:
         self.new_point_made = False
         if self.current_point is None and self.table.dice.total in (4, 5, 6, 8, 9, 10):
             self.current_point = self.table.dice.total
         elif self.current_point is not None and self.current_point == self.table.dice.total:
             self.point_made()
-        return self.status, self.win_amount, self.remove
 
     def point_made(self):
         if self.table.dice.total not in self.points_made:
