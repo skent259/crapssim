@@ -118,6 +118,7 @@ class PassLine(WinningLosingNumbersBet):
     def __init__(self, bet_amount: float):
         super().__init__(bet_amount, None)
         self.point: int | None = None
+        self.new_point_made: bool = False
 
     @property
     def winning_numbers(self):
@@ -133,9 +134,11 @@ class PassLine(WinningLosingNumbersBet):
 
     def _update_bet(self) -> tuple[str | None, float, bool]:
         status, win_amount, remove = super()._update_bet()
+        self.new_point_made = False
 
         if self.point is None and status not in ("win", "lose"):
             self.point = self.table.dice.total
+            self.new_point_made = True
 
         return status, win_amount, remove
 
@@ -310,6 +313,7 @@ class DontPass(WinningLosingNumbersBet):
         return super().remove
 
     def _update_bet(self) -> tuple[str | None, float, bool]:
+        self.new_point_made = False
         if self.point is None and self.table.dice.total in (4, 5, 6, 8, 9, 10):
             self.point = self.table.dice.total
             self.new_point_made = True
