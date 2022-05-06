@@ -32,7 +32,7 @@ class Bet(ABC):
     @property
     @abstractmethod
     def payout_ratio(self):
-        return 1.0
+        pass
 
     @property
     def name(self):
@@ -370,7 +370,8 @@ class LayOdds(WinningLosingNumbersBet):
             return 2 / 3
         elif self.losing_numbers in ([6], [8]):
             return 5 / 6
-        return 0
+        else:
+            raise NotImplementedError
 
 
 """
@@ -424,7 +425,8 @@ class CAndE(WinningLosingNumbersBet):
             return 3
         elif self.table.dice.total in [11]:
             return 7
-        return 0
+        else:
+            raise NotImplementedError
 
 
 class HardWay(Bet, ABC):
@@ -520,4 +522,4 @@ class Fire(Bet):
         if len(self.points_made) in self.table.payouts['fire_points']:
             return self.table.payouts['fire_points'][len(self.points_made)]
         else:
-            return 0.0
+            raise NotImplementedError
