@@ -45,4 +45,4 @@ if __name__ == "__main__":
     ))  # NTS: this will not show duplicate bets, but they still exist
     print(Sean.bets_on_table)
 
-    print(Sean.get_bet("Come", "8"))
+    print(Sean.get_bet("Come"))

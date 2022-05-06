@@ -18,8 +18,8 @@ def test_irremovable_bet():
     table = Table()
     dice = Dice()
     dice.fixed_roll([2, 2])
-    player.get_bet('PassLine')._update_bet()
-    player.remove_if_present('PassLine')
+    player.get_bet(PassLine)._update_bet()
+    player.remove_if_present(PassLine)
     assert len(player.bets_on_table) == 1
 
 

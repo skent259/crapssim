@@ -67,8 +67,8 @@ class Player:
         if self.bankroll >= bet_object.bet_amount:
             self.bankroll -= bet_object.bet_amount
 
-            if (bet_object.name, bet_object.subname) in [(b.name, b.subname) for b in self.bets_on_table]:
-                existing_bet: Bet = self.get_bet(bet_object.name, bet_object.subname)
+            if bet_object.already_placed(self):
+                existing_bet: Bet = self.get_bet(type(bet_object))
                 existing_bet.bet_amount += bet_object.bet_amount
             else:
                 bet_object.player = self
@@ -83,30 +83,28 @@ class Player:
             self.bets_on_table.remove(bet_object)
             self.total_bet_amount -= bet_object.bet_amount
 
-    def has_bet(self, *bets_to_check: str) -> bool:
-        """ returns True if bets_to_check and self.bets_on_table has at least one thing in common """
-        bet_names = {b.name for b in self.bets_on_table}
-        return bool(bet_names.intersection(bets_to_check))
+    def get_bets(self, *bet_types: typing.Type[Bet], **bet_attributes) -> list[Bet]:
+        bet_types = tuple(bet_types)
+        return [x for x in self.bets_on_table if isinstance(x, bet_types)
+                and x.__dict__.items() >= bet_attributes.items()]
 
-    def get_bet(self, bet_name: str, bet_subname: str = "") -> Bet:
-        """returns first betting object matching bet_name and bet_subname.
-        If bet_subname="Any", returns first betting object matching bet_name"""
-        if bet_subname == "Any":
-            bet_name_list: list[str] = [b.name for b in self.bets_on_table]
-            ind: int = bet_name_list.index(bet_name)
-        else:
-            bet_name_subname_list: list[list[str]] = [[b.name, b.subname] for b in self.bets_on_table]
-            ind = bet_name_subname_list.index([bet_name, bet_subname])
-        return self.bets_on_table[ind]
+    def has_bet(self, *bets_to_check: typing.Type[Bet], **bet_attributes) -> bool:
+        """ returns True if bets_to_check and self.bets_on_table has at least one thing in common """
+        return len(self.get_bets(*bets_to_check, **bet_attributes)) > 0
+
+    def get_bet(self, bet: typing.Type[Bet]) -> Bet:
+        """returns first betting object matching bet and bet_subname.
+        If bet_subname="Any", returns first betting object matching bet"""
+        return self.get_bets(bet)[0]
 
     def num_bet(self, *bets_to_check: str) -> int:
         """ returns the total number of bets in self.bets_on_table that match bets_to_check """
         bet_names = [b.name for b in self.bets_on_table]
         return sum([i in bets_to_check for i in bet_names])
 
-    def remove_if_present(self, bet_name: str, bet_subname: str = "") -> None:
-        if self.has_bet(bet_name):
-            self.remove(self.get_bet(bet_name, bet_subname))
+    def remove_if_present(self, bet: str) -> None:
+        if self.has_bet(type(bet)):
+            self.remove(self.get_bet(type(bet)))
 
     def add_strategy_bets(self) -> None:
         """ Implement the given betting strategy """

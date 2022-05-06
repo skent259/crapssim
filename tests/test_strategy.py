@@ -3,6 +3,7 @@ from collections import namedtuple
 import pytest
 
 from crapssim import Player, Table
+from crapssim.bet import Come, LayOdds, DontCome
 from crapssim.strategy import passline, passline_odds, passline_odds2, passline_odds345, pass2come, place, place68, \
     dontpass, layodds, place68_2come, ironcross, hammerlock, risk12, knockout, dicedoctor, place68_dontcome2odds
 
@@ -12,16 +13,16 @@ from crapssim.strategy import passline, passline_odds, passline_odds2, passline_
     (passline, {}, [(4, 4)], {('PassLine', '', 5)}),
     (passline_odds, {}, [], {('PassLine', '', 5)}),
     (passline_odds, {}, [(4, 4)], {('PassLine', '', 5),
-                                   ('Odds', '8', 5)}),
+                                   ('Odds8', '', 5)}),
     (passline_odds, {}, [(4, 4), (3, 3)], {('PassLine', '', 5),
-                                           ('Odds', '8', 5)}),
+                                           ('Odds8', '', 5)}),
     (passline_odds, {'mult': '345'}, [], {('PassLine', '', 5)}),
     (passline_odds, {'mult': '345'}, [(6, 4)], {('PassLine', '', 5),
-                                                ('Odds', '10', 15)}),
+                                                ('Odds10', '', 15)}),
     (passline_odds2, {}, [(2, 2)], {('PassLine', '', 5),
-                                    ('Odds', '4', 10)}),
+                                    ('Odds4', '', 10)}),
     (passline_odds345, {}, [(3, 4), (3, 3)], {('PassLine', '', 5),
-                                              ('Odds', '6', 25)}),
+                                              ('Odds6', '', 25)}),
     (pass2come, {}, [], {('PassLine', '', 5)}),
     (pass2come, {}, [(4, 5)], {('PassLine', '', 5),
                                ('Come', '', 5)}),
@@ -42,7 +43,7 @@ from crapssim.strategy import passline, passline_odds, passline_odds2, passline_
     (dontpass, {}, [], {('DontPass', '', 5)}),
     (layodds, {'win_mult': 1}, [], {('DontPass', '', 5)}),
     (layodds, {'win_mult': '345'}, [(3, 3)], {('DontPass', '', 5),
-                                              ('LayOdds', '6', 30)}),
+                                              ('LayOdds6', '', 30)}),
     (place68_2come, {}, [], set()),
     (place68_2come, {}, [(3, 3)], {('Place6', '', 6),
                                    ('Place8', '', 6),
@@ -57,7 +58,7 @@ from crapssim.strategy import passline, passline_odds, passline_odds2, passline_
                                            ('Come', '', 5)}),
     (ironcross, {}, [], {('PassLine', '', 5)}),
     (ironcross, {'mult': '2'}, [(4, 4)], {('PassLine', '', 5),
-                                          ('Odds', '8', 10),
+                                          ('Odds8', '', 10),
                                           ('Place5', '', 5),
                                           ('Place6', '', 6),
                                           ('Field', '', 5)}),
@@ -66,12 +67,12 @@ from crapssim.strategy import passline, passline_odds, passline_odds2, passline_
                                 ('DontPass', '', 5),
                                 ('Place6', '', 6),
                                 ('Place8', '', 6),
-                                ('LayOdds', '6', 30)}),
+                                ('LayOdds6', '', 30)}),
     (hammerlock, {}, [(3, 3), (4, 4)], {('PassLine', '', 5),
                                         ('DontPass', '', 5),
                                         ('Place6', '', 6),
                                         ('Place8', '', 6),
-                                        ('LayOdds', '6', 30),
+                                        ('LayOdds6', '', 30),
                                         ('Place5', '', 5),
                                         ('Place9', '', 5)}),
     (risk12, {}, [], {('PassLine', '', 5), ('Field', '', 5)}),
@@ -85,7 +86,7 @@ from crapssim.strategy import passline, passline_odds, passline_odds2, passline_
                         ('DontPass', '', 5)}),
     (knockout, {}, [(4, 2)], {('PassLine', '', 5),
                               ('DontPass', '', 5),
-                              ('Odds', '6', 25)}),
+                              ('Odds6', '', 25)}),
     (dicedoctor, {}, [], {('Field', '', 10)}),
     (dicedoctor, {}, [(1, 1), (5, 6), (5, 5)], {('Field', '', 30)}),
     (place68_dontcome2odds, {}, [], set()),
@@ -95,7 +96,7 @@ from crapssim.strategy import passline, passline_odds, passline_odds2, passline_
     (place68_dontcome2odds, {}, [(4, 4), (2, 2)], {('Place6', '', 6),
                                                    ('Place8', '', 6),
                                                    ('DontCome', '4', 5),
-                                                   ('LayOdds', '4', 20)})
+                                                   ('LayOdds4', '', 20)})
 ])
 def test_strategies_compare_bets(strategy, strategy_info, rolls: list[tuple[int, int]],
                                  correct_bets: {(str, str, float)}):
@@ -107,10 +108,17 @@ def test_strategies_compare_bets(strategy, strategy_info, rolls: list[tuple[int,
     table = Table()
     player = Player(100, bet_strategy=strat)
     table.add_player(player)
-
     table.fixed_run(rolls)
     table.add_player_bets(verbose=False)
 
     bets = table.players[0].bets_on_table
 
-    assert {(b.name, b.subname, b.bet_amount) for b in bets} == correct_bets
+    check_list = []
+    for bet in bets:
+        if isinstance(bet, (Come, DontCome)) and bet.point is not None:
+            subname = str(bet.point)
+        else:
+            subname = ''
+        check_list.append((bet.name, subname, bet.bet_amount))
+
+    assert set(check_list) == correct_bets
