@@ -118,7 +118,7 @@ class PassLine(WinningLosingNumbersBet):
     def __init__(self, bet_amount: float):
         super().__init__(bet_amount, None)
         self.point: int | None = None
-        self.new_point_made: bool = False
+        self.new_point: bool = False
 
     @property
     def winning_numbers(self):
@@ -132,15 +132,20 @@ class PassLine(WinningLosingNumbersBet):
             return [2, 3, 12]
         return [7]
 
+    @property
+    def remove(self):
+        if self.new_point is True:
+            return False
+        return super().remove
+
     def _update_bet(self) -> tuple[str | None, float, bool]:
-        status, win_amount, remove = super()._update_bet()
-        self.new_point_made = False
+        self.new_point = False
 
-        if self.point is None and status not in ("win", "lose"):
+        if self.point is None and self.status not in ("win", "lose"):
             self.point = self.table.dice.total
-            self.new_point_made = True
+            self.new_point = True
 
-        return status, win_amount, remove
+        return self.status, self.win_amount, self.remove
 
     @property
     def removable(self):
@@ -156,10 +161,10 @@ class PassLine(WinningLosingNumbersBet):
 
 class Come(PassLine):
     def _update_bet(self) -> tuple[str | None, float, bool]:
-        status, win_amount, remove = super()._update_bet()
+        super()._update_bet()
         if self.point is not None and self.subname == "":
             self.subname = str(self.point)
-        return status, win_amount, remove
+        return self.status, self.win_amount, self.remove
 
     def allowed(self, table: 'Table') -> bool:
         if table.point.status == 'On':
@@ -290,7 +295,7 @@ class DontPass(WinningLosingNumbersBet):
         super().__init__(bet_amount, None)
         self.push_numbers: list[int] = [12]
         self.point: int | None = None
-        self.new_point_made: bool = False
+        self.new_point: bool = False
 
     @property
     def winning_numbers(self):
@@ -308,15 +313,15 @@ class DontPass(WinningLosingNumbersBet):
     def remove(self) -> bool:
         if self.point is None and self.table.dice.total == 12:
             return True
-        if self.new_point_made is True:
+        if self.new_point is True:
             return False
         return super().remove
 
     def _update_bet(self) -> tuple[str | None, float, bool]:
-        self.new_point_made = False
+        self.new_point = False
         if self.point is None and self.table.dice.total in (4, 5, 6, 8, 9, 10):
             self.point = self.table.dice.total
-            self.new_point_made = True
+            self.new_point = True
         return self.status, self.win_amount, self.remove
 
     def allowed(self, table: 'Table') -> bool:
@@ -327,10 +332,10 @@ class DontPass(WinningLosingNumbersBet):
 
 class DontCome(DontPass):
     def _update_bet(self) -> tuple[str | None, float, bool]:
-        status, win_amount, remove = super()._update_bet()
+        super()._update_bet()
         if self.point is not None and self.subname == "":
             self.subname = "".join(str(e) for e in self.losing_numbers)
-        return status, win_amount, remove
+        return self.status, self.win_amount, self.remove
 
     def allowed(self, table: 'Table') -> bool:
         if table.point.status == 'On':
