@@ -285,6 +285,7 @@ class DontPass(WinningLosingNumbersBet):
         super().__init__(bet_amount, None)
         self.push_numbers: list[int] = [12]
         self.point: int | None = None
+        self.new_point_made: bool = False
 
     @property
     def winning_numbers(self):
@@ -298,15 +299,19 @@ class DontPass(WinningLosingNumbersBet):
             return [7, 11]
         return [self.point]
 
-    def _update_bet(self) -> tuple[str | None, float, bool]:
-        status, win_amount, remove = super()._update_bet()
+    @property
+    def remove(self) -> bool:
         if self.point is None and self.table.dice.total == 12:
-            remove = True
-        if self.point is None and remove is False:
-            self.push_numbers = []
-            self.point = self.table.dice.total
+            return True
+        if self.new_point_made is True:
+            return False
+        return super().remove
 
-        return status, win_amount, remove
+    def _update_bet(self) -> tuple[str | None, float, bool]:
+        if self.point is None and self.table.dice.total in (4, 5, 6, 8, 9, 10):
+            self.point = self.table.dice.total
+            self.new_point_made = True
+        return self.status, self.win_amount, self.remove
 
     def allowed(self, table: 'Table') -> bool:
         if table.point.status == 'Off':
@@ -354,8 +359,7 @@ class LayOdds(WinningLosingNumbersBet):
             return 2 / 3
         elif self.losing_numbers in ([6], [8]):
             return 5 / 6
-        else:
-            raise NotImplementedError
+        return 0
 
 
 """
@@ -409,8 +413,7 @@ class CAndE(WinningLosingNumbersBet):
             return 3
         elif self.table.dice.total in [11]:
             return 7
-        else:
-            raise NotImplementedError
+        return 0
 
 
 class HardWay(Bet, ABC):
@@ -489,11 +492,14 @@ class Fire(Bet):
         if self.current_point is None and self.table.dice.total in (4, 5, 6, 8, 9, 10):
             self.current_point = self.table.dice.total
         elif self.current_point is not None and self.current_point == self.table.dice.total:
-            if self.table.dice.total not in self.points_made:
-                self.new_point_made = True
-                self.points_made = self.points_made + [self.table.dice.total]
-            self.current_point = None
+            self.point_made()
         return self.status, self.win_amount, self.remove
+
+    def point_made(self):
+        if self.table.dice.total not in self.points_made:
+            self.new_point_made = True
+            self.points_made = self.points_made + [self.table.dice.total]
+        self.current_point = None
 
     def allowed(self, table: 'Table') -> bool:
         return table.new_shooter
