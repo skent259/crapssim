@@ -84,7 +84,10 @@ class Player:
             self.total_bet_amount -= bet_object.bet_amount
 
     def get_bets(self, *bet_types: typing.Type[Bet], **bet_attributes) -> list[Bet]:
-        bet_types = tuple(bet_types)
+        if len(bet_types) == 0:
+            bet_types = (Bet,)
+        else:
+            bet_types = tuple(bet_types)
         return [x for x in self.bets_on_table if isinstance(x, bet_types)
                 and x.__dict__.items() >= bet_attributes.items()]
 
