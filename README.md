@@ -83,5 +83,25 @@ Those looking to contribute to this project are welcome to do so.  Currently, th
 - Supported strategies (see [strategy.py](./crapssim/strategy.py))
 - Documentation
 
+### Setting up VSCode - Without Conda Environments
+
+Install python 3.10 
+
+Create and activate venv
+
+MacOS
+```
+python3 -m venv .venv
+source .venv/bin/activate
+```
+
+Windows
+```
+py -3 -m venv .venv
+.venv\scripts\activate
+```
+
+Install the required libraries
+`pip install -r requirements.txt`
 
 
