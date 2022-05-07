@@ -686,6 +686,26 @@ def place68_dontcome2odds(player: 'Player', table: 'Table') -> None:
             player.bet(LayOdds(mult * player.unit, dc))
 
 
+def dontpass_2come_dontcome(player, table, unit=5, strat_info=None):
+    # start with dontpass bet
+    # once the point is established, place come bet twice
+    # finally place a dont come bet
+    # whenever there is less than 2 come bet replenish it.
+    dontpass(player, table, unit)
+
+    if table.point == "On":
+        total_come_bets = player.has_bet("Come")
+        total_dont_come_bets = player.has_bet("DontCome")
+        if not player.has_bet("Come") and len(total_come_bets) < 2:
+            player.bet(
+                Come(unit)
+            )
+        elif not player.has_bet("DontCome") and len(total_dont_come_bets) == 0:
+            player.bet(
+                DontCome(unit)
+            )
+
+
 if __name__ == "__main__":
     # Test a betting strategy
 
