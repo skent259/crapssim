@@ -4,6 +4,7 @@
 .Ruserdata
 
 .vscode
+.venv
 Articles/
 output/
 R/

@@ -83,5 +83,19 @@ Those looking to contribute to this project are welcome to do so.  Currently, th
 - Supported strategies (see [strategy.py](./crapssim/strategy.py))
 - Documentation
 
+### Setting up VSCode 
+Install python-3.10 
 
+Setup a venv
+
+```
+python3 -m venv .venv
+source .venv/bin/activate
+```
+
+Install requirements 
+
+```
+pip install -r requirements.txt
+```
 
