@@ -123,8 +123,6 @@ class AllowsOdds(WinningLosingNumbersBet, StaticPayoutRatio, ABC):
 
 
 class PassLine(AllowsOdds):
-    payout_ratio: float = 1.0
-
     def __init__(self, bet_amount: float):
         super().__init__(bet_amount)
         self.point: int | None = None
@@ -353,8 +351,6 @@ Don't pass and Don't come bets
 
 
 class DontPass(AllowsOdds):
-    payout_ratio: float = 1.0
-
     def __init__(self, bet_amount: float):
         super().__init__(bet_amount)
         self.push_numbers: list[int] = [12]
