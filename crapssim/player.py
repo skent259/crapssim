@@ -112,8 +112,7 @@ class Player:
         if self.bet_strategy:
             self.bet_strategy(self, table, **self.strat_info)
 
-    def update_bet(self, table, verbose: bool = False) -> \
-            dict[str, dict[str, str | None | float]]:
+    def update_bet(self, table, verbose: bool = False) -> None:
         info = {}
         for bet in self.bets_on_table[:]:
             bet.update(table)
@@ -128,7 +127,6 @@ class Player:
 
             info[bet.name] = {"status": bet.get_status(table),
                               "win_amount": bet.get_win_amount(table)}
-        return info
 
     def print_bet_update(self, bet, table):
         status = bet.get_status(table)
