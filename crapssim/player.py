@@ -83,9 +83,9 @@ class Player:
         return [x for x in self.bets_on_table if isinstance(x, bet_types)
                 and x.__dict__.items() >= bet_attributes.items()]
 
-    def has_bet(self, *bets_to_check: typing.Type[Bet], **bet_attributes) -> bool:
+    def has_bet(self, *bet_types: typing.Type[Bet], **bet_attributes) -> bool:
         """ returns True if bets_to_check and self.bets_on_table has at least one thing in common """
-        return len(self.get_bets(*bets_to_check, **bet_attributes)) > 0
+        return len(self.get_bets(*bet_types, **bet_attributes)) > 0
 
     def get_bet(self, bet_type: typing.Type[Bet]) -> Bet:
         """returns first betting object matching bet and bet_subname.
@@ -97,9 +97,9 @@ class Player:
         bet_names = [b.name for b in self.bets_on_table]
         return sum([i in bets_to_check for i in bet_names])
 
-    def remove_if_present(self, bet: str) -> None:
-        if self.has_bet(type(bet)):
-            self.remove(self.get_bet(type(bet)))
+    def remove_if_present(self, bet_type: str) -> None:
+        if self.has_bet(type(bet_type)):
+            self.remove(self.get_bet(type(bet_type)))
 
     def add_strategy_bets(self, table: "Table") -> None:
         """ Implement the given betting strategy
