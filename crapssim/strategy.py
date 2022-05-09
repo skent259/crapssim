@@ -136,7 +136,7 @@ def pass2come(player: 'Player', table: 'Table') -> None:
     passline(player, table)
 
     # Come bet (2)
-    if table.point == "On" and player.num_bet("Come") < 2:
+    if table.point == "On" and player.num_bet(Come) < 2:
         player.bet(Come(player.unit), table)
 
 
@@ -330,7 +330,7 @@ def place68_2come(player: 'Player', table: 'Table') -> None:
             player.bet(Place8(6 / 5 * player.unit), table)
 
     # add come of passline bets to get on 4 numbers
-    if player.num_bet("Come", "PassLine") < 2 and len(player.bets_on_table) < 4:
+    if player.num_bet(Come, PassLine) < 2 and len(player.bets_on_table) < 4:
         if table.point == "On":
             player.bet(Come(player.unit), table)
         if table.point == "Off" and (
@@ -657,7 +657,7 @@ def place68_dontcome2odds(player: 'Player', table: 'Table') -> None:
         if 9 not in current_numbers:
             player.bet(Place9(player.unit), table)
 
-    if table.point == "On" and player.num_bet("DontCome") < 1:
+    if table.point == "On" and player.num_bet(DontCome) < 1:
         player.bet(DontCome(player.unit), table)
 
     if player.has_bet(DontCome):

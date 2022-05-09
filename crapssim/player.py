@@ -92,10 +92,9 @@ class Player:
         If bet_subname="Any", returns first betting object matching bet"""
         return self.get_bets(bet_type)[0]
 
-    def num_bet(self, *bets_to_check: str) -> int:
+    def num_bet(self, *bet_types: str) -> int:
         """ returns the total number of bets in self.bets_on_table that match bets_to_check """
-        bet_names = [b.name for b in self.bets_on_table]
-        return sum([i in bets_to_check for i in bet_names])
+        return len(self.get_bets(*bet_types))
 
     def remove_if_present(self, bet_type: str) -> None:
         if self.has_bet(type(bet_type)):
