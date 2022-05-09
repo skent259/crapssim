@@ -90,14 +90,14 @@ class Player:
         has at least one thing in common """
         return len(self.get_bets(*bet_types, **bet_attributes)) > 0
 
-    def get_bet(self, bet_type: typing.Type[Bet]) -> Bet:
+    def get_bet(self, bet_type: typing.Type[Bet], **bet_attributes) -> Bet:
         """returns first betting object matching bet and bet_subname.
         If bet_subname="Any", returns first betting object matching bet"""
-        return self.get_bets(bet_type)[0]
+        return self.get_bets(bet_type, **bet_attributes)[0]
 
-    def num_bet(self, *bet_types: str) -> int:
+    def num_bet(self, *bet_types: str, **bet_attributes) -> int:
         """ returns the total number of bets in self.bets_on_table that match bets_to_check """
-        return len(self.get_bets(*bet_types))
+        return len(self.get_bets(*bet_types, **bet_attributes))
 
     def remove_if_present(self, bet_type: str) -> None:
         if self.has_bet(type(bet_type)):
