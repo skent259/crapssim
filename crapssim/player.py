@@ -114,27 +114,27 @@ class Player:
     def update_bet(self, table, verbose: bool = False) -> \
             dict[str, dict[str, str | None | float]]:
         info = {}
-        for b in self.bets_on_table[:]:
-            b.update(table)
-            status, win_amount, remove = b.get_status(table), \
-                                         b.get_win_amount(table), \
-                                         b.should_remove(table)
+        for bet in self.bets_on_table[:]:
+            bet.update(table)
+            status, win_amount, remove = bet.get_status(table), \
+                                         bet.get_win_amount(table), \
+                                         bet.should_remove(table)
 
             if status == "win":
-                self.bankroll += win_amount + b.bet_amount
-                self.total_bet_amount -= b.bet_amount
+                self.bankroll += win_amount + bet.bet_amount
+                self.total_bet_amount -= bet.bet_amount
                 if verbose:
-                    print(f"{self.name} won ${win_amount} on {b.name} bet!")
+                    print(f"{self.name} won ${win_amount} on {bet.name} bet!")
             elif status == "lose":
-                self.total_bet_amount -= b.bet_amount
+                self.total_bet_amount -= bet.bet_amount
                 if verbose:
-                    print(f"{self.name} lost ${b.bet_amount} on {b.name} bet.")
+                    print(f"{self.name} lost ${bet.bet_amount} on {bet.name} bet.")
             elif status is None and remove is True:
-                self.bankroll += b.bet_amount
-                self.total_bet_amount -= b.bet_amount
+                self.bankroll += bet.bet_amount
+                self.total_bet_amount -= bet.bet_amount
 
             if remove:
-                self.bets_on_table.remove(b)
+                self.bets_on_table.remove(bet)
 
-            info[b.name] = {"status": status, "win_amount": win_amount}
+            info[bet.name] = {"status": status, "win_amount": win_amount}
         return info
