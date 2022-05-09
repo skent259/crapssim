@@ -55,27 +55,27 @@ class Player:
     def sit_at_table(self, table: "Table"):
         table.add_player(self)
 
-    def bet(self, bet_object: Bet, table: "Table") -> None:
-        if not bet_object.allowed(table=table, player=self):
+    def bet(self, bet: Bet, table: "Table") -> None:
+        if not bet.allowed(table=table, player=self):
             return
 
-        if self.bankroll >= bet_object.bet_amount:
-            self.bankroll -= bet_object.bet_amount
+        if self.bankroll >= bet.bet_amount:
+            self.bankroll -= bet.bet_amount
 
-            if bet_object.already_placed(self):
-                existing_bet: Bet = self.get_bet(type(bet_object))
-                existing_bet.bet_amount += bet_object.bet_amount
+            if bet.already_placed(self):
+                existing_bet: Bet = self.get_bet(type(bet))
+                existing_bet.bet_amount += bet.bet_amount
             else:
-                self.bets_on_table.append(bet_object)
-                bet_object.player = self
+                self.bets_on_table.append(bet)
+                bet.player = self
 
-            self.total_bet_amount += bet_object.bet_amount
+            self.total_bet_amount += bet.bet_amount
 
-    def remove(self, bet_object: Bet) -> None:
-        if bet_object in self.bets_on_table and bet_object.removable:
-            self.bankroll += bet_object.bet_amount
-            self.bets_on_table.remove(bet_object)
-            self.total_bet_amount -= bet_object.bet_amount
+    def remove(self, bet: Bet) -> None:
+        if bet in self.bets_on_table and bet.removable:
+            self.bankroll += bet.bet_amount
+            self.bets_on_table.remove(bet)
+            self.total_bet_amount -= bet.bet_amount
 
     def get_bets(self, *bet_types: typing.Type[Bet], **bet_attributes) -> list[Bet]:
         if len(bet_types) == 0:
