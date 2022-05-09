@@ -23,7 +23,6 @@ class Bet(ABC):
 
     def __init__(self, bet_amount: typing.SupportsFloat):
         self.bet_amount: float = float(bet_amount)
-        self._player: Player | None = None
 
     @abstractmethod
     def get_payout_ratio(self, table: "Table"):
@@ -36,17 +35,6 @@ class Bet(ABC):
     @property
     def removable(self):
         return True
-
-    @property
-    def player(self):
-        return self._player
-
-    @player.setter
-    def player(self, player: "Player"):
-        if self._player is not None and self not in self._player.bets_on_table:
-            self._player.bet(self)
-        else:
-            self._player = player
 
     def allowed(self, player) -> bool:
         """
@@ -130,7 +118,7 @@ class AllowsOdds(WinningLosingNumbersBet, StaticPayoutRatio, ABC):
     payout_ratio: float = 1.0
 
     @abstractmethod
-    def place_odds(self, bet_amount: typing.SupportsFloat):
+    def place_odds(self, bet_amount: typing.SupportsFloat, player: "Player"):
         pass
 
 
@@ -177,11 +165,11 @@ class PassLine(AllowsOdds):
             return True
         return False
 
-    def place_odds(self, bet_amount: typing.SupportsFloat):
+    def place_odds(self, bet_amount: typing.SupportsFloat, player: "Player"):
         number = self.winning_numbers[0]
         odds_type = {4: Odds4, 5: Odds5, 6: Odds6, 8: Odds8, 9: Odds9, 10: Odds10}[number]
         bet = odds_type(bet_amount)
-        self.player.bet(bet)
+        player.bet(bet)
 
 
 class Come(PassLine):
@@ -396,7 +384,7 @@ class DontPass(AllowsOdds):
             return True
         return False
 
-    def place_odds(self, bet_amount: typing.SupportsFloat):
+    def place_odds(self, bet_amount: typing.SupportsFloat, player: "Player"):
         number = self.losing_numbers[0]
         odds_type = {4: LayOdds4,
                      5: LayOdds5,
@@ -405,7 +393,7 @@ class DontPass(AllowsOdds):
                      9: LayOdds9,
                      10: LayOdds10}[number]
         bet = odds_type(bet_amount)
-        self.player.bet(bet)
+        player.bet(bet)
 
     def get_status(self, table: "Table") -> str | None:
         if self.new_point:

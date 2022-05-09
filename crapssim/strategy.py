@@ -79,7 +79,7 @@ def passline_odds(player: 'Player', table: 'Table', mult: int | str = 1) -> None
             and player.has_bet(PassLine)
             and not player.has_bet(Odds)
     ):
-        player.get_bet(PassLine).place_odds(float(mult * player.unit))
+        player.get_bet(PassLine).place_odds(float(mult * player.unit), player)
 
 
 def passline_odds2(player: 'Player', table: 'Table') -> None:
@@ -290,7 +290,7 @@ def layodds(player: 'Player', table: 'Table', win_mult: int | str = 1) -> None:
             and player.has_bet(DontPass)
             and not player.has_bet(LayOdds)
     ):
-        player.get_bet(DontPass).place_odds(mult * player.unit)
+        player.get_bet(DontPass).place_odds(mult * player.unit, player)
 
 
 """
@@ -683,7 +683,7 @@ def place68_dontcome2odds(player: 'Player', table: 'Table') -> None:
                     mult = 6 / 5 * win_mult
 
         if not player.has_bet(LayOdds) and not dc.point is None:
-            player.get_bet(DontCome).place_odds(mult * player.unit)
+            player.get_bet(DontCome).place_odds(mult * player.unit, player)
 
 
 if __name__ == "__main__":
