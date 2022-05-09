@@ -59,18 +59,18 @@ class Player:
         table.add_player(self)
 
     def place_bet(self, bet: Bet, table: "Table") -> None:
-        if not bet.allowed(table=table, player=self):
-            return
+        if bet.already_placed(self):
+            existing_bet: Bet = self.get_bet(type(bet))
+            existing_bet.bet_amount += bet.bet_amount
+            if not existing_bet.allowed(table=table, player=self):
+                existing_bet -= bet.bet_amount
+                return
+        else:
+            if not bet.allowed(table=table, player=self):
+                return
+            self.bets_on_table.append(bet)
 
-        if self.bankroll >= bet.bet_amount:
-            self.bankroll -= bet.bet_amount
-
-            if bet.already_placed(self):
-                existing_bet: Bet = self.get_bet(type(bet))
-                existing_bet.bet_amount += bet.bet_amount
-            else:
-                self.bets_on_table.append(bet)
-                bet.player = self
+        self.bankroll -= bet.bet_amount
 
     def remove_bet(self, bet: Bet) -> None:
         if bet in self.bets_on_table and bet.removable:
