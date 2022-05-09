@@ -87,10 +87,10 @@ class Player:
         """ returns True if bets_to_check and self.bets_on_table has at least one thing in common """
         return len(self.get_bets(*bets_to_check, **bet_attributes)) > 0
 
-    def get_bet(self, bet: typing.Type[Bet]) -> Bet:
+    def get_bet(self, bet_type: typing.Type[Bet]) -> Bet:
         """returns first betting object matching bet and bet_subname.
         If bet_subname="Any", returns first betting object matching bet"""
-        return self.get_bets(bet)[0]
+        return self.get_bets(bet_type)[0]
 
     def num_bet(self, *bets_to_check: str) -> int:
         """ returns the total number of bets in self.bets_on_table that match bets_to_check """
