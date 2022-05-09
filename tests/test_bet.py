@@ -40,7 +40,7 @@ def test_ev_oneroll(bet, ev):
     for d1 in range(1, 7):
         for d2 in range(1, 7):
             t.dice.fixed_roll([d1, d2])
-            status, win_amt, remove = bet.status, bet.win_amount, bet.remove
+            status, win_amt, remove = bet.get_status(t), bet.get_win_amount(t), bet.should_remove(t)
 
             outcomes.append(win_amt if status == "win" else -1 if status == "lose" else 0)
 
@@ -69,7 +69,7 @@ def test_fire(rolls, correct_status, correct_win_amt, correct_remove):
     for roll in rolls:
         table.fixed_roll_and_update(roll)
 
-    status, win_amt, remove = bet.status, bet.win_amount, bet.remove
+    status, win_amt, remove = bet.get_status(table), bet.get_win_amount(table), bet.should_remove(table)
 
     assert (status, win_amt, remove) == (correct_status, correct_win_amt, correct_remove)
 

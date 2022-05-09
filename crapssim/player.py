@@ -118,7 +118,9 @@ class Player:
         info = {}
         for b in self.bets_on_table[:]:
             b._update_bet()
-            status, win_amount, remove = b.status, b.win_amount, b.remove
+            status, win_amount, remove = b.get_status(self.table), \
+                                         b.get_win_amount(self.table), \
+                                         b.should_remove(self.table)
 
             if status == "win":
                 self.bankroll += win_amount + b.bet_amount

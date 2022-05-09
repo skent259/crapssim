@@ -120,5 +120,4 @@ def test_strategies_compare_bets(strategy, strategy_info, rolls: list[tuple[int,
         else:
             subname = ''
         check_list.append((bet.name, subname, bet.bet_amount))
-
     assert set(check_list) == correct_bets

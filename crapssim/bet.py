@@ -68,20 +68,17 @@ class Bet(ABC):
         """
         return True
 
-    @property
     @abstractmethod
-    def status(self) -> str | bool:
+    def get_status(self, table: "Table") -> str | bool:
         pass
 
-    @property
-    def win_amount(self) -> float:
-        if self.status == "win":
+    def get_win_amount(self, table: "Table") -> float:
+        if self.get_status(table) == "win":
             return self.payout_ratio * self.bet_amount
         return 0.0
 
-    @property
-    def remove(self) -> bool:
-        if self.status is not None:
+    def should_remove(self, table: "Table") -> bool:
+        if self.get_status(table) is not None:
             return True
         return False
 
@@ -119,6 +116,13 @@ class WinningLosingNumbersBet(Bet, ABC):
             return "lose"
         return None
 
+    def get_status(self, table: "Table") -> str | None:
+        if table.dice.total in self.winning_numbers:
+            return "win"
+        elif table.dice.total in self.losing_numbers:
+            return "lose"
+        return None
+
 
 """
 Passline and Come bets
@@ -150,6 +154,11 @@ class PassLine(AllowsOdds):
         if self.point is None:
             return [2, 3, 12]
         return [7]
+
+    def get_status(self, table: "Table"):
+        if self.new_point:
+            return None
+        return super().get_status(table)
 
     @property
     def remove(self):
@@ -414,6 +423,11 @@ class DontPass(AllowsOdds):
         bet = odds_type(bet_amount)
         self.player.bet(bet)
 
+    def get_status(self, table: "Table") -> str | None:
+        if self.new_point:
+            return None
+        return super().get_status(table)
+
 
 class DontCome(DontPass):
     def allowed(self, player) -> bool:
@@ -535,11 +549,10 @@ class HardWay(Bet, ABC):
     def winning_result(self):
         return [self.number / 2, self.number / 2]
 
-    @property
-    def status(self):
-        if self.table.dice.result == self.winning_result:
+    def get_status(self, table: "Table"):
+        if table.dice.result == self.winning_result:
             return "win"
-        elif self.table.dice.total in [self.number, 7]:
+        elif table.dice.total in [self.number, 7]:
             return "lose"
         return None
 
@@ -572,24 +585,15 @@ class Fire(Bet):
         self.current_point: int | None = None
         self.new_point_made: bool = False
 
-    @property
-    def status(self):
-        if self.new_point_made and len(self.points_made) in self.table.settings['fire_points']:
+    def get_status(self, table: "Table"):
+        if self.new_point_made and len(self.points_made) in table.settings['fire_points']:
             return "win"
         elif self.current_point is not None and self.table.dice.total == 7:
             return "lose"
         return None
 
-    @property
-    def win_amount(self) -> float:
-        if self.status == "win":
-            return self.payout_ratio * self.bet_amount
-        else:
-            return 0.0
-
-    @property
-    def remove(self) -> bool:
-        if len(self.points_made) == 6 or self.status == "lose":
+    def should_remove(self, table: "Table") -> bool:
+        if len(self.points_made) == 6 or self.get_status(table) == "lose":
             return True
         return False
 
