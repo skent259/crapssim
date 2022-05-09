@@ -39,7 +39,6 @@ class Table(object):
         self.players: list[Player] = []
         self.point: Point = Point()
         self.dice: Dice = Dice()
-        self.bet_update_info: dict | None = None
         self.settings: dict[str, typing.Any] = {'field_payouts': {2: 2, 3: 1, 4: 1, 9: 1, 10: 1, 11: 1, 12: 2},
                                                 'fire_points': {4: 24, 5: 249, 6: 999},
                                                 'max_odds': {4: 3, 5: 4, 6: 5, 8: 5, 9: 4, 10: 3},
@@ -276,10 +275,8 @@ class Table(object):
         verbose : bool
             If True, prints whether the player won, lost, etc and the amount
         """
-        self.bet_update_info = {}
         for p in self.players:
-            info = p.update_bet(self, verbose)
-            self.bet_update_info[p] = info
+            p.update_bet(self, verbose)
 
     def update_table(self, verbose: bool = False) -> None:
         """ update table attributes based on previous dice roll
