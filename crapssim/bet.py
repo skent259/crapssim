@@ -61,6 +61,15 @@ class Bet(ABC):
             return self.get_payout_ratio(table) * self.bet_amount
         return 0.0
 
+    def get_return_amount(self, table: "Table") -> float:
+        status = self.get_status(table)
+        if status == "win":
+            return self.get_win_amount(table) + self.bet_amount
+        if status is None and self.should_remove(table) is True:
+            return self.bet_amount
+        else:
+            return 0
+
     def should_remove(self, table: "Table") -> bool:
         if self.get_status(table) is not None:
             return True

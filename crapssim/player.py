@@ -50,7 +50,10 @@ class Player:
         self.name: str = name
         self.unit: typing.SupportsFloat = unit
         self.bets_on_table: list[Bet] = []
-        self.total_bet_amount: float = 0.0
+
+    @property
+    def total_bet_amount(self) -> float:
+        return sum(x.bet_amount for x in self.bets_on_table)
 
     def sit_at_table(self, table: "Table"):
         table.add_player(self)
@@ -69,13 +72,10 @@ class Player:
                 self.bets_on_table.append(bet)
                 bet.player = self
 
-            self.total_bet_amount += bet.bet_amount
-
     def remove_bet(self, bet: Bet) -> None:
         if bet in self.bets_on_table and bet.removable:
             self.bankroll += bet.bet_amount
             self.bets_on_table.remove(bet)
-            self.total_bet_amount -= bet.bet_amount
 
     def get_bets(self, *bet_types: typing.Type[Bet], **bet_attributes) -> list[Bet]:
         if len(bet_types) == 0:
@@ -122,21 +122,19 @@ class Player:
             win_amount = bet.get_win_amount(table)
             remove = bet.should_remove(table)
 
-            if status == "win":
-                self.bankroll += win_amount + bet.bet_amount
-                self.total_bet_amount -= bet.bet_amount
-                if verbose:
-                    print(f"{self.name} won ${win_amount} on {bet.name} bet!")
-            elif status == "lose":
-                self.total_bet_amount -= bet.bet_amount
-                if verbose:
-                    print(f"{self.name} lost ${bet.bet_amount} on {bet.name} bet.")
-            elif status is None and remove is True:
-                self.bankroll += bet.bet_amount
-                self.total_bet_amount -= bet.bet_amount
+            self.bankroll += bet.get_return_amount(table)
+
+            if verbose:
+                self.print_bet_update(bet, status, win_amount)
 
             if remove:
                 self.bets_on_table.remove(bet)
 
             info[bet.name] = {"status": status, "win_amount": win_amount}
         return info
+
+    def print_bet_update(self, bet, status, win_amount):
+        if status == "win":
+            print(f"{self.name} won ${win_amount} on {bet.name} bet!")
+        elif status == "lose":
+            print(f"{self.name} lost ${bet.bet_amount} on {bet.name} bet.")
