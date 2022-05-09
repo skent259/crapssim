@@ -48,10 +48,6 @@ class Bet(ABC):
         else:
             self._player = player
 
-    @property
-    def table(self):
-        return self.player.table
-
     def allowed(self, player) -> bool:
         """
         Checks whether the bet is allowed to be placed on the given table.
@@ -124,6 +120,7 @@ class StaticPayoutRatio(Bet, ABC):
     def get_payout_ratio(self, table: "Table"):
         return self.payout_ratio
 
+
 """
 Passline and Come bets
 """
@@ -166,7 +163,7 @@ class PassLine(AllowsOdds):
         self.new_point = False
 
         if self.point is None and self.get_status(table) not in ("win", "lose"):
-            self.point = self.table.dice.total
+            self.point = table.dice.total
             self.new_point = True
 
     @property
@@ -349,17 +346,17 @@ Field bet
 
 class Field(WinningLosingNumbersBet):
     def get_payout_ratio(self, table: "Table"):
-        if self.table.dice.total in self.table.settings['field_payouts']:
-            return self.table.settings['field_payouts'][self.table.dice.total]
+        if table.dice.total in table.settings['field_payouts']:
+            return table.settings['field_payouts'][table.dice.total]
         return 0
 
     @property
     def winning_numbers(self):
-        return list(self.table.settings['field_payouts'])
+        return [2, 3, 4, 9, 10, 11, 12]
 
     @property
     def losing_numbers(self):
-        return list(x for x in [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12] if x not in self.table.settings['field_payouts'])
+        return [5, 6, 7, 8]
 
 
 """
@@ -390,7 +387,7 @@ class DontPass(AllowsOdds):
 
     def _update_bet(self, table: "Table") -> None:
         self.new_point = False
-        if self.point is None and self.table.dice.total in (4, 5, 6, 8, 9, 10):
+        if self.point is None and table.dice.total in (4, 5, 6, 8, 9, 10):
             self.point = table.dice.total
             self.new_point = True
 
@@ -577,7 +574,7 @@ class Fire(Bet):
     def get_status(self, table: "Table"):
         if self.new_point_made and len(self.points_made) in table.settings['fire_points']:
             return "win"
-        elif self.current_point is not None and self.table.dice.total == 7:
+        elif self.current_point is not None and table.dice.total == 7:
             return "lose"
         return None
 
@@ -591,26 +588,19 @@ class Fire(Bet):
         if self.current_point is None and table.dice.total in (4, 5, 6, 8, 9, 10):
             self.current_point = table.dice.total
         elif self.current_point is not None and self.current_point == table.dice.total:
-            self.point_made()
+            self.point_made(table)
 
-    def point_made(self):
-        if self.table.dice.total not in self.points_made:
+    def point_made(self, table: "Table"):
+        if table.dice.total not in self.points_made:
             self.new_point_made = True
-            self.points_made = self.points_made + [self.table.dice.total]
+            self.points_made = self.points_made + [table.dice.total]
         self.current_point = None
 
     def allowed(self, player) -> bool:
         return player.table.new_shooter
 
-    @property
-    def payout_ratio(self):
-        if len(self.points_made) in self.table.settings['fire_points']:
-            return self.table.settings['fire_points'][len(self.points_made)]
-        else:
-            raise NotImplementedError
-
     def get_payout_ratio(self, table: "Table"):
-        if len(self.points_made) in self.table.settings['fire_points']:
-            return self.table.settings['fire_points'][len(self.points_made)]
+        if len(self.points_made) in table.settings['fire_points']:
+            return table.settings['fire_points'][len(self.points_made)]
         else:
             raise NotImplementedError
