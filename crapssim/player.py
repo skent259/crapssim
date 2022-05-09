@@ -71,9 +71,8 @@ class Player:
                 existing_bet: Bet = self.get_bet(type(bet_object))
                 existing_bet.bet_amount += bet_object.bet_amount
             else:
-                bet_object.player = self
-                bet_object.table = self.table
                 self.bets_on_table.append(bet_object)
+                bet_object.player = self
 
             self.total_bet_amount += bet_object.bet_amount
 

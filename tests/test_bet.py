@@ -37,7 +37,6 @@ def test_ev_oneroll(bet, ev):
     t.point.status = "On"  # for place bets to pay properly
     outcomes = []
     bet.player = p
-    bet.table = t
     for d1 in range(1, 7):
         for d2 in range(1, 7):
             t.dice.fixed_roll([d1, d2])
