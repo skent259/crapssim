@@ -82,7 +82,7 @@ class Bet(ABC):
             return True
         return False
 
-    def _update_bet(self) -> None:
+    def _update_bet(self, table: "Table") -> None:
         """
         Returns whether the bets status is win, lose or None and if win the amount won.
 
@@ -107,14 +107,6 @@ class WinningLosingNumbersBet(Bet, ABC):
     @abstractmethod
     def losing_numbers(self):
         pass
-
-    @property
-    def status(self) -> str | None:
-        if self.table.dice.total in self.winning_numbers:
-            return "win"
-        elif self.table.dice.total in self.losing_numbers:
-            return "lose"
-        return None
 
     def get_status(self, table: "Table") -> str | None:
         if table.dice.total in self.winning_numbers:
@@ -160,16 +152,10 @@ class PassLine(AllowsOdds):
             return None
         return super().get_status(table)
 
-    @property
-    def remove(self):
-        if self.new_point is True:
-            return False
-        return super().remove
-
-    def _update_bet(self) -> None:
+    def _update_bet(self, table: "Table") -> None:
         self.new_point = False
 
-        if self.point is None and self.status not in ("win", "lose"):
+        if self.point is None and self.get_status(table) not in ("win", "lose"):
             self.point = self.table.dice.total
             self.new_point = True
 
@@ -304,10 +290,10 @@ Place Bets on 4,5,6,8,9,10
 
 
 class Place(WinningLosingNumbersBet, ABC):
-    def _update_bet(self) -> None:
+    def _update_bet(self, table: "Table") -> None:
         # place bets are inactive when point is "Off"
-        if self.table.point == "On":
-            super()._update_bet()
+        if table.point == "On":
+            super()._update_bet(table)
 
 
 class Place4(Place):
@@ -393,18 +379,10 @@ class DontPass(AllowsOdds):
             return [7, 11]
         return [self.point]
 
-    @property
-    def remove(self) -> bool:
-        if self.point is None and self.table.dice.total == 12:
-            return True
-        if self.new_point is True:
-            return False
-        return super().remove
-
-    def _update_bet(self) -> None:
+    def _update_bet(self, table: "Table") -> None:
         self.new_point = False
         if self.point is None and self.table.dice.total in (4, 5, 6, 8, 9, 10):
-            self.point = self.table.dice.total
+            self.point = table.dice.total
             self.new_point = True
 
     def allowed(self, player) -> bool:
@@ -597,11 +575,11 @@ class Fire(Bet):
             return True
         return False
 
-    def _update_bet(self) -> None:
+    def _update_bet(self, table: "Table") -> None:
         self.new_point_made = False
-        if self.current_point is None and self.table.dice.total in (4, 5, 6, 8, 9, 10):
-            self.current_point = self.table.dice.total
-        elif self.current_point is not None and self.current_point == self.table.dice.total:
+        if self.current_point is None and table.dice.total in (4, 5, 6, 8, 9, 10):
+            self.current_point = table.dice.total
+        elif self.current_point is not None and self.current_point == table.dice.total:
             self.point_made()
 
     def point_made(self):

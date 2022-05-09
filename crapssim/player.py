@@ -117,7 +117,7 @@ class Player:
             dict[str, dict[str, str | None | float]]:
         info = {}
         for b in self.bets_on_table[:]:
-            b._update_bet()
+            b._update_bet(self.table)
             status, win_amount, remove = b.get_status(self.table), \
                                          b.get_win_amount(self.table), \
                                          b.should_remove(self.table)
