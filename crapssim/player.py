@@ -40,7 +40,9 @@ class Player:
         Sum of bet value for the player
     """
 
-    def __init__(self, bankroll: typing.SupportsFloat, bet_strategy: STRATEGY_TYPE = passline, name: str = "Player",
+    def __init__(self, bankroll: typing.SupportsFloat,
+                 bet_strategy: STRATEGY_TYPE = passline,
+                 name: str = "Player",
                  unit: typing.SupportsFloat = 5):
         self.bankroll: float = bankroll
         self.bet_strategy: STRATEGY_TYPE = bet_strategy
@@ -84,7 +86,8 @@ class Player:
                 and x.__dict__.items() >= bet_attributes.items()]
 
     def has_bet(self, *bet_types: typing.Type[Bet], **bet_attributes) -> bool:
-        """ returns True if bets_to_check and self.bets_on_table has at least one thing in common """
+        """ returns True if bets_to_check and self.bets_on_table
+        has at least one thing in common """
         return len(self.get_bets(*bet_types, **bet_attributes)) > 0
 
     def get_bet(self, bet_type: typing.Type[Bet]) -> Bet:
@@ -115,9 +118,9 @@ class Player:
         info = {}
         for bet in self.bets_on_table[:]:
             bet.update(table)
-            status, win_amount, remove = bet.get_status(table), \
-                                         bet.get_win_amount(table), \
-                                         bet.should_remove(table)
+            status = bet.get_status(table)
+            win_amount = bet.get_win_amount(table)
+            remove = bet.should_remove(table)
 
             if status == "win":
                 self.bankroll += win_amount + bet.bet_amount
