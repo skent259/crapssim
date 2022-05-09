@@ -458,7 +458,7 @@ Center-table Bets
 """
 
 
-class OneRollBet(WinningLosingNumbersBet):
+class OneRollBet(WinningLosingNumbersBet, ABC):
     """WinningLosingNumbersBet where if the number isn't in the winning_numbers, it is in the losing_numbers."""
     @property
     def losing_numbers(self):
