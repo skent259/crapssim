@@ -62,15 +62,14 @@ class Player:
         if bet.already_placed(self):
             existing_bet: Bet = self.get_bet(type(bet))
             existing_bet.bet_amount += bet.bet_amount
+            self.bankroll -= bet.bet_amount
             if not existing_bet.allowed(table=table, player=self):
                 existing_bet -= bet.bet_amount
-                return
+                self.bankroll += bet.bet_amount
         else:
-            if not bet.allowed(table=table, player=self):
-                return
-            self.bets_on_table.append(bet)
-
-        self.bankroll -= bet.bet_amount
+            if bet.allowed(table=table, player=self):
+                self.bets_on_table.append(bet)
+                self.bankroll -= bet.bet_amount
 
     def remove_bet(self, bet: Bet) -> None:
         if bet in self.bets_on_table and bet.removable:
@@ -118,22 +117,22 @@ class Player:
         info = {}
         for bet in self.bets_on_table[:]:
             bet.update(table)
-            status = bet.get_status(table)
-            win_amount = bet.get_win_amount(table)
-            remove = bet.should_remove(table)
 
             self.bankroll += bet.get_return_amount(table)
 
             if verbose:
-                self.print_bet_update(bet, status, win_amount)
+                self.print_bet_update(bet, table)
 
-            if remove:
+            if bet.should_remove(table):
                 self.bets_on_table.remove(bet)
 
-            info[bet.name] = {"status": status, "win_amount": win_amount}
+            info[bet.name] = {"status": bet.get_status(table),
+                              "win_amount": bet.get_win_amount(table)}
         return info
 
-    def print_bet_update(self, bet, status, win_amount):
+    def print_bet_update(self, bet, table):
+        status = bet.get_status(table)
+        win_amount = bet.get_win_amount(table)
         if status == "win":
             print(f"{self.name} won ${win_amount} on {bet.name} bet!")
         elif status == "lose":
