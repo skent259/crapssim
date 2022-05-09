@@ -78,7 +78,7 @@ class Bet(ABC):
         pass
 
     def already_placed(self, player: "Player") -> bool:
-        return player.has_bet(type(self))
+        return player.has_bets(type(self))
 
 
 class WinningLosingNumbersBet(Bet, ABC):
@@ -191,7 +191,7 @@ class PassLine(AllowsOdds):
         number = self.winning_numbers[0]
         odds_type = {4: Odds4, 5: Odds5, 6: Odds6, 8: Odds8, 9: Odds9, 10: Odds10}[number]
         bet = odds_type(bet_amount)
-        player.bet(bet, table)
+        player.place_bet(bet, table)
 
 
 class Come(PassLine):
@@ -201,7 +201,7 @@ class Come(PassLine):
         return False
 
     def already_placed(self, player: "Player") -> bool:
-        return player.has_bet(type(self), point=self.point)
+        return player.has_bets(type(self), point=self.point)
 
 
 """
@@ -393,7 +393,7 @@ class DontPass(AllowsOdds):
                      9: LayOdds9,
                      10: LayOdds10}[number]
         bet = odds_type(bet_amount)
-        player.bet(bet, table)
+        player.place_bet(bet, table)
 
     def get_status(self, table: "Table") -> str | None:
         if self.new_point:

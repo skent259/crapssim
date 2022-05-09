@@ -269,7 +269,7 @@ class Table(object):
                     print(f"{p.name}'s current bets: {bets}")
 
     def update_player_bets(self, verbose: bool = False) -> None:
-        """ Check bets for wins/losses, payout wins to their bankroll, remove bets that have resolved
+        """ Check bets for wins/losses, payout wins to their bankroll, remove_bet bets that have resolved
 
         Parameters
         ----------

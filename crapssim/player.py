@@ -55,7 +55,7 @@ class Player:
     def sit_at_table(self, table: "Table"):
         table.add_player(self)
 
-    def bet(self, bet: Bet, table: "Table") -> None:
+    def place_bet(self, bet: Bet, table: "Table") -> None:
         if not bet.allowed(table=table, player=self):
             return
 
@@ -71,7 +71,7 @@ class Player:
 
             self.total_bet_amount += bet.bet_amount
 
-    def remove(self, bet: Bet) -> None:
+    def remove_bet(self, bet: Bet) -> None:
         if bet in self.bets_on_table and bet.removable:
             self.bankroll += bet.bet_amount
             self.bets_on_table.remove(bet)
@@ -85,7 +85,7 @@ class Player:
         return [x for x in self.bets_on_table if isinstance(x, bet_types)
                 and x.__dict__.items() >= bet_attributes.items()]
 
-    def has_bet(self, *bet_types: typing.Type[Bet], **bet_attributes) -> bool:
+    def has_bets(self, *bet_types: typing.Type[Bet], **bet_attributes) -> bool:
         """ returns True if bets_to_check and self.bets_on_table
         has at least one thing in common """
         return len(self.get_bets(*bet_types, **bet_attributes)) > 0
@@ -95,13 +95,13 @@ class Player:
         If bet_subname="Any", returns first betting object matching bet"""
         return self.get_bets(bet_type, **bet_attributes)[0]
 
-    def num_bet(self, *bet_types: typing.Type[Bet], **bet_attributes) -> int:
+    def count_bets(self, *bet_types: typing.Type[Bet], **bet_attributes) -> int:
         """ returns the total number of bets in self.bets_on_table that match bets_to_check """
         return len(self.get_bets(*bet_types, **bet_attributes))
 
     def remove_if_present(self, bet_type: typing.Type[Bet]) -> None:
-        if self.has_bet(bet_type):
-            self.remove(self.get_bet(bet_type))
+        if self.has_bets(bet_type):
+            self.remove_bet(self.get_bet(bet_type))
 
     def add_strategy_bets(self, table: "Table") -> None:
         """ Implement the given betting strategy

@@ -14,7 +14,7 @@ def test_irremovable_bet():
     bet = PassLine(50)
     table = Table()
     table.add_player(player)
-    player.bet(bet, table)
+    player.place_bet(bet, table)
     table = Table()
     dice = Dice()
     dice.fixed_roll([2, 2])
@@ -28,9 +28,9 @@ def test_existing_bet():
     table = Table()
     table.add_player(player)
     bet_one = PassLine(50)
-    player.bet(bet_one, table)
+    player.place_bet(bet_one, table)
     bet_two = PassLine(50)
-    player.bet(bet_two, table)
+    player.place_bet(bet_two, table)
 
     bet_count = len(player.bets_on_table)
     bet_amount = player.bets_on_table[0].bet_amount
