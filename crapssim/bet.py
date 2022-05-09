@@ -23,7 +23,7 @@ class Bet(ABC):
 
     def __init__(self, bet_amount: typing.SupportsFloat):
         self.bet_amount: float = float(bet_amount)
-        self.player: Player | None = None
+        self._player: Player | None = None
 
     @property
     @abstractmethod
@@ -37,6 +37,17 @@ class Bet(ABC):
     @property
     def removable(self):
         return True
+
+    @property
+    def player(self):
+        return self._player
+
+    @player.setter
+    def player(self, player: "Player"):
+        if self._player is not None and self not in self._player.bets_on_table:
+            self._player.bet(self)
+        else:
+            self._player = player
 
     @property
     def table(self):
