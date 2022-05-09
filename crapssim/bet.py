@@ -410,7 +410,7 @@ class DontPass(AllowsOdds):
                      6: LayOdds6,
                      8: LayOdds8,
                      9: LayOdds9,
-                     10: Odds10}[number]
+                     10: LayOdds10}[number]
         bet = odds_type(bet_amount)
         self.player.bet(bet)
 
