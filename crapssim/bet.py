@@ -100,6 +100,29 @@ class WinningLosingNumbersBet(Bet, ABC):
         return None
 
 
+class SingleWinningNumberBet(WinningLosingNumbersBet, ABC):
+    """WinningLosingNumbersBet where only one number wins."""
+    @property
+    @abstractmethod
+    def winning_number(self):
+        pass
+
+    @property
+    def winning_numbers(self):
+        return [self.winning_number]
+
+
+class SingleLosingNumberBet(WinningLosingNumbersBet, ABC):
+    @property
+    @abstractmethod
+    def losing_number(self):
+        pass
+
+    @property
+    def losing_numbers(self):
+        return [self.losing_number]
+
+
 class StaticPayoutRatio(Bet, ABC):
     @property
     @abstractmethod
@@ -186,7 +209,7 @@ Passline/Come bet odds
 """
 
 
-class BaseOdds(WinningLosingNumbersBet, StaticPayoutRatio, ABC):
+class BaseOdds(SingleWinningNumberBet, SingleLosingNumberBet, StaticPayoutRatio, ABC):
     @property
     @abstractmethod
     def base_bet_types(self) -> tuple[typing.Type[WinningLosingNumbersBet]]:
@@ -199,26 +222,8 @@ class BaseOdds(WinningLosingNumbersBet, StaticPayoutRatio, ABC):
 
     @property
     @abstractmethod
-    def winning_number(self) -> int:
-        pass
-
-    @property
-    def winning_numbers(self) -> list[int]:
-        return [self.winning_number]
-
-    @property
-    @abstractmethod
     def key_number(self):
         pass
-
-    @property
-    @abstractmethod
-    def losing_number(self):
-        pass
-
-    @property
-    def losing_numbers(self):
-        return [self.losing_number]
 
     def get_base_bets(self, player: "Player") -> list[WinningLosingNumbersBet]:
         base_bets = player.get_bets(*self.base_bet_types, winning_numbers=self.winning_numbers)
@@ -281,7 +286,7 @@ Place Bets on 4,5,6,8,9,10
 """
 
 
-class Place(WinningLosingNumbersBet, StaticPayoutRatio, ABC):
+class Place(SingleWinningNumberBet, SingleLosingNumberBet, StaticPayoutRatio, ABC):
     def _update_bet(self, table: "Table") -> None:
         # place bets are inactive when point is "Off"
         if table.point == "On":
@@ -290,38 +295,38 @@ class Place(WinningLosingNumbersBet, StaticPayoutRatio, ABC):
 
 class Place4(Place):
     payout_ratio: float = 9 / 5
-    winning_numbers: list[int] = [4]
-    losing_numbers: list[int] = [7]
+    winning_number: int = 4
+    losing_number: list[int] = 7
 
 
 class Place5(Place):
     payout_ratio: float = 7 / 5
-    winning_numbers: list[int] = [5]
-    losing_numbers: list[int] = [7]
+    winning_number: int = 5
+    losing_number: list[int] = 7
 
 
 class Place6(Place):
     payout_ratio: float = 7 / 6
-    winning_numbers: list[int] = [6]
-    losing_numbers: list[int] = [7]
+    winning_number: int = 6
+    losing_number: list[int] = 7
 
 
 class Place8(Place):
     payout_ratio: float = 7 / 6
-    winning_numbers: list[int] = [8]
-    losing_numbers: list[int] = [7]
+    winning_number: int = 8
+    losing_number: list[int] = 7
 
 
 class Place9(Place):
     payout_ratio: float = 7 / 5
-    winning_numbers: list[int] = [9]
-    losing_numbers: list[int] = [7]
+    winning_number: int = 9
+    losing_number: list[int] = 7
 
 
 class Place10(Place):
     payout_ratio: float = 9 / 5
-    winning_numbers: list[int] = [10]
-    losing_numbers: list[int] = [7]
+    winning_number: int = 10
+    losing_number: list[int] = 7
 
 
 """
@@ -453,45 +458,45 @@ Center-table Bets
 """
 
 
-class Any7(WinningLosingNumbersBet, StaticPayoutRatio):
+class OneRollBet(WinningLosingNumbersBet):
+    """WinningLosingNumbersBet where if the number isn't in the winning_numbers, it is in the losing_numbers."""
+    @property
+    def losing_numbers(self):
+        return [x for x in [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12] if x not in self.winning_numbers]
+
+
+class Any7(OneRollBet, SingleWinningNumberBet, StaticPayoutRatio):
     payout_ratio: int = 4
-    winning_numbers: list[int] = [7]
-    losing_numbers: list[int] = [2, 3, 4, 5, 6, 8, 9, 10, 11, 12]
+    winning_number: int = 7
 
 
-class Two(WinningLosingNumbersBet, StaticPayoutRatio):
+class Two(OneRollBet, SingleWinningNumberBet, StaticPayoutRatio):
     payout_ratio: int = 30
-    winning_numbers: list[int] = [2]
-    losing_numbers: list[int] = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+    winning_number: int = 2
 
 
-class Three(WinningLosingNumbersBet, StaticPayoutRatio):
+class Three(OneRollBet, SingleWinningNumberBet, StaticPayoutRatio):
     payout_ratio: int = 15
-    winning_numbers: list[int] = [3]
-    losing_numbers: list[int] = [2, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+    winning_number: int = 3
 
 
-class Yo(WinningLosingNumbersBet, StaticPayoutRatio):
+class Yo(OneRollBet, SingleWinningNumberBet, StaticPayoutRatio):
     payout_ratio: int = 15
-    winning_numbers: list[int] = [11]
-    losing_numbers: list[int] = [2, 3, 4, 5, 6, 7, 8, 9, 10, 12]
+    winning_number: int = 11
 
 
-class Boxcars(WinningLosingNumbersBet, StaticPayoutRatio):
+class Boxcars(OneRollBet, SingleWinningNumberBet, StaticPayoutRatio):
     payout_ratio: int = 30
-    winning_numbers: list[int] = [12]
-    losing_numbers: list[int] = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+    winning_number: int = 12
 
 
-class AnyCraps(WinningLosingNumbersBet, StaticPayoutRatio):
+class AnyCraps(OneRollBet, WinningLosingNumbersBet, StaticPayoutRatio):
     payout_ratio: int = 7
     winning_numbers: list[int] = [2, 3, 12]
-    losing_numbers: list[int] = [4, 5, 6, 7, 8, 9, 10, 11]
 
 
-class CAndE(WinningLosingNumbersBet):
+class CAndE(OneRollBet, WinningLosingNumbersBet):
     winning_numbers: list[int] = [2, 3, 11, 12]
-    losing_numbers: list[int] = [4, 5, 6, 7, 8, 9, 10]
 
     def get_payout_ratio(self, table: "Table"):
         if table.dice.total in [2, 3, 12]:
