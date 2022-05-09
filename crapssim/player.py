@@ -95,13 +95,13 @@ class Player:
         If bet_subname="Any", returns first betting object matching bet"""
         return self.get_bets(bet_type, **bet_attributes)[0]
 
-    def num_bet(self, *bet_types: str, **bet_attributes) -> int:
+    def num_bet(self, *bet_types: typing.Type[Bet], **bet_attributes) -> int:
         """ returns the total number of bets in self.bets_on_table that match bets_to_check """
         return len(self.get_bets(*bet_types, **bet_attributes))
 
-    def remove_if_present(self, bet_type: str) -> None:
-        if self.has_bet(type(bet_type)):
-            self.remove(self.get_bet(type(bet_type)))
+    def remove_if_present(self, bet_type: typing.Type[Bet]) -> None:
+        if self.has_bet(bet_type):
+            self.remove(self.get_bet(bet_type))
 
     def add_strategy_bets(self, table: "Table") -> None:
         """ Implement the given betting strategy
