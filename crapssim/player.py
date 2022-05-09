@@ -40,28 +40,21 @@ class Player:
         Sum of bet value for the player
     """
 
-    def __init__(self, bankroll: typing.SupportsFloat,
-                 bet_strategy: STRATEGY_TYPE = passline,
-                 name: str = "Player",
-                 unit: typing.SupportsFloat = 5,
-                 table: 'Table' = None):
+    def __init__(self, bankroll: typing.SupportsFloat, bet_strategy: STRATEGY_TYPE = passline, name: str = "Player",
+                 unit: typing.SupportsFloat = 5):
         self.bankroll: float = bankroll
         self.bet_strategy: STRATEGY_TYPE = bet_strategy
         self.strat_info: dict[str, typing.Any] = {}
         self.name: str = name
         self.unit: typing.SupportsFloat = unit
-        self.table = None
-        if table is not None:
-            self.sit_at_table(table)
-
         self.bets_on_table: list[Bet] = []
         self.total_bet_amount: float = 0.0
 
     def sit_at_table(self, table: "Table"):
         table.add_player(self)
 
-    def bet(self, bet_object: Bet) -> None:
-        if not bet_object.allowed(self):
+    def bet(self, bet_object: Bet, table: "Table") -> None:
+        if not bet_object.allowed(table=table, player=self):
             return
 
         if self.bankroll >= bet_object.bet_amount:
@@ -108,19 +101,24 @@ class Player:
         if self.has_bet(type(bet)):
             self.remove(self.get_bet(type(bet)))
 
-    def add_strategy_bets(self) -> None:
-        """ Implement the given betting strategy """
-        if self.bet_strategy:
-            self.bet_strategy(self, self.table, **self.strat_info)
+    def add_strategy_bets(self, table: "Table") -> None:
+        """ Implement the given betting strategy
 
-    def update_bet(self, verbose: bool = False) -> \
+        Parameters
+        ----------
+        table
+        """
+        if self.bet_strategy:
+            self.bet_strategy(self, table, **self.strat_info)
+
+    def update_bet(self, table, verbose: bool = False) -> \
             dict[str, dict[str, str | None | float]]:
         info = {}
         for b in self.bets_on_table[:]:
-            b._update_bet(self.table)
-            status, win_amount, remove = b.get_status(self.table), \
-                                         b.get_win_amount(self.table), \
-                                         b.should_remove(self.table)
+            b._update_bet(table)
+            status, win_amount, remove = b.get_status(table), \
+                                         b.get_win_amount(table), \
+                                         b.should_remove(table)
 
             if status == "win":
                 self.bankroll += win_amount + b.bet_amount

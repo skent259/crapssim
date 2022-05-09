@@ -36,13 +36,14 @@ class Bet(ABC):
     def removable(self):
         return True
 
-    def allowed(self, player) -> bool:
+    def allowed(self, table: "Table", player: "Player") -> bool:
         """
         Checks whether the bet is allowed to be placed on the given table.
 
         Parameters
         ----------
         player
+        table
 
         Returns
         -------
@@ -118,7 +119,7 @@ class AllowsOdds(WinningLosingNumbersBet, StaticPayoutRatio, ABC):
     payout_ratio: float = 1.0
 
     @abstractmethod
-    def place_odds(self, bet_amount: typing.SupportsFloat, player: "Player"):
+    def place_odds(self, bet_amount: typing.SupportsFloat, player: "Player", table):
         pass
 
 
@@ -158,21 +159,21 @@ class PassLine(AllowsOdds):
             return False
         return True
 
-    def allowed(self, player) -> bool:
-        if player.table.point.status == 'Off':
+    def allowed(self, table: "Table", player: "Player") -> bool:
+        if table.point.status == 'Off':
             return True
         return False
 
-    def place_odds(self, bet_amount: typing.SupportsFloat, player: "Player"):
+    def place_odds(self, bet_amount: typing.SupportsFloat, player: "Player", table: "Table"):
         number = self.winning_numbers[0]
         odds_type = {4: Odds4, 5: Odds5, 6: Odds6, 8: Odds8, 9: Odds9, 10: Odds10}[number]
         bet = odds_type(bet_amount)
-        player.bet(bet)
+        player.bet(bet, table)
 
 
 class Come(PassLine):
-    def allowed(self, player) -> bool:
-        if player.table.point.status == 'On':
+    def allowed(self, table: "Table", player: "Player") -> bool:
+        if table.point.status == 'On':
             return True
         return False
 
@@ -220,21 +221,19 @@ class BaseOdds(WinningLosingNumbersBet, StaticPayoutRatio, ABC):
         return [self.losing_number]
 
     def get_base_bets(self, player: "Player") -> list[WinningLosingNumbersBet]:
-        base_bets = [x for x in player.bets_on_table if
-                     isinstance(x, self.base_bet_types)
-                     and x.winning_numbers == [self.winning_numbers]]
+        base_bets = player.get_bets(*self.base_bet_types, winning_numbers=self.winning_numbers)
         return base_bets
 
     def get_max_odds(self, table: "Table") -> int:
         return table.settings[self.table_odds_setting][self.key_number]
 
-    def get_max_bet(self, player: "Player") -> typing.SupportsFloat:
+    def get_max_bet(self, table: "Table", player: "Player") -> typing.SupportsFloat:
         base_bet_amount = sum(x.bet_amount for x in self.get_base_bets(player))
-        max_odds = self.get_max_odds(player.table)
+        max_odds = self.get_max_odds(table)
         return base_bet_amount * max_odds
 
-    def allowed(self, player) -> bool:
-        return self.get_max_bet(player) <= self.bet_amount
+    def allowed(self, table: "Table", player: "Player") -> bool:
+        return self.get_max_bet(table, player) <= self.bet_amount
 
 
 class Odds(BaseOdds, ABC):
@@ -375,12 +374,12 @@ class DontPass(AllowsOdds):
             self.point = table.dice.total
             self.new_point = True
 
-    def allowed(self, player) -> bool:
-        if player.table.point.status == 'Off':
+    def allowed(self, table: "Table", player) -> bool:
+        if table.point.status == 'Off':
             return True
         return False
 
-    def place_odds(self, bet_amount: typing.SupportsFloat, player: "Player"):
+    def place_odds(self, bet_amount: typing.SupportsFloat, player: "Player", table: "Table"):
         number = self.losing_numbers[0]
         odds_type = {4: LayOdds4,
                      5: LayOdds5,
@@ -389,7 +388,7 @@ class DontPass(AllowsOdds):
                      9: LayOdds9,
                      10: LayOdds10}[number]
         bet = odds_type(bet_amount)
-        player.bet(bet)
+        player.bet(bet, table)
 
     def get_status(self, table: "Table") -> str | None:
         if self.new_point:
@@ -398,8 +397,8 @@ class DontPass(AllowsOdds):
 
 
 class DontCome(DontPass):
-    def allowed(self, player) -> bool:
-        if player.table.point.status == 'On':
+    def allowed(self, table: "Table", player) -> bool:
+        if table.point.status == 'On':
             return True
         return False
 
@@ -580,8 +579,8 @@ class Fire(Bet):
             self.points_made = self.points_made + [table.dice.total]
         self.current_point = None
 
-    def allowed(self, player) -> bool:
-        return player.table.new_shooter
+    def allowed(self, table: "Table", player) -> bool:
+        return table.new_shooter
 
     def get_payout_ratio(self, table: "Table"):
         if len(self.points_made) in table.settings['fire_points']:
