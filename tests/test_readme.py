@@ -1,10 +1,9 @@
-import pytest
 import crapssim as craps
 
 
 def test_first_chunk():
     table = craps.Table()
-    your_strat = craps.strategy.passline_odds2
+    your_strat = craps.strategy.PassLineOdds(2)
     you = craps.Player(bankroll=200, bet_strategy=your_strat)
 
     table.add_player(you)

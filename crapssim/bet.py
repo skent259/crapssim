@@ -89,6 +89,10 @@ class Bet(ABC):
     def already_placed(self, player: "Player") -> bool:
         return player.has_bets(type(self))
 
+    @abstractmethod
+    def __eq__(self, other):
+        pass
+
 
 class WinningLosingNumbersBet(Bet, ABC):
     @property
@@ -107,6 +111,16 @@ class WinningLosingNumbersBet(Bet, ABC):
         elif table.dice.total in self.losing_numbers:
             return "lose"
         return None
+
+    def __eq__(self, other):
+        if isinstance(other, Bet) and not isinstance(other, type(self)):
+            return False
+        elif isinstance(other, type(self)):
+            return self.bet_amount == other.bet_amount and \
+                   self.winning_numbers == other.winning_numbers and \
+                   self.losing_numbers == other.losing_numbers
+        else:
+            raise NotImplementedError
 
 
 class SingleWinningNumberBet(WinningLosingNumbersBet, ABC):
@@ -175,8 +189,11 @@ class BaseOdds(SingleWinningNumberBet, SingleLosingNumberBet, StaticPayoutRatio,
     def get_max_odds(self, table: "Table") -> int:
         return table.settings[self.table_odds_setting][self.key_number]
 
+    def get_base_amount(self, player: "Player"):
+        return sum(x.bet_amount for x in self.get_base_bets(player))
+
     def get_max_bet(self, table: "Table", player: "Player") -> typing.SupportsFloat:
-        base_bet_amount = sum(x.bet_amount for x in self.get_base_bets(player))
+        base_bet_amount = self.get_base_amount(player)
         max_odds = self.get_max_odds(table)
         return base_bet_amount * max_odds
 
@@ -320,6 +337,16 @@ class Place(SingleWinningNumberBet, SingleLosingNumberBet, StaticPayoutRatio, AB
         # place bets are inactive when point is "Off"
         if table.point == "On":
             super().update(table)
+
+    @staticmethod
+    def by_number(number: int, bet_amount: float):
+        bet_type = {4: Place4,
+                    5: Place5,
+                    6: Place6,
+                    8: Place8,
+                    9: Place9,
+                    10: Place10}[number]
+        return bet_type(bet_amount)
 
 
 class Place4(Place):
@@ -555,6 +582,12 @@ class HardWay(StaticPayoutRatio, ABC):
             return "lose"
         return None
 
+    def __eq__(self, other):
+        if isinstance(other, Bet) and not isinstance(other, type(self)):
+            return False
+        elif isinstance(other, type(self)):
+            return self.number == other.number and self.bet_amount == other.bet_amount
+
 
 class Hard4(HardWay):
     payout_ratio: int = 7
@@ -617,3 +650,10 @@ class Fire(Bet):
             return table.settings['fire_points'][len(self.points_made)]
         else:
             raise NotImplementedError
+
+    def __eq__(self, other: Bet):
+        if isinstance(other, Bet) and not isinstance(other, type(self)):
+            return False
+        elif isinstance(other, type(self)):
+            return self.bet_amount == other.bet_amount and \
+                self.points_made == other.points_made

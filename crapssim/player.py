@@ -2,8 +2,8 @@ import inspect
 import typing
 from pprint import pprint
 
-from crapssim.bet import Bet, Odds, LayOdds, PassLine, Come, DontPass, DontCome, AllowsOdds
-from crapssim.strategy import STRATEGY_TYPE, passline
+from crapssim.bet import Bet, AllowsOdds
+from crapssim.strategy import Strategy, BetPassLine
 
 if typing.TYPE_CHECKING:
     from crapssim.table import Table
@@ -38,16 +38,14 @@ class Player:
         Standard amount of bet to be used by bet_strategy
     bets_on_table : list
         List of betting objects for the player
-    total_bet_amount : int
-        Sum of bet value for the player
     """
 
     def __init__(self, bankroll: typing.SupportsFloat,
-                 bet_strategy: STRATEGY_TYPE = passline,
+                 bet_strategy: Strategy = BetPassLine(5),
                  name: str = "Player",
                  unit: typing.SupportsFloat = 5):
         self.bankroll: float = bankroll
-        self.bet_strategy: STRATEGY_TYPE = bet_strategy
+        self.bet_strategy: Strategy = bet_strategy
         self.strat_info: dict[str, typing.Any] = {}
         self.name: str = name
         self.unit: typing.SupportsFloat = unit
@@ -116,8 +114,8 @@ class Player:
         ----------
         table
         """
-        if self.bet_strategy:
-            self.bet_strategy(self, table, **self.strat_info)
+        if self.bet_strategy is not None:
+            self.bet_strategy.update_bets(self, table)
 
     def update_bet(self, table, verbose: bool = False) -> None:
         info = {}
