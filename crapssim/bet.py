@@ -147,11 +147,60 @@ Passline and Come bets
 """
 
 
+class BaseOdds(SingleWinningNumberBet, SingleLosingNumberBet, StaticPayoutRatio, ABC):
+    @property
+    @abstractmethod
+    def base_bet_types(self) -> tuple[typing.Type[WinningLosingNumbersBet]]:
+        pass
+
+    @property
+    @abstractmethod
+    def table_odds_setting(self) -> str:
+        pass
+
+    @property
+    @abstractmethod
+    def key_number(self):
+        pass
+
+    @staticmethod
+    @abstractmethod
+    def by_number(number: int, bet_amount: float):
+        pass
+
+    def get_base_bets(self, player: "Player") -> list[WinningLosingNumbersBet]:
+        base_bets = player.get_bets(*self.base_bet_types, winning_numbers=self.winning_numbers)
+        return base_bets
+
+    def get_max_odds(self, table: "Table") -> int:
+        return table.settings[self.table_odds_setting][self.key_number]
+
+    def get_max_bet(self, table: "Table", player: "Player") -> typing.SupportsFloat:
+        base_bet_amount = sum(x.bet_amount for x in self.get_base_bets(player))
+        max_odds = self.get_max_odds(table)
+        return base_bet_amount * max_odds
+
+    def allowed(self, table: "Table", player: "Player") -> bool:
+        return self.get_max_bet(table, player) <= self.bet_amount
+
+
 class AllowsOdds(WinningLosingNumbersBet, StaticPayoutRatio, ABC):
     payout_ratio: float = 1.0
 
-    @abstractmethod
     def place_odds(self, bet_amount: typing.SupportsFloat, player: "Player", table):
+        player.place_bet(self.get_odds_bet(bet_amount), table)
+
+    def get_odds_bet(self, bet_amount: typing.SupportsFloat):
+        return self.odds_type.by_number(self.key_number, bet_amount)
+
+    @property
+    @abstractmethod
+    def odds_type(self) -> typing.Type[BaseOdds]:
+        pass
+
+    @property
+    @abstractmethod
+    def key_number(self):
         pass
 
 
@@ -160,6 +209,14 @@ class PassLine(AllowsOdds):
         super().__init__(bet_amount)
         self.point: int | None = None
         self.new_point: bool = False
+
+    @property
+    def odds_type(self) -> typing.Type[BaseOdds]:
+        return Odds
+
+    @property
+    def key_number(self) -> int:
+        return self.winning_numbers[0]
 
     @property
     def winning_numbers(self):
@@ -196,12 +253,6 @@ class PassLine(AllowsOdds):
             return True
         return False
 
-    def place_odds(self, bet_amount: typing.SupportsFloat, player: "Player", table: "Table"):
-        number = self.winning_numbers[0]
-        odds_type = {4: Odds4, 5: Odds5, 6: Odds6, 8: Odds8, 9: Odds9, 10: Odds10}[number]
-        bet = odds_type(bet_amount)
-        player.place_bet(bet, table)
-
 
 class Come(PassLine):
     def allowed(self, table: "Table", player: "Player") -> bool:
@@ -218,38 +269,6 @@ Passline/Come bet odds
 """
 
 
-class BaseOdds(SingleWinningNumberBet, SingleLosingNumberBet, StaticPayoutRatio, ABC):
-    @property
-    @abstractmethod
-    def base_bet_types(self) -> tuple[typing.Type[WinningLosingNumbersBet]]:
-        pass
-
-    @property
-    @abstractmethod
-    def table_odds_setting(self) -> str:
-        pass
-
-    @property
-    @abstractmethod
-    def key_number(self):
-        pass
-
-    def get_base_bets(self, player: "Player") -> list[WinningLosingNumbersBet]:
-        base_bets = player.get_bets(*self.base_bet_types, winning_numbers=self.winning_numbers)
-        return base_bets
-
-    def get_max_odds(self, table: "Table") -> int:
-        return table.settings[self.table_odds_setting][self.key_number]
-
-    def get_max_bet(self, table: "Table", player: "Player") -> typing.SupportsFloat:
-        base_bet_amount = sum(x.bet_amount for x in self.get_base_bets(player))
-        max_odds = self.get_max_odds(table)
-        return base_bet_amount * max_odds
-
-    def allowed(self, table: "Table", player: "Player") -> bool:
-        return self.get_max_bet(table, player) <= self.bet_amount
-
-
 class Odds(BaseOdds, ABC):
     base_bet_types: tuple[typing.Type[WinningLosingNumbersBet]] = (PassLine, Come)
     table_odds_setting: str = 'max_odds'
@@ -258,6 +277,10 @@ class Odds(BaseOdds, ABC):
     @property
     def key_number(self):
         return self.winning_number
+
+    @staticmethod
+    def by_number(number: int, bet_amount: float):
+        return {4: Odds4, 5: Odds5, 6: Odds6, 8: Odds8, 9: Odds9, 10: Odds10}[number](bet_amount)
 
 
 class Odds4(Odds):
@@ -374,6 +397,14 @@ class DontPass(AllowsOdds):
         self.new_point: bool = False
 
     @property
+    def odds_type(self) -> typing.Type[BaseOdds]:
+        return LayOdds
+
+    @property
+    def key_number(self) -> int:
+        return self.losing_numbers[0]
+
+    @property
     def winning_numbers(self):
         if self.point is None:
             return [2, 3]
@@ -395,17 +426,6 @@ class DontPass(AllowsOdds):
         if table.point.status == 'Off':
             return True
         return False
-
-    def place_odds(self, bet_amount: typing.SupportsFloat, player: "Player", table: "Table"):
-        number = self.losing_numbers[0]
-        odds_type = {4: LayOdds4,
-                     5: LayOdds5,
-                     6: LayOdds6,
-                     8: LayOdds8,
-                     9: LayOdds9,
-                     10: LayOdds10}[number]
-        bet = odds_type(bet_amount)
-        player.place_bet(bet, table)
 
     def get_status(self, table: "Table") -> str | None:
         if self.new_point:
@@ -433,6 +453,15 @@ class LayOdds(BaseOdds, ABC):
     @property
     def key_number(self):
         return self.losing_number
+
+    @staticmethod
+    def by_number(number: int, bet_amount: float):
+        return {4: LayOdds4,
+                5: LayOdds5,
+                6: LayOdds6,
+                8: LayOdds8,
+                9: LayOdds9,
+                10: LayOdds10}[number](bet_amount)
 
 
 class LayOdds4(LayOdds):
