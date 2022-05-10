@@ -343,7 +343,14 @@ Field bet
 """
 
 
-class Field(WinningLosingNumbersBet):
+class OneRollBet(WinningLosingNumbersBet, ABC):
+    """WinningLosingNumbersBet where if the number isn't in the winning_numbers, it is in the losing_numbers."""
+    @property
+    def losing_numbers(self):
+        return [x for x in [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12] if x not in self.winning_numbers]
+
+
+class Field(OneRollBet):
     def get_payout_ratio(self, table: "Table"):
         if table.dice.total in table.settings['field_payouts']:
             return table.settings['field_payouts'][table.dice.total]
@@ -352,10 +359,6 @@ class Field(WinningLosingNumbersBet):
     @property
     def winning_numbers(self):
         return [2, 3, 4, 9, 10, 11, 12]
-
-    @property
-    def losing_numbers(self):
-        return [5, 6, 7, 8]
 
 
 """
@@ -465,13 +468,6 @@ class LayOdds10(LayOdds):
 """
 Center-table Bets
 """
-
-
-class OneRollBet(WinningLosingNumbersBet, ABC):
-    """WinningLosingNumbersBet where if the number isn't in the winning_numbers, it is in the losing_numbers."""
-    @property
-    def losing_numbers(self):
-        return [x for x in [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12] if x not in self.winning_numbers]
 
 
 class Any7(OneRollBet, SingleWinningNumberBet, StaticPayoutRatio):
