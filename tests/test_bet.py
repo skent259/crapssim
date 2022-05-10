@@ -3,7 +3,7 @@ import crapssim
 import numpy as np
 
 from crapssim import Player
-from crapssim.bet import Fire, Bet, PassLine, Come, Odds, DontPass, DontCome, Field
+from crapssim.bet import Fire, PassLine, Come, DontPass, DontCome, Field
 from crapssim.dice import Dice
 from crapssim.table import Table, Point
 
