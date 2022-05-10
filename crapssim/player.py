@@ -1,6 +1,6 @@
 import typing
 
-from crapssim.bet import Bet
+from crapssim.bet import Bet, Odds, LayOdds
 from crapssim.strategy import STRATEGY_TYPE, passline
 
 if typing.TYPE_CHECKING:
@@ -135,3 +135,11 @@ class Player:
             print(f"{self.name} won ${win_amount} on {bet.name} bet!")
         elif status == "lose":
             print(f"{self.name} lost ${bet.bet_amount} on {bet.name} bet.")
+
+    def place_odds(self, number: int, bet_amount: float, table: "Table"):
+        odds_bet = Odds.by_number(number, bet_amount)
+        self.place_bet(odds_bet, table)
+
+    def lay_odds(self, number: int, bet_amount: float, table: "Table"):
+        odds_bet = LayOdds.by_number(number, bet_amount)
+        self.place_bet(odds_bet, table)
