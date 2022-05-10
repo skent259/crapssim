@@ -187,28 +187,24 @@ class BaseOdds(SingleWinningNumberBet, SingleLosingNumberBet, StaticPayoutRatio,
 class AllowsOdds(WinningLosingNumbersBet, StaticPayoutRatio, ABC):
     payout_ratio: float = 1.0
 
+    def __init__(self, bet_amount: float):
+        super().__init__(bet_amount)
+        self.point: int = None
+        self.new_point: bool = False
+
     def place_odds(self, bet_amount: typing.SupportsFloat, player: "Player", table):
         player.place_bet(self.get_odds_bet(bet_amount), table)
 
     def get_odds_bet(self, bet_amount: typing.SupportsFloat):
-        return self.odds_type.by_number(self.key_number, bet_amount)
+        return self.odds_type.by_number(self.point, bet_amount)
 
     @property
     @abstractmethod
     def odds_type(self) -> typing.Type[BaseOdds]:
         pass
 
-    @property
-    @abstractmethod
-    def key_number(self):
-        pass
-
 
 class PassLine(AllowsOdds):
-    def __init__(self, bet_amount: float):
-        super().__init__(bet_amount)
-        self.point: int | None = None
-        self.new_point: bool = False
 
     @property
     def odds_type(self) -> typing.Type[BaseOdds]:
@@ -390,12 +386,6 @@ Don't pass and Don't come bets
 
 
 class DontPass(AllowsOdds):
-    def __init__(self, bet_amount: float):
-        super().__init__(bet_amount)
-        self.push_numbers: list[int] = [12]
-        self.point: int | None = None
-        self.new_point: bool = False
-
     @property
     def odds_type(self) -> typing.Type[BaseOdds]:
         return LayOdds

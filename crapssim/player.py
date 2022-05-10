@@ -1,6 +1,6 @@
 import typing
 
-from crapssim.bet import Bet, Odds, LayOdds
+from crapssim.bet import Bet, Odds, LayOdds, PassLine, Come, DontPass, DontCome
 from crapssim.strategy import STRATEGY_TYPE, passline
 
 if typing.TYPE_CHECKING:
@@ -136,10 +136,50 @@ class Player:
         elif status == "lose":
             print(f"{self.name} lost ${bet.bet_amount} on {bet.name} bet.")
 
-    def place_odds(self, number: int, bet_amount: float, table: "Table"):
+    def place_odds(self, table: "Table",
+                   bet_amount: float = None,
+                   number: int = None):
+        if number is None:
+            pass_come_bets = self.get_bets(PassLine, Come)
+            if len(pass_come_bets) == 0:
+                raise ValueError('No PassLine or Come bets found to lay odds on.')
+            if len(pass_come_bets) > 1:
+                raise ValueError('If there is more than one PassLine and '
+                                 'Come bet for this Player you must specify a number.')
+        else:
+            pass_come_bets = self.get_bets(PassLine, Come, point=number)
+            if len(pass_come_bets) == 0:
+                raise ValueError(f'No PassLine or Come bets found with point={number}.')
+
+        pass_come_bet: PassLine | Come = pass_come_bets[0]
+        number = pass_come_bet.point
+
+        if bet_amount is None:
+            bet_amount = table.settings['max_odds'][number] * pass_come_bet.bet_amount
+
         odds_bet = Odds.by_number(number, bet_amount)
         self.place_bet(odds_bet, table)
 
-    def lay_odds(self, number: int, bet_amount: float, table: "Table"):
-        odds_bet = LayOdds.by_number(number, bet_amount)
-        self.place_bet(odds_bet, table)
+    def lay_odds(self, table: "Table",
+                 bet_amount: float = None,
+                 number: int = None):
+        if number is None:
+            dont_pass_come_bets = self.get_bets(DontPass, DontCome)
+            if len(dont_pass_come_bets) == 0:
+                raise ValueError('No DontPass or DontCome bets found to lay odds on.')
+            if len(dont_pass_come_bets) > 1:
+                raise ValueError('If there is more than one DontPass and '
+                                 'DontCome bet for this Player you must specify a number.')
+        else:
+            dont_pass_come_bets = self.get_bets(DontPass, DontCome, point=number)
+            if len(dont_pass_come_bets) == 0:
+                raise ValueError(f'No DontPass or DontCome bets found with point={number}.')
+
+        dont_pass_come_bet: PassLine | Come = dont_pass_come_bets[0]
+        number = dont_pass_come_bet.point
+
+        if bet_amount is None:
+            bet_amount = table.settings['max_odds'][number] * dont_pass_come_bet.bet_amount
+
+        lay_odds_bet = LayOdds.by_number(number, bet_amount)
+        self.place_bet(lay_odds_bet, table)
