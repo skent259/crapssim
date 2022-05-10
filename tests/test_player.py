@@ -1,12 +1,12 @@
-from crapssim import Table, Dice, Player
+from crapssim import Table
 from crapssim.bet import PassLine
-from crapssim.strategy import passline
+from crapssim.strategy import BetPassLine
 
 
 def test_default_strategy():
     table = Table()
     table.add_player()
-    assert table.players[0].bet_strategy == passline
+    assert table.players[0].bet_strategy == BetPassLine(5)
 
 
 def test_irremovable_bet():

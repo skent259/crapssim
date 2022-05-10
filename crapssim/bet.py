@@ -96,6 +96,10 @@ class Bet(ABC):
     def __repr__(self):
         return f'{self.__class__.__name__}(bet_amount={self.bet_amount})'
 
+    @abstractmethod
+    def __eq__(self, other):
+        pass
+
 
 class WinningLosingNumbersBet(Bet, ABC):
     @abstractmethod
@@ -112,6 +116,16 @@ class WinningLosingNumbersBet(Bet, ABC):
         elif table.dice.total in self.get_losing_numbers(table):
             return "lose"
         return None
+
+    def __eq__(self, other):
+        if isinstance(other, Bet) and not isinstance(other, type(self)):
+            return False
+        elif isinstance(other, type(self)):
+            return self.bet_amount == other.bet_amount and \
+                   self.winning_numbers == other.winning_numbers and \
+                   self.losing_numbers == other.losing_numbers
+        else:
+            raise NotImplementedError
 
 
 class StaticWinningLosingNumbersBet(WinningLosingNumbersBet):
@@ -362,6 +376,16 @@ class Place(SingleWinningNumberBet, SingleLosingNumberBet, StaticPayoutRatio, AB
         # place bets are inactive when point is "Off"
         if table.point == "On":
             super().update(table)
+
+    @staticmethod
+    def by_number(number: int, bet_amount: float):
+        bet_type = {4: Place4,
+                    5: Place5,
+                    6: Place6,
+                    8: Place8,
+                    9: Place9,
+                    10: Place10}[number]
+        return bet_type(bet_amount)
 
 
 class Place4(Place):
@@ -618,6 +642,12 @@ class HardWay(StaticPayoutRatio, ABC):
         elif table.dice.total in [self.number, 7]:
             return "lose"
         return None
+
+    def __eq__(self, other):
+        if isinstance(other, Bet) and not isinstance(other, type(self)):
+            return False
+        elif isinstance(other, type(self)):
+            return self.number == other.number and self.bet_amount == other.bet_amount
 
 
 class Hard4(HardWay):
