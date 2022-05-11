@@ -14,8 +14,8 @@ def test_second_chunk():
     n_sim = 10
     bankroll = 300
     strategies = {
-        "place68": craps.strategy.place68,
-        "ironcross": craps.strategy.ironcross
+        "place68": craps.strategy.Place68(5),
+        # "ironcross": craps.strategy.ironcross
     }
 
     for i in range(n_sim):

@@ -100,6 +100,10 @@ class Bet(ABC):
     def __eq__(self, other):
         pass
 
+    @abstractmethod
+    def __hash__(self):
+        pass
+
 
 class WinningLosingNumbersBet(Bet, ABC):
     @abstractmethod
@@ -649,6 +653,9 @@ class HardWay(StaticPayoutRatio, ABC):
         elif isinstance(other, type(self)):
             return self.number == other.number and self.bet_amount == other.bet_amount
 
+    def __hash__(self):
+        return hash((self.__class__, self.number, self.bet_amount))
+
 
 class Hard4(HardWay):
     payout_ratio: int = 7
@@ -671,6 +678,10 @@ class Hard10(HardWay):
 
 
 class Fire(Bet):
+    def __hash__(self):
+        return hash((self.__class__, self.bet_amount, tuple(self.points_made),
+                     tuple(self.current_point)))
+
     def __init__(self, bet_amount: float):
         super().__init__(bet_amount)
         self.bet_amount: float = bet_amount
