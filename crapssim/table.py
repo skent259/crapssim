@@ -203,6 +203,8 @@ class Table:
         """
         self.new_shooter = False
         self.dice.roll()
+        for player in self.players:
+            player.bet_strategy.after_roll(player, self)
 
         if verbose:
             print("")
@@ -222,6 +224,8 @@ class Table:
         """
         self.new_shooter = False
         self.dice.fixed_roll(dice_outcome)
+        for player in self.players:
+            player.bet_strategy.after_roll(player, self)
 
         if verbose:
             print("")
