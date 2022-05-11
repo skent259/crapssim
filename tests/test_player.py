@@ -10,17 +10,11 @@ def test_default_strategy():
 
 
 def test_irremovable_bet():
-    player = Player(100)
     bet = PassLine(50)
     table = Table()
-    table.add_player(player)
-    player.place_bet(bet, table)
-    table = Table()
-    dice = Dice()
-    dice.fixed_roll([2, 2])
-    player.get_bet(PassLine).update(table)
-    player.remove_if_present(PassLine)
-    assert len(player.bets_on_table) == 1
+    table.fixed_roll([2, 2])
+    bet.update(table)
+    assert bet.removable is False
 
 
 def test_existing_bet():

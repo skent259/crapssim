@@ -86,9 +86,9 @@ class Player:
         bets = []
 
         for bet in self.bets_on_table:
-            bet_members = inspect.getmembers(bet)
-            if isinstance(bet, bet_types) and all(x in bet_members for x in list(bet_attributes.items())):
-                bets.append(bet)
+            if isinstance(bet, bet_types):
+                if all(hasattr(bet, a) and getattr(bet, a) == bet_attributes[a] for a in bet_attributes):
+                    bets.append(bet)
         return bets
 
     def has_bets(self, *bet_types: typing.Type[Bet], **bet_attributes) -> bool:
