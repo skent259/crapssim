@@ -232,7 +232,6 @@ class PassLine(AllowsOdds):
         return super().get_status(table)
 
     def update(self, table: "Table") -> None:
-        print(self.point, self.get_status(table))
         self.new_point = False
 
         if self.point is None and self.get_status(table) not in ("win", "lose"):
