@@ -189,6 +189,18 @@ class BetLayOdds(Strategy):
                 player.place_bet(bet, table)
 
 
+class PlaceBetAndMove(Strategy):
+    """Make place bets and then move it to another place or remove it if a passline
+    or come bet is on the same number."""
+    def __init__(self, starting_bets: list[Place],
+                 bet_movements: dict[Place, Place]):
+        self.starting_bets = starting_bets
+        self.bet_movements = bet_movements
+
+    def update_bets(self, player: 'Player', table: 'Table'):
+        pass
+
+
 class Place682Come(Strategy):
     def __init__(self, pass_come_amount: float = 5,
                  place_amounts: dict[int, float] = None):
@@ -238,39 +250,3 @@ class Place682Come(Strategy):
         self.place_68(player, table)
         self.add_pass_line_come(player, table)
         self.move_bets(player, table)
-
-
-
-    # def point_off(self, player: 'Player', table: 'Table'):
-    #     if not player.count_bets(Place, Come, PassLine) >= 4:
-    #         player.place_bet(PassLine(self.pass_come_amount), table)
-    #
-    # def has_bet(self, player, number):
-    #     return len([x for x in player.bets_on_table if isinstance(x, (PassLine, Come, Place))
-    #             and x.winning_numbers == [number]]) > 0
-    #
-    # def point_on(self, player: 'Player', table: 'Table'):
-    #     self.place_68(player, table)
-    #
-    #     if not player.count_bets(Place, Come, PassLine) >= 4:
-    #         player.place_bet(Come(self.pass_come_amount), table)
-    #
-    #     self.move_bets(player, table)
-    #
-    # def move_bets(self, player: 'Player', table: 'Table'):
-    #     for winning_number in (6, 8):
-    #         if player.has_bets(Place, winning_number=winning_number) and \
-    #                 player.has_bets(PassLine, Come, winning_number=winning_number):
-    #             old_bet = player.get_bet(Place, winning_number=winning_number)
-    #             player.remove_bet(old_bet)
-    #
-    #             new_number = {6: 5, 8: 9}[winning_number]
-    #             new_amount = self.place_amounts[new_number]
-    #             new_bet = Place.by_number(new_number, new_amount)
-    #             player.place_bet(new_bet, table)
-    #
-    # def update_bets(self, player: 'Player', table: 'Table'):
-    #     if table.point.status == 'Off':
-    #         self.point_off(player, table)
-    #     else:
-    #         self.point_on(player, table)
