@@ -3,9 +3,9 @@ from collections import namedtuple
 import pytest
 
 from crapssim import Player, Table
-from crapssim.bet import Come, LayOdds, DontCome
+from crapssim.bet import Come, LayOdds, DontCome, Place6, Place8, PassLine, Place5, Place9, Field
 from crapssim.strategy import BetPassLine, PassLineOdds, TwoCome, Pass2Come, BetPlace, Place68, BetDontPass, BetLayOdds, \
-    Place682Come
+    Place682Come, PlaceBetAndMove, PassLinePlace68Move59, PlaceIfOtherBetsExist
 
 
 @pytest.mark.parametrize(['strategy', 'strategy_info', 'rolls', 'correct_bets'], [
@@ -47,6 +47,16 @@ from crapssim.strategy import BetPassLine, PassLineOdds, TwoCome, Pass2Come, Bet
     (BetDontPass(5) + BetLayOdds(1), {'win_mult': 1}, [], {('DontPass', '', 5)}),
     (BetDontPass(5) + BetLayOdds(6), {'win_mult': '345'}, [(3, 3)], {('DontPass', '', 5),
                                                                      ('LayOdds6', '', 30)}),
+    (PassLinePlace68Move59(), {}, [], {('PassLine', '', 5)}),
+    (PassLinePlace68Move59(), {}, [(3, 3)], {('PassLine', '', 5),
+                                             ('Place8', '', 6),
+                                             ('Place5', '', 5)}),
+    (PassLinePlace68Move59(), {}, [(3, 3), (4, 4)], {('PassLine', '', 5),
+                                                     ('Place8', '', 6),
+                                                     ('Place5', '', 5),
+                                                     ('Place9', '', 5)}),
+    (BetPassLine(5) + PlaceIfOtherBetsExist([Field(5)], [PassLine(5)]), {}, [], {('PassLine', '', 5),
+                                                                                 ('Field', '', 5)}),
     (Place682Come(), {}, [], set()),
     (Place682Come(), {}, [(3, 3)], {('Place6', '', 6),
                                     ('Place8', '', 6),

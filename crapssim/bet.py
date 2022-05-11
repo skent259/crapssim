@@ -93,6 +93,13 @@ class Bet(ABC):
     def __eq__(self, other):
         pass
 
+    @abstractmethod
+    def __hash__(self):
+        pass
+
+    def __repr__(self):
+        return f'{self.__class__.__name__}(bet_amount={self.bet_amount})'
+
 
 class WinningLosingNumbersBet(Bet, ABC):
     @property
@@ -121,6 +128,11 @@ class WinningLosingNumbersBet(Bet, ABC):
                    self.losing_numbers == other.losing_numbers
         else:
             raise NotImplementedError
+
+    def __hash__(self):
+        return hash((self.__class__, self.bet_amount,
+                     tuple(self.winning_numbers),
+                     tuple(self.losing_numbers)))
 
 
 class SingleWinningNumberBet(WinningLosingNumbersBet, ABC):
@@ -182,7 +194,7 @@ class BaseOdds(SingleWinningNumberBet, SingleLosingNumberBet, StaticPayoutRatio,
     def by_number(number: int, bet_amount: float):
         pass
 
-    def get_base_bets(self, player: "Player") -> list[WinningLosingNumbersBet]:
+    def get_base_bets(self, player: "Player") -> list['AllowsOdds']:
         base_bets = player.get_bets(*self.base_bet_types, winning_numbers=self.winning_numbers)
         return base_bets
 
@@ -204,10 +216,12 @@ class BaseOdds(SingleWinningNumberBet, SingleLosingNumberBet, StaticPayoutRatio,
 class AllowsOdds(WinningLosingNumbersBet, StaticPayoutRatio, ABC):
     payout_ratio: float = 1.0
 
-    def __init__(self, bet_amount: float):
+    def __init__(self, bet_amount: float,
+                 point: int | None = None,
+                 new_point: bool = False):
         super().__init__(bet_amount)
-        self.point: int = None
-        self.new_point: bool = False
+        self.point: int = point
+        self.new_point: bool = new_point
 
     def place_odds(self, bet_amount: typing.SupportsFloat, player: "Player", table):
         player.place_bet(self.get_odds_bet(bet_amount), table)
@@ -220,9 +234,15 @@ class AllowsOdds(WinningLosingNumbersBet, StaticPayoutRatio, ABC):
     def odds_type(self) -> typing.Type[BaseOdds]:
         pass
 
+    def __eq__(self, other):
+        if isinstance(other, type(self)):
+            return self.point == other.point
+
+    def __repr__(self):
+        return f'{self.__class__.__name__}(bet_amount={self.bet_amount}, point={self.point})'
+
 
 class PassLine(AllowsOdds):
-
     @property
     def odds_type(self) -> typing.Type[BaseOdds]:
         return Odds
@@ -249,9 +269,7 @@ class PassLine(AllowsOdds):
         return super().get_status(table)
 
     def update(self, table: "Table") -> None:
-        print(self.point, self.get_status(table))
         self.new_point = False
-
         if self.point is None and self.get_status(table) not in ("win", "lose"):
             self.point = table.dice.total
             self.new_point = True
@@ -588,6 +606,9 @@ class HardWay(StaticPayoutRatio, ABC):
         elif isinstance(other, type(self)):
             return self.number == other.number and self.bet_amount == other.bet_amount
 
+    def __hash__(self):
+        return hash((self.__class__, self.number, self.bet_amount))
+
 
 class Hard4(HardWay):
     payout_ratio: int = 7
@@ -610,6 +631,10 @@ class Hard10(HardWay):
 
 
 class Fire(Bet):
+    def __hash__(self):
+        return hash((self.__class__, self.bet_amount, tuple(self.points_made),
+                     tuple(self.current_point)))
+
     def __init__(self, bet_amount: float):
         super().__init__(bet_amount)
         self.bet_amount: float = bet_amount

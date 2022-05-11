@@ -1,6 +1,4 @@
-import inspect
 import typing
-from pprint import pprint
 
 from crapssim.bet import Bet, AllowsOdds
 from crapssim.strategy import Strategy, BetPassLine
