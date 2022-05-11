@@ -2,8 +2,8 @@ import copy
 import typing
 from abc import ABC, abstractmethod
 
-from crapssim.bet import Bet, PassLine, Odds, Come, Place, DontPass, LayOdds, Place6, Place8, Place5, Place9, DontCome, \
-    AllowsOdds, BaseOdds, Field
+from crapssim.bet import Bet, PassLine, Odds, Come, Place, DontPass, LayOdds, Place6, Place8, Place5, Place9, \
+    DontCome, AllowsOdds, BaseOdds, Field
 
 if typing.TYPE_CHECKING:
     from crapssim.player import Player
@@ -187,9 +187,10 @@ class Place68(AggregateStrategy):
     def __init__(self,
                  pass_line_amount: float = 5,
                  six_amount: float = 6,
-                 eight_amount: float = 6):
+                 eight_amount: float = 6,
+                 skip_point=True):
         pass_line_strategy = BetPassLine(pass_line_amount)
-        six_eight_strategy = BetPlace({6: six_amount, 8: eight_amount}, skip_point=True)
+        six_eight_strategy = BetPlace({6: six_amount, 8: eight_amount}, skip_point=skip_point)
         super().__init__(pass_line_strategy, six_eight_strategy)
 
 
@@ -349,4 +350,59 @@ class IronCross(AggregateStrategy):
                          BetPointOn(Field(base_amount)))
 
 
+class HammerLock(Strategy):
+    def __init__(self, base_amount: float):
+        self.pass_line_amount = base_amount
+        self.dont_pass_amount = base_amount
+        self.start_six_eight_amount = (6 / 5) * base_amount * 2
+        self.end_six_eight_amount = (6 / 5) * base_amount
+        self.five_nine_amount = base_amount
+        self.odds_multiplier = 6
+
+        self.place_win_count: int = 0
+        self.restart: bool = False
+
+    def after_roll(self, player: 'Player', table: 'Table'):
+        self.place_win_count += len([bet for bet in player.get_bets(Place) if bet.get_status(table) == 'win'])
+        if table.point.status == 'On' and table.dice.total == 7:
+            self.restart = True
+
+    def point_off(self, player, table):
+        strategy = BetNotPlaced(PassLine(self.pass_line_amount)) + BetNotPlaced(DontPass(self.dont_pass_amount))
+        strategy.update_bets(player, table)
+
+    def place68(self, player, table):
+        Place68(self.pass_line_amount,
+                self.start_six_eight_amount,
+                self.start_six_eight_amount,
+                skip_point=False).update_bets(player, table)
+        BetLayOdds(self.odds_multiplier).update_bets(player, table)
+
+    def place5689(self, player, table):
+        player.remove_bet(Place6(self.start_six_eight_amount))
+        player.remove_bet(Place8(self.start_six_eight_amount))
+        BetPlace({5: self.five_nine_amount,
+                  6: self.end_six_eight_amount,
+                  8: self.end_six_eight_amount,
+                  9: self.five_nine_amount}, skip_point=False).update_bets(player, table)
+
+    def remove_place_bets(self, player):
+        player.remove_bet(Place5(self.five_nine_amount))
+        player.remove_bet(Place6(self.start_six_eight_amount))
+        player.remove_bet(Place8(self.start_six_eight_amount))
+        player.remove_bet(Place9(self.five_nine_amount))
+
+    def update_bets(self, player: 'Player', table: 'Table'):
+        if table.point.status == 'Off':
+            self.point_off(player, table)
+        elif self.place_win_count == 0:
+            self.place68(player, table)
+        elif self.place_win_count == 1:
+            self.place5689(player, table)
+        elif self.place_win_count == 2:
+            self.remove_place_bets(player)
+
+        if self.restart:
+            self.place_win_count = 0
+            self.restart = False
 
