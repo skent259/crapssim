@@ -5,7 +5,7 @@ import pytest
 from crapssim import Player, Table
 from crapssim.bet import Come, LayOdds, DontCome, Place6, Place8, PassLine, Place5, Place9, Field
 from crapssim.strategy import BetPassLine, PassLineOdds, TwoCome, Pass2Come, BetPlace, Place68, BetDontPass, BetLayOdds, \
-    Place682Come, PlaceBetAndMove, PassLinePlace68Move59, PlaceIfOtherBetsExist
+    Place682Come, PlaceBetAndMove, PassLinePlace68Move59, PlaceIfOtherBetsExist, IronCross
 
 
 @pytest.mark.parametrize(['strategy', 'strategy_info', 'rolls', 'correct_bets'], [
@@ -69,12 +69,12 @@ from crapssim.strategy import BetPassLine, PassLineOdds, TwoCome, Pass2Come, Bet
                                             ('Place5', '', 5),
                                             ('Come', '8', 5),
                                             ('Come', '', 5)}),
-    # (IronCross, {}, [], {('PassLine', '', 5)}),
-    # (IronCross, {'mult': '2'}, [(4, 4)], {('PassLine', '', 5),
-    #                                       ('Odds8', '', 10),
-    #                                       ('Place5', '', 5),
-    #                                       ('Place6', '', 6),
-    #                                       ('Field', '', 5)}),
+    (IronCross(5), {}, [], {('PassLine', '', 5)}),
+    (IronCross(5), {'mult': '2'}, [(4, 4)], {('PassLine', '', 5),
+                                             ('Odds8', '', 10),
+                                             ('Place5', '', 10),
+                                             ('Place6', '', 12),
+                                             ('Field', '', 5)}),
     # (HammerLock, {}, [], {('PassLine', '', 5), ('DontPass', '', 5)}),
     # (HammerLock, {}, [(3, 3)], {('PassLine', '', 5),
     #                             ('DontPass', '', 5),

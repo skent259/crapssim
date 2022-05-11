@@ -3,7 +3,7 @@ import typing
 from abc import ABC, abstractmethod
 
 from crapssim.bet import Bet, PassLine, Odds, Come, Place, DontPass, LayOdds, Place6, Place8, Place5, Place9, DontCome, \
-    AllowsOdds, BaseOdds
+    AllowsOdds, BaseOdds, Field
 
 if typing.TYPE_CHECKING:
     from crapssim.player import Player
@@ -334,3 +334,19 @@ class Place682Come(Strategy):
         Place68Move59(pass_come_amount=self.pass_come_amount,
                       six_eight_amount=self.six_eight_amount,
                       five_nine_amount=self.five_nine_amount).update_bets(player, table)
+
+
+class IronCross(AggregateStrategy):
+    def __init__(self, base_amount: float):
+        place_six_eight_amount = (6 / 5) * base_amount * 2
+        place_five_amount = base_amount * 2
+
+        super().__init__(BetPassLine(base_amount),
+                         PassLineOdds(2),
+                         BetPlace({5: place_five_amount,
+                                   6: place_six_eight_amount,
+                                   8: place_six_eight_amount}),
+                         BetPointOn(Field(base_amount)))
+
+
+
