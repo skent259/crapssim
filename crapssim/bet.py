@@ -181,7 +181,7 @@ class BaseOdds(SingleWinningNumberBet, SingleLosingNumberBet, StaticPayoutRatio,
         return base_bet_amount * max_odds
 
     def allowed(self, table: "Table", player: "Player") -> bool:
-        return self.get_max_bet(table, player) <= self.bet_amount
+        return self.get_max_bet(table, player) >= self.bet_amount
 
 
 class AllowsOdds(WinningLosingNumbersBet, StaticPayoutRatio, ABC):

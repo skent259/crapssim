@@ -1,4 +1,6 @@
+import inspect
 import typing
+from pprint import pprint
 
 from crapssim.bet import Bet, Odds, LayOdds, PassLine, Come, DontPass, DontCome, AllowsOdds
 from crapssim.strategy import STRATEGY_TYPE, passline
@@ -81,8 +83,13 @@ class Player:
             bet_types = (Bet,)
         else:
             bet_types = tuple(bet_types)
-        return [x for x in self.bets_on_table if isinstance(x, bet_types)
-                and x.__dict__.items() >= bet_attributes.items()]
+        bets = []
+
+        for bet in self.bets_on_table:
+            bet_members = inspect.getmembers(bet)
+            if isinstance(bet, bet_types) and all(x in bet_members for x in list(bet_attributes.items())):
+                bets.append(bet)
+        return bets
 
     def has_bets(self, *bet_types: typing.Type[Bet], **bet_attributes) -> bool:
         """ returns True if bets_to_check and self.bets_on_table
@@ -159,5 +166,4 @@ class Player:
 
         if bet_amount is None:
             bet_amount = table.settings['max_odds'][point] * allows_odds_bet.bet_amount
-
         allows_odds_bet.place_odds(bet_amount, self, table)
