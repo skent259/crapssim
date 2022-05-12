@@ -60,7 +60,7 @@ class Player:
     def sit_at_table(self, table: "Table"):
         table.add_player(self)
 
-    def place_bet(self, bet: Bet, table: "Table") -> None:
+    def add_bet(self, bet: Bet, table: "Table") -> None:
         if bet.already_placed(self):
             existing_bet: Bet = self.get_bet(type(bet))
             existing_bet.bet_amount += bet.bet_amount

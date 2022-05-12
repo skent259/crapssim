@@ -63,7 +63,7 @@ def test_fire(rolls, correct_status, correct_win_amt, correct_remove):
     player = Player(100)
     bet = Fire(1)
     player.sit_at_table(table)
-    player.place_bet(bet, table)
+    player.add_bet(bet, table)
 
     # table.fixed_run(rolls)
     for roll in rolls:

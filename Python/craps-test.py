@@ -35,11 +35,11 @@ if __name__ == "__main__":
     # Sean.bet(come(5))
     # # d.fixed_roll([4,4])
     # Sean.bet(come(6))
-    Sean.place_bet(craps.bet.Come(5), None)
+    Sean.add_bet(craps.bet.Come(5), None)
 
     d.fixed_roll([4, 4])
     Sean.update_bet(None)
-    Sean.place_bet(craps.bet.Come(10), None)
+    Sean.add_bet(craps.bet.Come(10), None)
     print("Sean's current bets: {}".format(
         {b.name: b.bet_amount for b in Sean.bets_on_table}
     ))  # NTS: this will not show duplicate bets, but they still exist
