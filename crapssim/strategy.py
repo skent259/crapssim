@@ -65,14 +65,24 @@ class CriteriaStrategy(Strategy, ABC):
 
     def update_bets(self, player: 'Player', table: 'Table'):
         if self.criteria(player, table):
-            player.place_bet(self.bet, table)
+            player.place_bet(copy.deepcopy(self.bet), table)
 
     @abstractmethod
     def criteria(self, player: 'Player', table: 'Table') -> bool:
         pass
 
 
-class BetNotPlaced(CriteriaStrategy):
+class BetIfTrue(CriteriaStrategy):
+    """Place a bet if a criteria is True based on a given callable, normally a lambda."""
+    def __init__(self, bet: Bet, callable_: typing.Callable[['Player', 'Table'], bool]):
+        super().__init__(bet)
+        self.callable_ = callable_
+
+    def criteria(self, player: 'Player', table: 'Table') -> bool:
+        return self.callable_(player, table)
+
+
+class IfBetNotExist(CriteriaStrategy):
     """Add bets if they're not already on the table."""
 
     def criteria(self, player: 'Player', table: 'Table') -> bool:
@@ -83,29 +93,22 @@ class BetNotPlaced(CriteriaStrategy):
             player.place_bet(copy.deepcopy(self.bet), table)
 
 
-class BetPointOff(BetNotPlaced):
+class BetPointOff(BetIfTrue):
     """Place a bet if the point is off and the bet isn't already on the table."""
-
-    def criteria(self, player: 'Player', table: 'Table') -> bool:
-        return table.point.status == 'Off' and super().criteria(player, table)
-
-
-class BetFromPoint(BetNotPlaced):
-    """Place a bet if not already on table depending on what the point number is."""
-
-    def __init__(self, bet: Bet, points: typing.Iterable[int]):
-        super().__init__(bet)
-        self.points = points
-
-    def criteria(self, player: 'Player', table: 'Table') -> bool:
-        return table.point in self.points and super().criteria(player, table)
-
-
-class BetPointOn(BetFromPoint):
-    """Place a bet if not already on table depending if the point is on."""
-
     def __init__(self, bet: Bet):
-        super().__init__(bet, points=(4, 5, 6, 8, 9, 10))
+        super().__init__(bet, lambda p, t: t.point.status == "Off" and bet not in p.bets_on_table)
+
+
+class BetFromPoint(BetIfTrue):
+    """Place a bet if not already on table depending on what the point number is."""
+    def __init__(self, bet: Bet, points: typing.Iterable[int]):
+        super().__init__(bet, lambda p, t: t.point in points and bet not in p.bets_on_table)
+
+
+class BetPointOn(BetIfTrue):
+    """Place a bet if not already on table depending if the point is on."""
+    def __init__(self, bet: Bet):
+        super().__init__(bet, lambda p, t: t.point.status == "On" and bet not in p.bets_on_table)
 
 
 class BetPassLine(BetPointOff):
@@ -135,7 +138,7 @@ class OddsStrategy(Strategy):
             if isinstance(bet, self.allows_odds_type) and bet.point is not None:
                 amount = bet.bet_amount * self.odds_multiplier[bet.point]
                 odds_bet = bet.get_odds_bet(amount)
-                BetNotPlaced(odds_bet).update_bets(player, table)
+                IfBetNotExist(odds_bet).update_bets(player, table)
 
 
 class PassLineOdds(OddsStrategy):
@@ -145,7 +148,7 @@ class PassLineOdds(OddsStrategy):
         super().__init__(PassLine, odds)
 
 
-class CountStrategy(BetNotPlaced):
+class CountStrategy(IfBetNotExist):
     """If there are less bets of bet_types than count, place a bet if it doesn't exist."""
 
     def __init__(self, bet_types: typing.Iterable[typing.Type[Bet]], count: int, bet: Bet):
@@ -180,7 +183,7 @@ class BetPlace(Strategy):
                 continue
             if table.point.status == 'Off':
                 continue
-            BetNotPlaced(Place.by_number(number, amount)).update_bets(player, table)
+            IfBetNotExist(Place.by_number(number, amount)).update_bets(player, table)
 
 
 class Place68(AggregateStrategy):
@@ -281,6 +284,7 @@ class Place68Move59(PlaceBetAndMove):
 
 
 class PassLinePlace68Move59(AggregateStrategy):
+    """Equivalent of BetPassLine(...) + Place68Move59(...)"""
     def __init__(self, pass_line_amount: float = 5,
                  six_eight_amount: float = 6,
                  five_nine_amount: float = 5):
@@ -291,7 +295,6 @@ class PassLinePlace68Move59(AggregateStrategy):
 
 class PlaceIfOtherBetsExist(Strategy):
     """If any of the other bets exist in check bets, place these bets."""
-
     def __init__(self,
                  bets_to_place: list[Bet],
                  check_bets: list[Bet]):
@@ -368,7 +371,7 @@ class HammerLock(Strategy):
             self.restart = True
 
     def point_off(self, player, table):
-        strategy = BetNotPlaced(PassLine(self.pass_line_amount)) + BetNotPlaced(DontPass(self.dont_pass_amount))
+        strategy = IfBetNotExist(PassLine(self.pass_line_amount)) + IfBetNotExist(DontPass(self.dont_pass_amount))
         strategy.update_bets(player, table)
 
     def place68(self, player, table):
@@ -406,3 +409,33 @@ class HammerLock(Strategy):
             self.place_win_count = 0
             self.restart = False
 
+
+class Risk12(Strategy):
+    def __init__(self):
+        super().__init__()
+        self.pre_point_winnings = 0
+
+    def after_roll(self, player: 'Player', table: 'Table'):
+        if table.point.status == 'Off' and any(x.get_status(table) == 'win' for x in player.bets_on_table):
+            self.pre_point_winnings += sum(x.get_return_amount(table)
+                                           for x in player.bets_on_table
+                                           if x.get_status(table) == 'win')
+        elif table.point.status == 'On' and table.dice.total == 7:
+            self.pre_point_winnings = 0
+
+    @staticmethod
+    def point_off(player: 'Player', table: 'Table'):
+        IfBetNotExist(PassLine(5)).update_bets(player, table)
+        IfBetNotExist(Field(5)).update_bets(player, table)
+
+    def point_on(self, player: 'Player', table: 'Table'):
+        if self.pre_point_winnings >= 6 - 2:
+            IfBetNotExist(Place6(6)).update_bets(player, table)
+        if self.pre_point_winnings >= 12 - 2:
+            IfBetNotExist(Place8(6)).update_bets(player, table)
+
+    def update_bets(self, player: 'Player', table: 'Table'):
+        if table.point.status == 'Off':
+            self.point_off(player, table)
+        elif table.point.status == 'On':
+            self.point_on(player, table)
