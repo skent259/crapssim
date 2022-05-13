@@ -1,4 +1,3 @@
-import copy
 import typing
 
 from crapssim.bet import Bet, AllowsOdds
