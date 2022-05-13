@@ -34,6 +34,11 @@ class Strategy(ABC):
     def __add__(self, other: 'Strategy'):
         return AggregateStrategy(self, other)
 
+    def __eq__(self, other: 'Strategy'):
+        if isinstance(other, Strategy):
+            print(self.__dict__, other.__dict__)
+            return self.__dict__ == other.__dict__
+
 
 class AggregateStrategy(Strategy):
     def __init__(self, *strategies):
@@ -46,13 +51,14 @@ class AggregateStrategy(Strategy):
 
 class BetIfTrue(Strategy):
     """Place a bet if a criteria is True based on a given callable, normally a lambda."""
-    def __init__(self, bet: Bet, callable_: typing.Callable[['Player', 'Table'], bool]):
+
+    def __init__(self, bet: Bet, key: typing.Callable[['Player', 'Table'], bool]):
         super().__init__()
         self.bet = bet
-        self.callable_ = callable_
+        self.key = key
 
     def update_bets(self, player: 'Player', table: 'Table'):
-        if self.callable_(player, table):
+        if self.key(player, table):
             player.place_bet(copy.copy(self.bet), table)
 
 
@@ -68,18 +74,14 @@ class IfBetNotExist(BetIfTrue):
 
 class BetPointOff(BetIfTrue):
     """Place a bet if the point is off and the bet isn't already on the table."""
+
     def __init__(self, bet: Bet):
         super().__init__(bet, lambda p, t: t.point.status == "Off" and bet not in p.bets_on_table)
 
 
-class BetFromPoint(BetIfTrue):
-    """Place a bet if not already on table depending on what the point number is."""
-    def __init__(self, bet: Bet, points: typing.Iterable[int]):
-        super().__init__(bet, lambda p, t: t.point in points and bet not in p.bets_on_table)
-
-
 class BetPointOn(BetIfTrue):
     """Place a bet if not already on table depending if the point is on."""
+
     def __init__(self, bet: Bet):
         super().__init__(bet, lambda p, t: t.point.status == "On" and bet not in p.bets_on_table)
 
@@ -89,17 +91,13 @@ class BetPassLine(BetPointOff):
         self.bet_amount = bet_amount
         super().__init__(PassLine(bet_amount))
 
-    def __eq__(self, other):
-        if isinstance(other, type(self)):
-            return self.bet_amount == other.bet_amount
-
 
 class OddsStrategy(Strategy):
     """Place odds based on a multiplier of whatever the base_odds are for the item."""
 
-    def __init__(self, allows_odds_type: AllowsOdds,
+    def __init__(self, base_type: AllowsOdds,
                  odds_multiplier: dict[int, int] | int):
-        self.allows_odds_type = allows_odds_type
+        self.base_type = base_type
 
         if isinstance(odds_multiplier, int):
             self.odds_multiplier = {x: odds_multiplier for x in (4, 5, 6, 8, 9, 10)}
@@ -108,7 +106,7 @@ class OddsStrategy(Strategy):
 
     def update_bets(self, player: 'Player', table: 'Table'):
         for bet in player.bets_on_table:
-            if isinstance(bet, self.allows_odds_type) and bet.point is not None:
+            if isinstance(bet, self.base_type) and bet.point is not None:
                 amount = bet.bet_amount * self.odds_multiplier[bet.point]
                 odds_bet = bet.get_odds_bet(amount)
                 IfBetNotExist(odds_bet).update_bets(player, table)
@@ -129,7 +127,7 @@ class CountStrategy(BetIfTrue):
         self.count = count
         self.key = (lambda p, t: len([x for x in p.bets_on_table if isinstance(x, self.bet_types)]) < self.count
                                  and bet not in p.bets_on_table)
-        super().__init__(bet, callable_=self.key)
+        super().__init__(bet, key=self.key)
 
 
 class TwoCome(CountStrategy):
@@ -158,7 +156,7 @@ class BetPlace(Strategy):
             IfBetNotExist(Place.by_number(number, amount)).update_bets(player, table)
 
 
-class Place68(AggregateStrategy):
+class PassLinePlace68(AggregateStrategy):
     def __init__(self,
                  pass_line_amount: float = 5,
                  six_amount: float = 6,
@@ -217,7 +215,7 @@ class PlaceBetAndMove(Strategy):
 
         for bet in self.starting_bets:
             if bet not in player.bets_on_table:
-                player.place_bet(bet, table)
+                player.place_bet(copy.copy(bet), table)
 
     def bets_to_move(self, player: 'Player') -> list[Place]:
         return [x for x in self.bet_movements if x.winning_number in
@@ -230,7 +228,7 @@ class PlaceBetAndMove(Strategy):
             while new_bet in player.bets_on_table:
                 new_bet = self.bet_movements[new_bet]
             player.remove_bet(old_bet)
-            player.place_bet(new_bet, table)
+            player.place_bet(copy.copy(new_bet), table)
 
     def update_bets(self, player: 'Player', table: 'Table'):
         self.place_starting_bets(player, table)
@@ -238,7 +236,17 @@ class PlaceBetAndMove(Strategy):
 
 
 class Place68Move59(PlaceBetAndMove):
-    """Place 6 and 8 and move to 5 and 9 if a PassLine or Come bet with that point comes up."""
+    """Place 6 and 8 and move to 5 and 9 if a PassLine or Come bet with that point comes up.
+
+    Equivalent of:
+    starting_bets = [Place6(six_eight_amount), Place8(six_eight_amount)]
+    check_bets = [PassLine(pass_come_amount, point=6), PassLine(pass_come_amount, point=8),
+                  Come(pass_come_amount, point=6), Come(pass_come_amount, point=8)]
+    bet_movements = {Place6(six_eight_amount): Place5(5), Place8(six_eight_amount): Place5(5),
+                     Place5(five_nine_amount): Place9(five_nine_amount), Place9(five_nine_amount): None}
+
+    PlaceBetAndMove(starting_bets, check_bets, bet_movements)
+    """
 
     def __init__(self, pass_come_amount: float = 5,
                  six_eight_amount: float = 6,
@@ -264,28 +272,6 @@ class PassLinePlace68Move59(AggregateStrategy):
         pass_line_strategy = BetPassLine(pass_line_amount)
         place_bet_and_move_strategy = Place68Move59(pass_line_amount, six_eight_amount, five_nine_amount)
         super().__init__(pass_line_strategy, place_bet_and_move_strategy)
-
-
-class PlaceIfOtherBetsExist(Strategy):
-    """If any of the other bets exist in check bets, place these bets."""
-
-    def __init__(self,
-                 bets_to_place: list[Bet],
-                 check_bets: list[Bet]):
-        self.bets_to_place = bets_to_place
-        self.check_bets = check_bets
-
-    def check_bets_exist(self, player: 'Player'):
-        return any(x in player.bets_on_table for x in self.check_bets)
-
-    def add_bets(self, player: 'Player', table: 'Table'):
-        for bet in self.bets_to_place:
-            if bet not in player.bets_on_table:
-                player.place_bet(bet, table)
-
-    def update_bets(self, player: 'Player', table: 'Table'):
-        if self.check_bets_exist(player):
-            self.add_bets(player, table)
 
 
 class Place682Come(Strategy):
@@ -315,6 +301,12 @@ class Place682Come(Strategy):
 
 
 class IronCross(AggregateStrategy):
+    """Equivalent of:
+     BetPassLine(base_amount) + PassLineOdds(2) +
+     BetPlace({5: place_five_amount,
+               6: place_six_eight_amount,
+               8: place_six_eight_amount}) +
+     BetPointOn(Field(base_amount))"""
     def __init__(self, base_amount: float):
         place_six_eight_amount = (6 / 5) * base_amount * 2
         place_five_amount = base_amount * 2
@@ -349,10 +341,10 @@ class HammerLock(Strategy):
         strategy.update_bets(player, table)
 
     def place68(self, player, table):
-        Place68(self.pass_line_amount,
-                self.start_six_eight_amount,
-                self.start_six_eight_amount,
-                skip_point=False).update_bets(player, table)
+        PassLinePlace68(self.pass_line_amount,
+                        self.start_six_eight_amount,
+                        self.start_six_eight_amount,
+                        skip_point=False).update_bets(player, table)
         BetLayOdds(self.odds_multiplier).update_bets(player, table)
 
     def place5689(self, player, table):
