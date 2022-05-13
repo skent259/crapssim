@@ -1,11 +1,9 @@
-from collections import namedtuple
-
 import pytest
 
 from crapssim import Player, Table
-from crapssim.bet import Come, LayOdds, DontCome, Place6, Place8, PassLine, Place5, Place9, Field
-from crapssim.strategy import BetPassLine, PassLineOdds, TwoCome, Pass2Come, BetPlace, PassLinePlace68, BetDontPass, \
-    BetLayOdds, Place682Come, PlaceBetAndMove, PassLinePlace68Move59, IronCross, HammerLock, BetIfTrue, \
+from crapssim.bet import Come, DontCome, PassLine
+from crapssim.strategy import BetPassLine, PassLineOdds, Pass2Come, BetPlace, PassLinePlace68, BetDontPass, \
+    BetLayOdds, Place682Come, PassLinePlace68Move59, IronCross, HammerLock, BetIfTrue, \
     Risk12, Knockout, DiceDoctor, Place68CPR, Place68DontCome2Odds
 
 
