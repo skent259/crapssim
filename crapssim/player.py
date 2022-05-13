@@ -1,3 +1,4 @@
+import copy
 import typing
 
 from crapssim.bet import Bet, AllowsOdds
@@ -62,7 +63,7 @@ class Player:
             existing_bet.bet_amount += bet.bet_amount
             self.bankroll -= bet.bet_amount
             if not existing_bet.allowed(table=table, player=self):
-                existing_bet -= bet.bet_amount
+                existing_bet.bet_amount -= bet.bet_amount
                 self.bankroll += bet.bet_amount
         else:
             if bet.allowed(table=table, player=self):

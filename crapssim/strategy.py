@@ -2,8 +2,8 @@ import copy
 import typing
 from abc import ABC, abstractmethod
 
-from crapssim.bet import Bet, PassLine, Odds, Come, Place, DontPass, LayOdds, Place6, Place8, Place5, Place9, \
-    DontCome, AllowsOdds, BaseOdds, Field
+from crapssim.bet import Bet, PassLine, Odds, Come, Place, DontPass, Place6, Place8, Place5, Place9, AllowsOdds, Field, \
+    DontCome, BaseOdds
 
 if typing.TYPE_CHECKING:
     from crapssim.player import Player
@@ -21,22 +21,9 @@ Fundamental Strategies
 
 
 class Strategy(ABC):
-    def before_roll(self, player: 'Player', table: 'Table'):
-        """Method that can update the Strategy from the table/player before the dice are rolled."""
-        pass
-
     def after_roll(self, player: 'Player', table: 'Table'):
         """Method that can update the Strategy from the table/player after the dice are rolled but
         before the bets are updated."""
-        pass
-
-    def after_bets_updated(self, player: 'Player', table: 'Table'):
-        """Method that can update the Strategy from the table/player after the bets on the table
-         are updated but before the table is updated"""
-        pass
-
-    def after_table_update(self, player: 'Player', table: 'Table'):
-        """Method that can update the Strategy from the table/player after the table is updated."""
         pass
 
     @abstractmethod
@@ -57,40 +44,26 @@ class AggregateStrategy(Strategy):
             strategy.update_bets(player, table)
 
 
-class CriteriaStrategy(Strategy, ABC):
-    """Add bet if certain criteria is True."""
-
-    def __init__(self, bet: Bet):
-        self.bet = bet
-
-    def update_bets(self, player: 'Player', table: 'Table'):
-        if self.criteria(player, table):
-            player.place_bet(copy.deepcopy(self.bet), table)
-
-    @abstractmethod
-    def criteria(self, player: 'Player', table: 'Table') -> bool:
-        pass
-
-
-class BetIfTrue(CriteriaStrategy):
+class BetIfTrue(Strategy):
     """Place a bet if a criteria is True based on a given callable, normally a lambda."""
     def __init__(self, bet: Bet, callable_: typing.Callable[['Player', 'Table'], bool]):
-        super().__init__(bet)
+        super().__init__()
+        self.bet = bet
         self.callable_ = callable_
 
-    def criteria(self, player: 'Player', table: 'Table') -> bool:
-        return self.callable_(player, table)
-
-
-class IfBetNotExist(CriteriaStrategy):
-    """Add bets if they're not already on the table."""
-
-    def criteria(self, player: 'Player', table: 'Table') -> bool:
-        return self.bet not in player.bets_on_table
-
     def update_bets(self, player: 'Player', table: 'Table'):
-        if not self.bet.already_placed(player) and self.criteria(player, table):
-            player.place_bet(copy.deepcopy(self.bet), table)
+        if self.callable_(player, table):
+            player.place_bet(copy.copy(self.bet), table)
+
+
+class IfBetNotExist(BetIfTrue):
+    """Add bets if they're not already on the table.
+    Bet can either be a specific bet or a type of bet to look for."""
+
+    def __init__(self, bet: Bet):
+        super().__init__(bet,
+                         lambda p, t: bet not in p.bets_on_table if isinstance(bet, Bet) else
+                         not any(isinstance(x, bet) for x in p.bets_on_table))
 
 
 class BetPointOff(BetIfTrue):
@@ -148,16 +121,15 @@ class PassLineOdds(OddsStrategy):
         super().__init__(PassLine, odds)
 
 
-class CountStrategy(IfBetNotExist):
+class CountStrategy(BetIfTrue):
     """If there are less bets of bet_types than count, place a bet if it doesn't exist."""
 
     def __init__(self, bet_types: typing.Iterable[typing.Type[Bet]], count: int, bet: Bet):
         self.bet_types = bet_types
         self.count = count
-        super().__init__(bet)
-
-    def criteria(self, player: 'Player', table: 'Table') -> bool:
-        return len([x for x in player.bets_on_table if isinstance(x, tuple(self.bet_types))]) < self.count
+        self.key = (lambda p, t: len([x for x in p.bets_on_table if isinstance(x, self.bet_types)]) < self.count
+                                 and bet not in p.bets_on_table)
+        super().__init__(bet, callable_=self.key)
 
 
 class TwoCome(CountStrategy):
@@ -285,6 +257,7 @@ class Place68Move59(PlaceBetAndMove):
 
 class PassLinePlace68Move59(AggregateStrategy):
     """Equivalent of BetPassLine(...) + Place68Move59(...)"""
+
     def __init__(self, pass_line_amount: float = 5,
                  six_eight_amount: float = 6,
                  five_nine_amount: float = 5):
@@ -295,6 +268,7 @@ class PassLinePlace68Move59(AggregateStrategy):
 
 class PlaceIfOtherBetsExist(Strategy):
     """If any of the other bets exist in check bets, place these bets."""
+
     def __init__(self,
                  bets_to_place: list[Bet],
                  check_bets: list[Bet]):
@@ -439,3 +413,85 @@ class Risk12(Strategy):
             self.point_off(player, table)
         elif table.point.status == 'On':
             self.point_on(player, table)
+
+
+class Knockout(AggregateStrategy):
+    """PassLine and Don't bet prior to point, 345x odds after point. Equivalent to
+    BetPassLine(bet_amount) + BetPointOff(DontPass(bet_amount))
+    + PassLineOdds({4: 3, 5: 4, 6: 5, 8: 5, 9: 4, 10: 3})"""
+
+    def __init__(self, bet_amount: typing.SupportsFloat):
+        super().__init__(BetPassLine(bet_amount), BetPointOff(DontPass(bet_amount)),
+                         PassLineOdds({4: 3, 5: 4, 6: 5, 8: 5, 9: 4, 10: 3}))
+
+
+class FieldWinProgression(Strategy):
+    """Every time the field wins move to the next progression, else restart
+    at the beginning."""
+
+    def __init__(self, progression: list[typing.SupportsFloat]):
+        self.progression = progression
+        self.current_progression = 0
+
+    def after_roll(self, player: 'Player', table: 'Table'):
+        win = all(x for x in player.bets_on_table if x.get_status(table) == 'win')
+
+        if win:
+            self.current_progression += 1
+        else:
+            self.current_progression = 0
+
+    def update_bets(self, player: 'Player', table: 'Table'):
+        if self.current_progression >= len(self.progression):
+            bet_amount = self.progression[-1]
+        else:
+            bet_amount = self.progression[self.current_progression]
+        IfBetNotExist(player.place_bet(Field(bet_amount), table))
+
+
+class DiceDoctor(FieldWinProgression):
+    def __init__(self):
+        super().__init__([10, 20, 15, 30, 25, 50, 35, 70, 50, 100, 75, 150])
+
+
+class Place68CPR(Strategy):
+    def __init__(self, starting_amount: float = 6):
+        self.starting_amount = starting_amount
+        self.press_amount = 2 * self.starting_amount
+
+        self.win_one_amount = starting_amount * (7 / 6)
+        self.win_two_amount = starting_amount * 2 * (7 / 6)
+
+        self.six_winnings = 0
+        self.eight_winnings = 0
+
+    def after_roll(self, player: 'Player', table: 'Table'):
+        self.six_winnings = sum(x.get_win_amount(table) for x in player.bets_on_table if isinstance(x, Place6))
+        self.eight_winnings = sum(x.get_win_amount(table) for x in player.bets_on_table if isinstance(x, Place8))
+
+    def ensure_bets_exist(self, player: 'Player', table: 'Table'):
+        """Ensure that there is always a place 6 or place 8 bet if the point is On."""
+        if table.point.status == 'Off':
+            return
+        for bet_type in (Place6, Place8):
+            if not player.has_bets(bet_type):
+                player.place_bet(bet_type(self.starting_amount), table)
+
+    def press(self, player: 'Player', table: 'Table'):
+        if self.six_winnings == self.win_one_amount:
+            player.place_bet(Place6(self.starting_amount), table)
+        if self.eight_winnings == self.win_one_amount:
+            player.place_bet(Place8(self.starting_amount), table)
+
+    def update_bets(self, player: 'Player', table: 'Table'):
+        self.ensure_bets_exist(player, table)
+        self.press(player, table)
+
+
+class Place68DontCome2Odds(AggregateStrategy):
+    def __init__(self, six_eight_amount: float = 6,
+                 dont_come_amount: float = 5):
+        super().__init__(BetPlace({6: six_eight_amount, 8: six_eight_amount}, skip_point=False),
+                         BetIfTrue(DontCome(dont_come_amount),
+                                   lambda p, t: not any(isinstance(x, DontCome) for x in p.bets_on_table)),
+                         OddsStrategy(DontCome, 2))

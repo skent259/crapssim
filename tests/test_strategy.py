@@ -6,7 +6,7 @@ from crapssim import Player, Table
 from crapssim.bet import Come, LayOdds, DontCome, Place6, Place8, PassLine, Place5, Place9, Field
 from crapssim.strategy import BetPassLine, PassLineOdds, TwoCome, Pass2Come, BetPlace, Place68, BetDontPass, BetLayOdds, \
     Place682Come, PlaceBetAndMove, PassLinePlace68Move59, PlaceIfOtherBetsExist, IronCross, HammerLock, BetIfTrue, \
-    Risk12
+    Risk12, Knockout, DiceDoctor, Place68CPR, Place68DontCome2Odds
 
 
 @pytest.mark.parametrize(['strategy', 'strategy_info', 'rolls', 'correct_bets'], [
@@ -97,21 +97,30 @@ from crapssim.strategy import BetPassLine, PassLineOdds, TwoCome, Pass2Come, Bet
     (Risk12(), {}, [(5, 6), (2, 3)], {('PassLine', '', 5),
                                       ('Place6', '', 6),
                                       ('Place8', '', 6)}),
-    # (Knockout, {}, [], {('PassLine', '', 5),
-    #                     ('DontPass', '', 5)}),
-    # (Knockout, {}, [(4, 2)], {('PassLine', '', 5),
-    #                           ('DontPass', '', 5),
-    #                           ('Odds6', '', 25)}),
-    # (DiceDoctor, {}, [], {('Field', '', 10)}),
-    # (DiceDoctor, {}, [(1, 1), (5, 6), (5, 5)], {('Field', '', 30)}),
-    # (Place68DontCome2Odds, {}, [], set()),
-    # (Place68DontCome2Odds, {}, [(4, 4)], {('Place6', '', 6),
-    #                                       ('Place8', '', 6),
-    #                                       ('DontCome', '', 5)}),
-    # (Place68DontCome2Odds, {}, [(4, 4), (2, 2)], {('Place6', '', 6),
-    #                                               ('Place8', '', 6),
-    #                                               ('DontCome', '4', 5),
-    #                                               ('LayOdds4', '', 20)})
+    (Knockout(5), {}, [], {('PassLine', '', 5),
+                           ('DontPass', '', 5)}),
+    (Knockout(5), {}, [(4, 2)], {('PassLine', '', 5),
+                                 ('DontPass', '', 5),
+                                 ('Odds6', '', 25)}),
+    (DiceDoctor(), {}, [], {('Field', '', 10)}),
+    (DiceDoctor(), {}, [(1, 1), (5, 6), (5, 5)], {('Field', '', 30)}),
+    (Place68DontCome2Odds(), {}, [], set()),
+    (Place68DontCome2Odds(), {}, [(4, 4)], {('Place6', '', 6),
+                                          ('Place8', '', 6),
+                                          ('DontCome', '', 5)}),
+    (Place68DontCome2Odds(), {}, [(4, 4), (2, 2)], {('Place6', '', 6),
+                                                  ('Place8', '', 6),
+                                                  ('DontCome', '4', 5),
+                                                  ('LayOdds4', '', 10)}),
+    (Place68CPR(), {}, [], set()),
+    (Place68CPR(), {}, [(4, 4)], {('Place6', '', 6),
+                                  ('Place8', '', 6)}),
+    (Place68CPR(), {}, [(2, 2), (4, 4)], {('Place6', '', 6),
+                                          ('Place8', '', 12)}),
+    (Place68CPR(), {}, [(2, 2), (4, 4), (4, 4)], {('Place6', '', 6),
+                                                  ('Place8', '', 6)}),
+    (Place68CPR(), {}, [(2, 2), (4, 4), (4, 4), (4, 4)], {('Place6', '', 6),
+                                                          ('Place8', '', 12)})
 ])
 def test_strategies_compare_bets(strategy, strategy_info, rolls: list[tuple[int, int]],
                                  correct_bets: {(str, str, float)}):

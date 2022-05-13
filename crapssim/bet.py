@@ -475,6 +475,9 @@ class DontCome(DontPass):
             return True
         return False
 
+    def already_placed(self, player: "Player") -> bool:
+        return player.has_bets(type(self), point=self.point)
+
 
 """
 Don't pass/Don't come lay odds
