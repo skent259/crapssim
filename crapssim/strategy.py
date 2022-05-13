@@ -224,7 +224,7 @@ class PlaceBetAndMove(Strategy):
 
     def place_starting_bets(self, player: 'Player', table: 'Table'):
         for bet in self.starting_bets:
-            BetIfTrue(bet, lambda p, t: bet not in p.bets_on_table and t.point.status != 'Off').\
+            BetIfTrue(bet, lambda p, t: bet not in p.bets_on_table and t.point.status != 'Off'). \
                 update_bets(player, table)
 
     def bets_to_move(self, player: 'Player') -> list[Place]:
@@ -296,35 +296,27 @@ class PassLinePlace68Move59(AggregateStrategy):
         super().__init__(pass_line_strategy, place_bet_and_move_strategy)
 
 
-class Place682Come(Strategy):
+class Place682Come(AggregateStrategy):
     def __init__(self, pass_come_amount: float = 5,
                  six_eight_amount: float = 6,
                  five_nine_amount: float = 5):
-        self.pass_come_amount = pass_come_amount
-        self.six_eight_amount = six_eight_amount
-        self.five_nine_amount = five_nine_amount
+        def pass_line_key(p, t):
+            (t.point.status == 'Off' and
+             any(isinstance(x, (Place6, Place8)) for x in p.bets_on_table) and
+             p.count_bets(Place, PassLine, Come) <= 4)
 
-    def add_pass_line_come(self, player: 'Player', table):
-        # This logic is separate because it waits for player to have Place(6) or Place(8) bets.
-        if player.count_bets(Place, PassLine, Odds) >= 4:
-            return
-
-        if table.point.status == 'Off' and \
-                player.has_bets(winning_numbers=[6]) and \
-                player.has_bets(winning_numbers=[8]):
-            player.place_bet(PassLine(self.pass_come_amount), table)
-        elif table.point.status == 'On':
-            player.place_bet(Come(self.pass_come_amount), table)
-
-    def update_bets(self, player: 'Player', table: 'Table'):
-        self.add_pass_line_come(player, table)
-        Place68Move59(pass_come_amount=self.pass_come_amount,
-                      six_eight_amount=self.six_eight_amount,
-                      five_nine_amount=self.five_nine_amount).update_bets(player, table)
+        pass_line_strategy = BetIfTrue(PassLine(pass_come_amount), pass_line_key)
+        come_key = lambda p, t: t.point.status == 'On' and p.count_bets(Place, PassLine, Come) <= 4
+        come_strategy = BetIfTrue(Come(pass_come_amount), come_key)
+        place_strategy = Place68Move59(pass_come_amount=pass_come_amount,
+                                       six_eight_amount=six_eight_amount,
+                                       five_nine_amount=five_nine_amount)
+        super().__init__(pass_line_strategy, come_strategy, place_strategy)
 
 
 class IronCross(AggregateStrategy):
     """Equivalent of: BetPassLine(...) + PassLineOdds(2) + BetPlace(...) + BetPointOn(Field(...))"""
+
     def __init__(self, base_amount: float):
         place_six_eight_amount = (6 / 5) * base_amount * 2
         place_five_amount = base_amount * 2
@@ -367,7 +359,7 @@ class HammerLock(Strategy):
 
     def place5689(self, player, table):
         RemoveIfTrue(lambda b, p, t: b == Place6(self.start_six_eight_amount)
-                     or b == Place8(self.start_six_eight_amount)).update_bets(player, table)
+                                     or b == Place8(self.start_six_eight_amount)).update_bets(player, table)
         BetPlace({5: self.five_nine_amount,
                   6: self.end_six_eight_amount,
                   8: self.end_six_eight_amount,
@@ -476,7 +468,7 @@ class Place68CPR(Strategy):
     def ensure_bets_exist(self, player: 'Player', table: 'Table'):
         """Ensure that there is always a place 6 or place 8 bet if the point is On."""
         for bet in (Place6(self.starting_amount), Place8(self.starting_amount)):
-            BetIfTrue(bet, lambda p, t: t.point.status == 'On' and bet not in player.bets_on_table).\
+            BetIfTrue(bet, lambda p, t: t.point.status == 'On' and bet not in player.bets_on_table). \
                 update_bets(player, table)
 
     def press(self, player: 'Player', table: 'Table'):
