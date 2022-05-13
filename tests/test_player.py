@@ -6,7 +6,7 @@ from crapssim.strategy import BetPassLine
 
 def test_default_strategy():
     player = Player(100)
-    assert player.bet_strategy == BetPassLine(5)
+    assert player.bet_strategy.__class__ == BetPassLine
 
 
 def test_irremovable_bet():
