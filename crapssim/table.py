@@ -272,7 +272,7 @@ class Table(object):
             If True, print the players current bets.
         """
         for p in self.players:
-            p.add_strategy_bets(self)
+            p.add_strategy_bets()
 
             if verbose:
                 bets = [f"{b.name}: ${b.bet_amount}" for b in p.bets_on_table]
@@ -477,6 +477,10 @@ class Player:
     def total_bet_amount(self) -> float:
         return sum(x.bet_amount for x in self.bets_on_table)
 
+    @property
+    def table(self):
+        return self._table
+
     def add_bet(self, bet: Bet, table: "Table") -> None:
         if bet.already_placed(self):
             existing_bet: Bet = self.get_bet(type(bet))
@@ -526,15 +530,12 @@ class Player:
         if self.has_bets(bet_type):
             self.remove_bet(self.get_bet(bet_type))
 
-    def add_strategy_bets(self, table: "Table") -> None:
+    def add_strategy_bets(self) -> None:
         """ Implement the given betting strategy
 
-        Parameters
-        ----------
-        table
         """
         if self.bet_strategy:
-            self.bet_strategy(self, table, **self.strat_info)
+            self.bet_strategy(self, **self.strat_info)
 
     def update_bet(self, table, verbose: bool = False) -> None:
         info = {}

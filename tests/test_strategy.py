@@ -100,10 +100,10 @@ from crapssim.strategy import passline, passline_odds, passline_odds2, passline_
 ])
 def test_strategies_compare_bets(strategy, strategy_info, rolls: list[tuple[int, int]],
                                  correct_bets: {(str, str, float)}):
-    def strat(player, table, **strat_info):
+    def strat(player, **strat_info):
         if strat_info != {}:
-            return strategy(player, table, **strat_info)
-        return strategy(player, table, **strategy_info)
+            return strategy(player, **strat_info)
+        return strategy(player, **strategy_info)
 
     table = Table()
     table.add_player(strategy=strat)
