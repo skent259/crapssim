@@ -288,7 +288,7 @@ class Table(object):
             If True, prints whether the player won, lost, etc and the amount
         """
         for p in self.players:
-            p.update_bet(self, verbose)
+            p.update_bet(verbose)
 
     def update_table(self, verbose: bool = False) -> None:
         """ update table attributes based on previous dice roll
@@ -537,21 +537,21 @@ class Player:
         if self.bet_strategy:
             self.bet_strategy(self, **self.strat_info)
 
-    def update_bet(self, table, verbose: bool = False) -> None:
+    def update_bet(self, verbose: bool = False) -> None:
         info = {}
         for bet in self.bets_on_table[:]:
-            bet.update(table)
+            bet.update(self.table)
 
-            self.bankroll += bet.get_return_amount(table)
+            self.bankroll += bet.get_return_amount(self.table)
 
             if verbose:
-                self.print_bet_update(bet, table)
+                self.print_bet_update(bet, self.table)
 
-            if bet.should_remove(table):
+            if bet.should_remove(self.table):
                 self.bets_on_table.remove(bet)
 
-            info[bet.name] = {"status": bet.get_status(table),
-                              "win_amount": bet.get_win_amount(table)}
+            info[bet.name] = {"status": bet.get_status(self.table),
+                              "win_amount": bet.get_win_amount(self.table)}
 
     def print_bet_update(self, bet, table):
         status = bet.get_status(table)
