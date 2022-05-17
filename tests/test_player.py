@@ -1,6 +1,5 @@
-from crapssim import Table, Dice
+from crapssim import Table, Dice, Player
 from crapssim.bet import PassLine
-from crapssim.player import Player
 from crapssim.strategy import passline
 
 

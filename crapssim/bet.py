@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 
 if typing.TYPE_CHECKING:
     from crapssim.table import Table
-    from crapssim.player import Player
+    from crapssim import Player
 
 
 class Bet(ABC):

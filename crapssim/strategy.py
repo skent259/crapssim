@@ -6,7 +6,7 @@ from crapssim.bet import PassLine, Odds, Come, Bet
 from crapssim.bet import Place, Place4, Place5, Place6, Place8, Place9, Place10
 
 if typing.TYPE_CHECKING:
-    from crapssim.player import Player
+    from crapssim import Player
     from crapssim.table import Table
 
 """
@@ -684,23 +684,3 @@ def place68_dontcome2odds(player: 'Player', table: 'Table') -> None:
 
         if not player.has_bets(LayOdds) and not dc.point is None:
             player.add_odds(table, mult * player.unit, [DontCome], dc.point)
-
-
-if __name__ == "__main__":
-    # Test a betting strategy
-
-    from crapssim.player import Player
-    from crapssim.dice import Dice
-    from crapssim.table import Table
-
-    # table = CrapsTable()
-    # table._add_player(Player(500, place68_2come))
-
-    d = Dice()
-    p = Player(None, 500, place68_2come)
-    t = Table()
-    p.add_bet(PassLine(5), t)
-    p.add_bet(Place6(6), t)
-    print(p.bets_on_table)
-    print(p.bankroll)
-    print(p.total_bet_amount)
