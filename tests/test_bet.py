@@ -32,16 +32,14 @@ from crapssim.table import Table, Point
 ])
 def test_ev_oneroll(bet, ev):
     t = Table()
-    p = Player(100)
-    p.sit_at_table(t)
+    t.add_player()
     t.point.status = "On"  # for place bets to pay properly
     outcomes = []
-    bet.player = p
-    bet.table = t
+    t.players[0].add_bet(bet, t)
     for d1 in range(1, 7):
         for d2 in range(1, 7):
             t.dice.fixed_roll([d1, d2])
-            status, win_amt, remove = bet.status, bet.win_amount, bet.remove
+            status, win_amt, remove = bet.get_status(t), bet.get_win_amount(t), bet.should_remove(t)
 
             outcomes.append(win_amt if status == "win" else -1 if status == "lose" else 0)
 
@@ -61,16 +59,15 @@ def test_ev_oneroll(bet, ev):
 ])
 def test_fire(rolls, correct_status, correct_win_amt, correct_remove):
     table = Table()
-    player = Player(100)
+    table.add_player()
     bet = Fire(1)
-    player.sit_at_table(table)
-    player.bet(bet)
+    table.players[0].add_bet(bet, table)
 
     # table.fixed_run(rolls)
     for roll in rolls:
         table.fixed_roll_and_update(roll)
 
-    status, win_amt, remove = bet.status, bet.win_amount, bet.remove
+    status, win_amt, remove = bet.get_status(table), bet.get_win_amount(table), bet.should_remove(table)
 
     assert (status, win_amt, remove) == (correct_status, correct_win_amt, correct_remove)
 
@@ -89,8 +86,7 @@ def test_fire(rolls, correct_status, correct_win_amt, correct_remove):
 ])
 def test_bet_allowed_point(bet, point_number, allowed):
     table = Table()
-    player = Player(100)
-    player.sit_at_table(table)
+    table.add_player()
     dice = Dice()
     dice.total = point_number
 
@@ -99,7 +95,7 @@ def test_bet_allowed_point(bet, point_number, allowed):
 
     table.point = point
 
-    assert bet.allowed(player) == allowed
+    assert bet.allowed(table=table, player=table.players[0]) == allowed
 
 
 @pytest.mark.parametrize('bet, new_shooter, allowed', [
@@ -110,10 +106,9 @@ def test_bet_allowed_point(bet, point_number, allowed):
 ])
 def test_bet_allowed_new_shooter(bet, new_shooter, allowed):
     table = Table()
-    player = Player(100)
-    player.sit_at_table(table)
+    table.add_player()
 
     if new_shooter is False:
         table.fixed_roll((3, 4))
 
-    assert bet.allowed(player) == allowed
+    assert bet.allowed(table=table, player=table.players[0]) == allowed

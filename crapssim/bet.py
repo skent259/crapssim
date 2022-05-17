@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 
 if typing.TYPE_CHECKING:
     from crapssim.table import Table
-    from crapssim.player import Player
+    from crapssim import Player
 
 
 class Bet(ABC):
@@ -19,19 +19,13 @@ class Bet(ABC):
     ----------
     bet_amount: float
         Wagered amount for the bet
-    subname : string
-        Subname, usually denotes number for a come/don't come bet
     """
 
-    def __init__(self, bet_amount: typing.SupportsFloat, player=None, table=None):
+    def __init__(self, bet_amount: typing.SupportsFloat):
         self.bet_amount: float = float(bet_amount)
-        self.subname: str = str()
-        self.player: Player | None = player
-        self.table: Table | None = table
 
-    @property
     @abstractmethod
-    def payout_ratio(self):
+    def get_payout_ratio(self, table: "Table"):
         pass
 
     @property
@@ -42,13 +36,14 @@ class Bet(ABC):
     def removable(self):
         return True
 
-    def allowed(self, player) -> bool:
+    def allowed(self, table: "Table", player: "Player") -> bool:
         """
         Checks whether the bet is allowed to be placed on the given table.
 
         Parameters
         ----------
         player
+        table
 
         Returns
         -------
@@ -57,24 +52,30 @@ class Bet(ABC):
         """
         return True
 
-    @property
     @abstractmethod
-    def status(self) -> str | bool:
+    def get_status(self, table: "Table") -> str | bool:
         pass
 
-    @property
-    def win_amount(self) -> float:
-        if self.status == "win":
-            return self.payout_ratio * self.bet_amount
+    def get_win_amount(self, table: "Table") -> float:
+        if self.get_status(table) == "win":
+            return self.get_payout_ratio(table) * self.bet_amount
         return 0.0
 
-    @property
-    def remove(self) -> bool:
-        if self.status is not None:
+    def get_return_amount(self, table: "Table") -> float:
+        status = self.get_status(table)
+        if status == "win":
+            return self.get_win_amount(table) + self.bet_amount
+        if status is None and self.should_remove(table) is True:
+            return self.bet_amount
+        else:
+            return 0
+
+    def should_remove(self, table: "Table") -> bool:
+        if self.get_status(table) is not None:
             return True
         return False
 
-    def _update_bet(self) -> None:
+    def update(self, table: "Table") -> None:
         """
         Returns whether the bets status is win, lose or None and if win the amount won.
 
@@ -84,6 +85,9 @@ class Bet(ABC):
             The status of the bet and the amount of the winnings.
         """
         pass
+
+    def already_placed(self, player: "Player") -> bool:
+        return player.has_bets(type(self))
 
 
 class WinningLosingNumbersBet(Bet, ABC):
@@ -97,13 +101,45 @@ class WinningLosingNumbersBet(Bet, ABC):
     def losing_numbers(self):
         pass
 
-    @property
-    def status(self) -> str | None:
-        if self.table.dice.total in self.winning_numbers:
+    def get_status(self, table: "Table") -> str | None:
+        if table.dice.total in self.winning_numbers:
             return "win"
-        elif self.table.dice.total in self.losing_numbers:
+        elif table.dice.total in self.losing_numbers:
             return "lose"
         return None
+
+
+class SingleWinningNumberBet(WinningLosingNumbersBet, ABC):
+    """WinningLosingNumbersBet where only one number wins."""
+    @property
+    @abstractmethod
+    def winning_number(self):
+        pass
+
+    @property
+    def winning_numbers(self):
+        return [self.winning_number]
+
+
+class SingleLosingNumberBet(WinningLosingNumbersBet, ABC):
+    @property
+    @abstractmethod
+    def losing_number(self):
+        pass
+
+    @property
+    def losing_numbers(self):
+        return [self.losing_number]
+
+
+class StaticPayoutRatio(Bet, ABC):
+    @property
+    @abstractmethod
+    def payout_ratio(self):
+        pass
+
+    def get_payout_ratio(self, table: "Table"):
+        return self.payout_ratio
 
 
 """
@@ -111,13 +147,72 @@ Passline and Come bets
 """
 
 
-class PassLine(WinningLosingNumbersBet):
+class BaseOdds(SingleWinningNumberBet, SingleLosingNumberBet, StaticPayoutRatio, ABC):
+    @property
+    @abstractmethod
+    def base_bet_types(self) -> tuple[typing.Type[WinningLosingNumbersBet]]:
+        pass
+
+    @property
+    @abstractmethod
+    def table_odds_setting(self) -> str:
+        pass
+
+    @property
+    @abstractmethod
+    def key_number(self):
+        pass
+
+    @staticmethod
+    @abstractmethod
+    def by_number(number: int, bet_amount: float):
+        pass
+
+    def get_base_bets(self, player: "Player") -> list[WinningLosingNumbersBet]:
+        base_bets = player.get_bets(*self.base_bet_types, winning_numbers=self.winning_numbers)
+        return base_bets
+
+    def get_max_odds(self, table: "Table") -> int:
+        return table.settings[self.table_odds_setting][self.key_number]
+
+    def get_max_bet(self, table: "Table", player: "Player") -> typing.SupportsFloat:
+        base_bet_amount = sum(x.bet_amount for x in self.get_base_bets(player))
+        max_odds = self.get_max_odds(table)
+        return base_bet_amount * max_odds
+
+    def allowed(self, table: "Table", player: "Player") -> bool:
+        return self.get_max_bet(table, player) >= self.bet_amount
+
+
+class AllowsOdds(WinningLosingNumbersBet, StaticPayoutRatio, ABC):
     payout_ratio: float = 1.0
 
     def __init__(self, bet_amount: float):
-        super().__init__(bet_amount, None)
-        self.point: int | None = None
+        super().__init__(bet_amount)
+        self.point: int = None
         self.new_point: bool = False
+
+    def place_odds(self, bet_amount: typing.SupportsFloat, player: "Player", table):
+        player.add_bet(self.get_odds_bet(bet_amount), table)
+
+    def get_odds_bet(self, bet_amount: typing.SupportsFloat):
+        return self.odds_type.by_number(self.point, bet_amount)
+
+    @property
+    @abstractmethod
+    def odds_type(self) -> typing.Type[BaseOdds]:
+        pass
+
+
+class PassLine(AllowsOdds):
+
+    @property
+    def odds_type(self) -> typing.Type[BaseOdds]:
+        return Odds
+
+    @property
+    def key_number(self) -> int:
+        return self.winning_numbers[0]
 
     @property
     def winning_numbers(self):
@@ -131,19 +226,17 @@ class PassLine(WinningLosingNumbersBet):
             return [2, 3, 12]
         return [7]
 
-    @property
-    def remove(self):
-        if self.new_point is True:
-            return False
-        return super().remove
+    def get_status(self, table: "Table"):
+        if self.new_point:
+            return None
+        return super().get_status(table)
 
-    def _update_bet(self) -> None:
+    def update(self, table: "Table") -> None:
         self.new_point = False
 
-        if self.point is None and self.status not in ("win", "lose"):
-            self.point = self.table.dice.total
+        if self.point is None and self.get_status(table) not in ("win", "lose"):
+            self.point = table.dice.total
             self.new_point = True
-
 
     @property
     def removable(self):
@@ -151,22 +244,20 @@ class PassLine(WinningLosingNumbersBet):
             return False
         return True
 
-    def allowed(self, player) -> bool:
-        if player.table.point.status == 'Off':
+    def allowed(self, table: "Table", player: "Player") -> bool:
+        if table.point.status == 'Off':
             return True
         return False
 
 
 class Come(PassLine):
-    def _update_bet(self) -> None:
-        super()._update_bet()
-        if self.point is not None and self.subname == "":
-            self.subname = str(self.point)
-
-    def allowed(self, player) -> bool:
-        if player.table.point.status == 'On':
+    def allowed(self, table: "Table", player: "Player") -> bool:
+        if table.point.status == 'On':
             return True
         return False
+
+    def already_placed(self, player: "Player") -> bool:
+        return player.has_bets(type(self), point=self.point)
 
 
 """
@@ -174,51 +265,48 @@ Passline/Come bet odds
 """
 
 
-class BaseOdds(WinningLosingNumbersBet, ABC):
-    @property
-    @abstractmethod
-    def base_bet_type(self) -> type:
-        pass
-
-    def allowed(self, player) -> bool:
-        max_bet = self.bet_amount
-
-
-
-class Odds(WinningLosingNumbersBet):
-    def __init__(self, bet_amount: typing.SupportsFloat, bet_object: PassLine | Come):
-        super().__init__(bet_amount, None)
-        self.bet_object = bet_object
-
-        if not isinstance(bet_object, PassLine) and not isinstance(bet_object, Come):
-            raise TypeError('bet_object must be either a PassLine or Come Bet.')
-
-        self.subname: str = "".join(str(e) for e in bet_object.winning_numbers)
+class Odds(BaseOdds, ABC):
+    base_bet_types: tuple[typing.Type[WinningLosingNumbersBet]] = (PassLine, Come)
+    table_odds_setting: str = 'max_odds'
+    losing_number: list[int] = 7
 
     @property
-    def winning_numbers(self):
-        return self.bet_object.winning_numbers
+    def key_number(self):
+        return self.winning_number
 
-    @property
-    def losing_numbers(self):
-        return self.bet_object.losing_numbers
+    @staticmethod
+    def by_number(number: int, bet_amount: float):
+        return {4: Odds4, 5: Odds5, 6: Odds6, 8: Odds8, 9: Odds9, 10: Odds10}[number](bet_amount)
 
-    @property
-    def payout_ratio(self):
-        if self.winning_numbers in ([4], [10]):
-            return 2 / 1
-        elif self.winning_numbers in ([5], [9]):
-            return 3 / 2
-        elif self.winning_numbers in ([6], [8]):
-            return 6 / 5
-        else:
-            raise NotImplementedError
 
-    def allowed(self, player) -> bool:
-        if isinstance(self.bet_object, PassLine):
-            if player.table.point.status == 'Off':
-                return False
-            return True
+class Odds4(Odds):
+    winning_number: int = 4
+    payout_ratio: float = 2 / 1
+
+
+class Odds5(Odds):
+    winning_number: int = 5
+    payout_ratio: float = 3 / 2
+
+
+class Odds6(Odds):
+    winning_number: int = 6
+    payout_ratio: float = 6 / 5
+
+
+class Odds8(Odds):
+    winning_number: int = 8
+    payout_ratio: float = 6 / 5
+
+
+class Odds9(Odds):
+    winning_number: int = 9
+    payout_ratio: float = 3 / 2
+
+
+class Odds10(Odds):
+    winning_number: int = 10
+    payout_ratio: float = 2 / 1
 
 
 """
@@ -226,47 +314,47 @@ Place Bets on 4,5,6,8,9,10
 """
 
 
-class Place(WinningLosingNumbersBet, ABC):
-    def _update_bet(self) -> None:
+class Place(SingleWinningNumberBet, SingleLosingNumberBet, StaticPayoutRatio, ABC):
+    def update(self, table: "Table") -> None:
         # place bets are inactive when point is "Off"
-        if self.table.point == "On":
-            super()._update_bet()
+        if table.point == "On":
+            super().update(table)
 
 
 class Place4(Place):
     payout_ratio: float = 9 / 5
-    winning_numbers: list[int] = [4]
-    losing_numbers: list[int] = [7]
+    winning_number: int = 4
+    losing_number: list[int] = 7
 
 
 class Place5(Place):
     payout_ratio: float = 7 / 5
-    winning_numbers: list[int] = [5]
-    losing_numbers: list[int] = [7]
+    winning_number: int = 5
+    losing_number: list[int] = 7
 
 
 class Place6(Place):
     payout_ratio: float = 7 / 6
-    winning_numbers: list[int] = [6]
-    losing_numbers: list[int] = [7]
+    winning_number: int = 6
+    losing_number: list[int] = 7
 
 
 class Place8(Place):
     payout_ratio: float = 7 / 6
-    winning_numbers: list[int] = [8]
-    losing_numbers: list[int] = [7]
+    winning_number: int = 8
+    losing_number: list[int] = 7
 
 
 class Place9(Place):
     payout_ratio: float = 7 / 5
-    winning_numbers: list[int] = [9]
-    losing_numbers: list[int] = [7]
+    winning_number: int = 9
+    losing_number: list[int] = 7
 
 
 class Place10(Place):
     payout_ratio: float = 9 / 5
-    winning_numbers: list[int] = [10]
-    losing_numbers: list[int] = [7]
+    winning_number: int = 10
+    losing_number: list[int] = 7
 
 
 """
@@ -274,20 +362,22 @@ Field bet
 """
 
 
-class Field(WinningLosingNumbersBet):
+class OneRollBet(WinningLosingNumbersBet, ABC):
+    """WinningLosingNumbersBet where if the number isn't in the winning_numbers, it is in the losing_numbers."""
     @property
-    def payout_ratio(self):
-        if self.table.dice.total in self.table.settings['field_payouts']:
-            return self.table.settings['field_payouts'][self.table.dice.total]
+    def losing_numbers(self):
+        return [x for x in [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12] if x not in self.winning_numbers]
+
+
+class Field(OneRollBet):
+    def get_payout_ratio(self, table: "Table"):
+        if table.dice.total in table.settings['field_payouts']:
+            return table.settings['field_payouts'][table.dice.total]
         return 0
 
     @property
     def winning_numbers(self):
-        return list(self.table.settings['field_payouts'])
-
-    @property
-    def losing_numbers(self):
-        return list(x for x in [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12] if x not in self.table.settings['field_payouts'])
+        return [2, 3, 4, 9, 10, 11, 12]
 
 
 """
@@ -295,14 +385,14 @@ Don't pass and Don't come bets
 """
 
 
-class DontPass(WinningLosingNumbersBet):
-    payout_ratio: float = 1.0
+class DontPass(AllowsOdds):
+    @property
+    def odds_type(self) -> typing.Type[BaseOdds]:
+        return LayOdds
 
-    def __init__(self, bet_amount: float):
-        super().__init__(bet_amount, None)
-        self.push_numbers: list[int] = [12]
-        self.point: int | None = None
-        self.new_point: bool = False
+    @property
+    def key_number(self) -> int:
+        return self.losing_numbers[0]
 
     @property
     def winning_numbers(self):
@@ -316,34 +406,26 @@ class DontPass(WinningLosingNumbersBet):
             return [7, 11]
         return [self.point]
 
-    @property
-    def remove(self) -> bool:
-        if self.point is None and self.table.dice.total == 12:
-            return True
-        if self.new_point is True:
-            return False
-        return super().remove
-
-    def _update_bet(self) -> None:
+    def update(self, table: "Table") -> None:
         self.new_point = False
-        if self.point is None and self.table.dice.total in (4, 5, 6, 8, 9, 10):
-            self.point = self.table.dice.total
+        if self.point is None and table.dice.total in (4, 5, 6, 8, 9, 10):
+            self.point = table.dice.total
             self.new_point = True
 
-    def allowed(self, player) -> bool:
-        if player.table.point.status == 'Off':
+    def allowed(self, table: "Table", player) -> bool:
+        if table.point.status == 'Off':
             return True
         return False
 
+    def get_status(self, table: "Table") -> str | None:
+        if self.new_point:
+            return None
+        return super().get_status(table)
+
 
 class DontCome(DontPass):
-    def _update_bet(self) -> None:
-        super()._update_bet()
-        if self.point is not None and self.subname == "":
-            self.subname = "".join(str(e) for e in self.losing_numbers)
-
-    def allowed(self, player) -> bool:
-        if player.table.point.status == 'On':
+    def allowed(self, table: "Table", player) -> bool:
+        if table.point.status == 'On':
             return True
         return False
 
@@ -353,30 +435,53 @@ Don't pass/Don't come lay odds
 """
 
 
-class LayOdds(WinningLosingNumbersBet):
-    def __init__(self, bet_amount: float, bet_object: DontPass | DontCome):
-        super().__init__(bet_amount, None)
-        self.bet_object = bet_object
-        self.subname: str = "".join(str(e) for e in bet_object.losing_numbers)
+class LayOdds(BaseOdds, ABC):
+    base_bet_types: typing.Type[AllowsOdds] = (DontPass, DontCome)
+    table_odds_setting: str = 'max_dont_odds'
+    winning_number: int = 7
 
     @property
-    def winning_numbers(self):
-        return self.bet_object.winning_numbers
+    def key_number(self):
+        return self.losing_number
 
-    @property
-    def losing_numbers(self):
-        return self.bet_object.losing_numbers
+    @staticmethod
+    def by_number(number: int, bet_amount: float):
+        return {4: LayOdds4,
+                5: LayOdds5,
+                6: LayOdds6,
+                8: LayOdds8,
+                9: LayOdds9,
+                10: LayOdds10}[number](bet_amount)
 
-    @property
-    def payout_ratio(self):
-        if self.losing_numbers in ([4], [10]):
-            return 1 / 2
-        elif self.losing_numbers in ([5], [9]):
-            return 2 / 3
-        elif self.losing_numbers in ([6], [8]):
-            return 5 / 6
-        else:
-            raise NotImplementedError
+
+class LayOdds4(LayOdds):
+    losing_number: int = 4
+    payout_ratio: float = 1 / 2
+
+
+class LayOdds5(LayOdds):
+    losing_number: int = 5
+    payout_ratio: float = 2 / 3
+
+
+class LayOdds6(LayOdds):
+    losing_number: int = 6
+    payout_ratio: float = 5 / 6
+
+
+class LayOdds8(LayOdds):
+    losing_number: int = 8
+    payout_ratio: float = 5 / 6
+
+
+class LayOdds9(LayOdds):
+    losing_number: int = 9
+    payout_ratio: float = 2 / 3
+
+
+class LayOdds10(LayOdds):
+    losing_number: int = 10
+    payout_ratio: float = 1 / 2
 
 
 """
@@ -384,59 +489,51 @@ Center-table Bets
 """
 
 
-class Any7(WinningLosingNumbersBet):
+class Any7(OneRollBet, SingleWinningNumberBet, StaticPayoutRatio):
     payout_ratio: int = 4
-    winning_numbers: list[int] = [7]
-    losing_numbers: list[int] = [2, 3, 4, 5, 6, 8, 9, 10, 11, 12]
+    winning_number: int = 7
 
 
-class Two(WinningLosingNumbersBet):
+class Two(OneRollBet, SingleWinningNumberBet, StaticPayoutRatio):
     payout_ratio: int = 30
-    winning_numbers: list[int] = [2]
-    losing_numbers: list[int] = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+    winning_number: int = 2
 
 
-class Three(WinningLosingNumbersBet):
+class Three(OneRollBet, SingleWinningNumberBet, StaticPayoutRatio):
     payout_ratio: int = 15
-    winning_numbers: list[int] = [3]
-    losing_numbers: list[int] = [2, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+    winning_number: int = 3
 
 
-class Yo(WinningLosingNumbersBet):
+class Yo(OneRollBet, SingleWinningNumberBet, StaticPayoutRatio):
     payout_ratio: int = 15
-    winning_numbers: list[int] = [11]
-    losing_numbers: list[int] = [2, 3, 4, 5, 6, 7, 8, 9, 10, 12]
+    winning_number: int = 11
 
 
-class Boxcars(WinningLosingNumbersBet):
+class Boxcars(OneRollBet, SingleWinningNumberBet, StaticPayoutRatio):
     payout_ratio: int = 30
-    winning_numbers: list[int] = [12]
-    losing_numbers: list[int] = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+    winning_number: int = 12
 
 
-class AnyCraps(WinningLosingNumbersBet):
+class AnyCraps(OneRollBet, WinningLosingNumbersBet, StaticPayoutRatio):
     payout_ratio: int = 7
     winning_numbers: list[int] = [2, 3, 12]
-    losing_numbers: list[int] = [4, 5, 6, 7, 8, 9, 10, 11]
 
 
-class CAndE(WinningLosingNumbersBet):
+class CAndE(OneRollBet, WinningLosingNumbersBet):
     winning_numbers: list[int] = [2, 3, 11, 12]
-    losing_numbers: list[int] = [4, 5, 6, 7, 8, 9, 10]
 
-    @property
-    def payout_ratio(self):
-        if self.table.dice.total in [2, 3, 12]:
+    def get_payout_ratio(self, table: "Table"):
+        if table.dice.total in [2, 3, 12]:
             return 3
-        elif self.table.dice.total in [11]:
+        elif table.dice.total in [11]:
             return 7
         else:
             raise NotImplementedError
 
 
-class HardWay(Bet, ABC):
+class HardWay(StaticPayoutRatio, ABC):
     def __init__(self, bet_amount: float):
-        super().__init__(bet_amount, None)
+        super().__init__(bet_amount)
 
     @property
     @abstractmethod
@@ -447,11 +544,13 @@ class HardWay(Bet, ABC):
     def winning_result(self):
         return [self.number / 2, self.number / 2]
 
-    @property
-    def status(self):
-        if self.table.dice.result == self.winning_result:
+    def get_payout_ratio(self, table: "Table"):
+        return self.payout_ratio
+
+    def get_status(self, table: "Table"):
+        if table.dice.result == self.winning_result:
             return "win"
-        elif self.table.dice.total in [self.number, 7]:
+        elif table.dice.total in [self.number, 7]:
             return "lose"
         return None
 
@@ -478,52 +577,42 @@ class Hard10(HardWay):
 
 class Fire(Bet):
     def __init__(self, bet_amount: float):
-        super().__init__(bet_amount, None)
+        super().__init__(bet_amount)
         self.bet_amount: float = bet_amount
         self.points_made: list[int] = []
         self.current_point: int | None = None
         self.new_point_made: bool = False
 
-    @property
-    def status(self):
-        if self.new_point_made and len(self.points_made) in self.table.settings['fire_points']:
+    def get_status(self, table: "Table"):
+        if self.new_point_made and len(self.points_made) in table.settings['fire_points']:
             return "win"
-        elif self.current_point is not None and self.table.dice.total == 7:
+        elif self.current_point is not None and table.dice.total == 7:
             return "lose"
         return None
 
-    @property
-    def win_amount(self) -> float:
-        if self.status == "win":
-            return self.payout_ratio * self.bet_amount
-        else:
-            return 0.0
-
-    @property
-    def remove(self) -> bool:
-        if len(self.points_made) == 6 or self.status == "lose":
+    def should_remove(self, table: "Table") -> bool:
+        if len(self.points_made) == 6 or self.get_status(table) == "lose":
             return True
         return False
 
-    def _update_bet(self) -> None:
+    def update(self, table: "Table") -> None:
         self.new_point_made = False
-        if self.current_point is None and self.table.dice.total in (4, 5, 6, 8, 9, 10):
-            self.current_point = self.table.dice.total
-        elif self.current_point is not None and self.current_point == self.table.dice.total:
-            self.point_made()
+        if self.current_point is None and table.dice.total in (4, 5, 6, 8, 9, 10):
+            self.current_point = table.dice.total
+        elif self.current_point is not None and self.current_point == table.dice.total:
+            self.point_made(table)
 
-    def point_made(self):
-        if self.table.dice.total not in self.points_made:
+    def point_made(self, table: "Table"):
+        if table.dice.total not in self.points_made:
             self.new_point_made = True
-            self.points_made = self.points_made + [self.table.dice.total]
+            self.points_made = self.points_made + [table.dice.total]
         self.current_point = None
 
-    def allowed(self, player) -> bool:
-        return player.table.new_shooter
+    def allowed(self, table: "Table", player) -> bool:
+        return table.new_shooter
 
-    @property
-    def payout_ratio(self):
-        if len(self.points_made) in self.table.settings['fire_points']:
-            return self.table.settings['fire_points'][len(self.points_made)]
+    def get_payout_ratio(self, table: "Table"):
+        if len(self.points_made) in table.settings['fire_points']:
+            return table.settings['fire_points'][len(self.points_made)]
         else:
             raise NotImplementedError

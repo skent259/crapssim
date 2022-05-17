@@ -1,7 +1,8 @@
 import typing
 
 from crapssim.dice import Dice
-from crapssim.player import Player
+from .bet import Bet, AllowsOdds
+from .strategy import STRATEGY_TYPE, passline
 
 
 class Table(object):
@@ -39,7 +40,6 @@ class Table(object):
         self.players: list[Player] = []
         self.point: Point = Point()
         self.dice: Dice = Dice()
-        self.bet_update_info: dict | None = None
         self.settings: dict[str, typing.Any] = {'field_payouts': {2: 2, 3: 1, 4: 1, 9: 1, 10: 1, 11: 1, 12: 2},
                                                 'fire_points': {4: 24, 5: 249, 6: 999},
                                                 'max_odds': {4: 3, 5: 4, 6: 5, 8: 5, 9: 4, 10: 3},
@@ -81,17 +81,28 @@ class Table(object):
         """
         self.settings[name] = value
 
-    def add_player(self, player_object: Player) -> None:
+    def add_player(self, bankroll: typing.SupportsFloat = 100,
+                   strategy: STRATEGY_TYPE = passline,
+                   name: str = None,
+                   unit: typing.SupportsFloat = 5) -> None:
         """ Add player object to the table
 
         Parameters
         ----------
-        player_object : Player
-            Player object to add to the table.
+        bankroll
+            The players bankroll, defaults to 100.
+        strategy
+            The players strategy, defaults to passline.
+        name
+            The players name, if None defaults to "Player x" with x being the current number
+            of players starting with 0 (ex. Player 0, Player 1, Player 2).
+        unit
+            The unit to use for strategies, defaults to 5.
+
         """
-        if player_object not in self.players:
-            self.players.append(player_object)
-        player_object.table = self
+        if name is None:
+            name = f'Player {len(self.players)}'
+        self.players.append(Player(table=self, bankroll=bankroll, bet_strategy=strategy, name=name, unit=unit))
 
     def _setup_run(self, verbose: bool) -> None:
         """
@@ -250,7 +261,7 @@ class Table(object):
         """ Make sure there is at least one player at the table
         """
         if len(self.players) == 0:
-            self.add_player(Player(500.0, name="Player1"))
+            self.add_player()
 
     def add_player_bets(self, verbose: bool = False) -> None:
         """ Implement each player's betting strategy.
@@ -264,22 +275,20 @@ class Table(object):
             p.add_strategy_bets()
 
             if verbose:
-                bets = [f"{b.name}{b.subname}: ${b.bet_amount}" for b in p.bets_on_table]
+                bets = [f"{b.name}: ${b.bet_amount}" for b in p.bets_on_table]
                 if verbose:
                     print(f"{p.name}'s current bets: {bets}")
 
     def update_player_bets(self, verbose: bool = False) -> None:
-        """ Check bets for wins/losses, payout wins to their bankroll, remove bets that have resolved
+        """ Check bets for wins/losses, payout wins to their bankroll, remove_bet bets that have resolved
 
         Parameters
         ----------
         verbose : bool
             If True, prints whether the player won, lost, etc and the amount
         """
-        self.bet_update_info = {}
         for p in self.players:
-            info = p.update_bet(verbose)
-            self.bet_update_info[p] = info
+            p.update_bet(self, verbose)
 
     def update_table(self, verbose: bool = False) -> None:
         """ update table attributes based on previous dice roll
@@ -420,52 +429,159 @@ class Point:
             self.number = None
 
 
-if __name__ == "__main__":
-    import sys
+class Player:
+    """
+    Player standing at the craps table
 
-    # import strategy
-    from crapssim.strategy import dicedoctor
+    Parameters
+    ----------
+    bankroll : typing.SupportsFloat
+        Starting amount of cash for the player
+    bet_strategy : function(table, player, unit=5)
+        A function that implements a particular betting strategy.  See betting_strategies.py
+    name : string, default = "Player"
+        Name of the player
+    unit : typing.SupportsFloat, default=5
+        Standard amount of bet to be used by bet_strategy
 
-    sim = False
-    printout = True
+    Attributes
+    ----------
+    bankroll : typing.SupportsFloat
+        Current amount of cash for the player
+    name : str
+        Name of the player
+    bet_strategy :
+        A function that implements a particular betting strategy. See betting_strategies.py.
+    strat_info : dict[str, typing.Any]
+        Variables to be used by the players bet_strategy
+    unit : typing.SupportsFloat
+        Standard amount of bet to be used by bet_strategy
+    bets_on_table : list
+        List of betting objects for the player
+    total_bet_amount : int
+        Sum of bet value for the player
+    """
 
-    n_sim = 100
-    n_roll = 144
-    n_shooter = 2
-    bankroll = 1000
-    strategy = dicedoctor
-    strategy_name = "dicedoctor"  # don't include any "_" in this
-    runout = True
-    runout_str = "-runout" if runout else ""
+    def __init__(self, table,
+                 bankroll: typing.SupportsFloat, bet_strategy: STRATEGY_TYPE = passline,
+                 name: str = "Player", unit: typing.SupportsFloat = 5):
+        self.bankroll: float = bankroll
+        self.bet_strategy: STRATEGY_TYPE = bet_strategy
+        self.strat_info: dict[str, typing.Any] = {}
+        self.name: str = name
+        self.unit: typing.SupportsFloat = unit
+        self.bets_on_table: list[Bet] = []
+        self._table: Table = table
 
-    if sim:
-        # Run simulation of n_roll rolls (estimated rolls/hour with 5 players) 1000 times
-        outfile_name = f"./output/simulations/{strategy_name}_sim-{n_sim}_roll-{n_roll}_br-{bankroll}{runout_str}.txt"
-        with open(outfile_name, "w") as f_out:
-            f_out.write("total_cash,n_rolls")
-            f_out.write(str("\n"))
-            for i in range(n_sim):
-                table = Table()
-                table.add_player(Player(bankroll, strategy))
-                table.run(n_roll, n_shooter, verbose=False, runout=runout)
-                out = f"{table.total_player_cash},{table.dice.n_rolls}"
-                f_out.write(str(out))
-                f_out.write(str("\n"))
+    @property
+    def total_bet_amount(self) -> float:
+        return sum(x.bet_amount for x in self.bets_on_table)
 
-    if printout:
-        # Run one simulation with verbose=True to check strategy
-        outfile_name = f"./output/printout/{strategy_name}_roll-{n_roll}_br-{bankroll}{runout_str}.txt"
-        with open(outfile_name, "w") as f_out:
-            sys.stdout = f_out
-            table = Table()
-            table.add_player(Player(bankroll, strategy))
-            table.run(n_roll, verbose=True)
-            # out = table.total_player_cash
-            # f_out.write(str(out))
-            # f_out.write(str('\n'))
+    @property
+    def table(self):
+        return self._table
 
-    sys.stdout = sys.__stdout__  # reset stdout
+    def add_bet(self, bet: Bet, table: "Table") -> None:
+        if bet.already_placed(self):
+            existing_bet: Bet = self.get_bet(type(bet))
+            existing_bet.bet_amount += bet.bet_amount
+            self.bankroll -= bet.bet_amount
+            if not existing_bet.allowed(table=table, player=self):
+                existing_bet -= bet.bet_amount
+                self.bankroll += bet.bet_amount
+        else:
+            if bet.allowed(table=table, player=self):
+                self.bets_on_table.append(bet)
+                self.bankroll -= bet.bet_amount
 
-    # table = Table().with_payouts(fielddouble=[2], fieldtriple=[12])
-    # print(table)
-    # print(table.settings)
+    def remove_bet(self, bet: Bet) -> None:
+        if bet in self.bets_on_table and bet.removable:
+            self.bankroll += bet.bet_amount
+            self.bets_on_table.remove(bet)
+
+    def get_bets(self, *bet_types: typing.Type[Bet], **bet_attributes) -> list[Bet]:
+        if len(bet_types) == 0:
+            bet_types = (Bet,)
+        else:
+            bet_types = tuple(bet_types)
+        bets = []
+
+        for bet in self.bets_on_table:
+            if isinstance(bet, bet_types):
+                if all(hasattr(bet, a) and getattr(bet, a) == bet_attributes[a] for a in bet_attributes):
+                    bets.append(bet)
+        return bets
+
+    def has_bets(self, *bet_types: typing.Type[Bet], **bet_attributes) -> bool:
+        """ returns True if bets_to_check and self.bets_on_table
+        has at least one thing in common """
+        return len(self.get_bets(*bet_types, **bet_attributes)) > 0
+
+    def get_bet(self, bet_type: typing.Type[Bet], **bet_attributes) -> Bet:
+        """returns first betting object matching bet and bet_subname.
+        If bet_subname="Any", returns first betting object matching bet"""
+        return self.get_bets(bet_type, **bet_attributes)[0]
+
+    def count_bets(self, *bet_types: typing.Type[Bet], **bet_attributes) -> int:
+        """ returns the total number of bets in self.bets_on_table that match bets_to_check """
+        return len(self.get_bets(*bet_types, **bet_attributes))
+
+    def remove_if_present(self, bet_type: typing.Type[Bet]) -> None:
+        if self.has_bets(bet_type):
+            self.remove_bet(self.get_bet(bet_type))
+
+    def add_strategy_bets(self) -> None:
+        """ Implement the given betting strategy
+
+        """
+        if self.bet_strategy:
+            self.bet_strategy(self, **self.strat_info)
+
+    def update_bet(self, table, verbose: bool = False) -> None:
+        info = {}
+        for bet in self.bets_on_table[:]:
+            bet.update(table)
+
+            self.bankroll += bet.get_return_amount(table)
+
+            if verbose:
+                self.print_bet_update(bet, table)
+
+            if bet.should_remove(table):
+                self.bets_on_table.remove(bet)
+
+            info[bet.name] = {"status": bet.get_status(table),
+                              "win_amount": bet.get_win_amount(table)}
+
+    def print_bet_update(self, bet, table):
+        status = bet.get_status(table)
+        win_amount = bet.get_win_amount(table)
+        if status == "win":
+            print(f"{self.name} won ${win_amount} on {bet.name} bet!")
+        elif status == "lose":
+            print(f"{self.name} lost ${bet.bet_amount} on {bet.name} bet.")
+
+    def add_odds(self,
+                 table: "Table",
+                 bet_amount: float = None,
+                 bet_types: typing.Iterable[AllowsOdds] = AllowsOdds,
+                 point: int = None):
+        if point is None:
+            allows_odds_bets = self.get_bets(*bet_types)
+            if len(allows_odds_bets) == 0:
+                raise ValueError(f'No {", ".join(x.__name__ for x in bet_types)} bets found to put odds on.')
+            if len(allows_odds_bets) > 1:
+                raise ValueError(f'If there is more than one {", ".join(x.__name__ for x in bet_types)} for this'
+                                 f' player you must specify a point.')
+        else:
+            allows_odds_bets = self.get_bets(*bet_types, point=point)
+            if len(allows_odds_bets) == 0:
+                raise ValueError(f'No {", ".join(x.__name__ for x in bet_types)} bets found with point={point}'
+                                 f' to put odds on.')
+
+        allows_odds_bet: AllowsOdds = allows_odds_bets[0]
+        point = allows_odds_bet.point
+
+        if bet_amount is None:
+            bet_amount = table.settings['max_odds'][point] * allows_odds_bet.bet_amount
+        allows_odds_bet.place_odds(bet_amount, self, table)
