@@ -4,8 +4,9 @@ from crapssim.strategy import passline
 
 
 def test_default_strategy():
-    player = Player(None, 100)
-    assert player.bet_strategy == passline
+    table = Table()
+    table.add_player()
+    assert table.players[0].bet_strategy == passline
 
 
 def test_irremovable_bet():

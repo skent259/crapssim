@@ -19,18 +19,19 @@ def test_ensure_one_player():
 def test_wrong_point_off():
     table = Table()
     table.point.status = 'Off'
-    player = Player(None, 500)
-    player.add_bet(Come(100), table)
-    assert (len(player.bets_on_table), player.bankroll) == (0, 500)
+    table.add_player(bankroll=500)
+    table.players[0].add_bet(Come(100), table)
+    assert (len(table.players[0].bets_on_table),
+            table.players[0].bankroll) == (0, 500)
 
 
 def test_wrong_point_on():
     table = Table()
     table.point.status = 'On'
     table.point.number = 4
-    player = Player(None, 500)
-    player.add_bet(PassLine(100), table)
-    assert (len(player.bets_on_table), player.bankroll) == (0, 500)
+    table.add_player(bankroll=500)
+    assert (len(table.players[0].bets_on_table),
+            table.players[0].bankroll) == (0, 500)
 
 
 @pytest.mark.parametrize(['status', 'number', 'comparison'], [

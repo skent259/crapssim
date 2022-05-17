@@ -462,7 +462,8 @@ class Player:
         Sum of bet value for the player
     """
 
-    def __init__(self, table, bankroll: typing.SupportsFloat, bet_strategy: STRATEGY_TYPE = passline,
+    def __init__(self, table,
+                 bankroll: typing.SupportsFloat, bet_strategy: STRATEGY_TYPE = passline,
                  name: str = "Player", unit: typing.SupportsFloat = 5):
         self.bankroll: float = bankroll
         self.bet_strategy: STRATEGY_TYPE = bet_strategy
