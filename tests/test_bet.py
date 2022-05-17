@@ -35,7 +35,7 @@ def test_ev_oneroll(bet, ev):
     t.add_player()
     t.point.status = "On"  # for place bets to pay properly
     outcomes = []
-    t.players[0].add_bet(bet, t)
+    t.players[0].add_bet(bet)
     for d1 in range(1, 7):
         for d2 in range(1, 7):
             t.dice.fixed_roll([d1, d2])
@@ -61,7 +61,7 @@ def test_fire(rolls, correct_status, correct_win_amt, correct_remove):
     table = Table()
     table.add_player()
     bet = Fire(1)
-    table.players[0].add_bet(bet, table)
+    table.players[0].add_bet(bet)
 
     # table.fixed_run(rolls)
     for roll in rolls:

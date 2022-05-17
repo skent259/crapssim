@@ -193,7 +193,7 @@ class AllowsOdds(WinningLosingNumbersBet, StaticPayoutRatio, ABC):
         self.new_point: bool = False
 
     def place_odds(self, bet_amount: typing.SupportsFloat, player: "Player", table):
-        player.add_bet(self.get_odds_bet(bet_amount), table)
+        player.add_bet(self.get_odds_bet(bet_amount))
 
     def get_odds_bet(self, bet_amount: typing.SupportsFloat):
         return self.odds_type.by_number(self.point, bet_amount)
