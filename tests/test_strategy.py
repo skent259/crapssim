@@ -106,8 +106,7 @@ def test_strategies_compare_bets(strategy, strategy_info, rolls: list[tuple[int,
         return strategy(player, table, **strategy_info)
 
     table = Table()
-    player = Player(100, bet_strategy=strat)
-    table.add_player(player)
+    table.add_player(strategy=strat)
     table.fixed_run(rolls)
     table.add_player_bets(verbose=False)
 

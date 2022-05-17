@@ -2,6 +2,7 @@ import typing
 
 from crapssim.dice import Dice
 from crapssim.player import Player
+from .strategy import STRATEGY_TYPE, passline
 
 
 class Table(object):
@@ -80,17 +81,28 @@ class Table(object):
         """
         self.settings[name] = value
 
-    def add_player(self, player_object: Player) -> None:
+    def add_player(self, bankroll: typing.SupportsFloat = 100,
+                   strategy: STRATEGY_TYPE = passline,
+                   name: str = None,
+                   unit: typing.SupportsFloat = 5) -> None:
         """ Add player object to the table
 
         Parameters
         ----------
-        player_object : Player
-            Player object to add to the table.
+        bankroll
+            The players bankroll, defaults to 100.
+        strategy
+            The players strategy, defaults to passline.
+        name
+            The players name, if None defaults to "Player x" with x being the current number
+            of players starting with 0 (ex. Player 0, Player 1, Player 2).
+        unit
+            The unit to use for strategies, defaults to 5.
+
         """
-        if player_object not in self.players:
-            self.players.append(player_object)
-        player_object.table = self
+        if name is None:
+            name = f'Player {len(self.players)}'
+        self.players.append(Player(table=self, bankroll=bankroll, bet_strategy=strategy, name=name, unit=unit))
 
     def _setup_run(self, verbose: bool) -> None:
         """
@@ -249,7 +261,7 @@ class Table(object):
         """ Make sure there is at least one player at the table
         """
         if len(self.players) == 0:
-            self.add_player(Player(500.0, name="Player1"))
+            self.add_player()
 
     def add_player_bets(self, verbose: bool = False) -> None:
         """ Implement each player's betting strategy.
@@ -415,54 +427,3 @@ class Point:
         elif self.status == "On" and dice_object.total in [7, self.number]:
             self.status = "Off"
             self.number = None
-
-
-if __name__ == "__main__":
-    import sys
-
-    # import strategy
-    from crapssim.strategy import dicedoctor
-
-    sim = False
-    printout = True
-
-    n_sim = 100
-    n_roll = 144
-    n_shooter = 2
-    bankroll = 1000
-    strategy = dicedoctor
-    strategy_name = "dicedoctor"  # don't include any "_" in this
-    runout = True
-    runout_str = "-runout" if runout else ""
-
-    if sim:
-        # Run simulation of n_roll rolls (estimated rolls/hour with 5 players) 1000 times
-        outfile_name = f"./output/simulations/{strategy_name}_sim-{n_sim}_roll-{n_roll}_br-{bankroll}{runout_str}.txt"
-        with open(outfile_name, "w") as f_out:
-            f_out.write("total_cash,n_rolls")
-            f_out.write(str("\n"))
-            for i in range(n_sim):
-                table = Table()
-                table.add_player(Player(bankroll, strategy))
-                table.run(n_roll, n_shooter, verbose=False, runout=runout)
-                out = f"{table.total_player_cash},{table.dice.n_rolls}"
-                f_out.write(str(out))
-                f_out.write(str("\n"))
-
-    if printout:
-        # Run one simulation with verbose=True to check strategy
-        outfile_name = f"./output/printout/{strategy_name}_roll-{n_roll}_br-{bankroll}{runout_str}.txt"
-        with open(outfile_name, "w") as f_out:
-            sys.stdout = f_out
-            table = Table()
-            table.add_player(Player(bankroll, strategy))
-            table.run(n_roll, verbose=True)
-            # out = table.total_player_cash
-            # f_out.write(str(out))
-            # f_out.write(str('\n'))
-
-    sys.stdout = sys.__stdout__  # reset stdout
-
-    # table = Table().with_payouts(fielddouble=[2], fieldtriple=[12])
-    # print(table)
-    # print(table.settings)

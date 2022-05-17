@@ -42,23 +42,19 @@ class Player:
         Sum of bet value for the player
     """
 
-    def __init__(self, bankroll: typing.SupportsFloat,
-                 bet_strategy: STRATEGY_TYPE = passline,
-                 name: str = "Player",
-                 unit: typing.SupportsFloat = 5):
+    def __init__(self, table, bankroll: typing.SupportsFloat, bet_strategy: STRATEGY_TYPE = passline,
+                 name: str = "Player", unit: typing.SupportsFloat = 5):
         self.bankroll: float = bankroll
         self.bet_strategy: STRATEGY_TYPE = bet_strategy
         self.strat_info: dict[str, typing.Any] = {}
         self.name: str = name
         self.unit: typing.SupportsFloat = unit
         self.bets_on_table: list[Bet] = []
+        self._table: Table = table
 
     @property
     def total_bet_amount(self) -> float:
         return sum(x.bet_amount for x in self.bets_on_table)
-
-    def sit_at_table(self, table: "Table"):
-        table.add_player(self)
 
     def add_bet(self, bet: Bet, table: "Table") -> None:
         if bet.already_placed(self):

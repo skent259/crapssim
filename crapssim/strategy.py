@@ -697,7 +697,7 @@ if __name__ == "__main__":
     # table._add_player(Player(500, place68_2come))
 
     d = Dice()
-    p = Player(500, place68_2come)
+    p = Player(None, 500, place68_2come)
     t = Table()
     p.add_bet(PassLine(5), t)
     p.add_bet(Place6(6), t)
