@@ -561,10 +561,7 @@ class Player:
         elif status == "lose":
             print(f"{self.name} lost ${bet.bet_amount} on {bet.name} bet.")
 
-    def add_odds(self,
-                 table: "Table",
-                 bet_amount: float = None,
-                 bet_types: typing.Iterable[AllowsOdds] = AllowsOdds,
+    def add_odds(self, bet_amount: float = None, bet_types: typing.Iterable[AllowsOdds] = AllowsOdds,
                  point: int = None):
         if point is None:
             allows_odds_bets = self.get_bets(*bet_types)
@@ -583,5 +580,5 @@ class Player:
         point = allows_odds_bet.point
 
         if bet_amount is None:
-            bet_amount = table.settings['max_odds'][point] * allows_odds_bet.bet_amount
-        allows_odds_bet.place_odds(bet_amount, self, table)
+            bet_amount = self.table.settings['max_odds'][point] * allows_odds_bet.bet_amount
+        allows_odds_bet.place_odds(bet_amount, self, self.table)
