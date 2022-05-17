@@ -545,7 +545,7 @@ class Player:
             self.bankroll += bet.get_return_amount(self.table)
 
             if verbose:
-                self.print_bet_update(bet, self.table)
+                self.print_bet_update(bet)
 
             if bet.should_remove(self.table):
                 self.bets_on_table.remove(bet)
@@ -553,9 +553,9 @@ class Player:
             info[bet.name] = {"status": bet.get_status(self.table),
                               "win_amount": bet.get_win_amount(self.table)}
 
-    def print_bet_update(self, bet, table):
-        status = bet.get_status(table)
-        win_amount = bet.get_win_amount(table)
+    def print_bet_update(self, bet):
+        status = bet.get_status(self.table)
+        win_amount = bet.get_win_amount(self.table)
         if status == "win":
             print(f"{self.name} won ${win_amount} on {bet.name} bet!")
         elif status == "lose":
