@@ -2,7 +2,7 @@ import typing
 
 from crapssim.dice import Dice
 from .bet import Bet, AllowsOdds, BaseOdds
-from .strategy import STRATEGY_TYPE, passline
+from .strategy import Strategy, BetPassLine
 
 
 class Table:
@@ -82,7 +82,7 @@ class Table:
         self.settings[name] = value
 
     def add_player(self, bankroll: typing.SupportsFloat = 100,
-                   strategy: STRATEGY_TYPE = passline,
+                   strategy: Strategy = BetPassLine(5),
                    name: str = None,
                    unit: typing.SupportsFloat = 5) -> None:
         """ Add player object to the table
@@ -204,7 +204,7 @@ class Table:
         self.new_shooter = False
         self.dice.roll()
         for player in self.players:
-            player.bet_strategy.after_roll(player, self)
+            player.bet_strategy.after_roll(player)
 
         if verbose:
             print("")
@@ -225,7 +225,7 @@ class Table:
         self.new_shooter = False
         self.dice.fixed_roll(dice_outcome)
         for player in self.players:
-            player.bet_strategy.after_roll(player, self)
+            player.bet_strategy.after_roll(player)
 
         if verbose:
             print("")
@@ -467,10 +467,10 @@ class Player:
     """
 
     def __init__(self, table,
-                 bankroll: typing.SupportsFloat, bet_strategy: STRATEGY_TYPE = passline,
+                 bankroll: typing.SupportsFloat, bet_strategy: Strategy = BetPassLine(5),
                  name: str = "Player", unit: typing.SupportsFloat = 5):
         self.bankroll: float = bankroll
-        self.bet_strategy: STRATEGY_TYPE = bet_strategy
+        self.bet_strategy: Strategy = bet_strategy
         self.strat_info: dict[str, typing.Any] = {}
         self.name: str = name
         self.unit: typing.SupportsFloat = unit
@@ -541,8 +541,8 @@ class Player:
         """ Implement the given betting strategy
 
         """
-        if self.bet_strategy:
-            self.bet_strategy(self, **self.strat_info)
+        if self.bet_strategy is not None:
+            self.bet_strategy.update_bets(self)
 
     def update_bet(self, verbose: bool = False) -> None:
         info = {}
