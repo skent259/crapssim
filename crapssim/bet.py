@@ -36,14 +36,13 @@ class Bet(ABC):
     def removable(self):
         return True
 
-    def allowed(self, table: "Table", player: "Player") -> bool:
+    def allowed(self, player: "Player") -> bool:
         """
         Checks whether the bet is allowed to be placed on the given table.
 
         Parameters
         ----------
         player
-        table
 
         Returns
         -------
@@ -175,13 +174,13 @@ class BaseOdds(SingleWinningNumberBet, SingleLosingNumberBet, StaticPayoutRatio,
     def get_max_odds(self, table: "Table") -> int:
         return table.settings[self.table_odds_setting][self.key_number]
 
-    def get_max_bet(self, table: "Table", player: "Player") -> typing.SupportsFloat:
+    def get_max_bet(self, player: "Player") -> typing.SupportsFloat:
         base_bet_amount = sum(x.bet_amount for x in self.get_base_bets(player))
-        max_odds = self.get_max_odds(table)
+        max_odds = self.get_max_odds(player.table)
         return base_bet_amount * max_odds
 
-    def allowed(self, table: "Table", player: "Player") -> bool:
-        return self.get_max_bet(table, player) >= self.bet_amount
+    def allowed(self, player: "Player") -> bool:
+        return self.get_max_bet(player) >= self.bet_amount
 
 
 class AllowsOdds(WinningLosingNumbersBet, StaticPayoutRatio, ABC):
@@ -244,15 +243,15 @@ class PassLine(AllowsOdds):
             return False
         return True
 
-    def allowed(self, table: "Table", player: "Player") -> bool:
-        if table.point.status == 'Off':
+    def allowed(self, player: "Player") -> bool:
+        if player.table.point.status == 'Off':
             return True
         return False
 
 
 class Come(PassLine):
-    def allowed(self, table: "Table", player: "Player") -> bool:
-        if table.point.status == 'On':
+    def allowed(self, player: "Player") -> bool:
+        if player.table.point.status == 'On':
             return True
         return False
 
@@ -412,8 +411,8 @@ class DontPass(AllowsOdds):
             self.point = table.dice.total
             self.new_point = True
 
-    def allowed(self, table: "Table", player) -> bool:
-        if table.point.status == 'Off':
+    def allowed(self, player) -> bool:
+        if player.table.point.status == 'Off':
             return True
         return False
 
@@ -424,8 +423,8 @@ class DontPass(AllowsOdds):
 
 
 class DontCome(DontPass):
-    def allowed(self, table: "Table", player) -> bool:
-        if table.point.status == 'On':
+    def allowed(self, player) -> bool:
+        if player.table.point.status == 'On':
             return True
         return False
 
@@ -608,8 +607,8 @@ class Fire(Bet):
             self.points_made = self.points_made + [table.dice.total]
         self.current_point = None
 
-    def allowed(self, table: "Table", player) -> bool:
-        return table.new_shooter
+    def allowed(self, player) -> bool:
+        return player.table.new_shooter
 
     def get_payout_ratio(self, table: "Table"):
         if len(self.points_made) in table.settings['fire_points']:

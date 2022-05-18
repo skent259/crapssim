@@ -486,11 +486,11 @@ class Player:
             existing_bet: Bet = self.get_bet(type(bet))
             existing_bet.bet_amount += bet.bet_amount
             self.bankroll -= bet.bet_amount
-            if not existing_bet.allowed(table=self.table, player=self):
+            if not existing_bet.allowed(player=self):
                 existing_bet -= bet.bet_amount
                 self.bankroll += bet.bet_amount
         else:
-            if bet.allowed(table=self.table, player=self):
+            if bet.allowed(player=self):
                 self.bets_on_table.append(bet)
                 self.bankroll -= bet.bet_amount
 

@@ -95,7 +95,7 @@ def test_bet_allowed_point(bet, point_number, allowed):
 
     table.point = point
 
-    assert bet.allowed(table=table, player=table.players[0]) == allowed
+    assert bet.allowed(player=table.players[0]) == allowed
 
 
 @pytest.mark.parametrize('bet, new_shooter, allowed', [
@@ -111,4 +111,4 @@ def test_bet_allowed_new_shooter(bet, new_shooter, allowed):
     if new_shooter is False:
         table.fixed_roll((3, 4))
 
-    assert bet.allowed(table=table, player=table.players[0]) == allowed
+    assert bet.allowed(player=table.players[0]) == allowed
