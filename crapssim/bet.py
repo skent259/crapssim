@@ -460,12 +460,42 @@ class DontPass(AllowsOdds):
         return super().get_status(table)
 
 
-class DontCome(DontPass):
+class DontCome(AllowsOdds):
+    @property
+    def odds_type(self) -> typing.Type[BaseOdds]:
+        return LayOdds
+
+    @property
+    def key_number(self) -> int:
+        return self.losing_numbers[0]
+
+    @property
+    def winning_numbers(self):
+        if self.point is None:
+            return [2, 3]
+        return [7]
+
+    @property
+    def losing_numbers(self):
+        if self.point is None:
+            return [7, 11]
+        return [self.point]
+
+    def update(self, table: "Table") -> None:
+        self.new_point = False
+        if self.point is None and table.dice.total in (4, 5, 6, 8, 9, 10):
+            self.point = table.dice.total
+            self.new_point = True
+
     def allowed(self, player) -> bool:
         if player.table.point.status == 'On':
             return True
         return False
 
+    def get_status(self, table: "Table") -> str | None:
+        if self.new_point:
+            return None
+        return super().get_status(table)
 
 """
 Don't pass/Don't come lay odds
