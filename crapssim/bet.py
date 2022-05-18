@@ -249,7 +249,45 @@ class PassLine(AllowsOdds):
         return False
 
 
-class Come(PassLine):
+class Come(AllowsOdds):
+    @property
+    def odds_type(self) -> typing.Type[BaseOdds]:
+        return Odds
+
+    @property
+    def key_number(self) -> int:
+        return self.winning_numbers[0]
+
+    @property
+    def winning_numbers(self):
+        if self.point is None:
+            return [7, 11]
+        return [self.point]
+
+    @property
+    def losing_numbers(self):
+        if self.point is None:
+            return [2, 3, 12]
+        return [7]
+
+    def get_status(self, table: "Table"):
+        if self.new_point:
+            return None
+        return super().get_status(table)
+
+    def update(self, table: "Table") -> None:
+        self.new_point = False
+
+        if self.point is None and self.get_status(table) not in ("win", "lose"):
+            self.point = table.dice.total
+            self.new_point = True
+
+    @property
+    def removable(self):
+        if self.point is not None:
+            return False
+        return True
+
     def allowed(self, player: "Player") -> bool:
         if player.table.point.status == 'On':
             return True
