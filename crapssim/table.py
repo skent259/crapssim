@@ -161,7 +161,7 @@ class Table(object):
 
         for dice_outcome in dice_outcomes:
             self.add_player_bets(verbose=verbose)
-            self.fixed_roll_and_update(dice_outcome)
+            self.fixed_roll_and_update(dice_outcome, verbose=verbose)
 
     def roll_and_update(self, verbose: bool = False) -> None:
         """
