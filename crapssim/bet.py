@@ -90,6 +90,23 @@ class Bet(ABC):
 
 
 class WinningLosingNumbersBet(Bet, ABC):
+    @abstractmethod
+    def get_winning_numbers(self, table: "Table"):
+        pass
+
+    @abstractmethod
+    def get_losing_numbers(self, table: "Table"):
+        pass
+
+    def get_status(self, table: "Table") -> str | None:
+        if table.dice.total in self.get_winning_numbers(table):
+            return "win"
+        elif table.dice.total in self.get_losing_numbers(table):
+            return "lose"
+        return None
+
+
+class StaticWinningLosingNumbersBet(WinningLosingNumbersBet):
     @property
     @abstractmethod
     def winning_numbers(self):
@@ -100,15 +117,14 @@ class WinningLosingNumbersBet(Bet, ABC):
     def losing_numbers(self):
         pass
 
-    def get_status(self, table: "Table") -> str | None:
-        if table.dice.total in self.winning_numbers:
-            return "win"
-        elif table.dice.total in self.losing_numbers:
-            return "lose"
-        return None
+    def get_winning_numbers(self, table: "Table"):
+        return self.winning_numbers
+
+    def get_losing_numbers(self, table: "Table"):
+        return self.losing_numbers
 
 
-class SingleWinningNumberBet(WinningLosingNumbersBet, ABC):
+class SingleWinningNumberBet(StaticWinningLosingNumbersBet, ABC):
     """WinningLosingNumbersBet where only one number wins."""
     @property
     @abstractmethod
@@ -120,7 +136,7 @@ class SingleWinningNumberBet(WinningLosingNumbersBet, ABC):
         return [self.winning_number]
 
 
-class SingleLosingNumberBet(WinningLosingNumbersBet, ABC):
+class SingleLosingNumberBet(StaticWinningLosingNumbersBet, ABC):
     @property
     @abstractmethod
     def losing_number(self):
@@ -168,7 +184,8 @@ class BaseOdds(SingleWinningNumberBet, SingleLosingNumberBet, StaticPayoutRatio,
         pass
 
     def get_base_bets(self, player: "Player") -> list[WinningLosingNumbersBet]:
-        base_bets = player.get_bets(*self.base_bet_types, winning_numbers=self.winning_numbers)
+        base_bets = [x for x in player.bets_on_table if isinstance(x, self.base_bet_types)
+                     and x.get_winning_numbers(player.table) == self.winning_numbers]
         return base_bets
 
     def get_max_odds(self, table: "Table") -> int:
@@ -204,23 +221,16 @@ class AllowsOdds(WinningLosingNumbersBet, StaticPayoutRatio, ABC):
 
 
 class PassLine(AllowsOdds):
-
     @property
     def odds_type(self) -> typing.Type[BaseOdds]:
         return Odds
 
-    @property
-    def key_number(self) -> int:
-        return self.winning_numbers[0]
-
-    @property
-    def winning_numbers(self):
+    def get_winning_numbers(self, table: "Table"):
         if self.point is None:
             return [7, 11]
         return [self.point]
 
-    @property
-    def losing_numbers(self):
+    def get_losing_numbers(self, table: "Table"):
         if self.point is None:
             return [2, 3, 12]
         return [7]
@@ -254,18 +264,12 @@ class Come(AllowsOdds):
     def odds_type(self) -> typing.Type[BaseOdds]:
         return Odds
 
-    @property
-    def key_number(self) -> int:
-        return self.winning_numbers[0]
-
-    @property
-    def winning_numbers(self):
+    def get_winning_numbers(self, table: "Table"):
         if self.point is None:
             return [7, 11]
         return [self.point]
 
-    @property
-    def losing_numbers(self):
+    def get_losing_numbers(self, table: "Table"):
         if self.point is None:
             return [2, 3, 12]
         return [7]
@@ -399,7 +403,7 @@ Field bet
 """
 
 
-class OneRollBet(WinningLosingNumbersBet, ABC):
+class OneRollBet(StaticWinningLosingNumbersBet, ABC):
     """WinningLosingNumbersBet where if the number isn't in the winning_numbers, it is in the losing_numbers."""
     @property
     def losing_numbers(self):
@@ -427,18 +431,12 @@ class DontPass(AllowsOdds):
     def odds_type(self) -> typing.Type[BaseOdds]:
         return LayOdds
 
-    @property
-    def key_number(self) -> int:
-        return self.losing_numbers[0]
-
-    @property
-    def winning_numbers(self):
+    def get_winning_numbers(self, table: "Table"):
         if self.point is None:
             return [2, 3]
         return [7]
 
-    @property
-    def losing_numbers(self):
+    def get_losing_numbers(self, table: "Table"):
         if self.point is None:
             return [7, 11]
         return [self.point]
@@ -465,18 +463,12 @@ class DontCome(AllowsOdds):
     def odds_type(self) -> typing.Type[BaseOdds]:
         return LayOdds
 
-    @property
-    def key_number(self) -> int:
-        return self.losing_numbers[0]
-
-    @property
-    def winning_numbers(self):
+    def get_winning_numbers(self, table: "Table"):
         if self.point is None:
             return [2, 3]
         return [7]
 
-    @property
-    def losing_numbers(self):
+    def get_losing_numbers(self, table: "Table"):
         if self.point is None:
             return [7, 11]
         return [self.point]

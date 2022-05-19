@@ -304,7 +304,7 @@ def place68_2come(player: 'Player') -> None:
     """
     current_numbers = []
     for bet in player.bets_on_table:
-        current_numbers += bet.winning_numbers
+        current_numbers += bet.get_winning_numbers(player.table)
     current_numbers = list(set(current_numbers))
 
     if player.table.point == "On" and len(player.bets_on_table) < 4:
@@ -326,9 +326,9 @@ def place68_2come(player: 'Player') -> None:
     # if come bet or passline goes to 6 or 8, move place bets to 5 or 9
     pass_come_winning_numbers = []
     if player.has_bets(PassLine):
-        pass_come_winning_numbers += player.get_bet(PassLine).winning_numbers
+        pass_come_winning_numbers += player.get_bet(PassLine).get_winning_numbers(player.table)
     if player.has_bets(Come):
-        pass_come_winning_numbers += player.get_bet(Come).winning_numbers
+        pass_come_winning_numbers += player.get_bet(Come).get_winning_numbers(player.table)
 
     if 6 in pass_come_winning_numbers:
         if player.has_bets(Place6):
@@ -624,12 +624,12 @@ def place68_dontcome2odds(player: 'Player') -> None:
 
     current_numbers = []
     for bet in player.bets_on_table:
-        current_numbers += bet.winning_numbers
+        current_numbers += bet.get_winning_numbers(player.table)
     current_numbers = list(set(current_numbers))
 
     dont_come_losing_numbers = []
     if player.has_bets(DontCome):
-        dont_come_losing_numbers += player.get_bet(DontCome).losing_numbers
+        dont_come_losing_numbers += player.get_bet(DontCome).get_losing_numbers(player.table)
 
     if 6 in dont_come_losing_numbers:
         if player.has_bets(Place6):
@@ -659,7 +659,7 @@ def place68_dontcome2odds(player: 'Player') -> None:
             win_mult = float(win_mult)
             # print([[b.name, b.subname] for b in player.bets_on_player.table])
             if not dc.point is None:
-                lose_num = dc.losing_numbers[0]
+                lose_num = dc.get_losing_numbers(player.table)[0]
                 if lose_num in [4, 10]:
                     mult = 2 * win_mult
                 elif lose_num in [5, 9]:

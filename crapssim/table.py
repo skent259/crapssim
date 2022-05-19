@@ -581,4 +581,5 @@ class Player:
 
         if bet_amount is None:
             bet_amount = self.table.settings['max_odds'][point] * allows_odds_bet.bet_amount
-        allows_odds_bet.place_odds(bet_amount, self, self.table)
+        odds_bet = allows_odds_bet.get_odds_bet(bet_amount)
+        self.add_bet(odds_bet)
