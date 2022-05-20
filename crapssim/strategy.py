@@ -410,7 +410,7 @@ def hammerlock(player: 'Player', mode: str | None = None) -> dict[str, str]:
     if mode is None or player.table.point == "Off":
         mode = 'place68'
         for bet_nm in [Place5, Place6, Place8, Place9]:
-            player.remove_if_present(bet_nm)
+            player.remove_bet_type(bet_nm)
 
     if mode == "place68":
         if player.table.point == "On" and has_place68 and place_nums != {6, 8}:
@@ -427,7 +427,7 @@ def hammerlock(player: 'Player', mode: str | None = None) -> dict[str, str]:
         if player.table.point == "On" and has_place5689 and place_nums != {5, 6, 8, 9}:
             # assume that a place 5/6/8/9 has won
             for bet_nm in [Place5, Place6, Place8, Place9]:
-                player.remove_if_present(bet_nm)
+                player.remove_bet_type(bet_nm)
             mode = "takedown"
         else:
             place(player, skip_point=False, numbers={5, 6, 8, 9})
@@ -474,7 +474,7 @@ def risk12(player: 'Player', winnings: typing.SupportsFloat = 0) -> dict[str, in
         player.add_bet(Field(player.unit))
         if player.table.last_roll == 7:
             for bet_nm in [Place6, Place8]:
-                player.remove_if_present(bet_nm)
+                player.remove_bet_type(bet_nm)
     elif player.table.point.number in [4, 9, 10]:
         place(player, numbers={6, 8})
     elif player.table.point.number in [5, 6, 8]:

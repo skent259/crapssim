@@ -529,7 +529,7 @@ class Player:
         """ returns the total number of bets in self.bets_on_table that match bets_to_check """
         return len(self.get_bets(*bet_types, **bet_attributes))
 
-    def remove_if_present(self, bet_type: typing.Type[Bet]) -> None:
+    def remove_bet_type(self, bet_type: typing.Type[Bet]) -> None:
         if self.has_bets_by_type(bet_type):
             self.remove_bet(self.get_bet(bet_type))
 
