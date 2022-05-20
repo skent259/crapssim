@@ -1005,9 +1005,50 @@ def test_get_fire_non_default_table_payout_ratio(points_made, correct_ratio):
     Hard8(5),
     Hard10(5)
 ])
-def test_is_removable_bets_table_point_off(bet):
+def test_is_removable_table_point_off(bet):
     table = Table()
     table.add_player()
+    assert bet.is_removable(table.players[0]) is True
+
+
+@pytest.mark.parametrize('bet', [
+    Odds4(5),
+    Odds5(5),
+    Odds6(5),
+    Odds8(5),
+    Odds9(5),
+    Odds10(5),
+    Place4(5),
+    Place5(5),
+    Place6(6),
+    Place8(8),
+    Place9(9),
+    Place10(10),
+    LayOdds4(5),
+    LayOdds5(5),
+    LayOdds6(5),
+    LayOdds8(5),
+    LayOdds9(5),
+    LayOdds10(5),
+    Field(5),
+    DontPass(5),
+    DontCome(5),
+    Any7(5),
+    Two(5),
+    Three(5),
+    Yo(5),
+    Boxcars(5),
+    AnyCraps(5),
+    Hard4(5),
+    Hard6(5),
+    Hard8(5),
+    Hard10(5)
+])
+def test_is_removable_table_point_on(bet):
+    table = Table()
+    table.add_player()
+    table.point.number = 6
+    table.point.status = 'On'
     assert bet.is_removable(table.players[0]) is True
 
 
@@ -1037,3 +1078,62 @@ def test_come_is_irremovable_with_point():
     table.point.number = 6
     table.point.status = 'On'
     assert bet.is_removable(table.players[0]) is False
+
+
+@pytest.mark.parametrize('bet', [
+    PassLine(5),
+    Place4(5),
+    Place5(5),
+    Place6(5),
+    Place8(5),
+    Place9(5),
+    Place10(5),
+    DontPass(5),
+    Field(5),
+    Any7(5),
+    Two(5),
+    Three(5),
+    Yo(5),
+    Boxcars(5),
+    AnyCraps(5),
+    Hard4(5),
+    Hard6(5),
+    Hard8(5),
+    Hard10(5)
+])
+def test_bets_always_allowed_point_off(bet):
+    table = Table()
+    table.add_player()
+    assert bet.allowed(table.players[0])
+
+
+@pytest.mark.parametrize('bet', [
+    Come(5),
+    Place4(5),
+    Place5(5),
+    Place6(5),
+    Place8(5),
+    Place9(5),
+    Place10(5),
+    DontCome(5),
+    Field(5),
+    Any7(5),
+    Two(5),
+    Three(5),
+    Yo(5),
+    Boxcars(5),
+    AnyCraps(5),
+    Hard4(5),
+    Hard6(5),
+    Hard8(5),
+    Hard10(5)
+])
+def test_bets_always_allowed_point_on(bet):
+    table = Table()
+    table.point.number = 10
+    table.point.status = 'On'
+    table.add_player()
+    assert bet.allowed(table.players[0])
+
+
+
