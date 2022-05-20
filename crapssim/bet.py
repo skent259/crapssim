@@ -202,10 +202,6 @@ class BaseOdds(SingleWinningNumberBet, SingleLosingNumberBet, StaticPayoutRatio,
 class AllowsOdds(WinningLosingNumbersBet, StaticPayoutRatio, ABC):
     payout_ratio: float = 1.0
 
-    def __init__(self, bet_amount: float):
-        super().__init__(bet_amount)
-        self.new_point: bool = False
-
     @abstractmethod
     def get_odds_bet(self, bet_amount: typing.SupportsFloat, table: "Table"):
         pass
@@ -245,6 +241,7 @@ class Come(AllowsOdds):
     def __init__(self, bet_amount: typing.SupportsFloat):
         super().__init__(bet_amount)
         self.point = None
+        self.new_point = False
 
     def get_winning_numbers(self, table: "Table"):
         if self.point is None:
@@ -439,6 +436,7 @@ class DontCome(AllowsOdds):
     def __init__(self, bet_amount: typing.SupportsFloat):
         super().__init__(bet_amount)
         self.point = None
+        self.new_point = False
 
     def get_winning_numbers(self, table: "Table"):
         if self.point is None:
