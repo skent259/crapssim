@@ -13,8 +13,9 @@ def test_irremovable_bet():
     bet = PassLine(50)
     table = Table()
     table.add_player(500)
-    table.fixed_roll([2, 2])
+    table.fixed_roll_and_update([2, 2])
     bet.update(table)
+    print(table.point.status)
     assert bet.is_removable(table.players[0]) is False
 
 

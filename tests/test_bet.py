@@ -1009,3 +1009,31 @@ def test_is_removable_bets_table_point_off(bet):
     table = Table()
     table.add_player()
     assert bet.is_removable(table.players[0]) is True
+
+
+def test_passline_is_irremovable_table_point_off():
+    bet = PassLine(5)
+    table = Table()
+    table.add_player()
+    table.point.number = 6
+    table.point.status = 'On'
+    assert bet.is_removable(table.players[0]) is False
+
+
+def test_come_is_removable_without_point():
+    bet = Come(5)
+    table = Table()
+    table.add_player()
+    table.point.number = 6
+    table.point.status = 'On'
+    assert bet.is_removable(table.players[0]) is True
+
+
+def test_come_is_irremovable_with_point():
+    bet = Come(5)
+    bet.point = 10
+    table = Table()
+    table.add_player()
+    table.point.number = 6
+    table.point.status = 'On'
+    assert bet.is_removable(table.players[0]) is False
