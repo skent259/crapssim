@@ -235,7 +235,6 @@ class PassLine(AllowsOdds):
         self.new_point = False
 
         if table.point is None and table.dice.total in (4, 5, 6, 8, 9, 10):
-            self.point = table.dice.total
             self.new_point = True
 
     def is_removable(self, player: "Player"):
@@ -433,7 +432,6 @@ class DontPass(AllowsOdds):
         self.new_point = False
 
         if table.point is None and table.dice.total in (4, 5, 6, 8, 9, 10):
-            self.point = table.dice.total
             self.new_point = True
 
     def allowed(self, player) -> bool:
