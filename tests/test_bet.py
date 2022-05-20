@@ -823,18 +823,6 @@ def test_come_point_inequality():
     assert come_one != come_two
 
 
-def test_come_new_point_inequality():
-    come_one = Come(5)
-    come_one.point = 5
-    come_one.new_point = True
-
-    come_two = Come(5)
-    come_two.point = 5
-    come_two.new_point = False
-
-    assert come_one != come_two
-
-
 def test_dont_come_equality():
     dont_come_one = DontCome(5)
     dont_come_one.point = 5
@@ -857,16 +845,3 @@ def test_dont_come_point_inequality():
     dont_come_two.new_point = True
 
     assert dont_come_one != dont_come_two
-
-
-def test_dont_come_new_point_inequality():
-    dont_come_one = DontCome(5)
-    dont_come_one.point = 5
-    dont_come_one.new_point = True
-
-    dont_come_two = DontCome(5)
-    dont_come_two.point = 5
-    dont_come_two.new_point = False
-
-    assert dont_come_one != dont_come_two
-

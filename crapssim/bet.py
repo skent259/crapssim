@@ -257,7 +257,7 @@ class Come(AllowsOdds):
     def __init__(self, bet_amount: typing.SupportsFloat):
         super().__init__(bet_amount)
         self.point = None
-        self.new_point = False
+        self._status = None
 
     def get_winning_numbers(self, table: "Table"):
         if self.point is None:
@@ -270,16 +270,13 @@ class Come(AllowsOdds):
         return [7]
 
     def get_status(self, table: "Table"):
-        if self.new_point:
-            return None
-        return super().get_status(table)
+        return self._status
 
     def update(self, table: "Table") -> None:
-        self.new_point = False
-
         if self.point is None and table.dice.total in (4, 5, 6, 8, 9, 10):
             self.point = table.dice.total
-            self.new_point = True
+        else:
+            self._status = super().get_status(table)
 
     def is_removable(self, player: "Player"):
         if self.point is not None:
@@ -301,11 +298,10 @@ class Come(AllowsOdds):
         if isinstance(other, Bet):
             return isinstance(other, type(self)) and \
                    other.bet_amount == self.bet_amount and \
-                   other.point == self.point and \
-                   other.new_point == self.new_point
+                   other.point == self.point
 
     def __repr__(self):
-        return f'{self.__class__.__name__}(point={self.point}, new_point={self.new_point})'
+        return f'{self.__class__.__name__}(point={self.point})'
 
 """
 Passline/Come bet odds
@@ -461,7 +457,7 @@ class DontCome(AllowsOdds):
     def __init__(self, bet_amount: typing.SupportsFloat):
         super().__init__(bet_amount)
         self.point = None
-        self.new_point = False
+        self._status = None
 
     def get_winning_numbers(self, table: "Table"):
         if self.point is None:
@@ -474,10 +470,10 @@ class DontCome(AllowsOdds):
         return [self.point]
 
     def update(self, table: "Table") -> None:
-        self.new_point = False
         if self.point is None and table.dice.total in (4, 5, 6, 8, 9, 10):
             self.point = table.dice.total
-            self.new_point = True
+        else:
+            self._status = super().get_status(table)
 
     def allowed(self, player) -> bool:
         if player.table.point.status == 'On':
@@ -485,9 +481,7 @@ class DontCome(AllowsOdds):
         return False
 
     def get_status(self, table: "Table") -> str | None:
-        if self.new_point:
-            return None
-        return super().get_status(table)
+        return self._status
 
     def get_odds_bet(self, bet_amount: typing.SupportsFloat, table: "Table"):
         return LayOdds.by_number(self.point, bet_amount)
@@ -496,8 +490,10 @@ class DontCome(AllowsOdds):
         if isinstance(other, Bet):
             return isinstance(other, type(self)) and \
                    self.bet_amount == other.bet_amount and \
-                   self.point == other.point and \
-                   self.new_point == other.new_point
+                   self.point == other.point
+
+    def __repr__(self):
+        return f'{self.__class__.__name__}(bet_amount={self.bet_amount}, point={self.point})'
 
 """
 Don't pass/Don't come lay odds
