@@ -243,7 +243,7 @@ class PassLine(AllowsOdds):
         return super().get_status(table)
 
     def is_removable(self, player: "Player"):
-        if player.table.point is not None:
+        if player.table.point.status is 'On':
             return False
         return True
 

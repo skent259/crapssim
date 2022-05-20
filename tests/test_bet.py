@@ -969,3 +969,43 @@ def test_get_fire_non_default_table_payout_ratio(points_made, correct_ratio):
     bet = Fire(5)
     bet.points_made = points_made
     assert bet.get_payout_ratio(table) == correct_ratio
+
+
+@pytest.mark.parametrize('bet', [
+    PassLine(5),
+    Odds4(5),
+    Odds5(5),
+    Odds6(5),
+    Odds8(5),
+    Odds9(5),
+    Odds10(5),
+    Place4(5),
+    Place5(5),
+    Place6(6),
+    Place8(8),
+    Place9(9),
+    Place10(10),
+    LayOdds4(5),
+    LayOdds5(5),
+    LayOdds6(5),
+    LayOdds8(5),
+    LayOdds9(5),
+    LayOdds10(5),
+    Field(5),
+    DontPass(5),
+    DontCome(5),
+    Any7(5),
+    Two(5),
+    Three(5),
+    Yo(5),
+    Boxcars(5),
+    AnyCraps(5),
+    Hard4(5),
+    Hard6(5),
+    Hard8(5),
+    Hard10(5)
+])
+def test_is_removable_bets_table_point_off(bet):
+    table = Table()
+    table.add_player()
+    assert bet.is_removable(table.players[0]) is True
