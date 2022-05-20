@@ -845,3 +845,127 @@ def test_dont_come_point_inequality():
     dont_come_two.new_point = True
 
     assert dont_come_one != dont_come_two
+
+
+def test_cant_instantiate_bet_object():
+    with pytest.raises(TypeError) as e_info:
+        Bet(400)
+
+
+@pytest.mark.parametrize('bet, ratio', [
+    (PassLine, 1),
+    (Come, 1),
+    (DontPass, 1),
+    (DontCome, 1),
+    (Odds4, 2 / 1),
+    (Odds5, 3 / 2),
+    (Odds6, 6 / 5),
+    (Odds8, 6 / 5),
+    (Odds9, 3 / 2),
+    (Odds10, 2 / 1),
+    (Place4, 9 / 5),
+    (Place5, 7 / 5),
+    (Place6, 7 / 6),
+    (Place8, 7 / 6),
+    (Place9, 7 / 5),
+    (Place10, 9 / 5),
+    (LayOdds4, 1 / 2),
+    (LayOdds5, 2 / 3),
+    (LayOdds6, 5 / 6),
+    (LayOdds8, 5 / 6),
+    (LayOdds9, 2 / 3),
+    (LayOdds10, 1 / 2),
+    (Any7, 4),
+    (Two, 30),
+    (Three, 15),
+    (Yo, 15),
+    (Boxcars, 30),
+    (AnyCraps, 7),
+    (Hard4, 7),
+    (Hard6, 9),
+    (Hard8, 9),
+    (Hard10, 7)
+])
+def test_get_static_payout_ratio(bet, ratio):
+    assert bet.payout_ratio == ratio
+
+
+def test_get_cande_dice_2_payout_ratio():
+    table = Table()
+    table.dice.fixed_roll((1, 1))
+    assert CAndE(5).get_payout_ratio(table) == 3
+
+
+def test_get_cande_dice_3_payout_ratio():
+    table = Table()
+    table.dice.fixed_roll((1, 2))
+    assert CAndE(5).get_payout_ratio(table) == 3
+
+
+def test_get_cande_dice_11_payout_ratio():
+    table = Table()
+    table.dice.fixed_roll((6, 5))
+    assert CAndE(5).get_payout_ratio(table) == 7
+
+
+def test_get_cande_dice_12_payout_ratio():
+    table = Table()
+    table.dice.fixed_roll((6, 6))
+    assert CAndE(5).get_payout_ratio(table) == 3
+
+
+@pytest.mark.parametrize('dice1, dice2, correct_ratio', [
+    (1, 1, 2),
+    (1, 2, 1),
+    (2, 2, 1),
+    (5, 4, 1),
+    (5, 5, 1),
+    (6, 5, 1),
+    (6, 6, 2)
+])
+def test_get_field_default_table_payout_ratio(dice1, dice2, correct_ratio):
+    table = Table()
+    table.dice.fixed_roll((dice1, dice2))
+    assert Field(5).get_payout_ratio(table) == correct_ratio
+
+
+@pytest.mark.parametrize('dice1, dice2, correct_ratio', [
+    (1, 1, 2),
+    (1, 2, 14),
+    (2, 2, 14000),
+    (5, 4, 1),
+    (5, 5, 1),
+    (6, 5, 1),
+    (6, 6, 3)
+])
+def test_get_field_non_default_table_payout_ratio(dice1, dice2, correct_ratio):
+    table = Table()
+    table.settings['field_payouts'].update({3: 14, 12: 3, 4: 14000})
+    table.dice.fixed_roll((dice1, dice2))
+    assert Field(5).get_payout_ratio(table) == correct_ratio
+
+
+@pytest.mark.parametrize('points_made, correct_ratio', [
+    ([4, 5, 6, 9], 24),
+    ([4, 5, 6, 9, 10], 249),
+    ([4, 5, 6, 8, 9, 10], 999)
+])
+def test_get_fire_default_table_payout_ratio(points_made, correct_ratio):
+    table = Table()
+    bet = Fire(5)
+    bet.points_made = points_made
+    assert bet.get_payout_ratio(table) == correct_ratio
+
+
+@pytest.mark.parametrize('points_made, correct_ratio', [
+    ([4, 5, 6], 6),
+    ([4, 5, 6, 9], 9),
+    ([4, 5, 6, 9, 10], 69),
+    ([4, 5, 6, 8, 9, 10], 420)
+])
+def test_get_fire_non_default_table_payout_ratio(points_made, correct_ratio):
+    table = Table()
+    table.settings['fire_points'] = {3: 6, 4: 9, 5: 69, 6: 420}
+    bet = Fire(5)
+    bet.points_made = points_made
+    assert bet.get_payout_ratio(table) == correct_ratio
