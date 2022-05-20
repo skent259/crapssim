@@ -87,6 +87,15 @@ class Bet(ABC):
     def already_placed(self, player: "Player") -> bool:
         return player.has_bets(type(self))
 
+    def __eq__(self, other):
+        if isinstance(other, Bet):
+            return isinstance(other, type(self)) and other.bet_amount == self.bet_amount
+        else:
+            raise NotImplementedError
+
+    def __repr__(self):
+        return f'{self.__class__.__name__}(bet_amount={self.bet_amount})'
+
 
 class WinningLosingNumbersBet(Bet, ABC):
     @abstractmethod
@@ -121,6 +130,13 @@ class StaticWinningLosingNumbersBet(WinningLosingNumbersBet):
 
     def get_losing_numbers(self, table: "Table"):
         return self.losing_numbers
+
+    def __eq__(self, other):
+        if isinstance(other, Bet):
+            return isinstance(other, type(self)) and \
+                   self.winning_numbers == other.winning_numbers and \
+                   self.losing_numbers == other.losing_numbers and \
+                   self.bet_amount == other.bet_amount
 
 
 class SingleWinningNumberBet(StaticWinningLosingNumbersBet, ABC):
@@ -281,6 +297,15 @@ class Come(AllowsOdds):
     def get_odds_bet(self, bet_amount: typing.SupportsFloat, table: "Table"):
         return Odds.by_number(self.point, bet_amount)
 
+    def __eq__(self, other):
+        if isinstance(other, Bet):
+            return isinstance(other, type(self)) and \
+                   other.bet_amount == self.bet_amount and \
+                   other.point == self.point and \
+                   other.new_point == self.new_point
+
+    def __repr__(self):
+        return f'{self.__class__.__name__}(point={self.point}, new_point={self.new_point})'
 
 """
 Passline/Come bet odds
@@ -466,6 +491,13 @@ class DontCome(AllowsOdds):
 
     def get_odds_bet(self, bet_amount: typing.SupportsFloat, table: "Table"):
         return LayOdds.by_number(self.point, bet_amount)
+
+    def __eq__(self, other):
+        if isinstance(other, Bet):
+            return isinstance(other, type(self)) and \
+                   self.bet_amount == other.bet_amount and \
+                   self.point == other.point and \
+                   self.new_point == other.new_point
 
 """
 Don't pass/Don't come lay odds
@@ -653,3 +685,10 @@ class Fire(Bet):
             return table.settings['fire_points'][len(self.points_made)]
         else:
             raise NotImplementedError
+
+    def __eq__(self, other: Bet):
+        if isinstance(other, Bet) and not isinstance(other, type(self)):
+            return False
+        elif isinstance(other, type(self)):
+            return self.bet_amount == other.bet_amount and \
+                self.points_made == other.points_made

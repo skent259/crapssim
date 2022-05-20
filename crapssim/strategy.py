@@ -304,6 +304,7 @@ def place68_2come(player: 'Player') -> None:
     """
     current_numbers = []
     for bet in player.bets_on_table:
+        print(bet.get_winning_numbers(player.table))
         current_numbers += bet.get_winning_numbers(player.table)
     current_numbers = list(set(current_numbers))
 
