@@ -261,7 +261,7 @@ class Come(AllowsOdds):
     def update(self, table: "Table") -> None:
         self.new_point = False
 
-        if self.point is None and self.get_status(table) not in ("win", "lose"):
+        if self.point is None and table.dice.total in (4, 5, 6, 8, 9, 10):
             self.point = table.dice.total
             self.new_point = True
 
