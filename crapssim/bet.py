@@ -32,8 +32,7 @@ class Bet(ABC):
     def name(self):
         return self.__class__.__name__
 
-    @property
-    def removable(self):
+    def is_removable(self, player: "Player"):
         return True
 
     def allowed(self, player: "Player") -> bool:
@@ -208,30 +207,22 @@ class AllowsOdds(WinningLosingNumbersBet, StaticPayoutRatio, ABC):
         self.point: int = None
         self.new_point: bool = False
 
-    def place_odds(self, bet_amount: typing.SupportsFloat, player: "Player"):
-        player.add_bet(self.get_odds_bet(bet_amount))
-
-    def get_odds_bet(self, bet_amount: typing.SupportsFloat):
-        return self.odds_type.by_number(self.point, bet_amount)
-
-    @property
     @abstractmethod
-    def odds_type(self) -> typing.Type[BaseOdds]:
+    def get_odds_bet(self, bet_amount: typing.SupportsFloat, table: "Table"):
         pass
 
 
 class PassLine(AllowsOdds):
-    @property
-    def odds_type(self) -> typing.Type[BaseOdds]:
-        return Odds
+    def get_odds_bet(self, bet_amount: typing.SupportsFloat, table: "Table"):
+        return Odds.by_number(table.point.number, bet_amount)
 
     def get_winning_numbers(self, table: "Table"):
-        if self.point is None:
+        if table.point.number is None:
             return [7, 11]
-        return [self.point]
+        return [table.point.number]
 
     def get_losing_numbers(self, table: "Table"):
-        if self.point is None:
+        if table.point.number is None:
             return [2, 3, 12]
         return [7]
 
@@ -243,13 +234,12 @@ class PassLine(AllowsOdds):
     def update(self, table: "Table") -> None:
         self.new_point = False
 
-        if self.point is None and self.get_status(table) not in ("win", "lose"):
+        if table.point is None and table.dice.total in (4, 5, 6, 8, 9, 10):
             self.point = table.dice.total
             self.new_point = True
 
-    @property
-    def removable(self):
-        if self.point is not None:
+    def is_removable(self, player: "Player"):
+        if player.table.point is not None:
             return False
         return True
 
@@ -286,8 +276,7 @@ class Come(AllowsOdds):
             self.point = table.dice.total
             self.new_point = True
 
-    @property
-    def removable(self):
+    def is_removable(self, player: "Player"):
         if self.point is not None:
             return False
         return True
@@ -299,6 +288,9 @@ class Come(AllowsOdds):
 
     def already_placed(self, player: "Player") -> bool:
         return player.has_bets(type(self), point=self.point)
+
+    def get_odds_bet(self, bet_amount: typing.SupportsFloat, table: "Table"):
+        return Odds.by_number(self.point, bet_amount)
 
 
 """
@@ -427,23 +419,20 @@ Don't pass and Don't come bets
 
 
 class DontPass(AllowsOdds):
-    @property
-    def odds_type(self) -> typing.Type[BaseOdds]:
-        return LayOdds
-
     def get_winning_numbers(self, table: "Table"):
-        if self.point is None:
+        if table.point.number is None:
             return [2, 3]
         return [7]
 
     def get_losing_numbers(self, table: "Table"):
-        if self.point is None:
+        if table.point.number is None:
             return [7, 11]
-        return [self.point]
+        return [table.point.number]
 
     def update(self, table: "Table") -> None:
         self.new_point = False
-        if self.point is None and table.dice.total in (4, 5, 6, 8, 9, 10):
+
+        if table.point is None and table.dice.total in (4, 5, 6, 8, 9, 10):
             self.point = table.dice.total
             self.new_point = True
 
@@ -457,12 +446,11 @@ class DontPass(AllowsOdds):
             return None
         return super().get_status(table)
 
+    def get_odds_bet(self, bet_amount: typing.SupportsFloat, table: "Table"):
+        return LayOdds.by_number(table.point.number, bet_amount)
+
 
 class DontCome(AllowsOdds):
-    @property
-    def odds_type(self) -> typing.Type[BaseOdds]:
-        return LayOdds
-
     def get_winning_numbers(self, table: "Table"):
         if self.point is None:
             return [2, 3]
@@ -488,6 +476,9 @@ class DontCome(AllowsOdds):
         if self.new_point:
             return None
         return super().get_status(table)
+
+    def get_odds_bet(self, bet_amount: typing.SupportsFloat, table: "Table"):
+        return LayOdds.by_number(self.point, bet_amount)
 
 """
 Don't pass/Don't come lay odds

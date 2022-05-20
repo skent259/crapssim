@@ -1,7 +1,7 @@
 import typing
 
 from crapssim.dice import Dice
-from .bet import Bet, AllowsOdds
+from .bet import Bet, AllowsOdds, BaseOdds
 from .strategy import STRATEGY_TYPE, passline
 
 
@@ -495,7 +495,7 @@ class Player:
                 self.bankroll -= bet.bet_amount
 
     def remove_bet(self, bet: Bet) -> None:
-        if bet in self.bets_on_table and bet.removable:
+        if bet in self.bets_on_table and bet.is_removable(self):
             self.bankroll += bet.bet_amount
             self.bets_on_table.remove(bet)
 
@@ -561,25 +561,14 @@ class Player:
         elif status == "lose":
             print(f"{self.name} lost ${bet.bet_amount} on {bet.name} bet.")
 
-    def add_odds(self, bet_amount: float = None, bet_types: typing.Iterable[AllowsOdds] = AllowsOdds,
+    def add_odds(self, bet_amount: float,
+                 bet_types: typing.Iterable[AllowsOdds] = AllowsOdds,
                  point: int = None):
-        if point is None:
-            allows_odds_bets = self.get_bets(*bet_types)
-            if len(allows_odds_bets) == 0:
-                raise ValueError(f'No {", ".join(x.__name__ for x in bet_types)} bets found to put odds on.')
-            if len(allows_odds_bets) > 1:
-                raise ValueError(f'If there is more than one {", ".join(x.__name__ for x in bet_types)} for this'
-                                 f' player you must specify a point.')
-        else:
-            allows_odds_bets = self.get_bets(*bet_types, point=point)
-            if len(allows_odds_bets) == 0:
-                raise ValueError(f'No {", ".join(x.__name__ for x in bet_types)} bets found with point={point}'
-                                 f' to put odds on.')
+        points: tuple[int] = (point, ) if point is not None else (4, 5, 6, 8, 9, 10)
+        allows_odds_bets: list[AllowsOdds] = [x for x in self.bets_on_table if isinstance(x, AllowsOdds)]
+        correct_bets: list[AllowsOdds] = [x for x in allows_odds_bets if isinstance(x, tuple(bet_types))]
+        for bet in correct_bets:
+            odds_bet: BaseOdds = bet.get_odds_bet(bet_amount, self.table)
+            if odds_bet.key_number in points:
+                self.add_bet(odds_bet)
 
-        allows_odds_bet: AllowsOdds = allows_odds_bets[0]
-        point = allows_odds_bet.point
-
-        if bet_amount is None:
-            bet_amount = self.table.settings['max_odds'][point] * allows_odds_bet.bet_amount
-        odds_bet = allows_odds_bet.get_odds_bet(bet_amount)
-        self.add_bet(odds_bet)
