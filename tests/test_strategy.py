@@ -102,7 +102,7 @@ from crapssim.strategy import passline, passline_odds, passline_odds2, passline_
                                                    ('LayOdds4', '', 20)})
 ])
 def test_strategies_compare_bets(strategy, strategy_info, rolls: list[tuple[int, int]],
-                                 correct_bets: {(str, str, float)}):
+                                 correct_bets: dict[tuple[str, str, float]]):
     def strat(player, **strat_info):
         if strat_info != {}:
             return strategy(player, **strat_info)

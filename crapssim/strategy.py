@@ -366,7 +366,11 @@ def ironcross(player: 'Player', mult: int | str = 1) -> None:
         """
     passline(player)
     passline_odds(player, mult)
+
+    # place 5,6,8 for double unit
+    player.unit = 2 * player.unit 
     place(player, numbers={5, 6, 8})
+    player.unit = player.unit / 2
 
     if player.table.point == "On":
         if not player.has_bets_by_type(Field):
@@ -422,7 +426,9 @@ def hammerlock(player: 'Player', mode: str | None = None) -> dict[str, str]:
             mode = "place_inside"
             place(player, skip_point=False, numbers={5, 6, 8, 9})
         else:
+            player.unit = 2 * player.unit 
             place(player, skip_point=False, numbers={6, 8})
+            player.unit = player.unit / 2
     elif mode == "place_inside":
         if player.table.point == "On" and has_place5689 and place_nums != {5, 6, 8, 9}:
             # assume that a place 5/6/8/9 has won
