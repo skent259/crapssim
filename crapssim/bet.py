@@ -249,10 +249,6 @@ class PassLine(AllowsOdds):
 
 
 class Come(AllowsOdds):
-    @property
-    def odds_type(self) -> typing.Type[BaseOdds]:
-        return Odds
-
     def get_winning_numbers(self, table: "Table"):
         if self.point is None:
             return [7, 11]
