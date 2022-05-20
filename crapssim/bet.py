@@ -85,7 +85,7 @@ class Bet(ABC):
         pass
 
     def already_placed(self, player: "Player") -> bool:
-        return player.has_bets(type(self))
+        return player.has_bets_by_type(type(self))
 
     def __eq__(self, other):
         if isinstance(other, Bet):
@@ -289,7 +289,7 @@ class Come(AllowsOdds):
         return False
 
     def already_placed(self, player: "Player") -> bool:
-        return player.has_bets(type(self), point=self.point)
+        return player.has_bets_by_type(type(self), point=self.point)
 
     def get_odds_bet(self, bet_amount: typing.SupportsFloat, table: "Table"):
         return Odds.by_number(self.point, bet_amount)

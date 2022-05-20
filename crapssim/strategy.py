@@ -36,7 +36,7 @@ def passline(player: 'Player'):
         Dictionary of strategy info.
     """
     # Pass line bet
-    if player.table.point == "Off" and not player.has_bets(PassLine):
+    if player.table.point == "Off" and not player.has_bets_by_type(PassLine):
         player.add_bet(PassLine(player.unit))
 
 
@@ -71,8 +71,8 @@ def passline_odds(player: 'Player', mult: int | str = 1) -> None:
 
     if (
             player.table.point == "On"
-            and player.has_bets(PassLine)
-            and not player.has_bets(Odds)
+            and player.has_bets_by_type(PassLine)
+            and not player.has_bets_by_type(Odds)
     ):
         player.add_odds(mult * player.unit, [PassLine], point=player.table.point.number)
 
@@ -156,32 +156,32 @@ def place(player: 'Player', skip_point: bool = True, numbers: set[int] | None = 
 
     # Place the provided numbers when point is ON
     if player.table.point == "On":
-        if not player.has_bets(Place4) and 4 in numbers:
+        if not player.has_bets_by_type(Place4) and 4 in numbers:
             player.add_bet(Place4(player.unit))
-        if not player.has_bets(Place5) and 5 in numbers:
+        if not player.has_bets_by_type(Place5) and 5 in numbers:
             player.add_bet(Place5(player.unit))
-        if not player.has_bets(Place6) and 6 in numbers:
+        if not player.has_bets_by_type(Place6) and 6 in numbers:
             player.add_bet(Place6(6 / 5 * player.unit))
-        if not player.has_bets(Place8) and 8 in numbers:
+        if not player.has_bets_by_type(Place8) and 8 in numbers:
             player.add_bet(Place8(6 / 5 * player.unit))
-        if not player.has_bets(Place9) and 9 in numbers:
+        if not player.has_bets_by_type(Place9) and 9 in numbers:
             player.add_bet(Place9(player.unit))
-        if not player.has_bets(Place10) and 10 in numbers:
+        if not player.has_bets_by_type(Place10) and 10 in numbers:
             player.add_bet(Place10(player.unit))
 
     # Move the bets off the point number if it shows up later
     if skip_point and player.table.point == "On":
-        if player.has_bets(Place4) and player.table.point.number == 4:
+        if player.has_bets_by_type(Place4) and player.table.point.number == 4:
             player.remove_bet(player.get_bet(Place4))
-        if player.has_bets(Place5) and player.table.point.number == 5:
+        if player.has_bets_by_type(Place5) and player.table.point.number == 5:
             player.remove_bet(player.get_bet(Place5))
-        if player.has_bets(Place6) and player.table.point.number == 6:
+        if player.has_bets_by_type(Place6) and player.table.point.number == 6:
             player.remove_bet(player.get_bet(Place6))
-        if player.has_bets(Place8) and player.table.point.number == 8:
+        if player.has_bets_by_type(Place8) and player.table.point.number == 8:
             player.remove_bet(player.get_bet(Place8))
-        if player.has_bets(Place9) and player.table.point.number == 9:
+        if player.has_bets_by_type(Place9) and player.table.point.number == 9:
             player.remove_bet(player.get_bet(Place9))
-        if player.has_bets(Place10) and player.table.point.number == 10:
+        if player.has_bets_by_type(Place10) and player.table.point.number == 10:
             player.remove_bet(player.get_bet(Place10))
 
 
@@ -202,7 +202,7 @@ def place68(player: 'Player') -> None:
         """
     passline(player)
     # Place 6 and 8 when point is ON
-    p_has_place_bets = player.has_bets(
+    p_has_place_bets = player.has_bets_by_type(
         Place4, Place5, Place6, Place8, Place9, Place10
     )
     if player.table.point == "On" and not p_has_place_bets:
@@ -231,7 +231,7 @@ def dontpass(player: 'Player') -> None:
             Dictionary of strategy info.
         """
     # Don't pass bet
-    if player.table.point == "Off" and not player.has_bets(DontPass):
+    if player.table.point == "Off" and not player.has_bets_by_type(DontPass):
         player.add_bet(DontPass(player.unit))
 
 
@@ -272,8 +272,8 @@ def layodds(player: 'Player', win_mult: int | str = 1) -> None:
 
     if (
             player.table.point == "On"
-            and player.has_bets(DontPass)
-            and not player.has_bets(LayOdds)
+            and player.has_bets_by_type(DontPass)
+            and not player.has_bets_by_type(LayOdds)
     ):
         player.add_odds(mult * player.unit, [DontPass], player.table.point.number)
 
@@ -319,26 +319,26 @@ def place68_2come(player: 'Player') -> None:
         if player.table.point == "On":
             player.add_bet(Come(player.unit))
         if player.table.point == "Off" and (
-                player.has_bets(Place6) or player.has_bets(Place8)
+                player.has_bets_by_type(Place6) or player.has_bets_by_type(Place8)
         ):
             player.add_bet(PassLine(player.unit))
 
     # if come bet or passline goes to 6 or 8, move place bets to 5 or 9
     pass_come_winning_numbers = []
-    if player.has_bets(PassLine):
+    if player.has_bets_by_type(PassLine):
         pass_come_winning_numbers += player.get_bet(PassLine).get_winning_numbers(player.table)
-    if player.has_bets(Come):
+    if player.has_bets_by_type(Come):
         pass_come_winning_numbers += player.get_bet(Come).get_winning_numbers(player.table)
 
     if 6 in pass_come_winning_numbers:
-        if player.has_bets(Place6):
+        if player.has_bets_by_type(Place6):
             player.remove_bet(player.get_bet(Place6))
         if 5 not in current_numbers:
             player.add_bet(Place5(player.unit))
         elif 9 not in current_numbers:
             player.add_bet(Place9(player.unit))
     elif 8 in pass_come_winning_numbers:
-        if player.has_bets(Place8):
+        if player.has_bets_by_type(Place8):
             player.remove_bet(player.get_bet(Place8))
         if 5 not in current_numbers:
             player.add_bet(Place5(player.unit))
@@ -369,7 +369,7 @@ def ironcross(player: 'Player', mult: int | str = 1) -> None:
     place(player, numbers={5, 6, 8})
 
     if player.table.point == "On":
-        if not player.has_bets(Field):
+        if not player.has_bets_by_type(Field):
             player.add_bet(Field(player.unit))
 
 
@@ -415,9 +415,9 @@ def hammerlock(player: 'Player', mode: str | None = None) -> dict[str, str]:
     if mode == "place68":
         if player.table.point == "On" and has_place68 and place_nums != {6, 8}:
             # assume that a place 6/8 has won
-            if player.has_bets(Place6):
+            if player.has_bets_by_type(Place6):
                 player.remove_bet(player.get_bet(Place6))
-            if player.has_bets(Place8):
+            if player.has_bets_by_type(Place8):
                 player.remove_bet(player.get_bet(Place8))
             mode = "place_inside"
             place(player, skip_point=False, numbers={5, 6, 8, 9})
@@ -553,14 +553,14 @@ def dicedoctor(player: 'Player', progression: int = 0) -> dict[str, int]:
 #
 #     if player.table.point == "On":
 #         # always place 6 and 8 when they aren't place bets already
-#         if not player.has_bets("Place6"):
+#         if not player.has_bets_by_type("Place6"):
 #             player.bet(Place6(6 / 5 * unit))
-#         if not player.has_bets("Place8"):
+#         if not player.has_bets_by_type("Place8"):
 #             player.bet(Place8(6 / 5 * unit))
 #
 #     if player.table.bet_update_info is not None:
 #         # place6
-#         if player.has_bets("Place6"):
+#         if player.has_bets_by_type("Place6"):
 #             bet = player.get_bet("Place6")
 #             if (
 #                 player.table.bet_update_info[player].get(bet.name) is not None
@@ -581,7 +581,7 @@ def dicedoctor(player: 'Player', progression: int = 0) -> dict[str, int]:
 #                         strat_info["mode6"] = "press"
 #                     # print("updated place6 mode: {}".format(strat_info["mode6"]))
 #         # place8
-#         if player.has_bets("Place8"):
+#         if player.has_bets_by_type("Place8"):
 #             bet = player.get_bet("Place8")
 #             if (
 #                 player.table.bet_update_info[player].get(bet.name) is not None
@@ -628,16 +628,16 @@ def place68_dontcome2odds(player: 'Player') -> None:
     current_numbers = list(set(current_numbers))
 
     dont_come_losing_numbers = []
-    if player.has_bets(DontCome):
+    if player.has_bets_by_type(DontCome):
         dont_come_losing_numbers += player.get_bet(DontCome).get_losing_numbers(player.table)
 
     if 6 in dont_come_losing_numbers:
-        if player.has_bets(Place6):
+        if player.has_bets_by_type(Place6):
             player.remove_bet(player.get_bet(Place6))
         if 5 not in current_numbers:
             player.add_bet(Place5(player.unit))
     elif 8 in dont_come_losing_numbers:
-        if player.has_bets(Place8):
+        if player.has_bets_by_type(Place8):
             player.remove_bet(player.get_bet(Place8))
         if 9 not in current_numbers:
             player.add_bet(Place9(player.unit))
@@ -645,7 +645,7 @@ def place68_dontcome2odds(player: 'Player') -> None:
     if player.table.point == "On" and player.count_bets(DontCome) < 1:
         player.add_bet(DontCome(player.unit))
 
-    if player.has_bets(DontCome):
+    if player.has_bets_by_type(DontCome):
         dc: Bet = player.get_bet(DontCome)
 
         if not isinstance(dc, DontCome):
@@ -667,5 +667,5 @@ def place68_dontcome2odds(player: 'Player') -> None:
                 elif lose_num in [6, 8]:
                     mult = 6 / 5 * win_mult
 
-        if not player.has_bets(LayOdds) and not dc.point is None:
+        if not player.has_bets_by_type(LayOdds) and not dc.point is None:
             player.add_odds(mult * player.unit, [DontCome], dc.point)

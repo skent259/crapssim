@@ -512,7 +512,10 @@ class Player:
                     bets.append(bet)
         return bets
 
-    def has_bets(self, *bet_types: typing.Type[Bet], **bet_attributes) -> bool:
+    def has_bet(self, bet: Bet):
+        return bet in self.bets_on_table
+
+    def has_bets_by_type(self, *bet_types: typing.Type[Bet], **bet_attributes) -> bool:
         """ returns True if bets_to_check and self.bets_on_table
         has at least one thing in common """
         return len(self.get_bets(*bet_types, **bet_attributes)) > 0
@@ -527,7 +530,7 @@ class Player:
         return len(self.get_bets(*bet_types, **bet_attributes))
 
     def remove_if_present(self, bet_type: typing.Type[Bet]) -> None:
-        if self.has_bets(bet_type):
+        if self.has_bets_by_type(bet_type):
             self.remove_bet(self.get_bet(bet_type))
 
     def add_strategy_bets(self) -> None:
