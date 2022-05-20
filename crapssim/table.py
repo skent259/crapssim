@@ -5,7 +5,7 @@ from .bet import Bet, AllowsOdds, BaseOdds
 from .strategy import STRATEGY_TYPE, passline
 
 
-class Table(object):
+class Table:
     """
     Craps Table that contains Dice, Players, the Players' bets, and updates
     them accordingly.  Main method is run() which should simulate a craps
