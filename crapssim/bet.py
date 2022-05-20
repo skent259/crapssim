@@ -226,15 +226,9 @@ class PassLine(AllowsOdds):
         return [7]
 
     def get_status(self, table: "Table"):
-        if self.new_point:
+        if table.point.status == 'Off' and table.last_roll in (4, 5, 6, 8, 9, 10):
             return None
         return super().get_status(table)
-
-    def update(self, table: "Table") -> None:
-        self.new_point = False
-
-        if table.point is None and table.dice.total in (4, 5, 6, 8, 9, 10):
-            self.new_point = True
 
     def is_removable(self, player: "Player"):
         if player.table.point is not None:
@@ -427,19 +421,13 @@ class DontPass(AllowsOdds):
             return [7, 11]
         return [table.point.number]
 
-    def update(self, table: "Table") -> None:
-        self.new_point = False
-
-        if table.point is None and table.dice.total in (4, 5, 6, 8, 9, 10):
-            self.new_point = True
-
     def allowed(self, player) -> bool:
         if player.table.point.status == 'Off':
             return True
         return False
 
     def get_status(self, table: "Table") -> str | None:
-        if self.new_point:
+        if table.point.status is None and table.dice.total in (4, 5, 6, 8, 9, 10):
             return None
         return super().get_status(table)
 
