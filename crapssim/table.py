@@ -377,8 +377,14 @@ class Point:
     """
 
     def __init__(self) -> None:
-        self.status: str = "Off"
         self.number: int | None = None
+
+    @property
+    def status(self) -> str:
+        if self.number is None:
+            return 'Off'
+        else:
+            return 'On'
 
     def __eq__(self, other: object) -> bool:
         if isinstance(other, str):
@@ -426,10 +432,8 @@ class Point:
             The Dice you want to update the point with
         """
         if self.status == "Off" and dice_object.total in [4, 5, 6, 8, 9, 10]:
-            self.status = "On"
             self.number = dice_object.total
         elif self.status == "On" and dice_object.total in [7, self.number]:
-            self.status = "Off"
             self.number = None
 
 
