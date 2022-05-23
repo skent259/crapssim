@@ -210,9 +210,21 @@ class OddsStrategy(Strategy):
             The player to add the odds bet to.
         """
         for bet in player.bets_on_table:
-            if isinstance(bet, self.base_type) and bet.point is not None:
-                amount = bet.bet_amount * self.odds_multiplier[bet.point]
-                odds_bet = bet.get_odds_bet(amount)
+            if isinstance(bet, self.base_type):
+                if isinstance(bet, (PassLine, DontPass)):
+                    point = player.table.point.number
+                elif isinstance(bet, (Come, DontCome)):
+                    point = bet.point
+                else:
+                    raise NotImplementedError
+
+                if point in self.odds_multiplier:
+                    multiplier = self.odds_multiplier[point]
+                else:
+                    return
+
+                amount = bet.bet_amount * multiplier
+                odds_bet = bet.get_odds_bet(amount, player.table)
                 IfBetNotExist(odds_bet).update_bets(player)
 
 
@@ -414,7 +426,11 @@ class PlaceBetAndMove(Strategy):
         list[int]
             A list of points of bets that are check bets the player has on the table.
         """
-        return [x.point for x in self.check_bets_on_table(player)]
+        check_numbers = []
+        for bet in self.check_bets:
+            if bet in player.bets_on_table:
+                check_numbers += bet.get_winning_numbers(player.table)
+        return check_numbers
 
     def place_starting_bets(self, player: 'Player'):
         """Place the initial place bets.
@@ -510,8 +526,8 @@ class Place68Move59(PlaceBetAndMove):
         """
         super().__init__(starting_bets=[Place6(six_eight_amount),
                                         Place8(six_eight_amount)],
-                         check_bets=[PassLine(pass_come_amount, point=6),
-                                     PassLine(pass_come_amount, point=8),
+                         check_bets=[PassLine(pass_come_amount),
+                                     PassLine(pass_come_amount),
                                      Come(pass_come_amount, point=6),
                                      Come(pass_come_amount, point=8)],
                          bet_movements={Place6(six_eight_amount): Place5(5),
