@@ -1136,4 +1136,41 @@ def test_bets_always_allowed_point_on(bet):
     assert bet.allowed(table.players[0])
 
 
+def test_pass_line_odds_allowed():
+    table = Table()
+    table.add_player()
+    table.players[0].bets_on_table = [PassLine(5)]
+    table.point.number = 6
+    table.point.status = 'On'
+    bet = Odds6(25)
+    assert bet.allowed(table.players[0])
 
+
+def test_pass_line_odds_too_high():
+    table = Table()
+    table.add_player()
+    table.players[0].bets_on_table = [PassLine(5)]
+    table.point.number = 4
+    table.point.status = 'On'
+    bet = Odds4(25)
+    assert bet.allowed(table.players[0]) is False
+
+
+def test_come_odds_allowed():
+    table = Table()
+    table.add_player()
+    come_bet = Come(5)
+    come_bet.point = 6
+    table.players[0].bets_on_table = [come_bet]
+    bet = Odds6(25)
+    assert bet.allowed(table.players[0])
+
+
+def test_come_odds_not_allowed():
+    table = Table()
+    table.add_player()
+    come_bet = Come(5)
+    come_bet.point = 6
+    table.players[0].bets_on_table = [come_bet]
+    bet = Odds6(9000)
+    assert bet.allowed(table.players[0]) is False
