@@ -117,9 +117,11 @@ class RemoveIfTrue(Strategy):
         player
             The Player to remove the bets for.
         """
+        new_bets = []
         for bet in player.bets_on_table:
-            if self.key(bet, player):
-                player.remove_bet(bet)
+            if not self.key(bet, player):
+                new_bets.append(bet)
+        player.bets_on_table = new_bets
 
 
 class IfBetNotExist(BetIfTrue):
@@ -757,6 +759,7 @@ class Risk12(Strategy):
         player
             The player to check the bets for.
         """
+        RemoveIfTrue(lambda b, p: isinstance(b, Place)).update_bets(player)
         IfBetNotExist(PassLine(5)).update_bets(player)
         IfBetNotExist(Field(5)).update_bets(player)
 
@@ -770,7 +773,10 @@ class Risk12(Strategy):
             The player to place the bets for.
         """
         if self.pre_point_winnings >= 6 - 1:
-            IfBetNotExist(Place6(6)).update_bets(player)
+            if player.table.point.number != 6:
+                IfBetNotExist(Place6(6)).update_bets(player)
+            else:
+                IfBetNotExist(Place8(6)).update_bets(player)
         if self.pre_point_winnings >= 12 - 2:
             IfBetNotExist(Place8(6)).update_bets(player)
 
