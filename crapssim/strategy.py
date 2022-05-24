@@ -263,7 +263,7 @@ class CountStrategy(BetIfTrue):
         self.bet_types = bet_types
         self.count = count
         self.key = (lambda p: len([x for x in p.bets_on_table if isinstance(x, self.bet_types)]) < self.count
-                                 and bet not in p.bets_on_table)
+                              and bet not in p.bets_on_table)
         super().__init__(bet, key=self.key)
 
 
@@ -701,7 +701,7 @@ class HammerLock(Strategy):
             The player to place the bets for.
         """
         RemoveIfTrue(lambda b, p: b == Place6(self.start_six_eight_amount)
-                                     or b == Place8(self.start_six_eight_amount)).update_bets(player)
+                                  or b == Place8(self.start_six_eight_amount)).update_bets(player)
         BetPlace({5: self.five_nine_amount,
                   6: self.end_six_eight_amount,
                   8: self.end_six_eight_amount,
@@ -743,7 +743,8 @@ class Risk12(Strategy):
         player
             The player to check the bets for.
         """
-        if player.table.point.status == 'Off' and any(x.get_status(player.table) == 'win' for x in player.bets_on_table):
+        if player.table.point.status == 'Off' and any(
+                x.get_status(player.table) == 'win' for x in player.bets_on_table):
             self.pre_point_winnings += sum(x.get_return_amount(player.table)
                                            for x in player.bets_on_table
                                            if x.get_status(player.table) == 'win')
@@ -759,7 +760,9 @@ class Risk12(Strategy):
         player
             The player to check the bets for.
         """
-        RemoveIfTrue(lambda b, p: isinstance(b, Place)).update_bets(player)
+        RemoveIfTrue(lambda b, p: isinstance(b, Place)
+                                  and p.table.last_roll is not None
+                                  and p.table.last_roll == 7).update_bets(player)
         IfBetNotExist(PassLine(5)).update_bets(player)
         IfBetNotExist(Field(5)).update_bets(player)
 
@@ -778,7 +781,7 @@ class Risk12(Strategy):
             else:
                 IfBetNotExist(Place8(6)).update_bets(player)
         if self.pre_point_winnings >= 12 - 2:
-            IfBetNotExist(Place8(6)).update_bets(player)
+            BetPlace({6: 6, 8: 6}).update_bets(player)
 
     def update_bets(self, player: 'Player') -> None:
         """If the point is off make a Field and PassLine bet. If the point is on
