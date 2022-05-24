@@ -35,7 +35,7 @@ from crapssim.table import Table, Point
 def test_ev_oneroll(bet, ev):
     t = Table()
     t.add_player()
-    t.point.status = "On"  # for place bets to pay properly
+    t.point.number = 8  # for place bets to pay properly
     outcomes = []
     t.players[0].add_bet(bet)
     for d1 in range(1, 7):
@@ -1048,7 +1048,6 @@ def test_is_removable_table_point_on(bet):
     table = Table()
     table.add_player()
     table.point.number = 6
-    table.point.status = 'On'
     assert bet.is_removable(table.players[0]) is True
 
 
@@ -1057,7 +1056,6 @@ def test_passline_is_irremovable_table_point_off():
     table = Table()
     table.add_player()
     table.point.number = 6
-    table.point.status = 'On'
     assert bet.is_removable(table.players[0]) is False
 
 
@@ -1066,7 +1064,6 @@ def test_come_is_removable_without_point():
     table = Table()
     table.add_player()
     table.point.number = 6
-    table.point.status = 'On'
     assert bet.is_removable(table.players[0]) is True
 
 
@@ -1076,7 +1073,6 @@ def test_come_is_irremovable_with_point():
     table = Table()
     table.add_player()
     table.point.number = 6
-    table.point.status = 'On'
     assert bet.is_removable(table.players[0]) is False
 
 
@@ -1131,7 +1127,6 @@ def test_bets_always_allowed_point_off(bet):
 def test_bets_always_allowed_point_on(bet):
     table = Table()
     table.point.number = 10
-    table.point.status = 'On'
     table.add_player()
     assert bet.allowed(table.players[0])
 
@@ -1141,7 +1136,6 @@ def test_pass_line_odds_allowed():
     table.add_player()
     table.players[0].bets_on_table = [PassLine(5)]
     table.point.number = 6
-    table.point.status = 'On'
     bet = Odds6(25)
     assert bet.allowed(table.players[0])
 
@@ -1151,7 +1145,6 @@ def test_pass_line_odds_too_high():
     table.add_player()
     table.players[0].bets_on_table = [PassLine(5)]
     table.point.number = 4
-    table.point.status = 'On'
     bet = Odds4(25)
     assert bet.allowed(table.players[0]) is False
 

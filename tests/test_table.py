@@ -18,7 +18,6 @@ def test_ensure_one_player():
 
 def test_wrong_point_off():
     table = Table()
-    table.point.status = 'Off'
     table.add_player(bankroll=500)
     table.players[0].add_bet(Come(100))
     assert (len(table.players[0].bets_on_table),
@@ -27,7 +26,6 @@ def test_wrong_point_off():
 
 def test_wrong_point_on():
     table = Table()
-    table.point.status = 'On'
     table.point.number = 4
     table.add_player(bankroll=500)
     assert (len(table.players[0].bets_on_table),
@@ -43,7 +41,6 @@ def test_wrong_point_on():
 ])
 def test_point_equality(status, number, comparison):
     point = Point()
-    point.status = status
     point.number = number
     assert point == comparison
 
@@ -54,7 +51,6 @@ def test_point_equality(status, number, comparison):
 ])
 def test_point_greater_than(number, comparison):
     point = Point()
-    point.status = 'On'
     point.number = number
     assert point > comparison
 
@@ -65,8 +61,6 @@ def test_point_greater_than(number, comparison):
 ])
 def test_point_less_than(number, comparison):
     point = Point()
-    point.status = 'On'
     point.number = number
     assert point < comparison
-
 
