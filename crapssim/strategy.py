@@ -600,7 +600,7 @@ class Place682Come(AggregateStrategy):
         """
 
         def pass_line_key(p):
-            (p.table.point.status == 'Off' and
+            return (p.table.point.status == 'Off' and
              any(isinstance(x, (Place6, Place8)) for x in p.bets_on_table) and
              p.count_bets(Place, PassLine, Come) < 4)
 
