@@ -311,7 +311,7 @@ class Come(AllowsOdds):
                    other.point == self.point
 
     def __repr__(self):
-        return f'{self.__class__.__name__}(point={self.point})'
+        return f'{self.__class__.__name__}(bet_amount={self.bet_amount}, point={self.point})'
 
     def __hash__(self):
         return hash((Come, self.bet_amount, self.point))
