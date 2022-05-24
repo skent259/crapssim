@@ -1,7 +1,6 @@
 import copy
 import typing
 from abc import ABC, abstractmethod
-from inspect import getsource
 
 from crapssim.bet import Bet, PassLine, Come, Place, DontPass, Place6, Place8, Place5, Place9, AllowsOdds, \
     Field, DontCome
