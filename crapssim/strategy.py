@@ -321,6 +321,23 @@ class BetPlace(Strategy):
             if player.table.point.status == 'Off':
                 continue
             IfBetNotExist(Place.by_number(number, amount)).update_bets(player)
+        self.remove_point_bet(player)
+
+    def remove_point_bet(self, player: "Player"):
+        """If skip_point is true and the player has a place bet for the table point number,
+        remove the Place bet.
+
+        Parameters
+        ----------
+        player
+            The player to check and see if they have the given bet.
+        """
+        if self.skip_point and player.table.point.number in self.place_bet_amounts:
+            bet_amount = self.place_bet_amounts[player.table.point.number]
+            bet = Place.by_number(player.table.point.number, bet_amount)
+
+            if bet in player.bets_on_table:
+                player.remove_bet(bet)
 
 
 class PassLinePlace68(AggregateStrategy):
