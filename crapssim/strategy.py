@@ -1,6 +1,7 @@
 import copy
 import typing
 from abc import ABC, abstractmethod
+from inspect import getsource
 
 from crapssim.bet import Bet, PassLine, Come, Place, DontPass, Place6, Place8, Place5, Place9, AllowsOdds, \
     Field, DontCome
@@ -63,8 +64,10 @@ class AggregateStrategy(Strategy):
         self.strategies = strategies
 
     def update_bets(self, player: 'Player'):
+        count = 0
         for strategy in self.strategies:
             strategy.update_bets(player)
+            count += 1
 
 
 class BetIfTrue(Strategy):
@@ -600,10 +603,17 @@ class Place682Come(AggregateStrategy):
         def pass_line_key(p):
             (p.table.point.status == 'Off' and
              any(isinstance(x, (Place6, Place8)) for x in p.bets_on_table) and
-             p.count_bets(Place, PassLine, Come) <= 4)
+             p.count_bets(Place, PassLine, Come) < 4)
 
         pass_line_strategy = BetIfTrue(PassLine(pass_come_amount), pass_line_key)
-        come_key = lambda p: p.table.point.status == 'On' and p.count_bets(Place, PassLine, Come) <= 4
+
+        def come_key(player):
+            come_count = len([b for b in player.bets_on_table if isinstance(b, Come)])
+            place_passline_come_count = len(
+                [b for b in player.bets_on_table if isinstance(b, (PassLine, Come, Place))]
+            )
+            return player.table.point.status == 'On' and place_passline_come_count < 4 and come_count < 2
+
         come_strategy = BetIfTrue(Come(pass_come_amount), come_key)
         place_strategy = Place68Move59(pass_come_amount=pass_come_amount,
                                        six_eight_amount=six_eight_amount,
