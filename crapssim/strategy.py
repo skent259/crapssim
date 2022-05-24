@@ -664,7 +664,8 @@ class HammerLock(Strategy):
         ----------
         player
         """
-        self.place_win_count += len([bet for bet in player.get_bets(Place) if bet.get_status(player.table) == 'win'])
+        self.place_win_count += len([bet for bet in player.bets_on_table if isinstance(bet, Place) and
+                                     bet.get_status(player.table) == 'win'])
         if player.table.point.status == 'On' and player.table.dice.total == 7:
             self.place_win_count = 0
 
@@ -676,6 +677,7 @@ class HammerLock(Strategy):
         player
             The player to place the bets for.
         """
+        RemoveIfTrue(lambda b, p: isinstance(b, Place)).update_bets(player)
         strategy = IfBetNotExist(PassLine(self.base_amount)) + IfBetNotExist(DontPass(self.base_amount))
         strategy.update_bets(player)
 
@@ -700,8 +702,7 @@ class HammerLock(Strategy):
         player
             The player to place the bets for.
         """
-        RemoveIfTrue(lambda b, p: b == Place6(self.start_six_eight_amount)
-                                  or b == Place8(self.start_six_eight_amount)).update_bets(player)
+        RemoveIfTrue(lambda b, p: isinstance(b, Place)).update_bets(player)
         BetPlace({5: self.five_nine_amount,
                   6: self.end_six_eight_amount,
                   8: self.end_six_eight_amount,
