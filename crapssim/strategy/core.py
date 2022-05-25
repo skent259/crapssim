@@ -32,19 +32,19 @@ class Strategy(ABC):
         """
 
     @abstractmethod
-    def update_bets(self, player: 'Player'):
+    def update_bets(self, player: 'Player') -> None:
         """Add, remove, or change the bets on the table.
 
         This method is applied after the dice are rolled,
         the bets are updated, and the table is updated."""
 
-    def __add__(self, other: 'Strategy'):
+    def __add__(self, other: 'Strategy') -> "AggregateStrategy":
         return AggregateStrategy(self, other)
 
-    def __eq__(self, other: 'Strategy'):
+    def __eq__(self, other: object) -> bool:
         if isinstance(other, Strategy):
-            return self.__dict__ == other.__dict__
-        raise NotImplementedError
+            return self.__class__ == other.__class__
+        return NotImplemented
 
 
 class AggregateStrategy(Strategy):
@@ -60,7 +60,7 @@ class AggregateStrategy(Strategy):
         """
         self.strategies = strategies
 
-    def update_bets(self, player: 'Player'):
+    def update_bets(self, player: 'Player') -> None:
         count = 0
         for strategy in self.strategies:
             strategy.update_bets(player)
@@ -86,7 +86,7 @@ class BetIfTrue(Strategy):
         self.bet = bet
         self.key = key
 
-    def update_bets(self, player: 'Player'):
+    def update_bets(self, player: 'Player') -> None:
         """If the key is True add the bet to the player and table.
 
         Parameters
@@ -113,7 +113,7 @@ class RemoveIfTrue(Strategy):
         super().__init__()
         self.key = key
 
-    def update_bets(self, player: 'Player'):
+    def update_bets(self, player: 'Player') -> None:
         """For each of the players bets if the key is True remove the bet from the table.
 
         Parameters
@@ -200,7 +200,7 @@ class CountStrategy(BetIfTrue):
         self.count = count
 
         def key(player: "Player"):
-            bets_of_type = [x for x in player.bets_on_table if isinstance(x, self.bet_types)]
+            bets_of_type = [x for x in player.bets_on_table if isinstance(x, tuple(self.bet_types))]
             bets_of_type_count = len(bets_of_type)
             return bets_of_type_count < self.count and bet not in player.bets_on_table
         super().__init__(bet, key=key)
@@ -245,7 +245,8 @@ class PlaceBetAndMove(Strategy):
         list[AllowsOdds]
             A list of all the check bets that are on the table.
         """
-        return [x for x in player.bets_on_table if x in self.check_bets]
+        return [x for x in player.bets_on_table if isinstance(x, AllowsOdds)
+                and x in self.check_bets]
 
     def check_numbers(self, player: 'Player') -> list[int]:
         """Returns the points of all the check bets that are currently on the table.
@@ -308,7 +309,8 @@ class PlaceBetAndMove(Strategy):
             while new_bet in player.bets_on_table:
                 new_bet = self.bet_movements[new_bet]
             player.remove_bet(old_bet)
-            player.add_bet(copy.copy(new_bet))
+            if new_bet is not None:
+                player.add_bet(copy.copy(new_bet))
 
     def update_bets(self, player: 'Player'):
         """Place the initial bets and move them to the desired location.
