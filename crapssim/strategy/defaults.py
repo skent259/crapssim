@@ -6,9 +6,8 @@ import typing
 
 from crapssim.bet import PassLine, AllowsOdds, DontPass, Come, DontCome, Place, Place6, Place8, \
     Place5, Place9, Field
-from crapssim.strategy import BetPointOff, Strategy, IfBetNotExist, BetIfTrue, AggregateStrategy, \
-    BetPointOn, RemoveIfTrue
-from crapssim.strategy.core import CountStrategy, PlaceBetAndMove
+from crapssim.strategy.core import CountStrategy, PlaceBetAndMove, BetPointOff, Strategy, \
+    IfBetNotExist, BetIfTrue, AggregateStrategy, BetPointOn, RemoveIfTrue
 
 if typing.TYPE_CHECKING:
     from crapssim import Player
