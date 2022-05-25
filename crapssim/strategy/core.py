@@ -9,7 +9,7 @@ from abc import ABC, abstractmethod
 from crapssim.bet import Bet, Place, AllowsOdds
 
 if typing.TYPE_CHECKING:
-    from crapssim import Player
+    from crapssim.table import Player
 
 
 class Strategy(ABC):

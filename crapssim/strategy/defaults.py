@@ -10,7 +10,7 @@ from crapssim.strategy.core import CountStrategy, PlaceBetAndMove, BetPointOff, 
     IfBetNotExist, BetIfTrue, AggregateStrategy, BetPointOn, RemoveIfTrue
 
 if typing.TYPE_CHECKING:
-    from crapssim import Player
+    from crapssim.table import Player
 
 
 class BetPassLine(BetPointOff):
