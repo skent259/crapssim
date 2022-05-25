@@ -1,22 +1,18 @@
+"""
+Strategies to be assigned to players on the Craps table. The strategy determines what bets the
+player should make, remove, or change. Strategies are applied for the player to change the bets
+after the previous bets and table have been updated.
+"""
+
 import copy
 import typing
 from abc import ABC, abstractmethod
 
-from crapssim.bet import Bet, PassLine, Come, Place, DontPass, Place6, Place8, Place5, Place9, AllowsOdds, \
+from .bet import Bet, PassLine, Come, Place, DontPass, Place6, Place8, Place5, Place9, AllowsOdds, \
     Field, DontCome
 
 if typing.TYPE_CHECKING:
     from crapssim.table import Player
-
-"""
-Various betting strategies that are based on conditions of the CrapsTable.
-Each strategy must take a table and a player_object, and implicitly 
-uses the methods from the player object.
-"""
-
-"""
-Fundamental Strategies
-"""
 
 
 class Strategy(ABC):
@@ -25,23 +21,25 @@ class Strategy(ABC):
     """
 
     def after_roll(self, player: 'Player') -> None:
-        """Method that can update the Strategy from the table/player after the dice are rolled but
-        before the bets and the table are updated. For example, if you wanted to know whether the point changed
-        from on to off you could do self.point_lost = table.point.status = "On" and table.dice.roll.total == 7.
-        You couldn't do this in update_bets since the table has already been updated with point.status = Off.
+        """Method that can update the Strategy from the table/player after the dice
+         are rolled but before the bets and the table are updated. For example,
+         if you wanted to know whether the point changed from on to off you could
+         do self.point_lost = table.point.status = "On" and table.dice.roll.total == 7.
+         You couldn't do this in update_bets since the table has already been
+         updated with point.status = Off.
 
         Parameters
         ----------
         player
             The Player to check for bets, etc.
         """
-        pass
 
     @abstractmethod
     def update_bets(self, player: 'Player'):
-        """Add, remove, or change the bets on the table. This method is applied after the dice are rolled,
+        """Add, remove, or change the bets on the table.
+
+        This method is applied after the dice are rolled,
         the bets are updated, and the table is updated."""
-        pass
 
     def __add__(self, other: 'Strategy'):
         return AggregateStrategy(self, other)
@@ -49,9 +47,12 @@ class Strategy(ABC):
     def __eq__(self, other: 'Strategy'):
         if isinstance(other, Strategy):
             return self.__dict__ == other.__dict__
+        raise NotImplementedError
 
 
 class AggregateStrategy(Strategy):
+    """A combination of multiple strategies."""
+
     def __init__(self, *strategies: Strategy):
         """A combination of multiple strategies. Strategies are applied in the order that is given.
 
@@ -70,17 +71,20 @@ class AggregateStrategy(Strategy):
 
 
 class BetIfTrue(Strategy):
+    """Strategy that places a bet if a given key taking Player as a parameter is True."""
+
     def __init__(self, bet: Bet, key: typing.Callable[['Player'], bool]):
-        """Place the given bet if a criteria is True based on a given callable key with the parameters
-         of Player and Table returning True if the bet should be place, otherwise False.
+        """The strategy will place the given bet if the given key is True.
 
         Parameters
         ----------
         bet
             The Bet to place if key is True.
         key
-            Callable with parameters of player and table returning a boolean to decide whether to place the bet.
+            Callable with parameters of player and table
+            returning a boolean to decide whether to place the bet.
         """
+
         super().__init__()
         self.bet = bet
         self.key = key
@@ -98,9 +102,10 @@ class BetIfTrue(Strategy):
 
 
 class RemoveIfTrue(Strategy):
+    """Strategy that removes all bets that are True for a given key. The key takes the Bet and the
+     Player as parameters."""
     def __init__(self, key: typing.Callable[['Bet', 'Player'], bool]):
-        """Strategy that goes through all of the players bets, and if the key returns True
-        remove the bet.
+        """The strategy will remove all bets that are true for the given key.
 
         Parameters
         ----------
@@ -127,38 +132,46 @@ class RemoveIfTrue(Strategy):
 
 
 class IfBetNotExist(BetIfTrue):
+    """Strategy that adds a bet if it isn't on the table for that player. Equivalent of
+    BetIfTrue(bet, lambda p: bet not in p.bets_on_table)"""
+
     def __init__(self, bet: Bet):
-        """Add bets if it's not already on the table.
+        """The strategy adds the given bet object to the table if it is not already on the table.
 
         Parameters
         ----------
         bet
             The bet to add if it isn't already on the table.
         """
-        super().__init__(bet,
-                         lambda p: bet not in p.bets_on_table if isinstance(bet, Bet) else
-                         not any(isinstance(x, bet) for x in p.bets_on_table))
+        super().__init__(bet, lambda p: bet not in p.bets_on_table)
 
 
 class BetPointOff(BetIfTrue):
+    """Strategy that adds a bet if the table point is Off, and the Player doesn't have a bet on the
+    table. Equivalent to BetIfTrue(bet, lambda p: p.table.point.status == "Off"
+                                        and bet not in p.bets_on_table)"""
     def __init__(self, bet: Bet):
-        """Add a bet if the table point is Off.
+        """Adds the given bet if the table point is Off and the player doesn't have that bet on the
+        table.
 
         Parameters
         ----------
         bet
             The bet to add if the point is Off.
         """
-        super().__init__(bet, lambda p: p.table.point.status == "Off" and bet not in p.bets_on_table)
+        super().__init__(bet, lambda p: p.table.point.status == "Off"
+                                        and bet not in p.bets_on_table)
 
     def __eq__(self, other):
         if isinstance(other, Strategy):
             return isinstance(other, BetPointOff) and self.bet == other.bet
-        else:
-            raise NotImplementedError
+        raise NotImplementedError
 
 
 class BetPointOn(BetIfTrue):
+    """Strategy that adds a bet if the table point is On, and the Player doesn't have a bet on the
+    table. Equivalent to BetIfTrue(bet, lambda p: p.table.point.status == "On"
+                                        and bet not in p.bets_on_table)"""
     def __init__(self, bet: Bet):
         """Add a bet if the point is On.
 
@@ -171,8 +184,11 @@ class BetPointOn(BetIfTrue):
 
 
 class BetPassLine(BetPointOff):
+    """Strategy that adds a PassLine bet if the point is Off and the player doesn't have a PassLine
+    bet already on the table. Equivalent to BetPointOff(PassLine(bet_amount))."""
     def __init__(self, bet_amount: float):
-        """Add a PassLine bet if of bet_amount if the point is Off.
+        """Adds a PassLine bet for the given bet_amount if the point is Off and the player doesn't
+        have a PassLine bet for that amount already on the table.
 
         Parameters
         ----------
@@ -184,19 +200,21 @@ class BetPassLine(BetPointOff):
 
 
 class OddsStrategy(Strategy):
+    """Strategy that takes an AllowsOdds object and places Odds on it given either a multiplier,
+    or a dictionary of points and multipliers."""
     def __init__(self, base_type: AllowsOdds,
                  odds_multiplier: dict[int, int] | int):
-        """Takes an AllowsOdds item (ex. PassLine, Come, DontPass) and adds a BaseOdds bet (either Odds or LayOdds)
-         based on the odds_multiplier given.
+        """Takes an AllowsOdds item (ex. PassLine, Come, DontPass) and adds a BaseOdds bet
+        (either Odds or LayOdds) based on the odds_multiplier given.
 
         Parameters
         ----------
         base_type
             The bet that odds will be added to.
         odds_multiplier
-            If odds_multipler is an integer adds multiplier * base_bets amount to the odds. If the odds multiplier is a
-            dictionary of Integers looks at the dictionary to determine what odds multiplier to use depending
-            on the given point.
+            If odds_multipler is an integer adds multiplier * base_bets amount to the odds.
+            If the odds multiplier is a dictionary of Integers looks at the dictionary to
+            determine what odds multiplier to use depending on the given point.
         """
         self.base_type = base_type
 
@@ -206,7 +224,7 @@ class OddsStrategy(Strategy):
             self.odds_multiplier = odds_multiplier
 
     def update_bets(self, player: 'Player'):
-        """Add and Odds bet to the given base_types in the amount determined by the odds_multiplier.
+        """Add an Odds bet to the given base_types in the amount determined by the odds_multiplier.
 
         Parameters
         ----------
@@ -233,25 +251,28 @@ class OddsStrategy(Strategy):
 
 
 class PassLineOdds(OddsStrategy):
+    """Strategy that adds an Odds bet to the PassLine bet. Equivalent to
+    OddsStrategy(PassLine, odds)."""
     def __init__(self, odds: dict[int, int] | int | None = None):
-        """Add odds to PassLine bets with the multipler specified by odds.
+        """Add odds to PassLine bets with the multipler specified by the odds variable.
 
         Parameters
         ----------
         odds
-            If odds is an integer the bet amount is the PassLine bet amount * odds. If it's a dictionary
-            it uses the PassLine bet's point to determine the multiplier. Defaults to
-            {4: 3, 5: 4, 6: 5, 8: 5, 9: 4, 10: 3} which are 345x odds.
-        """
+            If odds is an integer the bet amount is the PassLine bet amount * odds. If it's a
+            dictionary it uses the PassLine bet's point to determine the multiplier. Defaults to
+            {4: 3, 5: 4, 6: 5, 8: 5, 9: 4, 10: 3} which are 345x odds."""
         if odds is None:
             odds = {4: 3, 5: 4, 6: 5, 8: 5, 9: 4, 10: 3}
         super().__init__(PassLine, odds)
 
 
 class CountStrategy(BetIfTrue):
+    """Strategy that checks how many bets exist of a certain type. If the number of bets of that
+    type is less than the given count, it places the bet."""
     def __init__(self, bet_types: typing.Iterable[typing.Type[Bet]], count: int, bet: Bet):
-        """If there are less than x number of bets placed by player with a given type, place
-        the given bet.
+        """If there are less than count number of bets placed by player with a given bet_type, it
+        adds the given bet.
 
         Parameters
         ----------
@@ -264,12 +285,17 @@ class CountStrategy(BetIfTrue):
         """
         self.bet_types = bet_types
         self.count = count
-        self.key = (lambda p: len([x for x in p.bets_on_table if isinstance(x, self.bet_types)]) < self.count
-                              and bet not in p.bets_on_table)
-        super().__init__(bet, key=self.key)
+
+        def key(player: "Player"):
+            bets_of_type = [x for x in player.bets_on_table if isinstance(x, self.bet_types)]
+            bets_of_type_count = len(bets_of_type)
+            return bets_of_type_count < self.count and bet not in player.bets_on_table
+        super().__init__(bet, key=key)
 
 
 class TwoCome(CountStrategy):
+    """Strategy that adds a Come bet of a certain amount if that bet doesn't exist on the table.
+    Equivalent to CountStrategy((Come, ), 2, bet)."""
     def __init__(self, bet_amount: float):
         """If there are less than two Come bets placed, place a Come bet.
 
@@ -283,18 +309,22 @@ class TwoCome(CountStrategy):
 
 
 class Pass2Come(AggregateStrategy):
+    """Places a PassLine bet and two Come bets. Equivalent to BetPassLine(bet_amount) +
+    TwoCome(bet_amount)"""
     def __init__(self, bet_amount: float):
-        """Place a PassLine bet and two Come bets. Equivalent to
-        BetPassLine(bet_amount) + TwoCome(bet_amount)
+        """Place a PassLine bet and two Come bets of the given bet_amount.
 
         Parameters
         ----------
         bet_amount
+            The amount of the PassLine and Come bets.
         """
         super().__init__(BetPassLine(bet_amount), TwoCome(bet_amount))
 
 
 class BetPlace(Strategy):
+    """Strategy that makes multiple Place bets of given amounts. It can also skip making the bet
+    if the point is the same as the given bet number."""
     def __init__(self, place_bet_amounts: dict[int, float], skip_point: bool = True):
         """Strategy for making multiple place bets.
 
@@ -345,13 +375,16 @@ class BetPlace(Strategy):
 
 
 class PassLinePlace68(AggregateStrategy):
+    """Bet the PassLine and Place the 6 and the 8. Equivalent to: BetPassLine(pass_line_amount) +
+        BetPlace({6: six_amount, 8: eight_amount}, skip_point=skip_point)"""
     def __init__(self,
                  pass_line_amount: float = 5,
                  six_amount: float = 6,
                  eight_amount: float = 6,
                  skip_point=True):
         """Bet the PassLine and Place the 6 and the 8. Equivalent to:
-        BetPassLine(pass_line_amount) + BetPlace({6: six_amount, 8: eight_amount}, skip_point=skip_point)
+        BetPassLine(pass_line_amount) +
+        BetPlace({6: six_amount, 8: eight_amount}, skip_point=skip_point)
 
         Parameters
         ----------
@@ -370,8 +403,12 @@ class PassLinePlace68(AggregateStrategy):
 
 
 class BetDontPass(BetPointOff):
+    """Strategy that adds a DontPass bet if the point is off and the player doesn't have a DontPass
+    bet of the given amount already on the table.
+    Equivalent to BetPointOff(DontPass(bet_amount))."""
     def __init__(self, bet_amount: float):
-        """If the point is off place a DontPass bet of a given amount.
+        """If the point is off and the player doesn't have a DontPass(bet_amount) bet on the table
+        place a DontPass(bet_amount) bet.
 
         Parameters
         ----------
@@ -382,14 +419,17 @@ class BetDontPass(BetPointOff):
 
 
 class BetLayOdds(OddsStrategy):
+    """Strategy that adds a LayOdds bet to the DontPass bet. Equivalent to
+    OddsStrategy(DontPass, odds)"""
     def __init__(self, odds: dict[int, int] | int | None = None):
         """Add odds to DontPass bets with the multipler specified by odds.
 
         Parameters
         ----------
         odds
-            If odds is an integer the bet amount is the PassLine bet amount * odds. If it's a dictionary
-            it uses the PassLine bet's point to determine the multiplier. Defaults to 6.
+            If odds is an integer the bet amount is the PassLine bet amount * odds.
+            If it's a dictionary it uses the PassLine bet's point to determine the multiplier.
+            Defaults to 6.
         """
         if odds is None:
             odds = 6
@@ -397,11 +437,14 @@ class BetLayOdds(OddsStrategy):
 
 
 class PlaceBetAndMove(Strategy):
+    """Strategy that makes Place bets and then moves the bet to other Places if an AllowsOdds bet
+    gets moved to a bet with the same number."""
     def __init__(self, starting_bets: list[Place],
                  check_bets: list[AllowsOdds],
                  bet_movements: dict[Place, Place | None]):
-        """Make place bets and then move it to another place or remove it if certain check_bets move
-        to the same number.
+        """Makes the starting place bets in starting_bets and then if one of the check_bets gets
+        moved to the same point as one of the place bets, the bet gets moved to a different bet
+        depending on the bet_movements dictionary.
 
         Parameters
         ----------
@@ -462,8 +505,8 @@ class PlaceBetAndMove(Strategy):
             The player to place the bets for.
         """
         for bet in self.starting_bets:
-            BetIfTrue(bet, lambda p: bet not in p.bets_on_table and p.table.point.status != 'Off'). \
-                update_bets(player)
+            if bet not in player.bets_on_table and player.table.point.status != "Off":
+                player.add_bet(copy.copy(bet))
 
     def bets_to_move(self, player: 'Player') -> list[Place]:
         """A list of the bets that need to bet moved to a different bet.
@@ -510,12 +553,10 @@ class PlaceBetAndMove(Strategy):
 
 
 class Place68Move59(PlaceBetAndMove):
-    def __init__(self, pass_come_amount: float = 5,
-                 six_eight_amount: float = 6,
-                 five_nine_amount: float = 5):
-        """Place 6 and 8 and move to 5 and 9 if a PassLine or Come bet with that point comes up.
+    """Strategy that makes place bets on the six and eight, and then if a PassLine or Come bet with
+    that point comes up, moves to the place bet to 5 or 9.
 
-        Equivalent of:
+        Equivalent to:
         starting_bets = [
             Place6(six_eight_amount),
             Place8(six_eight_amount)
@@ -534,7 +575,13 @@ class Place68Move59(PlaceBetAndMove):
             Place9(five_nine_amount): None
         }
 
-        PlaceBetAndMove(starting_bets, check_bets, bet_movements)
+        PlaceBetAndMove(starting_bets, check_bets, bet_movements)"""
+    def __init__(self, pass_come_amount: float = 5,
+                 six_eight_amount: float = 6,
+                 five_nine_amount: float = 5):
+        """Makes Place bets of 6 and 8 for the six_eight_amount, then if a PassLine or Come bet
+        comes with the pass_come_amount, moves those bets to the five and nine with the
+        five_nine_amount.
 
         Parameters
         ----------
@@ -558,7 +605,10 @@ class Place68Move59(PlaceBetAndMove):
 
 
 class PassLinePlace68Move59(AggregateStrategy):
-
+    """Strategy that makes a PassLine bet, makes Place bets on the six and eight, and then moves
+    them back to the 5 and 9 if the point for the PassLine (also the tables point) is six or
+    eight. Equivalent to BetPassLine(pass_line_amount) + Place68Move59(pass_line_amount,
+    six_eight_amount, five_nine_amount)."""
     def __init__(self, pass_line_amount: float = 5,
                  six_eight_amount: float = 6,
                  five_nine_amount: float = 5):
@@ -577,17 +627,22 @@ class PassLinePlace68Move59(AggregateStrategy):
             The amount of the Place5 and Place9 bets.
         """
         pass_line_strategy = BetPassLine(pass_line_amount)
-        place_bet_and_move_strategy = Place68Move59(pass_line_amount, six_eight_amount, five_nine_amount)
+        place_bet_and_move_strategy = Place68Move59(pass_line_amount,
+                                                    six_eight_amount,
+                                                    five_nine_amount)
         super().__init__(pass_line_strategy, place_bet_and_move_strategy)
 
 
 class Place682Come(AggregateStrategy):
+    """Strategy that makes place bets on the 6 and 8 places two come bets moving the six and eight
+    to five or nine if the Come or PassLine bets points come up to those numbers. Also, if there is
+    a Place6 or Place8 bet and the point if Off make a PassLine bet."""
     def __init__(self, pass_come_amount: float = 5,
                  six_eight_amount: float = 6,
                  five_nine_amount: float = 5):
-        """Place the six and the eight and place two come bets moving the six and eight to five or nine
-        if the Come or PassLine bets points come up to those numbers. Also, if there is a Place6 or Place8
-        bet and the point if Off make a PassLine bet.
+        """Place the six and the eight and place two come bets moving the six and eight to five or
+        nine if the Come or PassLine bets points come up to those numbers. Also, if there is a
+        Place6 or Place8 bet and the point if Off make a PassLine bet.
 
         Parameters
         ----------
@@ -599,10 +654,10 @@ class Place682Come(AggregateStrategy):
             The amount of the Place5 and Place9 bets.
         """
 
-        def pass_line_key(p):
-            return (p.table.point.status == 'Off' and
-             any(isinstance(x, (Place6, Place8)) for x in p.bets_on_table) and
-             p.count_bets(Place, PassLine, Come) < 4)
+        def pass_line_key(player):
+            return (player.table.point.status == 'Off' and
+             any(isinstance(x, (Place6, Place8)) for x in player.bets_on_table) and
+             player.count_bets(Place, PassLine, Come) < 4)
 
         pass_line_strategy = BetIfTrue(PassLine(pass_come_amount), pass_line_key)
 
@@ -611,7 +666,8 @@ class Place682Come(AggregateStrategy):
             place_passline_come_count = len(
                 [b for b in player.bets_on_table if isinstance(b, (PassLine, Come, Place))]
             )
-            return player.table.point.status == 'On' and place_passline_come_count < 4 and come_count < 2
+            return player.table.point.status == 'On' \
+                   and place_passline_come_count < 4 and come_count < 2
 
         come_strategy = BetIfTrue(Come(pass_come_amount), come_key)
         place_strategy = Place68Move59(pass_come_amount=pass_come_amount,
@@ -621,19 +677,19 @@ class Place682Come(AggregateStrategy):
 
 
 class IronCross(AggregateStrategy):
+    """Strategy that bets the PassLine, bets the PassLine Odds, and bets Place on the 5, 6, and 8.
+    If the point is on and there is no bet on the field, place a bet on the field. Equivalent to:
+    BetPassLine(...) + PassLineOdds(2), + BetPlace({...}) + BetPointOn(Field(...))"""
     def __init__(self, base_amount: float):
-        """Bet the Pass Line, the Pass Line Odds, and Place on 5, 6, and 8. If point is on and no bet on the field, place
-        a bet on the field.
-
-        Equivalent to:
-        BetPassLine(...) + PassLineOdds(2), + BetPlace({...}) + BetPointOn(Field(...))
+        """Creates the IronCross strategy based on the base_amount, using that number to determine
+        the amounts for all the other numbers.
 
         Parameters
         ----------
         base_amount
             The base amount of the bets. This amount is used for the PassLine and Field.
-            base_amount * (6/5) * 2 is used for placing the six and eight, and base amount * 2 is used for
-            placing the five.
+            base_amount * (6/5) * 2 is used for placing the six and eight, and base amount * 2
+            is used for placing the five.
         """
         place_six_eight_amount = (6 / 5) * base_amount * 2
         place_five_amount = base_amount * 2
@@ -647,15 +703,20 @@ class IronCross(AggregateStrategy):
 
 
 class HammerLock(Strategy):
+    """Strategy that makes a PassLine bet and a DontPass bet when the point is off. Once the point
+    is on, adds LayOdds to the DontPass bet, and Places the 6 and 8. If either of those place bets
+    win, shifts the bets outside to the 5, 6, 8, and 9. If one of those wins, all place bets get
+    taken down.
+    """
     def __init__(self, base_amount: float):
-        """Pass Line Bet, Don't Pass bet with a lay of odds. A phased place bet approach, starting inside and then
-        shifting outside eventually taking bet down if two place bets win.
+        """Creates the HammerLock strategy with all bet amounts being created from the given
+        base_amount.
 
         Parameters
         ----------
         base_amount
-            Base amount for PassLine and DontPass Bets, and Place5 and Place9 bets. Place6 and Place8 starts at
-            (6/5) * 2 * this amount and if it wins moves to (6 / 5) * this amount.
+            Base amount for PassLine and DontPass Bets, and Place5 and Place9 bets. Place6 and
+            Place8 starts at (6/5) * 2 * this amount and if it wins moves to (6 / 5) * this amount.
         """
         self.base_amount = base_amount
         self.start_six_eight_amount = (6 / 5) * base_amount * 2
@@ -666,15 +727,16 @@ class HammerLock(Strategy):
         self.place_win_count: int = 0
 
     def after_roll(self, player: 'Player'):
-        """Update the place_win_count based on how many Place bets are won. If table.point.status is On and the
-        dice total is 7 (meaning the shooter sevens out) reset place_win_count to 0.
+        """Update the place_win_count based on how many Place bets are won. If table.point.status is
+        On and the dice total is 7 (meaning the shooter sevens out) reset place_win_count to 0.
 
         Parameters
         ----------
         player
         """
-        self.place_win_count += len([bet for bet in player.bets_on_table if isinstance(bet, Place) and
-                                     bet.get_status(player.table) == 'win'])
+        place_bets = [bet for bet in player.bets_on_table if isinstance(bet, Place)]
+        winning_place_bets = [bet for bet in place_bets if bet.get_status(player.table) == 'win']
+        self.place_win_count += len(winning_place_bets)
         if player.table.point.status == 'On' and player.table.dice.total == 7:
             self.place_win_count = 0
 
@@ -687,7 +749,8 @@ class HammerLock(Strategy):
             The player to place the bets for.
         """
         RemoveIfTrue(lambda b, p: isinstance(b, Place)).update_bets(player)
-        strategy = IfBetNotExist(PassLine(self.base_amount)) + IfBetNotExist(DontPass(self.base_amount))
+        strategy = IfBetNotExist(PassLine(self.base_amount)) + \
+                   IfBetNotExist(DontPass(self.base_amount))
         strategy.update_bets(player)
 
     def place68(self, player):
@@ -718,8 +781,9 @@ class HammerLock(Strategy):
                   9: self.five_nine_amount}, skip_point=False).update_bets(player)
 
     def update_bets(self, player: 'Player'):
-        """If the point is off bet the PassLine and DontPass line. If the point is on bet the Place6 and Place8 until
-        one wins, then bet the Place 5, 6, 8, and 9. LayOdds whenever possible.
+        """If the point is off bet the PassLine and DontPass line. If the point is on bet the
+        Place6 and Place8 until one wins, then bet the Place 5, 6, 8, and 9. LayOdds whenever
+        possible.
 
         Parameters
         ----------
@@ -738,8 +802,12 @@ class HammerLock(Strategy):
 
 
 class Risk12(Strategy):
+    """Strategy that makes a PassLine and Field bet before the point is established. Once the point
+    is established, places either the 6 the 8, or both depending on if the player won enough
+    pre-point to cover those bets."""
     def __init__(self):
-        """Pass line and field bet before the point is established. Once the point is established place the 6 and 8.
+        """Pass line and field bet before the point is established. Once the point is established
+        place the 6 and 8.
         """
         super().__init__()
         self.pre_point_winnings = 0
@@ -777,8 +845,8 @@ class Risk12(Strategy):
         IfBetNotExist(Field(5)).update_bets(player)
 
     def point_on(self, player: 'Player') -> None:
-        """If your winnings were enough to cover the place bets (throwing in another dollar for each) make
-        the place bets.
+        """If your winnings were enough to cover the place bets (throwing in another dollar for
+        each) make the place bets.
 
         Parameters
         ----------
@@ -812,7 +880,8 @@ class Knockout(AggregateStrategy):
     """PassLine and Don't bet prior to point, 345x PassLine Odds after point.
 
     Equivalent to:
-    BetPassLine(bet_amount) + BetPointOff(DontPass(bet_amount)) + PassLineOdds({4: 3, 5: 4, 6: 5, 8: 5, 9: 4, 10: 3})
+    BetPassLine(bet_amount) + BetPointOff(DontPass(bet_amount)) +
+    PassLineOdds({4: 3, 5: 4, 6: 5, 8: 5, 9: 4, 10: 3})
     """
 
     def __init__(self, bet_amount: typing.SupportsFloat):
@@ -822,9 +891,10 @@ class Knockout(AggregateStrategy):
 
 
 class FieldWinProgression(Strategy):
+    """Strategy that every time a Field bet is won, moves to the next amount in the progression and
+    places a Field bet for that amount."""
     def __init__(self, progression: list[typing.SupportsFloat]):
-        """Every time the field wins move to the next progression, else restart
-        at the beginning.
+        """Creates the given the progression.
 
         Parameters
         ----------
@@ -851,15 +921,22 @@ class FieldWinProgression(Strategy):
 
 
 class DiceDoctor(FieldWinProgression):
+    """Field progression strategy with progressive increases and decreases. Equivalent to:
+    FieldWinProgression([10, 20, 15, 30, 25, 50, 35, 70, 50, 100, 75, 150])"""
     def __init__(self):
-        """Field bet with a progression if you win of [10, 20, 15, 30, 25, 50, 35, 70, 50, 100, 75, 150]
+        """Field bet with a progression if you win of [10, 20, 15, 30, 25, 50, 35, 70, 50, 100, 75,
+        150]
         """
         super().__init__([10, 20, 15, 30, 25, 50, 35, 70, 50, 100, 75, 150])
 
 
 class Place68CPR(Strategy):
+    """Strategy that places the 6 and 8. If either of those bets win, the bet is pressed to 2 *
+    the bet amount. If the bet is won again, it is reduced to the original bet amount."""
+
     def __init__(self, bet_amount: float = 6):
-        """If point is on place the 6 & 8. If you win press the bet. If you win again reduce the bet.
+        """If point is on place the 6 & 8 of the bet_amount. If you win press the bet 2 . If you win
+        again reduce the bet.
 
         Parameters
         ----------
@@ -883,8 +960,12 @@ class Place68CPR(Strategy):
         player
             The player to check the bets for.
         """
-        self.six_winnings = sum(x.get_win_amount(player.table) for x in player.bets_on_table if isinstance(x, Place6))
-        self.eight_winnings = sum(x.get_win_amount(player.table) for x in player.bets_on_table if isinstance(x, Place8))
+        place_six_bets = [x for x in player.bets_on_table if isinstance(x, Place6)]
+        place_six_win_amounts = [x.get_win_amount(player.table) for x in place_six_bets]
+        self.six_winnings = sum(place_six_win_amounts)
+        place_eight_bets = [x for x in player.bets_on_table if isinstance(x, Place8)]
+        place_eight_win_amounts = [x.get_win_amount(player.table) for x in place_eight_bets]
+        self.eight_winnings = sum(place_eight_win_amounts)
 
     def ensure_bets_exist(self, player: 'Player'):
         """Ensure that there is always a place 6 or place 8 bet if the point is On.
@@ -895,8 +976,7 @@ class Place68CPR(Strategy):
             The player to place the bets for.
         """
         for bet in (Place6(self.starting_amount), Place8(self.starting_amount)):
-            BetIfTrue(bet, lambda p: p.table.point.status == 'On' and bet not in p.bets_on_table). \
-                update_bets(player)
+            BetPointOn(bet).update_bets(player)
 
     def press(self, player: 'Player'):
         """Double the bet amount of the place bets.
@@ -925,6 +1005,8 @@ class Place68CPR(Strategy):
 
 
 class Place68DontCome2Odds(AggregateStrategy):
+    """Strategy that adds a DontCome bet when the point is Off, places the 6 and 8 when the point
+    is On and adds 2x Odds to the DontCome bet."""
     def __init__(self, six_eight_amount: float = 6,
                  dont_come_amount: float = 5):
         """Place the 6 and 8 along with a Don't Come bet with 2x odds.
@@ -938,5 +1020,6 @@ class Place68DontCome2Odds(AggregateStrategy):
         """
         super().__init__(BetPlace({6: six_eight_amount, 8: six_eight_amount}, skip_point=False),
                          BetIfTrue(DontCome(dont_come_amount),
-                                   lambda p: not any(isinstance(x, DontCome) for x in p.bets_on_table)),
+                                   lambda p: not any(isinstance(x, DontCome)
+                                                     for x in p.bets_on_table)),
                          OddsStrategy(DontCome, 2))
