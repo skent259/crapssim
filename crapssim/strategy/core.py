@@ -199,7 +199,7 @@ class CountStrategy(BetIfTrue):
         self.bet_types = bet_types
         self.count = count
 
-        def key(player: "Player"):
+        def key(player: "Player") -> typing.Callable[["Player"], bool]:
             bets_of_type = [x for x in player.bets_on_table if isinstance(x, tuple(self.bet_types))]
             bets_of_type_count = len(bets_of_type)
             return bets_of_type_count < self.count and bet not in player.bets_on_table
@@ -267,7 +267,7 @@ class PlaceBetAndMove(Strategy):
                 check_numbers += bet.get_winning_numbers(player.table)
         return check_numbers
 
-    def place_starting_bets(self, player: 'Player'):
+    def place_starting_bets(self, player: 'Player') -> None:
         """Place the initial place bets.
 
         Parameters
@@ -312,7 +312,7 @@ class PlaceBetAndMove(Strategy):
             if new_bet is not None:
                 player.add_bet(copy.copy(new_bet))
 
-    def update_bets(self, player: 'Player'):
+    def update_bets(self, player: 'Player') -> None:
         """Place the initial bets and move them to the desired location.
 
         Parameters

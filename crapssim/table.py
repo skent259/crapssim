@@ -487,7 +487,7 @@ class Player:
         return sum(x.bet_amount for x in self.bets_on_table)
 
     @property
-    def table(self):
+    def table(self) -> Table:
         return self._table
 
     def add_bet(self, bet: Bet) -> None:
@@ -521,7 +521,7 @@ class Player:
                     bets.append(bet)
         return bets
 
-    def has_bet(self, bet: Bet):
+    def has_bet(self, bet: Bet) -> bool:
         return bet in self.bets_on_table
 
     def has_bets_by_type(self, *bet_types: typing.Type[Bet], **bet_attributes) -> bool:
@@ -575,7 +575,7 @@ class Player:
 
     def add_odds(self, bet_amount: float,
                  bet_types: typing.Iterable[AllowsOdds] = AllowsOdds,
-                 point: int = None):
+                 point: int = None) -> None:
         points: tuple[int] = (point, ) if point is not None else (4, 5, 6, 8, 9, 10)
         allows_odds_bets: list[AllowsOdds] = [x for x in self.bets_on_table if isinstance(x, AllowsOdds)]
         correct_bets: list[AllowsOdds] = [x for x in allows_odds_bets if isinstance(x, tuple(bet_types))]

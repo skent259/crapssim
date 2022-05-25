@@ -53,7 +53,7 @@ class OddsStrategy(Strategy):
         else:
             self.odds_multiplier = odds_multiplier
 
-    def update_bets(self, player: 'Player'):
+    def update_bets(self, player: 'Player') -> None:
         """Add an Odds bet to the given base_types in the amount determined by the odds_multiplier.
 
         Parameters
@@ -145,7 +145,7 @@ class BetPlace(Strategy):
         self.place_bet_amounts = place_bet_amounts
         self.skip_point = skip_point
 
-    def update_bets(self, player: 'Player'):
+    def update_bets(self, player: 'Player') -> None:
         """Add the place bets on the numbers and amounts defined by place_bet_amounts.
 
         Parameters
@@ -161,7 +161,7 @@ class BetPlace(Strategy):
             IfBetNotExist(Place.by_number(number, amount)).update_bets(player)
         self.remove_point_bet(player)
 
-    def remove_point_bet(self, player: "Player"):
+    def remove_point_bet(self, player: "Player") -> None:
         """If skip_point is true and the player has a place bet for the table point number,
         remove the Place bet.
 
@@ -414,7 +414,7 @@ class HammerLock(Strategy):
 
         self.place_win_count: int = 0
 
-    def after_roll(self, player: 'Player'):
+    def after_roll(self, player: 'Player') -> None:
         """Update the place_win_count based on how many Place bets are won. If table.point.status is
         On and the dice total is 7 (meaning the shooter sevens out) reset place_win_count to 0.
 
@@ -428,7 +428,7 @@ class HammerLock(Strategy):
         if player.table.point.status == 'On' and player.table.dice.total == 7:
             self.place_win_count = 0
 
-    def point_off(self, player):
+    def point_off(self, player) -> None:
         """If the point is Off add a PassLine and a DontPass bet if they don't already exist.
 
         Parameters
@@ -441,7 +441,7 @@ class HammerLock(Strategy):
                    IfBetNotExist(DontPass(self.base_amount))
         strategy.update_bets(player)
 
-    def place68(self, player):
+    def place68(self, player) -> None:
         """Place the 6 and 8 (regardless of the point) and then lay odds on DontPass bets.
 
         Parameters
@@ -454,7 +454,7 @@ class HammerLock(Strategy):
                         self.start_six_eight_amount,
                         skip_point=False).update_bets(player)
 
-    def place5689(self, player):
+    def place5689(self, player) -> None:
         """Place the 5, 6, 8 and 9.
 
         Parameters
@@ -468,7 +468,7 @@ class HammerLock(Strategy):
                   8: self.end_six_eight_amount,
                   9: self.five_nine_amount}, skip_point=False).update_bets(player)
 
-    def update_bets(self, player: 'Player'):
+    def update_bets(self, player: 'Player') -> None:
         """If the point is off bet the PassLine and DontPass line. If the point is on bet the
         Place6 and Place8 until one wins, then bet the Place 5, 6, 8, and 9. LayOdds whenever
         possible.
@@ -493,14 +493,14 @@ class Risk12(Strategy):
     """Strategy that makes a PassLine and Field bet before the point is established. Once the point
     is established, places either the 6 the 8, or both depending on if the player won enough
     pre-point to cover those bets."""
-    def __init__(self):
+    def __init__(self) -> None:
         """Pass line and field bet before the point is established. Once the point is established
         place the 6 and 8.
         """
         super().__init__()
         self.pre_point_winnings = 0
 
-    def after_roll(self, player: 'Player'):
+    def after_roll(self, player: 'Player') -> None:
         """Determine the pre-point winnings which is used to determine which bets to place when the
         point is on.
 
@@ -518,7 +518,7 @@ class Risk12(Strategy):
             self.pre_point_winnings = 0
 
     @staticmethod
-    def point_off(player: 'Player'):
+    def point_off(player: 'Player') -> None:
         """Place a 5 PassLine and Field bet.
 
         Parameters
@@ -572,7 +572,7 @@ class Knockout(AggregateStrategy):
     PassLineOdds({4: 3, 5: 4, 6: 5, 8: 5, 9: 4, 10: 3})
     """
 
-    def __init__(self, bet_amount: typing.SupportsFloat):
+    def __init__(self, bet_amount: typing.SupportsFloat) -> None:
         super().__init__(BetPassLine(bet_amount),
                          BetPointOff(DontPass(bet_amount)),
                          PassLineOdds({4: 3, 5: 4, 6: 5, 8: 5, 9: 4, 10: 3}))
@@ -581,7 +581,7 @@ class Knockout(AggregateStrategy):
 class FieldWinProgression(Strategy):
     """Strategy that every time a Field bet is won, moves to the next amount in the progression and
     places a Field bet for that amount."""
-    def __init__(self, progression: list[typing.SupportsFloat]):
+    def __init__(self, progression: list[typing.SupportsFloat]) -> None:
         """Creates the given the progression.
 
         Parameters
@@ -592,7 +592,7 @@ class FieldWinProgression(Strategy):
         self.progression = progression
         self.current_progression = 0
 
-    def after_roll(self, player: 'Player'):
+    def after_roll(self, player: 'Player') -> None:
         win = all(x for x in player.bets_on_table if x.get_status(player.table) == 'win')
 
         if win:
@@ -600,7 +600,7 @@ class FieldWinProgression(Strategy):
         else:
             self.current_progression = 0
 
-    def update_bets(self, player: 'Player'):
+    def update_bets(self, player: 'Player') -> None:
         if self.current_progression >= len(self.progression):
             bet_amount = self.progression[-1]
         else:
@@ -611,7 +611,7 @@ class FieldWinProgression(Strategy):
 class DiceDoctor(FieldWinProgression):
     """Field progression strategy with progressive increases and decreases. Equivalent to:
     FieldWinProgression([10, 20, 15, 30, 25, 50, 35, 70, 50, 100, 75, 150])"""
-    def __init__(self):
+    def __init__(self) -> None:
         """Field bet with a progression if you win of [10, 20, 15, 30, 25, 50, 35, 70, 50, 100, 75,
         150]
         """
@@ -622,7 +622,7 @@ class Place68CPR(Strategy):
     """Strategy that places the 6 and 8. If either of those bets win, the bet is pressed to 2 *
     the bet amount. If the bet is won again, it is reduced to the original bet amount."""
 
-    def __init__(self, bet_amount: float = 6):
+    def __init__(self, bet_amount: float = 6) -> None:
         """If point is on place the 6 & 8 of the bet_amount. If you win press the bet 2 . If you win
         again reduce the bet.
 
@@ -640,7 +640,7 @@ class Place68CPR(Strategy):
         self.six_winnings = 0
         self.eight_winnings = 0
 
-    def after_roll(self, player: 'Player'):
+    def after_roll(self, player: 'Player') -> None:
         """Get the winnings on the Place 6 and 8 bets to determine whether to press or regress.
 
         Parameters
@@ -655,7 +655,7 @@ class Place68CPR(Strategy):
         place_eight_win_amounts = [x.get_win_amount(player.table) for x in place_eight_bets]
         self.eight_winnings = sum(place_eight_win_amounts)
 
-    def ensure_bets_exist(self, player: 'Player'):
+    def ensure_bets_exist(self, player: 'Player') -> None:
         """Ensure that there is always a place 6 or place 8 bet if the point is On.
 
         Parameters
@@ -666,7 +666,7 @@ class Place68CPR(Strategy):
         for bet in (Place6(self.starting_amount), Place8(self.starting_amount)):
             BetPointOn(bet).update_bets(player)
 
-    def press(self, player: 'Player'):
+    def press(self, player: 'Player') -> None:
         """Double the bet amount of the place bets.
 
         Parameters
@@ -679,7 +679,7 @@ class Place68CPR(Strategy):
         if self.eight_winnings == self.win_one_amount:
             player.add_bet(Place8(self.starting_amount))
 
-    def update_bets(self, player: 'Player'):
+    def update_bets(self, player: 'Player') -> None:
         """Ensure that a Place6 and Place8 bet always exist for the player of base amount.
         Press the bet if you win and haven't pressed the bet yet.
 
@@ -696,7 +696,7 @@ class Place68DontCome2Odds(AggregateStrategy):
     """Strategy that adds a DontCome bet when the point is Off, places the 6 and 8 when the point
     is On and adds 2x Odds to the DontCome bet."""
     def __init__(self, six_eight_amount: float = 6,
-                 dont_come_amount: float = 5):
+                 dont_come_amount: float = 5) -> None:
         """Place the 6 and 8 along with a Don't Come bet with 2x odds.
 
         Parameters
