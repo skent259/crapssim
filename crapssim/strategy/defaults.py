@@ -43,7 +43,7 @@ class OddsStrategy(Strategy):
         base_type
             The bet that odds will be added to.
         odds_multiplier
-            If odds_multipler is an integer adds multiplier * base_bets amount to the odds.
+            If odds_multiplier is an integer adds multiplier * base_bets amount to the odds.
             If the odds multiplier is a dictionary of Integers looks at the dictionary to
             determine what odds multiplier to use depending on the given point.
         """
@@ -85,7 +85,7 @@ class PassLineOdds(OddsStrategy):
     """Strategy that adds an Odds bet to the PassLine bet. Equivalent to
     OddsStrategy(PassLine, odds)."""
     def __init__(self, odds: dict[int, int] | int | None = None):
-        """Add odds to PassLine bets with the multipler specified by the odds variable.
+        """Add odds to PassLine bets with the multiplier specified by the odds variable.
 
         Parameters
         ----------
@@ -227,7 +227,7 @@ class BetLayOdds(OddsStrategy):
     """Strategy that adds a LayOdds bet to the DontPass bet. Equivalent to
     OddsStrategy(DontPass, odds)"""
     def __init__(self, odds: dict[int, int] | int | None = None):
-        """Add odds to DontPass bets with the multipler specified by odds.
+        """Add odds to DontPass bets with the multiplier specified by odds.
 
         Parameters
         ----------
@@ -404,7 +404,7 @@ class HammerLock(Strategy):
         Parameters
         ----------
         base_amount
-            Base amount for PassLine and DontPass Bets, and Place5 and Place9 bets. Place6 and
+            the base amount for PassLine and DontPass Bets, and Place5 and Place9 bets. Place6 and
             Place8 starts at (6/5) * 2 * this amount and if it wins moves to (6 / 5) * this amount.
         """
         self.base_amount = base_amount

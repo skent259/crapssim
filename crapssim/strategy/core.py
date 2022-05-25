@@ -23,7 +23,7 @@ class Strategy(ABC):
          if you wanted to know whether the point changed from on to off you could
          do self.point_lost = table.point.status = "On" and table.dice.roll.total == 7.
          You couldn't do this in update_bets since the table has already been
-         updated with point.status = Off.
+         updated setting the point's status to Off.
 
         Parameters
         ----------
@@ -156,8 +156,8 @@ class BetPointOff(BetIfTrue):
         bet
             The bet to add if the point is Off.
         """
-        super().__init__(bet, lambda p: p.table.point.status == "Off"
-                                        and bet not in p.bets_on_table)
+        super().__init__(bet,
+                         lambda p: p.table.point.status == "Off" and bet not in p.bets_on_table)
 
     def __eq__(self, other):
         if isinstance(other, Strategy):
@@ -233,7 +233,7 @@ class PlaceBetAndMove(Strategy):
         self.bet_movements = bet_movements
 
     def check_bets_on_table(self, player: 'Player') -> list[AllowsOdds]:
-        """Returns any bets the player has on the table that are check bets.
+        """Returns any bets the player has on the table that are in check_bets.
 
         Parameters
         ----------
@@ -243,7 +243,7 @@ class PlaceBetAndMove(Strategy):
         Returns
         -------
         list[AllowsOdds]
-            A list of all of the check bets that are on the table.
+            A list of all the check bets that are on the table.
         """
         return [x for x in player.bets_on_table if x in self.check_bets]
 
@@ -258,7 +258,7 @@ class PlaceBetAndMove(Strategy):
         Returns
         -------
         list[int]
-            A list of points of bets that are check bets the player has on the table.
+            A list of points of bets that are check_bets the player has on the table.
         """
         check_numbers = []
         for bet in self.check_bets:
