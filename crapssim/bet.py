@@ -87,7 +87,7 @@ class Bet(ABC):
     def already_placed(self, player: "Player") -> bool:
         return player.has_bets_by_type(type(self))
 
-    def __eq__(self, other) -> bool:
+    def __eq__(self, other: object) -> bool:
         if isinstance(other, Bet):
             return isinstance(other, type(self)) and other.bet_amount == self.bet_amount
         else:
@@ -135,7 +135,7 @@ class StaticWinningLosingNumbersBet(WinningLosingNumbersBet):
     def get_losing_numbers(self, table: "Table") -> list[int]:
         return self.losing_numbers
 
-    def __eq__(self, other):
+    def __eq__(self, other: object) -> bool:
         if isinstance(other, Bet):
             return isinstance(other, type(self)) and \
                    self.winning_numbers == other.winning_numbers and \
@@ -304,7 +304,7 @@ class Come(AllowsOdds):
     def get_odds_bet(self, bet_amount: typing.SupportsFloat, table: "Table") -> "Odds":
         return Odds.by_number(self.point, bet_amount)
 
-    def __eq__(self, other) -> bool:
+    def __eq__(self, other: object) -> bool:
         if isinstance(other, Bet):
             return isinstance(other, type(self)) and \
                    other.bet_amount == self.bet_amount and \
@@ -468,7 +468,7 @@ class DontPass(AllowsOdds):
             return [7, 11]
         return [table.point.number]
 
-    def allowed(self, player) -> bool:
+    def allowed(self, player: "Player") -> bool:
         if player.table.point.status == 'Off':
             return True
         return False
@@ -507,7 +507,7 @@ class DontCome(AllowsOdds):
         else:
             self._status = super().get_status(table)
 
-    def allowed(self, player) -> bool:
+    def allowed(self, player: "Player") -> bool:
         if player.table.point.status == 'On':
             return True
         return False
@@ -518,13 +518,13 @@ class DontCome(AllowsOdds):
     def get_odds_bet(self, bet_amount: typing.SupportsFloat, table: "Table") -> "LayOdds":
         return LayOdds.by_number(self.point, bet_amount)
 
-    def __eq__(self, other):
+    def __eq__(self, other: object) -> bool:
         if isinstance(other, Bet):
             return isinstance(other, type(self)) and \
                    self.bet_amount == other.bet_amount and \
                    self.point == other.point
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f'{self.__class__.__name__}(bet_amount={self.bet_amount}, point={self.point})'
 
     def already_placed(self, player: "Player") -> bool:
@@ -658,7 +658,7 @@ class HardWay(StaticPayoutRatio, ABC):
             return "lose"
         return None
 
-    def __eq__(self, other) -> bool:
+    def __eq__(self, other: object) -> bool:
         if isinstance(other, Bet) and not isinstance(other, type(self)):
             return False
         elif isinstance(other, type(self)):
@@ -721,7 +721,7 @@ class Fire(Bet):
             self.points_made = self.points_made + [table.dice.total]
         self.current_point = None
 
-    def allowed(self, player) -> bool:
+    def allowed(self, player: "Player") -> bool:
         return player.table.new_shooter
 
     def get_payout_ratio(self, table: "Table") -> typing.SupportsFloat:

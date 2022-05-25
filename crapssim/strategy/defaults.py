@@ -185,7 +185,7 @@ class PassLinePlace68(AggregateStrategy):
                  pass_line_amount: float = 5,
                  six_amount: float = 6,
                  eight_amount: float = 6,
-                 skip_point=True):
+                 skip_point: bool = True):
         """Bet the PassLine and Place the 6 and the 8. Equivalent to:
         BetPassLine(pass_line_amount) +
         BetPlace({6: six_amount, 8: eight_amount}, skip_point=skip_point)
@@ -342,14 +342,14 @@ class Place682Come(AggregateStrategy):
             The amount of the Place5 and Place9 bets.
         """
 
-        def pass_line_key(player):
+        def pass_line_key(player: "Player") -> bool:
             return (player.table.point.status == 'Off' and
              any(isinstance(x, (Place6, Place8)) for x in player.bets_on_table) and
              player.count_bets(Place, PassLine, Come) < 4)
 
         pass_line_strategy = BetIfTrue(PassLine(pass_come_amount), pass_line_key)
 
-        def come_key(player):
+        def come_key(player: "Player") -> bool:
             come_count = len([b for b in player.bets_on_table if isinstance(b, Come)])
             place_passline_come_count = len(
                 [b for b in player.bets_on_table if isinstance(b, (PassLine, Come, Place))]
@@ -428,7 +428,7 @@ class HammerLock(Strategy):
         if player.table.point.status == 'On' and player.table.dice.total == 7:
             self.place_win_count = 0
 
-    def point_off(self, player) -> None:
+    def point_off(self, player: "Player") -> None:
         """If the point is Off add a PassLine and a DontPass bet if they don't already exist.
 
         Parameters
@@ -441,7 +441,7 @@ class HammerLock(Strategy):
                    IfBetNotExist(DontPass(self.base_amount))
         strategy.update_bets(player)
 
-    def place68(self, player) -> None:
+    def place68(self, player: "Player") -> None:
         """Place the 6 and 8 (regardless of the point) and then lay odds on DontPass bets.
 
         Parameters
@@ -454,7 +454,7 @@ class HammerLock(Strategy):
                         self.start_six_eight_amount,
                         skip_point=False).update_bets(player)
 
-    def place5689(self, player) -> None:
+    def place5689(self, player: "Player") -> None:
         """Place the 5, 6, 8 and 9.
 
         Parameters

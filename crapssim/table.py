@@ -212,7 +212,7 @@ class Table:
             print("Dice out!")
             print(f"Shooter rolled {self.dice.total} {self.dice.result}")
 
-    def fixed_roll(self, dice_outcome: typing.Iterable[int], verbose=False) -> None:
+    def fixed_roll(self, dice_outcome: typing.Iterable[int], verbose: bool = False) -> None:
         """
         Convenience method to roll the dice with two fixed numbers.
 
@@ -471,9 +471,11 @@ class Player:
         Sum of bet value for the player
     """
 
-    def __init__(self, table,
-                 bankroll: typing.SupportsFloat, bet_strategy: Strategy = BetPassLine(5),
-                 name: str = "Player", unit: typing.SupportsFloat = 5):
+    def __init__(self, table: Table,
+                 bankroll: typing.SupportsFloat,
+                 bet_strategy: Strategy = BetPassLine(5),
+                 name: str = "Player",
+                 unit: typing.SupportsFloat = 5):
         self.bankroll: float = bankroll
         self.bet_strategy: Strategy = bet_strategy
         self.strat_info: dict[str, typing.Any] = {}
@@ -508,7 +510,7 @@ class Player:
             self.bankroll += bet.bet_amount
             self.bets_on_table.remove(bet)
 
-    def get_bets(self, *bet_types: typing.Type[Bet], **bet_attributes) -> list[Bet]:
+    def get_bets(self, *bet_types: typing.Type[Bet], **bet_attributes: typing.Any) -> list[Bet]:
         if len(bet_types) == 0:
             bet_types = (Bet,)
         else:
@@ -524,17 +526,17 @@ class Player:
     def has_bet(self, bet: Bet) -> bool:
         return bet in self.bets_on_table
 
-    def has_bets_by_type(self, *bet_types: typing.Type[Bet], **bet_attributes) -> bool:
+    def has_bets_by_type(self, *bet_types: typing.Type[Bet], **bet_attributes: typing.Any) -> bool:
         """ returns True if bets_to_check and self.bets_on_table
         has at least one thing in common """
         return len(self.get_bets(*bet_types, **bet_attributes)) > 0
 
-    def get_bet(self, bet_type: typing.Type[Bet], **bet_attributes) -> Bet:
+    def get_bet(self, bet_type: typing.Type[Bet], **bet_attributes: typing.Any) -> Bet:
         """returns first betting object matching bet and bet_subname.
         If bet_subname="Any", returns first betting object matching bet"""
         return self.get_bets(bet_type, **bet_attributes)[0]
 
-    def count_bets(self, *bet_types: typing.Type[Bet], **bet_attributes) -> int:
+    def count_bets(self, *bet_types: typing.Type[Bet], **bet_attributes: typing.Any) -> int:
         """ returns the total number of bets in self.bets_on_table that match bets_to_check """
         return len(self.get_bets(*bet_types, **bet_attributes))
 
@@ -565,7 +567,7 @@ class Player:
             info[bet.name] = {"status": bet.get_status(self.table),
                               "win_amount": bet.get_win_amount(self.table)}
 
-    def print_bet_update(self, bet):
+    def print_bet_update(self, bet: Bet) -> None:
         status = bet.get_status(self.table)
         win_amount = bet.get_win_amount(self.table)
         if status == "win":

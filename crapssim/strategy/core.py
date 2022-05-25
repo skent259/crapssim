@@ -159,7 +159,7 @@ class BetPointOff(BetIfTrue):
         super().__init__(bet,
                          lambda p: p.table.point.status == "Off" and bet not in p.bets_on_table)
 
-    def __eq__(self, other):
+    def __eq__(self, other: object) -> bool:
         if isinstance(other, Strategy):
             return isinstance(other, BetPointOff) and self.bet == other.bet
         raise NotImplementedError
