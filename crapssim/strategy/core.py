@@ -292,7 +292,7 @@ class PlaceBetAndMove(Strategy):
         list[Place]
             A list of the bets that need to be moved to a different bet.
         """
-        return [x for x in self.bet_movements if x.winning_number in
+        return [x for x in self.bet_movements if x.winning_numbers[0] in
                 self.check_numbers(player) and x in player.bets_on_table]
 
     def move_bets(self, player: 'Player') -> None:
