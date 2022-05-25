@@ -1,6 +1,6 @@
 import pytest
 
-from crapssim.strategy import IronCross
+from crapssim.strategy.defaults import IronCross
 from crapssim.table import Table
 from crapssim.bet import PassLine, Odds4, Odds5, Odds6, Odds8, Odds9, Odds10, Place5, Place8, Field, Place6
 

@@ -1,6 +1,6 @@
 import pytest
 
-from crapssim.strategy import BetDontPass, BetLayOdds
+from crapssim.strategy.defaults import BetDontPass, BetLayOdds
 from crapssim.table import Table
 from crapssim.bet import DontPass, LayOdds5, LayOdds4, LayOdds6, LayOdds8, LayOdds9, LayOdds10
 

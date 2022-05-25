@@ -1,6 +1,6 @@
 import pytest
 
-from crapssim.strategy import HammerLock
+from crapssim.strategy.defaults import HammerLock
 from crapssim.table import Table
 from crapssim.bet import PassLine, DontPass, LayOdds4, LayOdds5, LayOdds6, LayOdds8, LayOdds9, LayOdds10,\
     Place6, Place8, Place5, Place9

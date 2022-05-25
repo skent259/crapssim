@@ -1,6 +1,6 @@
 from crapssim import Table, Dice
 from crapssim.bet import PassLine
-from crapssim.strategy import BetPassLine
+from crapssim.strategy.defaults import BetPassLine
 
 
 def test_default_strategy():

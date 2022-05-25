@@ -1,6 +1,6 @@
 import pytest
 
-from crapssim.strategy import DiceDoctor
+from crapssim.strategy.defaults import DiceDoctor
 from crapssim.table import Table
 from crapssim.bet import Field
 

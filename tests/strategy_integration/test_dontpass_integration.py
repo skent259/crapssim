@@ -1,6 +1,6 @@
 import pytest
 
-from crapssim.strategy import BetDontPass
+from crapssim.strategy.defaults import BetDontPass
 from crapssim.table import Table
 from crapssim.bet import DontPass
 
