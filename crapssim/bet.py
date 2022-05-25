@@ -25,7 +25,7 @@ class Bet(ABC):
         self.bet_amount: float = float(bet_amount)
 
     @abstractmethod
-    def get_payout_ratio(self, table: "Table") -> typing.SupportsFloat:
+    def get_payout_ratio(self, table: "Table") -> float:
         pass
 
     @property
@@ -51,7 +51,7 @@ class Bet(ABC):
         return True
 
     @abstractmethod
-    def get_status(self, table: "Table") -> str | bool:
+    def get_status(self, table: "Table") -> str | None:
         pass
 
     def get_win_amount(self, table: "Table") -> float:
@@ -141,6 +141,8 @@ class StaticWinningLosingNumbersBet(WinningLosingNumbersBet):
                    self.winning_numbers == other.winning_numbers and \
                    self.losing_numbers == other.losing_numbers and \
                    self.bet_amount == other.bet_amount
+        else:
+            raise NotImplementedError
 
 
 class SingleWinningNumberBet(StaticWinningLosingNumbersBet, ABC):
@@ -172,8 +174,8 @@ class StaticPayoutRatio(Bet, ABC):
     def payout_ratio(self) -> typing.SupportsFloat:
         pass
 
-    def get_payout_ratio(self, table: "Table") -> typing.SupportsFloat:
-        return self.payout_ratio
+    def get_payout_ratio(self, table: "Table") -> float:
+        return float(self.payout_ratio)
 
 
 """
@@ -184,7 +186,7 @@ Passline and Come bets
 class BaseOdds(SingleWinningNumberBet, SingleLosingNumberBet, StaticPayoutRatio, ABC):
     @property
     @abstractmethod
-    def base_bet_types(self) -> tuple[typing.Type[WinningLosingNumbersBet]]:
+    def base_bet_types(self) -> tuple[typing.Type["AllowsOdds"], ...]:
         pass
 
     @property
@@ -202,15 +204,17 @@ class BaseOdds(SingleWinningNumberBet, SingleLosingNumberBet, StaticPayoutRatio,
     def by_number(number: int, bet_amount: float) -> "BaseOdds":
         pass
 
-    def get_base_bets(self, player: "Player") -> list[WinningLosingNumbersBet]:
-        base_bets = [x for x in player.bets_on_table if isinstance(x, self.base_bet_types)
-                     and x.get_winning_numbers(player.table) == self.winning_numbers]
+    def get_base_bets(self, player: "Player") -> list["AllowsOdds"]:
+        allows_odds_bets = [x for x in player.bets_on_table if isinstance(x, AllowsOdds)]
+        bets_of_type = [x for x in allows_odds_bets if isinstance(x, tuple(self.base_bet_types))]
+        base_bets = [x for x in bets_of_type
+                     if x.get_winning_numbers(player.table) == self.winning_numbers]
         return base_bets
 
     def get_max_odds(self, table: "Table") -> int:
         return table.settings[self.table_odds_setting][self.key_number]
 
-    def get_max_bet(self, player: "Player") -> typing.SupportsFloat:
+    def get_max_bet(self, player: "Player") -> float:
         base_bet_amount = sum(x.bet_amount for x in self.get_base_bets(player))
         max_odds = self.get_max_odds(player.table)
         return base_bet_amount * max_odds
@@ -232,7 +236,10 @@ class AllowsOdds(WinningLosingNumbersBet, StaticPayoutRatio, ABC):
 
 class PassLine(AllowsOdds):
     def get_odds_bet(self, bet_amount: typing.SupportsFloat, table: "Table") -> "Odds":
-        return Odds.by_number(table.point.number, bet_amount)
+        if table.point.number is not None:
+            return Odds.by_number(table.point.number, bet_amount)
+        else:
+            raise ValueError
 
     def get_winning_numbers(self, table: "Table") -> list[int]:
         if table.point.number is None:
@@ -267,7 +274,7 @@ class Come(AllowsOdds):
     def __init__(self, bet_amount: typing.SupportsFloat, point: int | None = None):
         super().__init__(bet_amount)
         self.point = point
-        self._status = None
+        self._status: str | None = None
 
     def get_winning_numbers(self, table: "Table") -> list[int]:
         if self.point is None:
@@ -302,13 +309,18 @@ class Come(AllowsOdds):
         return player.has_bets_by_type(type(self), point=self.point)
 
     def get_odds_bet(self, bet_amount: typing.SupportsFloat, table: "Table") -> "Odds":
-        return Odds.by_number(self.point, bet_amount)
+        if self.point is not None:
+            return Odds.by_number(self.point, bet_amount)
+        else:
+            raise ValueError
 
     def __eq__(self, other: object) -> bool:
         if isinstance(other, Bet):
             return isinstance(other, type(self)) and \
                    other.bet_amount == self.bet_amount and \
                    other.point == self.point
+        else:
+            raise NotImplementedError
 
     def __repr__(self) -> str:
         return f'{self.__class__.__name__}(bet_amount={self.bet_amount}, point={self.point})'
@@ -322,16 +334,16 @@ Passline/Come bet odds
 
 
 class Odds(BaseOdds, ABC):
-    base_bet_types: tuple[typing.Type[WinningLosingNumbersBet]] = (PassLine, Come)
-    table_odds_setting: str = 'max_odds'
-    losing_number: list[int] = 7
+    base_bet_types = (PassLine, Come)
+    table_odds_setting = 'max_odds'
+    losing_number = 7
 
     @property
     def key_number(self) -> int:
         return self.winning_number
 
     @staticmethod
-    def by_number(number: int, bet_amount: float) -> "Odds":
+    def by_number(number: int, bet_amount: typing.SupportsFloat) -> "Odds":
         return {4: Odds4, 5: Odds5, 6: Odds6, 8: Odds8, 9: Odds9, 10: Odds10}[number](bet_amount)
 
 
@@ -442,10 +454,10 @@ class OneRollBet(StaticWinningLosingNumbersBet, ABC):
 
 
 class Field(OneRollBet):
-    def get_payout_ratio(self, table: "Table") -> typing.SupportsFloat:
+    def get_payout_ratio(self, table: "Table") -> float:
         if table.dice.total in table.settings['field_payouts']:
-            return table.settings['field_payouts'][table.dice.total]
-        return 0
+            return float(table.settings['field_payouts'][table.dice.total])
+        return 0.0
 
     @property
     def winning_numbers(self) -> list[int]:
@@ -626,11 +638,11 @@ class AnyCraps(OneRollBet, WinningLosingNumbersBet, StaticPayoutRatio):
 class CAndE(OneRollBet, WinningLosingNumbersBet):
     winning_numbers: list[int] = [2, 3, 11, 12]
 
-    def get_payout_ratio(self, table: "Table") -> typing.SupportsFloat:
+    def get_payout_ratio(self, table: "Table") -> float:
         if table.dice.total in [2, 3, 12]:
-            return 3
+            return 3.0
         elif table.dice.total in [11]:
-            return 7
+            return 7.0
         else:
             raise NotImplementedError
 
@@ -648,8 +660,8 @@ class HardWay(StaticPayoutRatio, ABC):
     def winning_result(self) -> list[int]:
         return [self.number / 2, self.number / 2]
 
-    def get_payout_ratio(self, table: "Table") -> typing.SupportsFloat:
-        return self.payout_ratio
+    def get_payout_ratio(self, table: "Table") -> float:
+        return float(self.payout_ratio)
 
     def get_status(self, table: "Table") -> str | None:
         if table.dice.result == self.winning_result:
@@ -724,9 +736,9 @@ class Fire(Bet):
     def allowed(self, player: "Player") -> bool:
         return player.table.new_shooter
 
-    def get_payout_ratio(self, table: "Table") -> typing.SupportsFloat:
+    def get_payout_ratio(self, table: "Table") -> float:
         if len(self.points_made) in table.settings['fire_points']:
-            return table.settings['fire_points'][len(self.points_made)]
+            return float(table.settings['fire_points'][len(self.points_made)])
         else:
             raise NotImplementedError
 
