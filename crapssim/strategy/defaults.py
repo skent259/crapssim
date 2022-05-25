@@ -1,3 +1,7 @@
+"""The strategies included in this module are completed strategies that are runnable by the player
+in order to do the intended """
+
+
 import typing
 
 from crapssim.bet import PassLine, AllowsOdds, DontPass, Come, DontCome, Place, Place6, Place8, \

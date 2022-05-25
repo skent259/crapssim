@@ -1,3 +1,7 @@
+"""Core strategies are strategies that can be either subclassed, or initialized to create other
+strategies with the intended usage. Each of the strategies included in this package are intended
+to be used as building blocks when creating strategies."""
+
 import copy
 import typing
 from abc import ABC, abstractmethod
