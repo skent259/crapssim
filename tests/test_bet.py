@@ -852,44 +852,6 @@ def test_cant_instantiate_bet_object():
         Bet(400)
 
 
-@pytest.mark.parametrize('bet, ratio', [
-    (PassLine, 1),
-    (Come, 1),
-    (DontPass, 1),
-    (DontCome, 1),
-    (Odds4, 2 / 1),
-    (Odds5, 3 / 2),
-    (Odds6, 6 / 5),
-    (Odds8, 6 / 5),
-    (Odds9, 3 / 2),
-    (Odds10, 2 / 1),
-    (Place4, 9 / 5),
-    (Place5, 7 / 5),
-    (Place6, 7 / 6),
-    (Place8, 7 / 6),
-    (Place9, 7 / 5),
-    (Place10, 9 / 5),
-    (LayOdds4, 1 / 2),
-    (LayOdds5, 2 / 3),
-    (LayOdds6, 5 / 6),
-    (LayOdds8, 5 / 6),
-    (LayOdds9, 2 / 3),
-    (LayOdds10, 1 / 2),
-    (Any7, 4),
-    (Two, 30),
-    (Three, 15),
-    (Yo, 15),
-    (Boxcars, 30),
-    (AnyCraps, 7),
-    (Hard4, 7),
-    (Hard6, 9),
-    (Hard8, 9),
-    (Hard10, 7)
-])
-def test_get_static_payout_ratio(bet, ratio):
-    assert bet.payout_ratio == ratio
-
-
 def test_get_cande_dice_2_payout_ratio():
     table = Table()
     table.dice.fixed_roll((1, 1))

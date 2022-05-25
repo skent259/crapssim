@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 
 if typing.TYPE_CHECKING:
     from crapssim.table import Table
-    from crapssim import Player
+    from crapssim import Player, Table
 
 
 class Bet(ABC):
@@ -145,22 +145,12 @@ class StaticWinningLosingNumbersBet(WinningLosingNumbersBet):
             raise NotImplementedError
 
 
-class StaticPayoutRatio(Bet, ABC):
-    @property
-    @abstractmethod
-    def payout_ratio(self) -> typing.SupportsFloat:
-        pass
-
-    def get_payout_ratio(self, table: "Table") -> float:
-        return float(self.payout_ratio)
-
-
 """
 Passline and Come bets
 """
 
 
-class BaseOdds(StaticWinningLosingNumbersBet, StaticPayoutRatio, ABC):
+class BaseOdds(StaticWinningLosingNumbersBet, ABC):
     @property
     @abstractmethod
     def base_bet_types(self) -> tuple[typing.Type["AllowsOdds"], ...]:
@@ -202,13 +192,22 @@ class BaseOdds(StaticWinningLosingNumbersBet, StaticPayoutRatio, ABC):
     def __hash__(self) -> int:
         return hash((type(self), self.bet_amount))
 
+    @property
+    @abstractmethod
+    def payout_ratio(self) -> typing.SupportsFloat:
+        pass
 
-class AllowsOdds(WinningLosingNumbersBet, StaticPayoutRatio, ABC):
-    payout_ratio: float = 1.0
+    def get_payout_ratio(self, table: "Table") -> float:
+        return float(self.payout_ratio)
 
+
+class AllowsOdds(WinningLosingNumbersBet, ABC):
     @abstractmethod
     def get_odds_bet(self, bet_amount: typing.SupportsFloat, table: "Table") -> BaseOdds:
         pass
+
+    def get_payout_ratio(self, table: "Table") -> float:
+        return 1.0
 
 
 class PassLine(AllowsOdds):
@@ -359,7 +358,7 @@ Place Bets on 4,5,6,8,9,10
 """
 
 
-class Place(StaticWinningLosingNumbersBet, StaticPayoutRatio, ABC):
+class Place(StaticWinningLosingNumbersBet, ABC):
     losing_numbers: int = [7]
 
     def update(self, table: "Table") -> None:
@@ -376,6 +375,14 @@ class Place(StaticWinningLosingNumbersBet, StaticPayoutRatio, ABC):
                     9: Place9,
                     10: Place10}[number]
         return bet_type(bet_amount)
+
+    @property
+    @abstractmethod
+    def payout_ratio(self) -> float:
+        pass
+
+    def get_payout_ratio(self, table: "Table") -> float:
+        return self.payout_ratio
 
     def __hash__(self) -> int:
         return hash((type(self), self.bet_amount))
@@ -417,7 +424,8 @@ Field bet
 
 
 class OneRollBet(StaticWinningLosingNumbersBet, ABC):
-    """WinningLosingNumbersBet where if the number isn't in the winning_numbers, it is in the losing_numbers."""
+    """WinningLosingNumbersBet where if the number isn't in the winning_numbers,
+    it is in the losing_numbers."""
     @property
     def losing_numbers(self) -> list[int]:
         return [x for x in [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12] if x not in self.winning_numbers]
@@ -578,37 +586,47 @@ Center-table Bets
 """
 
 
-class Any7(OneRollBet, StaticPayoutRatio):
+class StaticPayoutOneRollBet(OneRollBet):
+    @property
+    @abstractmethod
+    def payout_ratio(self):
+        pass
+
+    def get_payout_ratio(self, table: "Table") -> float:
+        return self.payout_ratio
+
+
+class Any7(StaticPayoutOneRollBet):
     payout_ratio: int = 4
     winning_numbers: int = [7]
 
 
-class Two(OneRollBet, StaticPayoutRatio):
+class Two(StaticPayoutOneRollBet):
     payout_ratio: int = 30
     winning_numbers: int = [2]
 
 
-class Three(OneRollBet, StaticPayoutRatio):
+class Three(StaticPayoutOneRollBet):
     payout_ratio: int = 15
     winning_numbers: int = [3]
 
 
-class Yo(OneRollBet, StaticPayoutRatio):
+class Yo(StaticPayoutOneRollBet):
     payout_ratio: int = 15
     winning_numbers: int = [11]
 
 
-class Boxcars(OneRollBet, StaticPayoutRatio):
+class Boxcars(StaticPayoutOneRollBet):
     payout_ratio: int = 30
     winning_numbers: int = [12]
 
 
-class AnyCraps(OneRollBet, StaticPayoutRatio):
+class AnyCraps(StaticPayoutOneRollBet):
     payout_ratio: int = 7
     winning_numbers: list[int] = [2, 3, 12]
 
 
-class CAndE(OneRollBet, WinningLosingNumbersBet):
+class CAndE(OneRollBet):
     winning_numbers: list[int] = [2, 3, 11, 12]
 
     def get_payout_ratio(self, table: "Table") -> float:
@@ -620,7 +638,7 @@ class CAndE(OneRollBet, WinningLosingNumbersBet):
             raise NotImplementedError
 
 
-class HardWay(StaticPayoutRatio, ABC):
+class HardWay(Bet, ABC):
     def __init__(self, bet_amount: float) -> None:
         super().__init__(bet_amount)
 
@@ -651,6 +669,19 @@ class HardWay(StaticPayoutRatio, ABC):
 
     def __hash__(self) -> int:
         return hash((type(self), self.number, self.bet_amount))
+
+
+def _hard_way_type_factory(number: int, payout_ratio: typing.SupportsFloat):
+    __annotations__ = {'payout_ratio': int, 'number': int}
+    __doc__ = f"""A HardWay bet on the number {number} with a payout ratio of {payout_ratio}.
+    For this HardWay bet to win the dice have to both land on {number / 2}. The player loses 
+    if the dice land on {number} with anything other than {number / 2} or if the dice land on 
+    7."""
+    attributes = {'payout_ratio': payout_ratio,
+                  'number': number,
+                  '__doc__': __doc__,
+                  '__annotations__': __annotations__}
+    return type(f'Hard{number}', (HardWay, ), attributes)
 
 
 class Hard4(HardWay):
