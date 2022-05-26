@@ -567,7 +567,6 @@ class Player:
             self.bet_strategy.update_bets(self)
 
     def update_bet(self, verbose: bool = False) -> None:
-        info = {}
         for bet in self.bets_on_table[:]:
             bet.update(self.table)
 
@@ -578,9 +577,6 @@ class Player:
 
             if bet.should_remove(self.table):
                 self.bets_on_table.remove(bet)
-
-            info[bet.name] = {"status": bet.get_status(self.table),
-                              "win_amount": bet.get_win_amount(self.table)}
 
     def print_bet_update(self, bet: Bet) -> None:
         status = bet.get_status(self.table)
