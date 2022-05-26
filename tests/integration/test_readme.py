@@ -9,7 +9,7 @@ def test_first_chunk():
                  crapssim.strategy.defaults.PassLineOdds(2)
 
     table.add_player(strategy=your_strat)
-    table.run(max_rolls=20, verbose=True)
+    table.run(max_rolls=20, verbose=False)
 
 
 def test_second_chunk():
