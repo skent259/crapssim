@@ -725,8 +725,8 @@ class Place68CPR(Strategy):
         self.win_one_amount = bet_amount * (7 / 6)
         self.win_two_amount = bet_amount * 2 * (7 / 6)
 
-        self.six_winnings = 0
-        self.eight_winnings = 0
+        self.six_winnings = 0.0
+        self.eight_winnings = 0.0
 
     def after_roll(self, player: 'Player') -> None:
         """Get the winnings on the Place 6 and 8 bets to determine whether to press or regress.

@@ -235,7 +235,8 @@ class Table:
             print("Dice out!")
             print(f"Shooter rolled {self.dice.total} {self.dice.result}")
 
-    def should_keep_rolling(self, max_rolls: int, max_shooter: int, runout: bool) -> bool:
+    def should_keep_rolling(self, max_rolls: float | int, max_shooter: float | int,
+                            runout: bool) -> bool:
         """
         Determines whether the program should keep running or not.
 
@@ -400,29 +401,41 @@ class Point:
             raise NotImplementedError
 
     def __gt__(self, other: object) -> bool:
+        if self.number is None:
+            raise NotImplementedError
         if isinstance(other, str):
             return self.number > int(other)
         elif isinstance(other, int):
             return self.number > other
         elif isinstance(other, Point):
+            if other.number is None:
+                raise NotImplementedError
             return self.number > other.number
         else:
             raise NotImplementedError
 
     def __lt__(self, other: object) -> bool:
+        if self.number is None:
+            raise NotImplementedError
         if isinstance(other, str):
             return self.number < int(other)
         elif isinstance(other, int):
             return self.number < other
         elif isinstance(other, Point):
+            if other.number is None:
+                raise NotImplementedError
             return self.number < other.number
         else:
             raise NotImplementedError
 
     def __ge__(self, other: object) -> bool:
+        if self.number is None:
+            raise NotImplementedError
         return self.__eq__(other) or self.__gt__(other)
 
     def __le__(self, other: object) -> bool:
+        if self.number is None:
+            raise NotImplementedError
         return self.__eq__(other) or self.__lt__(other)
 
     def update(self, dice_object: Dice) -> None:
@@ -478,11 +491,11 @@ class Player:
                  bet_strategy: Strategy = BetPassLine(5),
                  name: str = "Player",
                  unit: typing.SupportsFloat = 5):
-        self.bankroll: float = bankroll
+        self.bankroll: float = float(bankroll)
         self.bet_strategy: Strategy = bet_strategy
         self.strat_info: dict[str, typing.Any] = {}
         self.name: str = name
-        self.unit: typing.SupportsFloat = unit
+        self.unit: float = float(unit)
         self.bets_on_table: list[Bet] = []
         self._table: Table = table
 
@@ -500,7 +513,7 @@ class Player:
             existing_bet.bet_amount += bet.bet_amount
             self.bankroll -= bet.bet_amount
             if not existing_bet.allowed(player=self):
-                existing_bet -= bet.bet_amount
+                existing_bet.bet_amount -= bet.bet_amount
                 self.bankroll += bet.bet_amount
         else:
             if bet.allowed(player=self):
