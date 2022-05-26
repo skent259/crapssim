@@ -3,6 +3,7 @@ strategies with the intended usage. Each of the strategies included in this pack
 to be used as building blocks when creating strategies."""
 
 import copy
+import inspect
 import typing
 from abc import ABC, abstractmethod
 
@@ -46,6 +47,9 @@ class Strategy(ABC):
             return self.__class__ == other.__class__
         return NotImplemented
 
+    def __repr__(self):
+        return f'{self.__class__.__name__}()'
+
 
 class AggregateStrategy(Strategy):
     """A combination of multiple strategies."""
@@ -65,6 +69,10 @@ class AggregateStrategy(Strategy):
         for strategy in self.strategies:
             strategy.update_bets(player)
             count += 1
+
+    def __repr__(self):
+        repr_strategies = [repr(x) for x in self.strategies]
+        return f'{" + ".join(repr_strategies)}'
 
 
 class BetIfTrue(Strategy):
@@ -97,6 +105,10 @@ class BetIfTrue(Strategy):
         if self.key(player):
             player.add_bet(copy.copy(self.bet))
 
+    def __repr__(self):
+        return f'{self.__class__.__name__}(bet={self.bet}, ' \
+               f'key={self.key})'
+
 
 class RemoveIfTrue(Strategy):
     """Strategy that removes all bets that are True for a given key. The key takes the Bet and the
@@ -127,6 +139,9 @@ class RemoveIfTrue(Strategy):
                 new_bets.append(bet)
         player.bets_on_table = new_bets
 
+    def __repr__(self):
+        return f'{self.__class__.__name__}(key={inspect.getsource(self.key)})'
+
 
 class IfBetNotExist(BetIfTrue):
     """Strategy that adds a bet if it isn't on the table for that player. Equivalent of
@@ -141,6 +156,9 @@ class IfBetNotExist(BetIfTrue):
             The bet to add if it isn't already on the table.
         """
         super().__init__(bet, lambda p: bet not in p.bets_on_table)
+
+    def __repr__(self):
+        return f'{self.__class__.__name__}(bet={self.bet})'
 
 
 class BetPointOff(BetIfTrue):
@@ -164,6 +182,9 @@ class BetPointOff(BetIfTrue):
             return isinstance(other, BetPointOff) and self.bet == other.bet
         raise NotImplementedError
 
+    def __repr__(self):
+        return f'{self.__class__.__name__}(bet={self.bet})'
+
 
 class BetPointOn(BetIfTrue):
     """Strategy that adds a bet if the table point is On, and the Player doesn't have a bet on the
@@ -178,6 +199,9 @@ class BetPointOn(BetIfTrue):
             The bet to add if the point is On.
         """
         super().__init__(bet, lambda p: p.table.point.status == "On" and bet not in p.bets_on_table)
+
+    def __repr__(self):
+        return f'{self.__class__.__name__}(bet={self.bet})'
 
 
 class CountStrategy(BetIfTrue):
@@ -204,6 +228,9 @@ class CountStrategy(BetIfTrue):
             bets_of_type_count = len(bets_of_type)
             return bets_of_type_count < self.count and bet not in player.bets_on_table
         super().__init__(bet, key=key)
+
+    def __repr__(self):
+        return f'{self.__class__.__name__}(bet={self.bet})'
 
 
 class PlaceBetAndMove(Strategy):
@@ -322,3 +349,7 @@ class PlaceBetAndMove(Strategy):
         """
         self.place_starting_bets(player)
         self.move_bets(player)
+
+    def __repr__(self):
+        return f'{self.__class__.__name__}(starting_bets={self.starting_bets}, ' \
+               f'check_bets={self.check_bets}, bet_movements={self.bet_movements})'
