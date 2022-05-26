@@ -16,7 +16,7 @@ if typing.TYPE_CHECKING:
 class BetPassLine(BetPointOff):
     """Strategy that adds a PassLine bet if the point is Off and the player doesn't have a PassLine
     bet already on the table. Equivalent to BetPointOff(PassLine(bet_amount))."""
-    def __init__(self, bet_amount: float):
+    def __init__(self, bet_amount: typing.SupportsFloat):
         """Adds a PassLine bet for the given bet_amount if the point is Off and the player doesn't
         have a PassLine bet for that amount already on the table.
 
@@ -25,17 +25,17 @@ class BetPassLine(BetPointOff):
         bet_amount
             The amount of the PassLine bet.
         """
-        self.bet_amount = bet_amount
+        self.bet_amount: float = float(bet_amount)
         super().__init__(PassLine(bet_amount))
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f'{self.__class__.__name__}(bet_amount={self.bet_amount})'
 
 
 class OddsStrategy(Strategy):
     """Strategy that takes an AllowsOdds object and places Odds on it given either a multiplier,
     or a dictionary of points and multipliers."""
-    def __init__(self, base_type: PassLine | DontPass | Come | DontCome,
+    def __init__(self, base_type: typing.Type[PassLine | DontPass | Come | DontCome],
                  odds_multiplier: dict[int, int] | int):
         """Takes an AllowsOdds item (ex. PassLine, Come, DontPass) and adds a BaseOdds bet
         (either Odds or LayOdds) based on the odds_multiplier given.
@@ -82,16 +82,16 @@ class OddsStrategy(Strategy):
                 odds_bet = bet.get_odds_bet(amount, player.table)
                 IfBetNotExist(odds_bet).update_bets(player)
 
-    def get_odds_multiplier_repr(self):
+    def get_odds_multiplier_repr(self) -> int | dict[int, int]:
         """If the odds_multiplier has multiple values return a dictionary with the values,
         if all the multipliers are the same return an integer of the multiplier."""
         if all([x == self.odds_multiplier[4] for x in self.odds_multiplier.values()]):
-            odds_multiplier = self.odds_multiplier[4]
+            odds_multiplier: int | dict[int, int] = self.odds_multiplier[4]
         else:
             odds_multiplier = self.odds_multiplier
         return odds_multiplier
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f'{self.__class__.__name__}(base_type={self.base_type}, ' \
                f'odds_multiplier={self.get_odds_multiplier_repr()})'
 
@@ -113,7 +113,7 @@ class PassLineOdds(OddsStrategy):
             odds_multiplier = {4: 3, 5: 4, 6: 5, 8: 5, 9: 4, 10: 3}
         super().__init__(PassLine, odds_multiplier)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f'{self.__class__.__name__}(odds_multiplier={self.get_odds_multiplier_repr()})'
 
 
@@ -146,7 +146,7 @@ class Pass2Come(AggregateStrategy):
         self.bet_amount = bet_amount
         super().__init__(BetPassLine(bet_amount), TwoCome(bet_amount))
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f'{self.__class__.__name__}(bet_amount={self.bet_amount})'
 
 
@@ -201,7 +201,7 @@ class BetPlace(Strategy):
             if bet in player.bets_on_table:
                 player.remove_bet(bet)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f'{self.__class__.__name__}(place_bet_amounts={self.place_bet_amounts},' \
                f' skip_point={self.skip_point})'
 
@@ -238,7 +238,7 @@ class PassLinePlace68(AggregateStrategy):
         six_eight_strategy = BetPlace({6: six_amount, 8: eight_amount}, skip_point=skip_point)
         super().__init__(pass_line_strategy, six_eight_strategy)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f'{self.__class__.__name__}(pass_line_amount={self.pass_line_amount}, ' \
                f'six_amount={self.six_amount}, eight_amount={self.eight_amount}, ' \
                f'skip_point={self.skip_point})'
@@ -260,7 +260,7 @@ class BetDontPass(BetPointOff):
         self.bet_amount = bet_amount
         super().__init__(DontPass(bet_amount))
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f'{self.__class__.__name__}(bet_amount={self.bet_amount})'
 
 
@@ -281,7 +281,7 @@ class BetLayOdds(OddsStrategy):
             odds_multiplier = 6
         super().__init__(DontPass, odds_multiplier)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f'{self.__class__.__name__}(odds_multiplier={self.get_odds_multiplier_repr()})'
 
 
@@ -339,7 +339,7 @@ class Place68Move59(PlaceBetAndMove):
                                         Place5(five_nine_amount): Place9(five_nine_amount),
                                         Place9(five_nine_amount): None})
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f'{self.__class__.__name__}(pass_come_amount={self.pass_come_amount}, ' \
                f'six_eight_amount={self.six_eight_amount}, ' \
                f'five_nine_amount={self.five_nine_amount})'
@@ -376,7 +376,7 @@ class PassLinePlace68Move59(AggregateStrategy):
                                                     five_nine_amount)
         super().__init__(pass_line_strategy, place_bet_and_move_strategy)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f'{self.__class__.__name__}(pass_line_amount={self.pass_line_amount}, ' \
                f'six_eight_amount={self.six_eight_amount}, ' \
                f'five_nine_amount={self.five_nine_amount})'
@@ -427,7 +427,7 @@ class Place682Come(AggregateStrategy):
                                        five_nine_amount=five_nine_amount)
         super().__init__(pass_line_strategy, come_strategy, place_strategy)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f'{self.__class__.__name__}(pass_come_amount={self.pass_come_amount}, ' \
                f'six_eight_amount={self.six_eight_amount}, ' \
                f'five_nine_amount={self.five_nine_amount})'
@@ -460,7 +460,7 @@ class IronCross(AggregateStrategy):
                          BetPointOn(Field(base_amount)))
 
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f'{self.__class__.__name__}(base_amount={self.base_amount})'
 
 
@@ -562,7 +562,7 @@ class HammerLock(Strategy):
             RemoveIfTrue(lambda b, p: isinstance(b, Place)).update_bets(player)
         BetLayOdds(self.odds_multiplier).update_bets(player)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f'{self.__class__.__name__}(base_amount={self.base_amount})'
 
 
@@ -575,7 +575,7 @@ class Risk12(Strategy):
         place the 6 and 8.
         """
         super().__init__()
-        self.pre_point_winnings = 0
+        self.pre_point_winnings: float = 0.0
 
     def after_roll(self, player: 'Player') -> None:
         """Determine the pre-point winnings which is used to determine which bets to place when the
@@ -655,7 +655,7 @@ class Knockout(AggregateStrategy):
                          BetPointOff(DontPass(bet_amount)),
                          PassLineOdds({4: 3, 5: 4, 6: 5, 8: 5, 9: 4, 10: 3}))
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f'{self.__class__.__name__}(bet_amount={self.bet_amount})'
 
 
@@ -686,9 +686,9 @@ class FieldWinProgression(Strategy):
             bet_amount = self.progression[-1]
         else:
             bet_amount = self.progression[self.current_progression]
-        IfBetNotExist(player.add_bet(Field(bet_amount)))
+        IfBetNotExist(Field(bet_amount)).update_bets(player)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f'{self.__class__.__name__}(progression={self.progression})'
 
 
@@ -701,7 +701,7 @@ class DiceDoctor(FieldWinProgression):
         """
         super().__init__([10, 20, 15, 30, 25, 50, 35, 70, 50, 100, 75, 150])
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f'{self.__class__.__name__}()'
 
 
@@ -779,7 +779,7 @@ class Place68CPR(Strategy):
         self.ensure_bets_exist(player)
         self.press(player)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f'{self.__class__.__name__}(bet_amount={self.bet_amount})'
 
 
@@ -805,6 +805,6 @@ class Place68DontCome2Odds(AggregateStrategy):
                                                      for x in p.bets_on_table)),
                          OddsStrategy(DontCome, 2))
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f'{self.__class__.__name__}(six_eight_amount={self.six_eight_amount}, ' \
                f'dont_come_amount={self.dont_come_amount})'

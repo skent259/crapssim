@@ -47,7 +47,7 @@ class Strategy(ABC):
             return self.__class__ == other.__class__
         return NotImplemented
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f'{self.__class__.__name__}()'
 
 
@@ -70,7 +70,7 @@ class AggregateStrategy(Strategy):
             strategy.update_bets(player)
             count += 1
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         repr_strategies = [repr(x) for x in self.strategies]
         return f'{" + ".join(repr_strategies)}'
 
@@ -105,7 +105,7 @@ class BetIfTrue(Strategy):
         if self.key(player):
             player.add_bet(copy.copy(self.bet))
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f'{self.__class__.__name__}(bet={self.bet}, ' \
                f'key={self.key})'
 
@@ -139,7 +139,7 @@ class RemoveIfTrue(Strategy):
                 new_bets.append(bet)
         player.bets_on_table = new_bets
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f'{self.__class__.__name__}(key={inspect.getsource(self.key)})'
 
 
@@ -157,7 +157,7 @@ class IfBetNotExist(BetIfTrue):
         """
         super().__init__(bet, lambda p: bet not in p.bets_on_table)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f'{self.__class__.__name__}(bet={self.bet})'
 
 
@@ -182,7 +182,7 @@ class BetPointOff(BetIfTrue):
             return isinstance(other, BetPointOff) and self.bet == other.bet
         raise NotImplementedError
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f'{self.__class__.__name__}(bet={self.bet})'
 
 
@@ -200,7 +200,7 @@ class BetPointOn(BetIfTrue):
         """
         super().__init__(bet, lambda p: p.table.point.status == "On" and bet not in p.bets_on_table)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f'{self.__class__.__name__}(bet={self.bet})'
 
 
@@ -223,13 +223,13 @@ class CountStrategy(BetIfTrue):
         self.bet_types = bet_types
         self.count = count
 
-        def key(player: "Player") -> typing.Callable[["Player"], bool]:
+        def key(player: "Player") -> bool:
             bets_of_type = [x for x in player.bets_on_table if isinstance(x, tuple(self.bet_types))]
             bets_of_type_count = len(bets_of_type)
             return bets_of_type_count < self.count and bet not in player.bets_on_table
         super().__init__(bet, key=key)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f'{self.__class__.__name__}(bet={self.bet})'
 
 
@@ -237,7 +237,7 @@ class PlaceBetAndMove(Strategy):
     """Strategy that makes Place bets and then moves the bet to other Places if an AllowsOdds bet
     gets moved to a bet with the same number."""
     def __init__(self, starting_bets: list[Place],
-                 check_bets: list[PassLine, DontPass, Come, DontCome],
+                 check_bets: list[PassLine | DontPass | Come | DontCome],
                  bet_movements: dict[Place, Place | None]):
         """Makes the starting place bets in starting_bets and then if one of the check_bets gets
         moved to the same point as one of the place bets, the bet gets moved to a different bet
@@ -259,7 +259,7 @@ class PlaceBetAndMove(Strategy):
         self.check_bets = check_bets
         self.bet_movements = bet_movements
 
-    def check_bets_on_table(self, player: 'Player') -> list[PassLine, DontPass, Come, DontCome]:
+    def check_bets_on_table(self, player: 'Player') -> list[PassLine | DontPass | Come | DontCome]:
         """Returns any bets the player has on the table that are in check_bets.
 
         Parameters
@@ -351,6 +351,6 @@ class PlaceBetAndMove(Strategy):
         self.place_starting_bets(player)
         self.move_bets(player)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f'{self.__class__.__name__}(starting_bets={self.starting_bets}, ' \
                f'check_bets={self.check_bets}, bet_movements={self.bet_movements})'
