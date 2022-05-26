@@ -7,7 +7,9 @@ import inspect
 import typing
 from abc import ABC, abstractmethod
 
-from crapssim.bet import Bet, Place, PassLine, DontPass, DontCome, Come
+from crapssim.bet import Bet, PassLine, Come
+from crapssim.bet.place import Place
+from crapssim.bet.pass_line import DontPass, DontCome
 
 if typing.TYPE_CHECKING:
     from crapssim.table import Player

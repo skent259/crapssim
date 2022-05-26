@@ -2,9 +2,10 @@ import pytest
 
 from crapssim.strategy.defaults import HammerLock
 from crapssim.table import Table
-from crapssim.bet import PassLine, DontPass, LayOdds4, LayOdds5, LayOdds6, LayOdds8, LayOdds9, \
-    LayOdds10, \
-    Place6, Place8, Place5, Place9, Place
+from crapssim.bet import PassLine
+from crapssim.bet.place import Place, Place5, Place6, Place8, Place9
+from crapssim.bet.pass_line import DontPass, LayOdds4, LayOdds5, LayOdds6, LayOdds8, LayOdds9, \
+    LayOdds10
 
 
 @pytest.mark.parametrize("point, last_roll, strat_info, bets_before, dice_result, bets_after", [

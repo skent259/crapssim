@@ -4,8 +4,10 @@ in order to do the intended """
 
 import typing
 
-from crapssim.bet import PassLine, DontPass, Come, DontCome, Place, Place6, Place8, \
-    Place5, Place9, Field
+from crapssim.bet import PassLine, Come
+from crapssim.bet.one_roll import Field
+from crapssim.bet.place import Place, Place5, Place6, Place8, Place9
+from crapssim.bet.pass_line import DontPass, DontCome
 from crapssim.strategy.core import CountStrategy, PlaceBetAndMove, BetPointOff, Strategy, \
     IfBetNotExist, BetIfTrue, AggregateStrategy, BetPointOn, RemoveIfTrue
 

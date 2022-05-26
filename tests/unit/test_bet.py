@@ -2,31 +2,36 @@ import pytest
 import crapssim
 import numpy as np
 
-from crapssim.bet import Bet, PassLine, Come, DontCome, Odds4, Odds6, CAndE
+import crapssim.bet.hard_way
+import crapssim.bet.one_roll
+import crapssim.bet.place
+from crapssim.bet import Bet, PassLine, Come
+from crapssim.bet.one_roll import CAndE
+from crapssim.bet.pass_line import DontCome, Odds4, Odds6
 from crapssim.table import Table
 
 
 # Check EV of bets on a "per-roll" basis
 
 @pytest.mark.parametrize("bet, ev", [
-    (crapssim.bet.Place4(1), -0.0167),
-    (crapssim.bet.Place5(1), -0.0111),
-    (crapssim.bet.Place6(1), -0.0046),
-    (crapssim.bet.Place8(1), -0.0046),
-    (crapssim.bet.Place9(1), -0.0111),
-    (crapssim.bet.Place10(1), -0.0167),
-    (crapssim.bet.Field(1), -0.0556),
-    (crapssim.bet.Any7(1), -0.1667),
-    (crapssim.bet.Two(1), -0.1389),
-    (crapssim.bet.Three(1), -0.1111),
-    (crapssim.bet.Yo(1), -0.1111),
-    (crapssim.bet.Boxcars(1), -0.1389),
-    (crapssim.bet.AnyCraps(1), -0.1111),
-    (crapssim.bet.CAndE(1), -0.1111),
-    (crapssim.bet.Hard4(1), -0.0278),
-    (crapssim.bet.Hard6(1), -0.0278),
-    (crapssim.bet.Hard8(1), -0.0278),
-    (crapssim.bet.Hard10(1), -0.0278),
+    (crapssim.bet.place.Place4(1), -0.0167),
+    (crapssim.bet.place.Place5(1), -0.0111),
+    (crapssim.bet.place.Place6(1), -0.0046),
+    (crapssim.bet.place.Place8(1), -0.0046),
+    (crapssim.bet.place.Place9(1), -0.0111),
+    (crapssim.bet.place.Place10(1), -0.0167),
+    (crapssim.bet.one_roll.Field(1), -0.0556),
+    (crapssim.bet.one_roll.Any7(1), -0.1667),
+    (crapssim.bet.one_roll.Two(1), -0.1389),
+    (crapssim.bet.one_roll.Three(1), -0.1111),
+    (crapssim.bet.one_roll.Yo(1), -0.1111),
+    (crapssim.bet.one_roll.Boxcars(1), -0.1389),
+    (crapssim.bet.one_roll.AnyCraps(1), -0.1111),
+    (crapssim.bet.one_roll.CAndE(1), -0.1111),
+    (crapssim.bet.hard_way.Hard4(1), -0.0278),
+    (crapssim.bet.hard_way.Hard6(1), -0.0278),
+    (crapssim.bet.hard_way.Hard8(1), -0.0278),
+    (crapssim.bet.hard_way.Hard10(1), -0.0278),
 ])
 def test_ev_oneroll(bet, ev):
     t = Table()

@@ -2,7 +2,9 @@ import pytest
 
 from crapssim.strategy.defaults import Risk12
 from crapssim.table import Table
-from crapssim.bet import PassLine, Field, Place6, Place8
+from crapssim.bet import PassLine
+from crapssim.bet.one_roll import Field
+from crapssim.bet.place import Place6, Place8
 
 
 @pytest.mark.parametrize("point, last_roll, strat_info, bets_before, dice_result, bets_after", [
