@@ -1,9 +1,11 @@
 import pytest
 
+from crapssim import Table, Dice
 from crapssim.bet import PassLine, Come, Odds4, Odds5, Odds6, Odds8, Odds9, Odds10, Place4, Place5, \
     Place6, Place8, Place9, Place10, Field, DontPass, DontCome, LayOdds4, LayOdds5, LayOdds6, \
     LayOdds8, LayOdds9, LayOdds10, Any7, Two, Three, Yo, Boxcars, AnyCraps, CAndE, Hard4, Hard6, \
     Hard8, Hard10, Fire
+from crapssim.table import Point
 
 
 @pytest.mark.parametrize('bet_one, bet_two', [
@@ -687,3 +689,263 @@ def test_bet_type_inequality(bet_one, bet_two):
 ])
 def test_bet_amount_inequality(bet_one, bet_two):
     assert bet_one != bet_two
+
+
+@pytest.mark.parametrize('bet', [
+    PassLine(5),
+    Odds4(5),
+    Odds5(5),
+    Odds6(5),
+    Odds8(5),
+    Odds9(5),
+    Odds10(5),
+    Place4(5),
+    Place5(5),
+    Place6(6),
+    Place8(8),
+    Place9(9),
+    Place10(10),
+    LayOdds4(5),
+    LayOdds5(5),
+    LayOdds6(5),
+    LayOdds8(5),
+    LayOdds9(5),
+    LayOdds10(5),
+    Field(5),
+    DontPass(5),
+    DontCome(5),
+    Any7(5),
+    Two(5),
+    Three(5),
+    Yo(5),
+    Boxcars(5),
+    AnyCraps(5),
+    Hard4(5),
+    Hard6(5),
+    Hard8(5),
+    Hard10(5)
+])
+def test_is_removable_table_point_off(bet):
+    table = Table()
+    table.add_player()
+    assert bet.is_removable(table.players[0]) is True
+
+
+@pytest.mark.parametrize('bet', [
+    Odds4(5),
+    Odds5(5),
+    Odds6(5),
+    Odds8(5),
+    Odds9(5),
+    Odds10(5),
+    Place4(5),
+    Place5(5),
+    Place6(6),
+    Place8(8),
+    Place9(9),
+    Place10(10),
+    LayOdds4(5),
+    LayOdds5(5),
+    LayOdds6(5),
+    LayOdds8(5),
+    LayOdds9(5),
+    LayOdds10(5),
+    Field(5),
+    DontPass(5),
+    DontCome(5),
+    Any7(5),
+    Two(5),
+    Three(5),
+    Yo(5),
+    Boxcars(5),
+    AnyCraps(5),
+    Hard4(5),
+    Hard6(5),
+    Hard8(5),
+    Hard10(5)
+])
+def test_is_removable_table_point_on(bet):
+    table = Table()
+    table.add_player()
+    table.point.number = 6
+    assert bet.is_removable(table.players[0]) is True
+
+
+@pytest.mark.parametrize('dice1, dice2, correct_ratio', [
+    (1, 1, 2),
+    (1, 2, 1),
+    (2, 2, 1),
+    (5, 4, 1),
+    (5, 5, 1),
+    (6, 5, 1),
+    (6, 6, 2)
+])
+def test_get_field_default_table_payout_ratio(dice1, dice2, correct_ratio):
+    table = Table()
+    table.dice.fixed_roll((dice1, dice2))
+    assert Field(5).get_payout_ratio(table) == correct_ratio
+
+
+@pytest.mark.parametrize('dice1, dice2, correct_ratio', [
+    (1, 1, 2),
+    (1, 2, 14),
+    (2, 2, 14000),
+    (5, 4, 1),
+    (5, 5, 1),
+    (6, 5, 1),
+    (6, 6, 3)
+])
+def test_get_field_non_default_table_payout_ratio(dice1, dice2, correct_ratio):
+    table = Table()
+    table.settings['field_payouts'].update({3: 14, 12: 3, 4: 14000})
+    table.dice.fixed_roll((dice1, dice2))
+    assert Field(5).get_payout_ratio(table) == correct_ratio
+
+
+@pytest.mark.parametrize('points_made, correct_ratio', [
+    ([4, 5, 6, 9], 24),
+    ([4, 5, 6, 9, 10], 249),
+    ([4, 5, 6, 8, 9, 10], 999)
+])
+def test_get_fire_default_table_payout_ratio(points_made, correct_ratio):
+    table = Table()
+    bet = Fire(5)
+    bet.points_made = points_made
+    assert bet.get_payout_ratio(table) == correct_ratio
+
+
+@pytest.mark.parametrize('points_made, correct_ratio', [
+    ([4, 5, 6], 6),
+    ([4, 5, 6, 9], 9),
+    ([4, 5, 6, 9, 10], 69),
+    ([4, 5, 6, 8, 9, 10], 420)
+])
+def test_get_fire_non_default_table_payout_ratio(points_made, correct_ratio):
+    table = Table()
+    table.settings['fire_points'] = {3: 6, 4: 9, 5: 69, 6: 420}
+    bet = Fire(5)
+    bet.points_made = points_made
+    assert bet.get_payout_ratio(table) == correct_ratio
+
+
+@pytest.mark.parametrize('rolls, correct_status, correct_win_amt, correct_remove', [
+    ([(6, 1)], None, 0.0, False),
+    ([(2, 2), (3, 1), (4, 3), (6, 6)], None, 0.0, False),
+    ([(2, 2), (4, 3)], 'lose', 0.0, True),
+    ([(2, 2), (2, 2), (3, 3), (3, 3), (4, 3), (4, 4), (4, 4), (5, 5), (5, 5)], 'win', 24, False),
+    ([(2, 2), (2, 2), (3, 3), (3, 3), (4, 3), (4, 4), (4, 4), (5, 5), (5, 5), (5, 5), (5, 5)], None, 0.0, False),
+    ([(2, 2), (2, 2), (3, 3), (3, 3), (4, 3), (4, 4), (4, 4), (5, 5), (5, 5), (5, 5), (3, 4)], 'lose', 0.0, True),
+    ([(2, 2), (2, 2), (3, 3), (3, 3), (4, 3), (4, 4), (4, 4), (5, 5), (5, 5), (2, 3), (2, 3)], 'win', 249, False),
+    ([(2, 2), (2, 2), (3, 3), (3, 3), (4, 3), (4, 4), (4, 4), (5, 5), (5, 5), (2, 3), (2, 3), (4, 5), (4, 5)],
+     'win', 999, True)
+])
+def test_fire(rolls, correct_status, correct_win_amt, correct_remove):
+    table = Table()
+    table.add_player()
+    bet = Fire(1)
+    table.players[0].add_bet(bet)
+
+    # table.fixed_run(rolls)
+    for roll in rolls:
+        table.fixed_roll_and_update(roll)
+
+    status, win_amt, remove = bet.get_status(table), bet.get_win_amount(table), bet.should_remove(table)
+
+    assert (status, win_amt, remove) == (correct_status, correct_win_amt, correct_remove)
+
+
+@pytest.mark.parametrize('bet, point_number, allowed', [
+    (PassLine(5), None, True),
+    (PassLine(5), 6, False),
+    (Come(5), None, False),
+    (Come(5), 6, True),
+    (DontPass(5), None, True),
+    (DontPass(5), 4, False),
+    (DontCome(5), None, False),
+    (DontCome(5), 8, True),
+    (Field(5), None, True),
+    (Field(5), 4, True)
+])
+def test_bet_allowed_point(bet, point_number, allowed):
+    table = Table()
+    table.add_player()
+    dice = Dice()
+    dice.total = point_number
+
+    point = Point()
+    point.update(dice)
+
+    table.point = point
+
+    assert bet.allowed(player=table.players[0]) == allowed
+
+
+@pytest.mark.parametrize('bet, new_shooter, allowed', [
+    (Field(5), True, True),
+    (Field(5), False, True),
+    (Fire(5), True, True),
+    (Fire(5), False, False)
+])
+def test_bet_allowed_new_shooter(bet, new_shooter, allowed):
+    table = Table()
+    table.add_player()
+
+    if new_shooter is False:
+        table.fixed_roll((3, 4))
+
+    assert bet.allowed(player=table.players[0]) == allowed
+
+
+@pytest.mark.parametrize('bet', [
+    PassLine(5),
+    Place4(5),
+    Place5(5),
+    Place6(5),
+    Place8(5),
+    Place9(5),
+    Place10(5),
+    DontPass(5),
+    Field(5),
+    Any7(5),
+    Two(5),
+    Three(5),
+    Yo(5),
+    Boxcars(5),
+    AnyCraps(5),
+    Hard4(5),
+    Hard6(5),
+    Hard8(5),
+    Hard10(5)
+])
+def test_bets_always_allowed_point_off(bet):
+    table = Table()
+    table.add_player()
+    assert bet.allowed(table.players[0])
+
+
+@pytest.mark.parametrize('bet', [
+    Come(5),
+    Place4(5),
+    Place5(5),
+    Place6(5),
+    Place8(5),
+    Place9(5),
+    Place10(5),
+    DontCome(5),
+    Field(5),
+    Any7(5),
+    Two(5),
+    Three(5),
+    Yo(5),
+    Boxcars(5),
+    AnyCraps(5),
+    Hard4(5),
+    Hard6(5),
+    Hard8(5),
+    Hard10(5)
+])
+def test_bets_always_allowed_point_on(bet):
+    table = Table()
+    table.point.number = 10
+    table.add_player()
+    assert bet.allowed(table.players[0])
