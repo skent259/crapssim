@@ -330,16 +330,16 @@ class Place68Move59(PlaceBetAndMove):
         self.pass_come_amount = pass_come_amount
         self.six_eight_amount = six_eight_amount
         self.five_nine_amount = five_nine_amount
-        super().__init__(starting_bets=[Place6(six_eight_amount),
-                                        Place8(six_eight_amount)],
+        super().__init__(starting_bets=[Place(6, six_eight_amount),
+                                        Place(8, six_eight_amount)],
                          check_bets=[PassLine(pass_come_amount),
                                      PassLine(pass_come_amount),
                                      Come(pass_come_amount, point=6),
                                      Come(pass_come_amount, point=8)],
-                         bet_movements={Place6(six_eight_amount): Place5(5),
-                                        Place8(six_eight_amount): Place5(5),
-                                        Place5(five_nine_amount): Place9(five_nine_amount),
-                                        Place9(five_nine_amount): None})
+                         bet_movements={Place(6, six_eight_amount): Place(5, five_nine_amount),
+                                        Place(8, six_eight_amount): Place(5, five_nine_amount),
+                                        Place(5, five_nine_amount): Place(9, five_nine_amount),
+                                        Place(9, five_nine_amount): None})
 
     def __repr__(self) -> str:
         return f'{self.__class__.__name__}(pass_come_amount={self.pass_come_amount}, ' \
@@ -409,19 +409,22 @@ class Place682Come(AggregateStrategy):
         self.five_nine_amount = five_nine_amount
 
         def pass_line_key(player: "Player") -> bool:
-            return (player.table.point.status == 'Off' and
-             any(isinstance(x, (Place6, Place8)) for x in player.bets_on_table) and
-             player.count_bets(Place, PassLine, Come) < 4)
+            point_off = player.table.point.status == 'Off'
+            has_place_6 = Place(6, self.six_eight_amount) in player.bets_on_table
+            has_place_8 = Place(8, self.six_eight_amount) in player.bets_on_table
+            less_than_four_bets = player.count_bets(Place, PassLine, Come) < 4
+            return point_off and (has_place_6 or has_place_8) and less_than_four_bets
 
         pass_line_strategy = BetIfTrue(PassLine(pass_come_amount), pass_line_key)
 
         def come_key(player: "Player") -> bool:
-            come_count = len([b for b in player.bets_on_table if isinstance(b, Come)])
+            point_on = player.table.point.status == 'On'
+            come_count_lt_2 = len([b for b in player.bets_on_table if isinstance(b, Come)]) < 2
             place_passline_come_count = len(
                 [b for b in player.bets_on_table if isinstance(b, (PassLine, Come, Place))]
             )
-            return player.table.point.status == 'On' \
-                   and place_passline_come_count < 4 and come_count < 2
+            pass_line_place_come_lt_4 = place_passline_come_count < 4
+            return point_on and come_count_lt_2 and pass_line_place_come_lt_4
 
         come_strategy = BetIfTrue(Come(pass_come_amount), come_key)
         place_strategy = Place68Move59(pass_come_amount=pass_come_amount,
