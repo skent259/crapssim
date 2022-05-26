@@ -283,9 +283,8 @@ class Table:
             p.add_strategy_bets()
 
             if verbose:
-                bets = [f"{b.name}: ${b.bet_amount}" for b in p.bets_on_table]
                 if verbose:
-                    print(f"{p.name}'s current bets: {bets}")
+                    print(f"{p.name}'s current bets: {p.bets_on_table}")
 
     def update_player_bets(self, verbose: bool = False) -> None:
         """ Check bets for wins/losses, payout wins to their bankroll, remove_bet bets that have resolved
@@ -582,6 +581,6 @@ class Player:
         status = bet.get_status(self.table)
         win_amount = bet.get_win_amount(self.table)
         if status == "win":
-            print(f"{self.name} won ${win_amount} on {bet.name} bet!")
+            print(f"{self.name} won ${win_amount} on {bet}!")
         elif status == "lose":
-            print(f"{self.name} lost ${bet.bet_amount} on {bet.name} bet.")
+            print(f"{self.name} lost ${bet.bet_amount} on {bet}.")

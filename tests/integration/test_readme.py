@@ -5,10 +5,11 @@ import crapssim.strategy.defaults
 
 def test_first_chunk():
     table = craps.Table()
-    your_strat = crapssim.strategy.defaults.PassLineOdds(2)
+    your_strat = crapssim.strategy.defaults.BetPassLine(5) + \
+                 crapssim.strategy.defaults.PassLineOdds(2)
 
     table.add_player(strategy=your_strat)
-    table.run(max_rolls=20, verbose=False)
+    table.run(max_rolls=20, verbose=True)
 
 
 def test_second_chunk():
@@ -24,6 +25,6 @@ def test_second_chunk():
         for s in strategies:
             table.add_player(name=s, strategy=strategies[s])
 
-        table.run(max_rolls=float("inf"), max_shooter=10, verbose=False)
+        table.run(max_rolls=float("inf"), max_shooter=10, verbose=True)
         for s in strategies:
             print(f"{i}, {s}, {table.get_player(s).bankroll}, {bankroll}, {table.dice.n_rolls}")
