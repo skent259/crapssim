@@ -28,6 +28,9 @@ class BetPassLine(BetPointOff):
         self.bet_amount = bet_amount
         super().__init__(PassLine(bet_amount))
 
+    def __repr__(self):
+        return f'{self.__class__.__name__}(bet_amount={self.bet_amount})'
+
 
 class OddsStrategy(Strategy):
     """Strategy that takes an AllowsOdds object and places Odds on it given either a multiplier,
@@ -254,7 +257,11 @@ class BetDontPass(BetPointOff):
         bet_amount
             The amount of the DontPass bet to place.
         """
+        self.bet_amount = bet_amount
         super().__init__(DontPass(bet_amount))
+
+    def __repr__(self):
+        return f'{self.__class__.__name__}(bet_amount={self.bet_amount})'
 
 
 class BetLayOdds(OddsStrategy):
@@ -370,7 +377,7 @@ class PassLinePlace68Move59(AggregateStrategy):
         super().__init__(pass_line_strategy, place_bet_and_move_strategy)
 
     def __repr__(self):
-        return f'{self.__class__.__name__}(pass_come_amount={self.pass_line_amount}, ' \
+        return f'{self.__class__.__name__}(pass_line_amount={self.pass_line_amount}, ' \
                f'six_eight_amount={self.six_eight_amount}, ' \
                f'five_nine_amount={self.five_nine_amount})'
 
