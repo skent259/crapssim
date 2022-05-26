@@ -7,7 +7,7 @@ import inspect
 import typing
 from abc import ABC, abstractmethod
 
-from crapssim.bet import Bet, Place, AllowsOdds
+from crapssim.bet import Bet, Place, PassLine, DontPass, DontCome, Come
 
 if typing.TYPE_CHECKING:
     from crapssim.table import Player
@@ -237,7 +237,7 @@ class PlaceBetAndMove(Strategy):
     """Strategy that makes Place bets and then moves the bet to other Places if an AllowsOdds bet
     gets moved to a bet with the same number."""
     def __init__(self, starting_bets: list[Place],
-                 check_bets: list[AllowsOdds],
+                 check_bets: list[PassLine, DontPass, Come, DontCome],
                  bet_movements: dict[Place, Place | None]):
         """Makes the starting place bets in starting_bets and then if one of the check_bets gets
         moved to the same point as one of the place bets, the bet gets moved to a different bet
@@ -259,7 +259,7 @@ class PlaceBetAndMove(Strategy):
         self.check_bets = check_bets
         self.bet_movements = bet_movements
 
-    def check_bets_on_table(self, player: 'Player') -> list[AllowsOdds]:
+    def check_bets_on_table(self, player: 'Player') -> list[PassLine, DontPass, Come, DontCome]:
         """Returns any bets the player has on the table that are in check_bets.
 
         Parameters
@@ -272,7 +272,8 @@ class PlaceBetAndMove(Strategy):
         list[AllowsOdds]
             A list of all the check bets that are on the table.
         """
-        return [x for x in player.bets_on_table if isinstance(x, AllowsOdds)
+        return [x for x in player.bets_on_table if isinstance(x, (PassLine, DontPass,
+                                                                  Come, DontCome))
                 and x in self.check_bets]
 
     def check_numbers(self, player: 'Player') -> list[int]:

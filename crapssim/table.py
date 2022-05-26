@@ -1,7 +1,7 @@
 import typing
 
 from crapssim.dice import Dice
-from .bet import Bet, AllowsOdds, BaseOdds
+from .bet import Bet
 from .strategy import Strategy
 from .strategy.defaults import BetPassLine
 
@@ -41,10 +41,12 @@ class Table:
         self.players: list[Player] = []
         self.point: Point = Point()
         self.dice: Dice = Dice()
-        self.settings: dict[str, typing.Any] = {'field_payouts': {2: 2, 3: 1, 4: 1, 9: 1, 10: 1, 11: 1, 12: 2},
+        self.settings: dict[str, typing.Any] = {'field_payouts': {2: 2, 3: 1, 4: 1, 9: 1, 10: 1,
+                                                                  11: 1, 12: 2},
                                                 'fire_points': {4: 24, 5: 249, 6: 999},
                                                 'max_odds': {4: 3, 5: 4, 6: 5, 8: 5, 9: 4, 10: 3},
-                                                'max_dont_odds': {4: 6, 5: 6, 6: 6, 8: 6, 9: 6, 10: 6}}
+                                                'max_dont_odds': {4: 6, 5: 6, 6: 6, 8: 6, 9: 6,
+                                                                  10: 6}}
         self.pass_rolls: int = 0
         self.last_roll: int | None = None
         self.n_shooters: int = 1
@@ -574,15 +576,3 @@ class Player:
             print(f"{self.name} won ${win_amount} on {bet.name} bet!")
         elif status == "lose":
             print(f"{self.name} lost ${bet.bet_amount} on {bet.name} bet.")
-
-    def add_odds(self, bet_amount: float,
-                 bet_types: typing.Iterable[AllowsOdds] = AllowsOdds,
-                 point: int = None) -> None:
-        points: tuple[int] = (point, ) if point is not None else (4, 5, 6, 8, 9, 10)
-        allows_odds_bets: list[AllowsOdds] = [x for x in self.bets_on_table if isinstance(x, AllowsOdds)]
-        correct_bets: list[AllowsOdds] = [x for x in allows_odds_bets if isinstance(x, tuple(bet_types))]
-        for bet in correct_bets:
-            odds_bet: BaseOdds = bet.get_odds_bet(bet_amount, self.table)
-            if odds_bet.key_number in points:
-                self.add_bet(odds_bet)
-

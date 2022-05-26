@@ -4,7 +4,7 @@ in order to do the intended """
 
 import typing
 
-from crapssim.bet import PassLine, AllowsOdds, DontPass, Come, DontCome, Place, Place6, Place8, \
+from crapssim.bet import PassLine, DontPass, Come, DontCome, Place, Place6, Place8, \
     Place5, Place9, Field
 from crapssim.strategy.core import CountStrategy, PlaceBetAndMove, BetPointOff, Strategy, \
     IfBetNotExist, BetIfTrue, AggregateStrategy, BetPointOn, RemoveIfTrue
@@ -35,7 +35,7 @@ class BetPassLine(BetPointOff):
 class OddsStrategy(Strategy):
     """Strategy that takes an AllowsOdds object and places Odds on it given either a multiplier,
     or a dictionary of points and multipliers."""
-    def __init__(self, base_type: AllowsOdds,
+    def __init__(self, base_type: PassLine | DontPass | Come | DontCome,
                  odds_multiplier: dict[int, int] | int):
         """Takes an AllowsOdds item (ex. PassLine, Come, DontPass) and adds a BaseOdds bet
         (either Odds or LayOdds) based on the odds_multiplier given.
