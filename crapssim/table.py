@@ -3,8 +3,7 @@ import typing
 
 from crapssim.dice import Dice
 from .bet import Bet, PassLine
-from .strategy import Strategy
-from .strategy.defaults import BetPassLine
+from .strategy import Strategy, BetPassLine
 
 
 class Table:

@@ -1,6 +1,6 @@
 import pytest
 
-from crapssim.strategy.defaults import BetPassLine
+from crapssim.strategy import BetPassLine
 from crapssim.table import Table
 from crapssim.bet import PassLine
 

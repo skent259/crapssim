@@ -1,6 +1,6 @@
 import pytest
 
-from crapssim.strategy.defaults import BetDontPass, BetLayOdds
+from crapssim.strategy import BetDontPass, BetDontPassOdds
 from crapssim.table import Table
 from crapssim.bet.pass_line import DontPass, LayOdds4, LayOdds5, LayOdds6, LayOdds8, LayOdds9, \
     LayOdds10
@@ -1811,8 +1811,8 @@ from crapssim.bet.pass_line import DontPass, LayOdds4, LayOdds5, LayOdds6, LayOd
 def test_layodds_integration(point, last_roll, strat_info, bets_before, dice_result, bets_after):
     table = Table()
     table.add_player(bankroll=float("inf"), strategy=(BetDontPass(5) +
-                                                      BetLayOdds({4: 2, 5: 1.5, 6: 6 / 5,
-                                                                  8: 6 / 5, 9: 1.5, 10: 2})))
+                                                      BetDontPassOdds({4: 2, 5: 1.5, 6: 6 / 5,
+                                                                       8: 6 / 5, 9: 1.5, 10: 2})))
     table.point.number = point
     table.last_roll = last_roll
     table.players[0].bets_on_table = bets_before

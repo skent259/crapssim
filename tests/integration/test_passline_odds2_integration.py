@@ -1,6 +1,6 @@
 import pytest
 
-from crapssim.strategy.defaults import BetPassLine, PassLineOdds
+from crapssim.strategy import BetPassLine, PassLineOdds
 from crapssim.table import Table
 from crapssim.bet import PassLine
 from crapssim.bet.pass_line import Odds4, Odds5, Odds6, Odds8, Odds9, Odds10

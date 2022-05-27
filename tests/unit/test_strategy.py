@@ -6,9 +6,9 @@ from crapssim.bet.one_roll import Field
 from crapssim.bet.place import Place
 from crapssim.bet.pass_line import DontPass, DontCome, Odds4, Odds6, Odds8, Odds10, LayOdds4, \
     LayOdds6
-from crapssim.strategy import BetIfTrue
-from crapssim.strategy.defaults import BetPassLine, PassLineOdds, Pass2Come, BetPlace, \
-    PassLinePlace68, BetDontPass, BetLayOdds, PassLinePlace68Move59, Place682Come, IronCross, \
+from crapssim.strategy import BetIfTrue, BetPassLine, PassLineOdds, BetPlace, BetDontPass, \
+ BetDontPassOdds
+from crapssim.strategy.examples import Pass2Come, PassLinePlace68, PassLinePlace68Move59, Place682Come, IronCross, \
     HammerLock, Risk12, Knockout, DiceDoctor, Place68CPR, Place68DontCome2Odds
 
 
@@ -67,10 +67,10 @@ from crapssim.strategy.defaults import BetPassLine, PassLineOdds, Pass2Come, Bet
   [(2, 4)],
   [Place(number=8, bet_amount=6.0), PassLine(bet_amount=5.0)]),
  (BetDontPass(bet_amount=5), [], [DontPass(bet_amount=5.0)]),
- (BetDontPass(bet_amount=5) + BetLayOdds(odds_multiplier=1),
+ (BetDontPass(bet_amount=5) + BetDontPassOdds(odds_multiplier=1),
   [],
   [DontPass(bet_amount=5.0)]),
- (BetDontPass(bet_amount=5) + BetLayOdds(odds_multiplier=6),
+ (BetDontPass(bet_amount=5) + BetDontPassOdds(odds_multiplier=6),
   [(3, 3)],
   [LayOdds6(bet_amount=30.0), DontPass(bet_amount=5.0)]),
  (PassLinePlace68Move59(pass_line_amount=5, six_eight_amount=6, five_nine_amount=5),

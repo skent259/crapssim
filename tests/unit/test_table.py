@@ -2,7 +2,7 @@ import pytest
 
 from crapssim import Table
 from crapssim.bet import Come
-from crapssim.strategy.defaults import BetPassLine
+from crapssim.strategy import BetPassLine
 from crapssim.table import Point
 
 

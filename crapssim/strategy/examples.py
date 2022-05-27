@@ -8,115 +8,12 @@ from crapssim.bet import PassLine, Come
 from crapssim.bet.one_roll import Field
 from crapssim.bet.place import Place
 from crapssim.bet.pass_line import DontPass, DontCome
+from crapssim.strategy import BetPassLine, OddsStrategy, PassLineOdds, BetPlace, BetDontPassOdds
 from crapssim.strategy.core import CountStrategy, PlaceBetAndMove, BetPointOff, Strategy, \
     IfBetNotExist, BetIfTrue, AggregateStrategy, BetPointOn, RemoveIfTrue
 
 if typing.TYPE_CHECKING:
     from crapssim.table import Player
-
-
-class BetPassLine(BetPointOff):
-    """Strategy that adds a PassLine bet if the point is Off and the player doesn't have a PassLine
-    bet already on the table. Equivalent to BetPointOff(PassLine(bet_amount))."""
-    def __init__(self, bet_amount: typing.SupportsFloat):
-        """Adds a PassLine bet for the given bet_amount if the point is Off and the player doesn't
-        have a PassLine bet for that amount already on the table.
-
-        Parameters
-        ----------
-        bet_amount
-            The amount of the PassLine bet.
-        """
-        self.bet_amount: float = float(bet_amount)
-        super().__init__(PassLine(bet_amount))
-
-    def __repr__(self) -> str:
-        return f'{self.__class__.__name__}(bet_amount={self.bet_amount})'
-
-
-class OddsStrategy(Strategy):
-    """Strategy that takes an AllowsOdds object and places Odds on it given either a multiplier,
-    or a dictionary of points and multipliers."""
-    def __init__(self, base_type: typing.Type[PassLine | DontPass | Come | DontCome],
-                 odds_multiplier: dict[int, int] | int):
-        """Takes an AllowsOdds item (ex. PassLine, Come, DontPass) and adds a BaseOdds bet
-        (either Odds or LayOdds) based on the odds_multiplier given.
-
-        Parameters
-        ----------
-        base_type
-            The bet that odds will be added to.
-        odds_multiplier
-            If odds_multiplier is an integer adds multiplier * base_bets amount to the odds.
-            If the odds multiplier is a dictionary of Integers looks at the dictionary to
-            determine what odds multiplier to use depending on the given point.
-        """
-        self.base_type = base_type
-
-        if isinstance(odds_multiplier, int):
-            self.odds_multiplier = {x: odds_multiplier for x in (4, 5, 6, 8, 9, 10)}
-        else:
-            self.odds_multiplier = odds_multiplier
-
-    def update_bets(self, player: 'Player') -> None:
-        """Add an Odds bet to the given base_types in the amount determined by the odds_multiplier.
-
-        Parameters
-        ----------
-        player
-            The player to add the odds bet to.
-        """
-        for bet in player.bets_on_table:
-            if isinstance(bet, self.base_type):
-                if isinstance(bet, (PassLine, DontPass)):
-                    point = player.table.point.number
-                elif isinstance(bet, (Come, DontCome)):
-                    point = bet.point
-                else:
-                    raise NotImplementedError
-
-                if point in self.odds_multiplier:
-                    multiplier = self.odds_multiplier[point]
-                else:
-                    return
-
-                amount = bet.bet_amount * multiplier
-                odds_bet = bet.get_odds_bet(amount, player.table)
-                IfBetNotExist(odds_bet).update_bets(player)
-
-    def get_odds_multiplier_repr(self) -> int | dict[int, int]:
-        """If the odds_multiplier has multiple values return a dictionary with the values,
-        if all the multipliers are the same return an integer of the multiplier."""
-        if all([x == self.odds_multiplier[4] for x in self.odds_multiplier.values()]):
-            odds_multiplier: int | dict[int, int] = self.odds_multiplier[4]
-        else:
-            odds_multiplier = self.odds_multiplier
-        return odds_multiplier
-
-    def __repr__(self) -> str:
-        return f'{self.__class__.__name__}(base_type={self.base_type}, ' \
-               f'odds_multiplier={self.get_odds_multiplier_repr()})'
-
-
-class PassLineOdds(OddsStrategy):
-    """Strategy that adds an Odds bet to the PassLine bet. Equivalent to
-    OddsStrategy(PassLine, odds)."""
-    def __init__(self, odds_multiplier: dict[int, int] | int | None = None):
-        """Add odds to PassLine bets with the multiplier specified by the odds_multiplier variable.
-
-        Parameters
-        ----------
-        odds_multiplier
-            If odds_multiplier is an integer the bet amount is the PassLine bet amount *
-            odds_multiplier.  If it's a dictionary it uses the PassLine bet's point to determine
-            the multiplier. Defaults to {4: 3, 5: 4, 6: 5, 8: 5, 9: 4, 10: 3} which are 345x odds.
-            """
-        if odds_multiplier is None:
-            odds_multiplier = {4: 3, 5: 4, 6: 5, 8: 5, 9: 4, 10: 3}
-        super().__init__(PassLine, odds_multiplier)
-
-    def __repr__(self) -> str:
-        return f'{self.__class__.__name__}(odds_multiplier={self.get_odds_multiplier_repr()})'
 
 
 class TwoCome(CountStrategy):
@@ -150,62 +47,6 @@ class Pass2Come(AggregateStrategy):
 
     def __repr__(self) -> str:
         return f'{self.__class__.__name__}(bet_amount={self.bet_amount})'
-
-
-class BetPlace(Strategy):
-    """Strategy that makes multiple Place bets of given amounts. It can also skip making the bet
-    if the point is the same as the given bet number."""
-    def __init__(self, place_bet_amounts: dict[int, float], skip_point: bool = True):
-        """Strategy for making multiple place bets.
-
-        Parameters
-        ----------
-        place_bet_amounts
-            Dictionary of the point to make the Place bet on and the amount of the
-            place bet to make.
-        skip_point
-            If True don't make the bet on the given Place if that's the number the tables Point
-            is on.
-        """
-        super().__init__()
-        self.place_bet_amounts = place_bet_amounts
-        self.skip_point = skip_point
-
-    def update_bets(self, player: 'Player') -> None:
-        """Add the place bets on the numbers and amounts defined by place_bet_amounts.
-
-        Parameters
-        ----------
-        player
-            The player to add the place bet to.
-        """
-        for number, amount in self.place_bet_amounts.items():
-            if self.skip_point and number == player.table.point.number:
-                continue
-            if player.table.point.status == 'Off':
-                continue
-            IfBetNotExist(Place(number, amount)).update_bets(player)
-        self.remove_point_bet(player)
-
-    def remove_point_bet(self, player: "Player") -> None:
-        """If skip_point is true and the player has a place bet for the table point number,
-        remove the Place bet.
-
-        Parameters
-        ----------
-        player
-            The player to check and see if they have the given bet.
-        """
-        if self.skip_point and player.table.point.number in self.place_bet_amounts:
-            bet_amount = self.place_bet_amounts[player.table.point.number]
-            bet = Place(player.table.point.number, bet_amount)
-
-            if bet in player.bets_on_table:
-                player.remove_bet(bet)
-
-    def __repr__(self) -> str:
-        return f'{self.__class__.__name__}(place_bet_amounts={self.place_bet_amounts},' \
-               f' skip_point={self.skip_point})'
 
 
 class PassLinePlace68(AggregateStrategy):
@@ -244,47 +85,6 @@ class PassLinePlace68(AggregateStrategy):
         return f'{self.__class__.__name__}(pass_line_amount={self.pass_line_amount}, ' \
                f'six_amount={self.six_amount}, eight_amount={self.eight_amount}, ' \
                f'skip_point={self.skip_point})'
-
-
-class BetDontPass(BetPointOff):
-    """Strategy that adds a DontPass bet if the point is off and the player doesn't have a DontPass
-    bet of the given amount already on the table.
-    Equivalent to BetPointOff(DontPass(bet_amount))."""
-    def __init__(self, bet_amount: float):
-        """If the point is off and the player doesn't have a DontPass(bet_amount) bet on the table
-        place a DontPass(bet_amount) bet.
-
-        Parameters
-        ----------
-        bet_amount
-            The amount of the DontPass bet to place.
-        """
-        self.bet_amount = bet_amount
-        super().__init__(DontPass(bet_amount))
-
-    def __repr__(self) -> str:
-        return f'{self.__class__.__name__}(bet_amount={self.bet_amount})'
-
-
-class BetLayOdds(OddsStrategy):
-    """Strategy that adds a LayOdds bet to the DontPass bet. Equivalent to
-    OddsStrategy(DontPass, odds)"""
-    def __init__(self, odds_multiplier: dict[int, int] | int | None = None):
-        """Add odds to DontPass bets with the multiplier specified by odds.
-
-        Parameters
-        ----------
-        odds_multiplier
-            If odds_multiplier is an integer the bet amount is the PassLine bet amount *
-            odds_multiplier. If it's a dictionary it uses the PassLine bet's point to determine the
-            multiplier. Defaults to 6.
-        """
-        if odds_multiplier is None:
-            odds_multiplier = 6
-        super().__init__(DontPass, odds_multiplier)
-
-    def __repr__(self) -> str:
-        return f'{self.__class__.__name__}(odds_multiplier={self.get_odds_multiplier_repr()})'
 
 
 class Place68Move59(PlaceBetAndMove):
@@ -565,7 +365,7 @@ class HammerLock(Strategy):
             self.place5689(player)
         elif self.place_win_count == 2:
             RemoveIfTrue(lambda b, p: isinstance(b, Place)).update_bets(player)
-        BetLayOdds(self.odds_multiplier).update_bets(player)
+        BetDontPassOdds(self.odds_multiplier).update_bets(player)
 
     def __repr__(self) -> str:
         return f'{self.__class__.__name__}(base_amount={self.base_amount})'

@@ -1,12 +1,13 @@
 import pytest
 import crapssim as craps
-import crapssim.strategy.defaults
+import crapssim.strategy.examples
+import crapssim.strategy.simple_bet
 
 
 def test_first_chunk():
     table = craps.Table()
-    your_strat = crapssim.strategy.defaults.BetPassLine(5) + \
-                 crapssim.strategy.defaults.PassLineOdds(2)
+    your_strat = crapssim.strategy.simple_bet.BetPassLine(5) + \
+                 crapssim.strategy.simple_bet.PassLineOdds(2)
 
     table.add_player(strategy=your_strat)
     table.run(max_rolls=20, verbose=False)
@@ -16,7 +17,7 @@ def test_second_chunk():
     n_sim = 10
     bankroll = 300
     strategies = {
-        "place68": crapssim.strategy.defaults.PassLinePlace68(5),
+        "place68": crapssim.strategy.examples.PassLinePlace68(5),
         # "ironcross": craps.strategy.ironcross
     }
 

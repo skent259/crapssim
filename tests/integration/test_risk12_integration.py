@@ -1,6 +1,6 @@
 import pytest
 
-from crapssim.strategy.defaults import Risk12
+from crapssim.strategy.examples import Risk12
 from crapssim.table import Table
 from crapssim.bet import PassLine
 from crapssim.bet.one_roll import Field

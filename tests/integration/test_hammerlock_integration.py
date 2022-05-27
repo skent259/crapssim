@@ -1,6 +1,6 @@
 import pytest
 
-from crapssim.strategy.defaults import HammerLock
+from crapssim.strategy.examples import HammerLock
 from crapssim.table import Table
 from crapssim.bet import PassLine
 from crapssim.bet.place import Place, Place5, Place6, Place8, Place9

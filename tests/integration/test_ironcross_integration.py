@@ -1,6 +1,6 @@
 import pytest
 
-from crapssim.strategy.defaults import IronCross
+from crapssim.strategy.examples import IronCross
 from crapssim.table import Table
 from crapssim.bet import PassLine
 from crapssim.bet.one_roll import Field
