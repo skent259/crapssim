@@ -845,14 +845,16 @@ def test_get_fire_non_default_table_payout_ratio(points_made, correct_ratio):
 def test_fire(rolls, correct_status, correct_win_amt, correct_remove):
     table = Table()
     table.add_player()
-    bet = Fire(1)
-    table.players[0].add_bet(bet)
+    table.players[0].add_bet(Fire(1))
+    bet = table.players[0].bets_on_table[0]
 
     # table.fixed_run(rolls)
     for roll in rolls:
         table.fixed_roll_and_update(roll)
 
-    status, win_amt, remove = bet.get_status(table), bet.get_win_amount(table), bet.should_remove(table)
+    status, win_amt, remove = bet.get_status(table), \
+                              bet.get_win_amount(table), \
+                              bet.should_remove(table)
 
     assert (status, win_amt, remove) == (correct_status, correct_win_amt, correct_remove)
 

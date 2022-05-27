@@ -2,7 +2,6 @@
 strategies with the intended usage. Each of the strategies included in this package are intended
 to be used as building blocks when creating strategies."""
 
-import copy
 import inspect
 import typing
 from abc import ABC, abstractmethod
@@ -105,7 +104,7 @@ class BetIfTrue(Strategy):
             The Player to add the bet for.
         """
         if self.key(player):
-            player.add_bet(copy.copy(self.bet))
+            player.add_bet(self.bet)
 
     def __repr__(self) -> str:
         return f'{self.__class__.__name__}(bet={self.bet}, ' \
@@ -307,7 +306,7 @@ class PlaceBetAndMove(Strategy):
         """
         for bet in self.starting_bets:
             if bet not in player.bets_on_table and player.table.point.status != "Off":
-                player.add_bet(copy.copy(bet))
+                player.add_bet(bet)
 
     def bets_to_move(self, player: 'Player') -> list[Place]:
         """A list of the bets that need to bet moved to a different bet.
@@ -340,7 +339,7 @@ class PlaceBetAndMove(Strategy):
                 new_bet = self.bet_movements[new_bet]
             player.remove_bet(old_bet)
             if new_bet is not None:
-                player.add_bet(copy.copy(new_bet))
+                player.add_bet(new_bet)
 
     def update_bets(self, player: 'Player') -> None:
         """Place the initial bets and move them to the desired location.

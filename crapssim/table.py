@@ -1,3 +1,4 @@
+import copy
 import typing
 
 from crapssim.dice import Dice
@@ -516,7 +517,7 @@ class Player:
                 self.bankroll += bet.bet_amount
         else:
             if bet.allowed(player=self):
-                self.bets_on_table.append(bet)
+                self.bets_on_table.append(copy.deepcopy(bet))
                 self.bankroll -= bet.bet_amount
 
     def remove_bet(self, bet: Bet) -> None:
