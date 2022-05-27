@@ -4,11 +4,11 @@ in order to do the intended """
 
 import typing
 
-from crapssim.bet import PassLine, Come, DontPass, Place
+from crapssim.bet import PassLine, Come
 from crapssim.bet.one_roll import Field
 from crapssim.bet.place import Place
 from crapssim.bet.pass_line import DontPass, DontCome
-from crapssim.strategy import OddsStrategy, BetPointOff, Strategy, IfBetNotExist
+from crapssim.strategy import OddsStrategy
 from crapssim.strategy.core import CountStrategy, PlaceBetAndMove, BetPointOff, Strategy, \
     IfBetNotExist, BetIfTrue, AggregateStrategy, BetPointOn, RemoveIfTrue
 
@@ -263,7 +263,6 @@ class IronCross(AggregateStrategy):
                                    6: place_six_eight_amount,
                                    8: place_six_eight_amount}),
                          BetPointOn(Field(base_amount)))
-
 
     def __repr__(self) -> str:
         return f'{self.__class__.__name__}(base_amount={self.base_amount})'
