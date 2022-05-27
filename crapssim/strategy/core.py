@@ -20,12 +20,11 @@ class Strategy(ABC):
     """
 
     def after_roll(self, player: 'Player') -> None:
-        """Method that can update the Strategy from the table/player after the dice
-         are rolled but before the bets and the table are updated. For example,
-         if you wanted to know whether the point changed from on to off you could
-         do self.point_lost = table.point.status = "On" and table.dice.roll.total == 7.
-         You couldn't do this in update_bets since the table has already been
-         updated setting the point's status to Off.
+        """Method that can update the Strategy from the table/player after the dice are rolled but
+        before the bets and the table are updated. For example, if you wanted to know whether the
+        point changed from on to off you could do self.point_lost = table.point.status = "On" and
+        table.dice.roll.total == 7. You couldn't do this in update_bets since the table has already
+        been updated setting the point's status to Off.
 
         Parameters
         ----------
