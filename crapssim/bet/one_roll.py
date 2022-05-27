@@ -22,13 +22,8 @@ class OneRollBet(WinningLosingNumbersBet, ABC):
         return [x for x in (2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12)
                 if x not in self.get_winning_numbers(table)]
 
-    @abstractmethod
-    def __eq__(self, other: object) -> bool:
-        pass
-
-    @abstractmethod
-    def __hash__(self) -> int:
-        pass
+    def get_placed_key(self) -> typing.Hashable:
+        return OneRollBet, tuple(self.winning_numbers)
 
 
 class Field(OneRollBet):
@@ -39,14 +34,6 @@ class Field(OneRollBet):
         if table.dice.total in table.settings['field_payouts']:
             return float(table.settings['field_payouts'][table.dice.total])
         return 0.0
-
-    def __eq__(self, other: object) -> bool:
-        if not isinstance(other, Bet):
-            raise NotImplementedError
-        return isinstance(other, Field) and self.bet_amount == other.bet_amount
-
-    def __hash__(self) -> int:
-        return hash((type(self), self.bet_amount))
 
 
 class StaticRatioOneRollBet(OneRollBet):
@@ -59,16 +46,8 @@ class StaticRatioOneRollBet(OneRollBet):
     def get_payout_ratio(self, table: "Table") -> float:
         return float(self.payout_ratio)
 
-    def _key(self) -> tuple[list[int], typing.SupportsFloat, float]:
-        return self.winning_numbers, self.payout_ratio, self.bet_amount
-
-    def __eq__(self, other: object) -> bool:
-        if not isinstance(other, Bet):
-            raise NotImplementedError
-        return isinstance(other, StaticRatioOneRollBet) and self._key() == other._key()
-
-    def __hash__(self) -> int:
-        return hash((StaticRatioOneRollBet, self._key()))
+    def get_placed_key(self) -> typing.Hashable:
+        return StaticRatioOneRollBet, tuple(self.winning_numbers), self.payout_ratio
 
 
 class Any7(StaticRatioOneRollBet):

@@ -47,15 +47,3 @@ class Fire(Bet):
             return float(table.settings['fire_points'][len(self.points_made)])
         else:
             raise NotImplementedError
-
-    def __eq__(self, other: object) -> bool:
-        if isinstance(other, Bet) and not isinstance(other, type(self)):
-            return False
-        elif isinstance(other, type(self)):
-            return self.bet_amount == other.bet_amount and \
-                   self.points_made == other.points_made
-        else:
-            raise NotImplementedError
-
-    def __hash__(self) -> int:
-        return hash((Fire, self.bet_amount, tuple(self.points_made)))

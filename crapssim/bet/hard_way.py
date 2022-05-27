@@ -3,7 +3,7 @@ import typing
 from crapssim.bet.base import Bet
 
 if typing.TYPE_CHECKING:
-    from crapssim import Table
+    from crapssim import Table, Player
 
 
 class HardWay(Bet):
@@ -28,16 +28,9 @@ class HardWay(Bet):
             return "lose"
         return None
 
-    def __eq__(self, other: object) -> bool:
-        if isinstance(other, Bet) and not isinstance(other, type(self)):
-            return False
-        elif isinstance(other, type(self)):
-            return self.number == other.number and self.bet_amount == other.bet_amount
-        else:
-            raise NotImplementedError
+    def get_placed_key(self) -> typing.Hashable:
+        return HardWay, self.number
 
-    def __hash__(self) -> int:
-        return hash((type(self), self.number, self.bet_amount))
 
 
 class Hard4(HardWay):

@@ -2,7 +2,7 @@ import copy
 import typing
 
 from crapssim.dice import Dice
-from .bet import Bet
+from .bet import Bet, PassLine
 from .strategy import Strategy
 from .strategy.defaults import BetPassLine
 
@@ -508,17 +508,14 @@ class Player:
         return self._table
 
     def add_bet(self, bet: Bet) -> None:
-        if bet.already_placed(self):
-            existing_bet: Bet = self.get_bet(type(bet))
-            existing_bet.bet_amount += bet.bet_amount
+        existing_bets: list[Bet] = bet.already_placed_bets(self)
+        new_bet = sum(existing_bets + [bet])
+
+        if new_bet.allowed(self):
+            for bet in existing_bets:
+                self.bets_on_table.remove(bet)
             self.bankroll -= bet.bet_amount
-            if not existing_bet.allowed(player=self):
-                existing_bet.bet_amount -= bet.bet_amount
-                self.bankroll += bet.bet_amount
-        else:
-            if bet.allowed(player=self):
-                self.bets_on_table.append(copy.deepcopy(bet))
-                self.bankroll -= bet.bet_amount
+            self.bets_on_table.append(new_bet)
 
     def remove_bet(self, bet: Bet) -> None:
         if bet in self.bets_on_table and bet.is_removable(self):

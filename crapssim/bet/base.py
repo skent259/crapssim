@@ -1,3 +1,4 @@
+import copy
 import typing
 from abc import ABC, abstractmethod
 
@@ -83,21 +84,56 @@ class Bet(ABC):
         """
         pass
 
+    def get_hash_key(self) -> typing.Hashable:
+        return self.get_placed_key(), self.bet_amount
+
+    def get_placed_key(self) -> typing.Hashable:
+        return type(self)
+
+    def already_placed_bets(self, player: "Player"):
+        return [x for x in player.bets_on_table if x.get_placed_key() == self.get_placed_key()]
+
     def already_placed(self, player: "Player") -> bool:
-        return player.has_bets_by_type(type(self))
+        return len(self.already_placed_bets(player)) > 0
 
     def __eq__(self, other: object) -> bool:
         if isinstance(other, Bet):
-            return isinstance(other, type(self)) and other.bet_amount == self.bet_amount
-        else:
-            raise NotImplementedError
+            return self.get_hash_key() == other.get_hash_key()
+        raise NotImplementedError
 
-    @abstractmethod
     def __hash__(self) -> int:
-        pass
+        return hash(self.get_hash_key())
 
     def __repr__(self) -> str:
         return f'{self.__class__.__name__}(bet_amount={self.bet_amount})'
+
+    def __add__(self, other: 'Bet') -> 'Bet':
+        if isinstance(other, typing.SupportsFloat):
+            bet_amount = self.bet_amount - float(other)
+        elif self.get_placed_key() == other.get_placed_key():
+            bet_amount = self.bet_amount + other.bet_amount
+        else:
+            raise NotImplementedError
+        new_bet = copy.copy(self)
+        new_bet.bet_amount = bet_amount
+        return new_bet
+
+    def __radd__(self, other):
+        return self.__add__(other)
+
+    def __sub__(self, other: 'Bet') -> 'Bet':
+        if isinstance(other, typing.SupportsFloat):
+            bet_amount = self.bet_amount - float(other)
+        elif self.get_placed_key() == other.get_placed_key():
+            bet_amount = self.bet_amount - other.bet_amount
+        else:
+            raise NotImplementedError
+        new_bet = copy.copy(self)
+        new_bet.bet_amount = bet_amount
+        return new_bet
+
+    def __rsub__(self, other):
+        return self.__sub__(other)
 
 
 class WinningLosingNumbersBet(Bet, ABC):

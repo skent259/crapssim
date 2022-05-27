@@ -43,9 +43,6 @@ class PassLine(WinningLosingNumbersBet):
             return True
         return False
 
-    def __hash__(self) -> int:
-        return hash((PassLine, self.bet_amount))
-
 
 class Come(WinningLosingNumbersBet):
     def __init__(self, bet_amount: typing.SupportsFloat, point: int | None = None):
@@ -85,28 +82,20 @@ class Come(WinningLosingNumbersBet):
             return True
         return False
 
-    def already_placed(self, player: "Player") -> bool:
-        return player.has_bets_by_type(type(self), point=self.point)
-
     def get_odds_bet(self, bet_amount: typing.SupportsFloat, table: "Table") -> "Odds":
         if self.point is not None:
             return Odds(self.point, bet_amount)
         else:
             raise ValueError
 
-    def __eq__(self, other: object) -> bool:
-        if isinstance(other, Bet):
-            return isinstance(other, type(self)) and \
-                   other.bet_amount == self.bet_amount and \
-                   other.point == self.point
-        else:
-            raise NotImplementedError
+    def get_hash_key(self) -> typing.Hashable:
+        return type(self), self.bet_amount, self.point
+
+    def get_placed_key(self) -> typing.Hashable:
+        return Come, self.point
 
     def __repr__(self) -> str:
         return f'{self.__class__.__name__}(bet_amount={self.bet_amount}, point={self.point})'
-
-    def __hash__(self) -> int:
-        return hash((Come, self.bet_amount, self.point))
 
 
 class DontPass(WinningLosingNumbersBet):
@@ -139,9 +128,6 @@ class DontPass(WinningLosingNumbersBet):
             return LayOdds(table.point.number, bet_amount)
         else:
             raise NotImplementedError
-
-    def __hash__(self) -> int:
-        return hash((DontPass, self.bet_amount))
 
 
 class DontCome(WinningLosingNumbersBet):
@@ -183,22 +169,14 @@ class DontCome(WinningLosingNumbersBet):
         else:
             raise NotImplementedError
 
-    def __eq__(self, other: object) -> bool:
-        if isinstance(other, Bet):
-            return isinstance(other, type(self)) and \
-                   self.bet_amount == other.bet_amount and \
-                   self.point == other.point
-        else:
-            raise NotImplementedError
+    def get_hash_key(self):
+        return type(self), self.bet_amount, self.point
 
     def __repr__(self) -> str:
         return f'{self.__class__.__name__}(bet_amount={self.bet_amount}, point={self.point})'
 
-    def already_placed(self, player: "Player") -> bool:
-        return player.has_bets_by_type(type(self), point=self.point)
-
-    def __hash__(self) -> int:
-        return hash((type(self), self.bet_amount))
+    def get_placed_key(self) -> typing.Hashable:
+        return DontCome, self.point
 
 
 class BaseOdds(Bet):
@@ -225,18 +203,6 @@ class BaseOdds(Bet):
         base_amount = self.get_base_amount(player.bets_on_table, player.table.point.number)
         max_bet = base_amount * max_odds
         return max_bet
-
-    @abstractmethod
-    def __eq__(self, other: object) -> bool:
-        pass
-
-    @abstractmethod
-    def __hash__(self) -> int:
-        pass
-
-    @abstractmethod
-    def __repr__(self) -> str:
-        pass
 
 
 class Odds(BaseOdds):
@@ -271,14 +237,8 @@ class Odds(BaseOdds):
         max_bet = self.get_max_bet(player)
         return self.bet_amount <= max_bet
 
-    def __eq__(self, other: object) -> bool:
-        if isinstance(other, Bet):
-            return isinstance(other, Odds) and self.bet_amount == other.bet_amount \
-                   and self.number == other.number
-        raise NotImplementedError
-
-    def __hash__(self) -> int:
-        return hash((Odds, self.bet_amount, self.number))
+    def get_placed_key(self) -> typing.Hashable:
+        return Odds, self.number
 
     def __repr__(self) -> str:
         return f'{self.__class__.__name__}(number={self.number}, bet_amount={self.bet_amount})'
@@ -356,14 +316,8 @@ class LayOdds(BaseOdds):
         max_odds = player.table.settings['max_dont_odds'][self.number]
         return max_odds
 
-    def __eq__(self, other: object) -> bool:
-        if isinstance(other, Bet):
-            return isinstance(other, LayOdds) and self.bet_amount == other.bet_amount \
-                   and self.number == other.number
-        raise NotImplementedError
-
-    def __hash__(self) -> int:
-        return hash((LayOdds, self.bet_amount, self.number))
+    def get_placed_key(self) -> typing.Hashable:
+        return LayOdds, self.number
 
     def __repr__(self) -> str:
         return f'{self.__class__.__name__}(number={self.number}, bet_amount={self.bet_amount})'

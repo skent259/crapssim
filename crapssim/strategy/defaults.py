@@ -6,7 +6,7 @@ import typing
 
 from crapssim.bet import PassLine, Come
 from crapssim.bet.one_roll import Field
-from crapssim.bet.place import Place, Place5, Place6, Place8, Place9
+from crapssim.bet.place import Place
 from crapssim.bet.pass_line import DontPass, DontCome
 from crapssim.strategy.core import CountStrategy, PlaceBetAndMove, BetPointOff, Strategy, \
     IfBetNotExist, BetIfTrue, AggregateStrategy, BetPointOn, RemoveIfTrue
@@ -625,9 +625,9 @@ class Risk12(Strategy):
         """
         if self.pre_point_winnings >= 6 - 1:
             if player.table.point.number != 6:
-                IfBetNotExist(Place6(6)).update_bets(player)
+                IfBetNotExist(Place(6, 6)).update_bets(player)
             else:
-                IfBetNotExist(Place8(6)).update_bets(player)
+                IfBetNotExist(Place(8, 6)).update_bets(player)
         if self.pre_point_winnings >= 12 - 2:
             BetPlace({6: 6, 8: 6}).update_bets(player)
 
@@ -741,10 +741,11 @@ class Place68CPR(Strategy):
         player
             The player to check the bets for.
         """
-        place_six_bets = [x for x in player.bets_on_table if isinstance(x, Place6)]
+        place_bets = [x for x in player.bets_on_table if isinstance(x, Place)]
+        place_six_bets = [x for x in place_bets if x.number == 6]
         place_six_win_amounts = [x.get_win_amount(player.table) for x in place_six_bets]
         self.six_winnings = sum(place_six_win_amounts)
-        place_eight_bets = [x for x in player.bets_on_table if isinstance(x, Place8)]
+        place_eight_bets = [x for x in place_bets if x.number == 8]
         place_eight_win_amounts = [x.get_win_amount(player.table) for x in place_eight_bets]
         self.eight_winnings = sum(place_eight_win_amounts)
 
@@ -756,7 +757,7 @@ class Place68CPR(Strategy):
         player
             The player to place the bets for.
         """
-        for bet in (Place6(self.starting_amount), Place8(self.starting_amount)):
+        for bet in (Place(6, self.starting_amount), Place(8, self.starting_amount)):
             BetPointOn(bet).update_bets(player)
 
     def press(self, player: 'Player') -> None:
@@ -768,9 +769,9 @@ class Place68CPR(Strategy):
             The player to make the bets for.
         """
         if self.six_winnings == self.win_one_amount:
-            player.add_bet(Place6(self.starting_amount))
+            player.add_bet(Place(6, self.starting_amount))
         if self.eight_winnings == self.win_one_amount:
-            player.add_bet(Place8(self.starting_amount))
+            player.add_bet(Place(8, self.starting_amount))
 
     def update_bets(self, player: 'Player') -> None:
         """Ensure that a Place6 and Place8 bet always exist for the player of base amount.
