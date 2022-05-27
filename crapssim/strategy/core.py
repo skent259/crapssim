@@ -8,7 +8,7 @@ from abc import ABC, abstractmethod
 
 from crapssim.bet import Bet, PassLine, Come
 from crapssim.bet.place import Place
-from crapssim.bet.pass_line import DontPass, DontCome
+from crapssim.bet.pass_line import DontPass, DontCome, Odds, LayOdds
 
 if typing.TYPE_CHECKING:
     from crapssim.table import Player
@@ -419,3 +419,25 @@ class OddsStrategy(Strategy):
     def __repr__(self) -> str:
         return f'{self.__class__.__name__}(base_type={self.base_type}, ' \
                f'odds_multiplier={self.get_odds_multiplier_repr()})'
+
+
+class OddsAmountStrategy(Strategy):
+    def __init__(self, base_type: typing.Type[PassLine | DontPass | Come | DontCome],
+                 odds_amounts: dict[int, typing.SupportsFloat]):
+        self.base_type = base_type
+        self.odds_amounts = odds_amounts
+
+    def get_bet_type(self):
+        print(self.base_type)
+        if issubclass(self.base_type, (PassLine, Come)):
+            return Odds
+        elif issubclass(self.base_type, (DontPass, DontCome)):
+            return LayOdds
+        else:
+            raise NotImplementedError
+
+    def update_bets(self, player: 'Player') -> None:
+        for number, amount in self.odds_amounts.items():
+            bet = self.get_bet_type()(number, amount)
+            if bet.allowed(player) and not bet.already_placed(player):
+                player.add_bet(bet)
