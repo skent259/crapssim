@@ -521,7 +521,7 @@ class Player:
             self.bankroll += bet.bet_amount
             self.bets_on_table.remove(bet)
 
-    def get_bets(self, *bet_types: typing.Type[Bet], **bet_attributes: typing.Any) -> list[Bet]:
+    def get_bets_by_type(self, *bet_types: typing.Type[Bet]) -> list[Bet]:
         if len(bet_types) == 0:
             bet_types = (Bet,)
         else:
@@ -530,30 +530,12 @@ class Player:
 
         for bet in self.bets_on_table:
             if isinstance(bet, bet_types):
-                if all(hasattr(bet, a) and getattr(bet, a) == bet_attributes[a] for a in bet_attributes):
-                    bets.append(bet)
+                bets.append(bet)
         return bets
 
-    def has_bet(self, bet: Bet) -> bool:
-        return bet in self.bets_on_table
-
-    def has_bets_by_type(self, *bet_types: typing.Type[Bet], **bet_attributes: typing.Any) -> bool:
-        """ returns True if bets_to_check and self.bets_on_table
-        has at least one thing in common """
-        return len(self.get_bets(*bet_types, **bet_attributes)) > 0
-
-    def get_bet(self, bet_type: typing.Type[Bet], **bet_attributes: typing.Any) -> Bet:
-        """returns first betting object matching bet and bet_subname.
-        If bet_subname="Any", returns first betting object matching bet"""
-        return self.get_bets(bet_type, **bet_attributes)[0]
-
-    def count_bets(self, *bet_types: typing.Type[Bet], **bet_attributes: typing.Any) -> int:
+    def count_bets_by_type(self, *bet_types: typing.Type[Bet]) -> int:
         """ returns the total number of bets in self.bets_on_table that match bets_to_check """
-        return len(self.get_bets(*bet_types, **bet_attributes))
-
-    def remove_bet_type(self, bet_type: typing.Type[Bet]) -> None:
-        if self.has_bets_by_type(bet_type):
-            self.remove_bet(self.get_bet(bet_type))
+        return len(self.get_bets_by_type(*bet_types))
 
     def add_strategy_bets(self) -> None:
         """ Implement the given betting strategy
