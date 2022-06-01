@@ -147,7 +147,7 @@ class RemoveIfTrue(Strategy):
         player.bets_on_table = new_bets
 
     def __repr__(self) -> str:
-        return f'{self.__class__.__name__}(key={inspect.getsource(self.key)})'
+        return f'{self.__class__.__name__}(key={self.key})'
 
 
 class IfBetNotExist(BetIfTrue):
