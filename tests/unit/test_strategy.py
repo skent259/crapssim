@@ -66,4 +66,21 @@ def test_aggregate_strategy_calls_all_update_bets(aggregate_strategy, player):
     aggregate_strategy.strategies[1].update_bets.assert_called_once_with(player)
 
 
+def test_aggregate_strategy_update_bets_calls_completed(aggregate_strategy, player):
+    aggregate_strategy.strategies[0].completed = MagicMock()
+    aggregate_strategy.strategies[1].completed = MagicMock()
 
+    aggregate_strategy.update_bets(player)
+
+    aggregate_strategy.strategies[0].completed.assert_called_once_with(player)
+    aggregate_strategy.strategies[1].completed.assert_called_once_with(player)
+
+
+def test_aggregate_strategy_completed_calls_all_completed(aggregate_strategy, player):
+    aggregate_strategy.strategies[0].completed = MagicMock()
+    aggregate_strategy.strategies[1].completed = MagicMock()
+
+    aggregate_strategy.completed(player)
+
+    aggregate_strategy.strategies[0].completed.assert_called_once_with(player)
+    aggregate_strategy.strategies[1].completed.assert_called_once_with(player)
