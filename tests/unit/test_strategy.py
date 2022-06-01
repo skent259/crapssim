@@ -1,193 +1,48 @@
-import pytest
-
 from crapssim import Player, Table
-from crapssim.bet import Come, PassLine
-from crapssim.bet.one_roll import Field
-from crapssim.bet.place import Place
-from crapssim.bet.pass_line import DontPass, DontCome, Odds4, Odds6, Odds8, Odds10, LayOdds4, \
-    LayOdds6
-from crapssim.strategy import BetIfTrue, BetPassLine, PassLineOdds, BetPlace, BetDontPass, \
- BetDontPassOdds
-from crapssim.strategy.examples import Pass2Come, PassLinePlace68, PassLinePlace68Move59, Place682Come, IronCross, \
-    HammerLock, Risk12, Knockout, DiceDoctor, Place68CPR, Place68DontCome2Odds
+from crapssim.strategy import Strategy
 
 
-@pytest.mark.parametrize(['strategy', 'rolls', 'correct_bets'],
-[(BetPassLine(bet_amount=5), [], [PassLine(bet_amount=5.0)]),
- (BetPassLine(bet_amount=5), [(4, 4)], [PassLine(bet_amount=5.0)]),
- (BetPassLine(bet_amount=5) + PassLineOdds(odds_multiplier=1),
-  [],
-  [PassLine(bet_amount=5.0)]),
- (BetPassLine(bet_amount=5) + PassLineOdds(odds_multiplier=1),
-  [(4, 4)],
-  [Odds8(bet_amount=5.0), PassLine(bet_amount=5.0)]),
- (BetPassLine(bet_amount=5) + PassLineOdds(odds_multiplier=1),
-  [(4, 4), (3, 3)],
-  [Odds8(bet_amount=5.0), PassLine(bet_amount=5.0)]),
- (BetPassLine(bet_amount=5) + PassLineOdds(odds_multiplier={4: 3, 5: 4, 6: 5, 8: 5, 9: 4, 10: 3}),
-  [],
-  [PassLine(bet_amount=5.0)]),
- (BetPassLine(bet_amount=5) + PassLineOdds(odds_multiplier={4: 3, 5: 4, 6: 5, 8: 5, 9: 4, 10: 3}),
-  [(6, 4)],
-  [PassLine(bet_amount=5.0), Odds10(bet_amount=15.0)]),
- (BetPassLine(bet_amount=5) + PassLineOdds(odds_multiplier=2),
-  [(2, 2)],
-  [PassLine(bet_amount=5.0), Odds4(bet_amount=10.0)]),
- (BetPassLine(bet_amount=5) + PassLineOdds(odds_multiplier={4: 3, 5: 4, 6: 5, 8: 5, 9: 4, 10: 3}),
-  [(3, 4), (3, 3)],
-  [PassLine(bet_amount=5.0), Odds6(bet_amount=25.0)]),
- (Pass2Come(bet_amount=5), [], [PassLine(bet_amount=5.0)]),
- (Pass2Come(bet_amount=5),
-  [(4, 5)],
-  [Come(bet_amount=5.0), PassLine(bet_amount=5.0)]),
- (Pass2Come(bet_amount=5),
-  [(4, 5), (5, 5)],
-  [PassLine(bet_amount=5.0),
-   Come(bet_amount=5.0, point=10),
-   Come(bet_amount=5.0)]),
- (Pass2Come(bet_amount=5),
-  [(4, 5), (5, 5), (3, 3)],
-  [PassLine(bet_amount=5.0),
-   Come(bet_amount=5.0, point=10),
-   Come(bet_amount=5.0, point=6)]),
- (BetPlace(place_bet_amounts={4: 5}, skip_point=True), [], []),
- (BetPlace(place_bet_amounts={5: 5}, skip_point=True),
-  [(3, 3)],
-  [Place(number=5, bet_amount=5.0)]),
- (BetPlace(place_bet_amounts={5: 5}, skip_point=True), [(3, 2)], []),
- (BetPlace(place_bet_amounts={5: 5}, skip_point=False),
-  [(3, 2)],
-  [Place(number=5, bet_amount=5.0)]),
- (PassLinePlace68(pass_line_amount=5, six_amount=6, eight_amount=6, skip_point=True),
-  [(4, 5)],
-  [Place(number=8, bet_amount=6.0),
-   PassLine(bet_amount=5.0),
-   Place(number=6, bet_amount=6.0)]),
- (PassLinePlace68(pass_line_amount=5, six_amount=6, eight_amount=6, skip_point=True),
-  [(2, 4)],
-  [Place(number=8, bet_amount=6.0), PassLine(bet_amount=5.0)]),
- (BetDontPass(bet_amount=5), [], [DontPass(bet_amount=5.0)]),
- (BetDontPass(bet_amount=5) + BetDontPassOdds(odds_multiplier=1),
-  [],
-  [DontPass(bet_amount=5.0)]),
- (BetDontPass(bet_amount=5) + BetDontPassOdds(odds_multiplier=6),
-  [(3, 3)],
-  [LayOdds6(bet_amount=30.0), DontPass(bet_amount=5.0)]),
- (PassLinePlace68Move59(pass_line_amount=5, six_eight_amount=6, five_nine_amount=5),
-  [],
-  [PassLine(bet_amount=5.0)]),
- (PassLinePlace68Move59(pass_line_amount=5, six_eight_amount=6, five_nine_amount=5),
-  [(3, 3)],
-  [Place(number=8, bet_amount=6.0),
-   Place(number=5, bet_amount=5.0),
-   PassLine(bet_amount=5.0)]),
- (PassLinePlace68Move59(pass_line_amount=5, six_eight_amount=6, five_nine_amount=5),
-  [(3, 3), (4, 4)],
-  [Place(number=8, bet_amount=6.0),
-   Place(number=9, bet_amount=5.0),
-   Place(number=5, bet_amount=5.0),
-   PassLine(bet_amount=5.0)]),
- (Place682Come(pass_come_amount=5, six_eight_amount=6, five_nine_amount=5),
-  [],
-  []),
- (Place682Come(pass_come_amount=5, six_eight_amount=6, five_nine_amount=5),
-  [(3, 3)],
-  [Place(number=8, bet_amount=6.0),
-   Place(number=6, bet_amount=6.0),
-   Come(bet_amount=5.0)]),
- (Place682Come(pass_come_amount=5, six_eight_amount=6, five_nine_amount=5),
-  [(3, 3), (3, 6)],
-  [Place(number=8, bet_amount=6.0),
-   Come(bet_amount=5.0, point=9),
-   Come(bet_amount=5.0),
-   Place(number=6, bet_amount=6.0)]),
- (Place682Come(pass_come_amount=5, six_eight_amount=6, five_nine_amount=5),
-  [(3, 3), (4, 4)],
-  [Place(number=6, bet_amount=6.0),
-   Place(number=5, bet_amount=5.0),
-   Come(bet_amount=5.0),
-   Come(bet_amount=5.0, point=8)]),
- (IronCross(base_amount=5), [], [PassLine(bet_amount=5.0)]),
- (IronCross(base_amount=5),
-  [(4, 4)],
-  [PassLine(bet_amount=5.0),
-   Place(number=5, bet_amount=10.0),
-   Place(number=6, bet_amount=12.0),
-   Field(bet_amount=5.0),
-   Odds8(bet_amount=10.0)]),
- (HammerLock(base_amount=5),
-  [],
-  [DontPass(bet_amount=5.0), PassLine(bet_amount=5.0)]),
- (HammerLock(base_amount=5),
-  [(3, 3)],
-  [LayOdds6(bet_amount=30.0),
-   PassLine(bet_amount=5.0),
-   Place(number=8, bet_amount=12.0),
-   DontPass(bet_amount=5.0),
-   Place(number=6, bet_amount=12.0)]),
- (HammerLock(base_amount=5),
-  [(3, 3), (4, 4)],
-  [Place(number=8, bet_amount=6.0),
-   Place(number=9, bet_amount=5.0),
-   LayOdds6(bet_amount=30.0),
-   PassLine(bet_amount=5.0),
-   Place(number=6, bet_amount=6.0),
-   DontPass(bet_amount=5.0),
-   Place(number=5, bet_amount=5.0)]),
- (BetIfTrue(bet=PassLine(bet_amount=5.0), key=lambda p: p.table.point.status == 'Off'),
-  [],
-  [PassLine(bet_amount=5.0)]),
- (Risk12(), [], [PassLine(bet_amount=5.0), Field(bet_amount=5.0)]),
- (Risk12(),
-  [(1, 3)],
-  [Place(number=8, bet_amount=6.0),
-   PassLine(bet_amount=5.0),
-   Place(number=6, bet_amount=6.0)]),
- (Risk12(),
-  [(5, 6), (2, 3)],
-  [Place(number=8, bet_amount=6.0),
-   PassLine(bet_amount=5.0),
-   Place(number=6, bet_amount=6.0)]),
- (Knockout(bet_amount=5),
-  [],
-  [DontPass(bet_amount=5.0), PassLine(bet_amount=5.0)]),
- (Knockout(bet_amount=5),
-  [(4, 2)],
-  [DontPass(bet_amount=5.0), PassLine(bet_amount=5.0), Odds6(bet_amount=25.0)]),
- (DiceDoctor(), [], [Field(bet_amount=10.0)]),
- (DiceDoctor(), [(1, 1), (5, 6), (5, 5)], [Field(bet_amount=30.0)]),
- (Place68DontCome2Odds(six_eight_amount=6, dont_come_amount=5), [], []),
- (Place68DontCome2Odds(six_eight_amount=6, dont_come_amount=5),
-  [(4, 4)],
-  [Place(number=8, bet_amount=6.0),
-   Place(number=6, bet_amount=6.0),
-   DontCome(bet_amount=5.0)]),
- (Place68DontCome2Odds(six_eight_amount=6, dont_come_amount=5),
-  [(4, 4), (2, 2)],
-  [Place(number=8, bet_amount=6.0),
-   LayOdds4(bet_amount=10.0),
-   Place(number=6, bet_amount=6.0),
-   DontCome(bet_amount=5.0, point=4)]),
- (Place68CPR(bet_amount=6), [], []),
- (Place68CPR(bet_amount=6),
-  [(4, 4)],
-  [Place(number=8, bet_amount=6.0), Place(number=6, bet_amount=6.0)]),
- (Place68CPR(bet_amount=6),
-  [(2, 2), (4, 4)],
-  [Place(number=8, bet_amount=12.0), Place(number=6, bet_amount=6.0)]),
- (Place68CPR(bet_amount=6),
-  [(2, 2), (4, 4), (4, 4)],
-  [Place(number=8, bet_amount=6.0), Place(number=6, bet_amount=6.0)]),
- (Place68CPR(bet_amount=6),
-  [(2, 2), (4, 4), (4, 4), (4, 4)],
-  [Place(number=8, bet_amount=12.0), Place(number=6, bet_amount=6.0)])])
-def test_strategies_compare_bets(strategy, rolls: list[tuple[int, int]],
-                                 correct_bets: {(str, str, float)}):
+def test_strategy_completed():
+    class TestStrategy(Strategy):
+        def update_bets(self, player: 'Player') -> None:
+            pass
+
+        def completed(self, player: 'Player'):
+            return player.bankroll == 100
+
+    strategy = TestStrategy()
+    table = Table()
+    table.add_player(100, strategy=TestStrategy)
+    assert strategy.completed(table.players[0]) is True
+
+
+def test_strategy_default_not_completed():
+    class TestStrategy(Strategy):
+        def update_bets(self, player: 'Player') -> None:
+            pass
+
+    strategy = TestStrategy()
+    table = Table()
+    table.add_player(100, strategy=TestStrategy)
+    assert strategy.completed(table.players[0]) is False
+
+
+def test_aggregate_strategy_completed():
+    class TestStrategy1(Strategy):
+        def update_bets(self, player: 'Player') -> None:
+            pass
+
+        def completed(self, player: 'Player') -> bool:
+            return True
+
+    class TestStrategy2(Strategy):
+        def update_bets(self, player: 'Player') -> None:
+            pass
+
+        def completed(self, player: 'Player') -> bool:
+            return True
+
+    strategy = TestStrategy1() + TestStrategy2()
     table = Table()
     table.add_player(strategy=strategy)
-    table.fixed_run(rolls)
-    table.add_player_bets(verbose=False)
-
-    bets = table.players[0].bets_on_table
-
-    assert set(bets) == set(correct_bets)
+    assert strategy.completed(table.players[0])
