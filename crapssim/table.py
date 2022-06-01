@@ -20,9 +20,6 @@ class Table:
     point : string
         The point for the table.  It is either "Off" when point is off or "On"
         when point is on.
-    bet_update_info : dictionary
-        Contains information from updating bets, for given player and a bet
-        name, this is status of last bet (win/loss), and win amount.
     dice : Dice
         Dice for the table
     settings : dice[str, list[int]]
@@ -52,42 +49,8 @@ class Table:
         self.n_shooters: int = 1
         self.new_shooter: bool = True
 
-    @classmethod
-    def with_payouts(cls, **kwargs: list[int]) -> 'Table':
-        """ Return a table with the settings specified in **kwargs.
-
-        Parameters
-        ----------
-        **kwargs : list[int]
-            The tables settings.
-
-        Returns
-        -------
-        Table
-            The table with the specified settings.
-
-        """
-        table = cls()
-        for name, value in kwargs.items():
-            table.settings[name] = value
-        return table
-
-    def set_payouts(self, name: str, value: list[int]) -> None:
-        """ Set a payout.
-
-        Parameters
-        ----------
-        name : str
-            Name of the payout.
-        value : list[int]
-            Rolls for the payout.
-        """
-        self.settings[name] = value
-
-    def add_player(self, bankroll: typing.SupportsFloat = 100,
-                   strategy: Strategy = BetPassLine(5),
-                   name: str = None,
-                   unit: typing.SupportsFloat = 5) -> None:
+    def add_player(self, bankroll: typing.SupportsFloat = 100, strategy: Strategy = BetPassLine(5),
+                   name: str = None) -> None:
         """ Add player object to the table
 
         Parameters
@@ -99,8 +62,6 @@ class Table:
         name
             The players name, if None defaults to "Player x" with x being the current number
             of players starting with 0 (ex. Player 0, Player 1, Player 2).
-        unit
-            The unit to use for strategies, defaults to 5.
 
         """
         if name is None:
@@ -367,14 +328,8 @@ class Point:
     """
     The point on a craps table.
 
-    Parameters
-    ----------
-    NONE
-
     Attributes
     ----------
-    status : str
-        Either 'On' or 'Off', depending on whether a point is set
     number : int
         The point number (in [4, 5, 6, 8, 9, 10]) is status == 'On'
     """

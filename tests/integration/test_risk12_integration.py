@@ -1818,7 +1818,7 @@ def test_risk12_integration(point, last_roll, strat_info, bets_before, dice_resu
         strategy.pre_point_winnings = 10
     elif strat_info is not None and 'winnings' in strat_info:
         strategy.pre_point_winnings = strat_info['winnings']
-    table.add_player(bankroll=float("inf"), strategy=strategy) # ADD STRATEGY HERE
+    table.add_player(bankroll=float("inf"), strategy=strategy)  # ADD STRATEGY HERE
     table.players[0].bets_on_table = bets_before
     table.dice.result = dice_result
     table.add_player_bets()

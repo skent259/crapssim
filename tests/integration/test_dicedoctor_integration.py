@@ -1811,7 +1811,7 @@ def test_dicedoctor_integration(point, last_roll, strat_info, bets_before, dice_
     table = Table()
     strategy = DiceDoctor()
     strategy.current_progression = strat_info['progression']
-    table.add_player(bankroll=float("inf"), strategy=strategy) # ADD STRATEGY HERE
+    table.add_player(bankroll=float("inf"), strategy=strategy)  # ADD STRATEGY HERE
     table.point.number = point
     table.last_roll = last_roll
     table.players[0].bets_on_table = bets_before

@@ -1811,7 +1811,8 @@ from crapssim.bet.pass_line import Odds4, Odds5, Odds6, Odds8, Odds9, Odds10
 def test_passline_odds345_integration(point, last_roll, strat_info, bets_before, dice_result, bets_after):
     table = Table()
     odds = {4: 3, 5: 4, 6: 5, 8: 5, 9: 4, 10: 3}
-    table.add_player(bankroll=float("inf"), strategy=BetPassLine(5) + PassLineOdds(odds)) # ADD STRATEGY HERE
+    table.add_player(bankroll=float("inf"),
+                     strategy=BetPassLine(5) + PassLineOdds(odds))  # ADD STRATEGY HERE
     table.point.number = point
     table.last_roll = last_roll
     table.players[0].bets_on_table = bets_before

@@ -1830,7 +1830,7 @@ def test_hammerlock_integration(point, last_roll, strat_info, bets_before, dice_
         strategy.place_win_count = 2
     elif table.point.status == 'On' and strat_info['mode'] == 'place_inside':
         strategy.place_win_count = 1
-    table.add_player(bankroll=float("inf"), strategy=strategy) # ADD STRATEGY HERE
+    table.add_player(bankroll=float("inf"), strategy=strategy)  # ADD STRATEGY HERE
     table.players[0].bets_on_table = bets_before
     table.dice.result = dice_result
     strategy.after_roll(table.players[0])
