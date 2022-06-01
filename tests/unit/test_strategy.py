@@ -46,3 +46,24 @@ def test_aggregate_strategy_completed():
     table = Table()
     table.add_player(strategy=strategy)
     assert strategy.completed(table.players[0])
+
+
+def test_aggregate_strategy_incomplete():
+    class TestStrategy1(Strategy):
+        def update_bets(self, player: 'Player') -> None:
+            pass
+
+        def completed(self, player: 'Player') -> bool:
+            return True
+
+    class TestStrategy2(Strategy):
+        def update_bets(self, player: 'Player') -> None:
+            pass
+
+        def completed(self, player: 'Player') -> bool:
+            return False
+
+    strategy = TestStrategy1() + TestStrategy2()
+    table = Table()
+    table.add_player(strategy=strategy)
+    assert not strategy.completed(table.players[0])
