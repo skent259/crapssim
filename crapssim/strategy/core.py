@@ -32,6 +32,11 @@ class Strategy(ABC):
             The Player to check for bets, etc.
         """
 
+    def completed(self, player: 'Player') -> bool:
+        """If True, the Strategy is completed and the Player stops playing. If False, the Player
+        keeps playing the Strategy."""
+        return False
+
     @abstractmethod
     def update_bets(self, player: 'Player') -> None:
         """Add, remove, or change the bets on the table.
@@ -65,10 +70,9 @@ class AggregateStrategy(Strategy):
         self.strategies = strategies
 
     def update_bets(self, player: 'Player') -> None:
-        count = 0
         for strategy in self.strategies:
-            strategy.update_bets(player)
-            count += 1
+            if not strategy.completed(player):
+                strategy.update_bets(player)
 
     def __repr__(self) -> str:
         repr_strategies = [repr(x) for x in self.strategies]
