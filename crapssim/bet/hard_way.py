@@ -30,36 +30,3 @@ class HardWay(Bet):
 
     def get_placed_key(self) -> typing.Hashable:
         return HardWay, self.number
-
-
-
-class Hard4(HardWay):
-    payout_ratio: int = HardWay.payout_ratios[4]
-    number: int = 4
-
-    def __init__(self, bet_amount: typing.SupportsFloat):
-        super().__init__(self.number, bet_amount)
-
-
-class Hard6(HardWay):
-    payout_ratio: int = HardWay.payout_ratios[6]
-    number: int = 6
-
-    def __init__(self, bet_amount: typing.SupportsFloat):
-        super().__init__(self.number, bet_amount)
-
-
-class Hard8(HardWay):
-    payout_ratio: int = HardWay.payout_ratios[8]
-    number: int = 8
-
-    def __init__(self, bet_amount: typing.SupportsFloat):
-        super().__init__(self.number, bet_amount)
-
-
-class Hard10(HardWay):
-    payout_ratio: int = HardWay.payout_ratios[10]
-    number: int = 10
-
-    def __init__(self, bet_amount: typing.SupportsFloat):
-        super().__init__(self.number, bet_amount)

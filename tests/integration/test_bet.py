@@ -3,11 +3,10 @@ import pytest
 from crapssim import Table, Dice
 from crapssim.bet import PassLine, Come
 from crapssim.bet.side import Fire
-from crapssim.bet.hard_way import Hard4, Hard6, Hard8, Hard10, HardWay
+from crapssim.bet.hard_way import HardWay
 from crapssim.bet.one_roll import Field, Any7, Two, Three, Yo, Boxcars, AnyCraps, CAndE
-from crapssim.bet.place import Place4, Place5, Place6, Place8, Place9, Place10, Place
-from crapssim.bet.pass_line import DontPass, DontCome, Odds4, Odds5, Odds6, Odds8, Odds9, Odds10, \
-    LayOdds4, LayOdds5, LayOdds6, LayOdds8, LayOdds9, LayOdds10, Odds, LayOdds
+from crapssim.bet.place import Place
+from crapssim.bet.pass_line import DontPass, DontCome, Odds, LayOdds
 from crapssim.table import Point
 
 

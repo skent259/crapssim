@@ -1,8 +1,7 @@
 import pytest
 
 from crapssim import Table
-from crapssim.bet import PassLine, Odds8, Odds10, Odds4, Odds6, Come, Place, DontPass, LayOdds6, \
-    Field, DontCome, LayOdds4, Odds, LayOdds
+from crapssim.bet import PassLine, Come, Place, DontPass, Field, DontCome, Odds, LayOdds
 from crapssim.strategy import BetPassLine, PassLineOdds, BetPlace, BetDontPass, BetDontPassOdds, \
     BetIfTrue
 from crapssim.strategy.examples import Pass2Come, PassLinePlace68, PassLinePlace68Move59, \

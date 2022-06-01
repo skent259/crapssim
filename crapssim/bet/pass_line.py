@@ -244,48 +244,6 @@ class Odds(BaseOdds):
         return f'{self.__class__.__name__}(number={self.number}, bet_amount={self.bet_amount})'
 
 
-class Odds4(Odds):
-    payout_ratio: float = 2 / 1
-
-    def __init__(self, bet_amount: typing.SupportsFloat) -> None:
-        super().__init__(4, bet_amount)
-
-
-class Odds5(Odds):
-    payout_ratio: float = 3 / 2
-
-    def __init__(self, bet_amount: typing.SupportsFloat) -> None:
-        super().__init__(5, bet_amount)
-
-
-class Odds6(Odds):
-    payout_ratio: float = 6 / 5
-
-    def __init__(self, bet_amount: typing.SupportsFloat) -> None:
-        super().__init__(6, bet_amount)
-
-
-class Odds8(Odds):
-    payout_ratio: float = 6 / 5
-
-    def __init__(self, bet_amount: typing.SupportsFloat) -> None:
-        super().__init__(8, bet_amount)
-
-
-class Odds9(Odds):
-    payout_ratio: float = 3 / 2
-
-    def __init__(self, bet_amount: typing.SupportsFloat) -> None:
-        super().__init__(9, bet_amount)
-
-
-class Odds10(Odds):
-    payout_ratio: float = 2 / 1
-
-    def __init__(self, bet_amount: typing.SupportsFloat) -> None:
-        super().__init__(10, bet_amount)
-
-
 class LayOdds(BaseOdds):
     payout_ratios = {4: 1 / 2, 5: 2 / 3, 6: 5 / 6, 8: 5 / 6, 9: 2 / 3, 10: 1 / 2}
 
@@ -321,51 +279,3 @@ class LayOdds(BaseOdds):
 
     def __repr__(self) -> str:
         return f'{self.__class__.__name__}(number={self.number}, bet_amount={self.bet_amount})'
-
-
-class LayOdds4(LayOdds):
-    losing_numbers: list[int] = [4]
-    payout_ratio: float = 1 / 2
-
-    def __init__(self, bet_amount: typing.SupportsFloat) -> None:
-        super().__init__(4, bet_amount)
-
-
-class LayOdds5(LayOdds):
-    losing_numbers: list[int] = [5]
-    payout_ratio: float = 2 / 3
-
-    def __init__(self, bet_amount: typing.SupportsFloat) -> None:
-        super().__init__(5, bet_amount)
-
-
-class LayOdds6(LayOdds):
-    losing_numbers: list[int] = [6]
-    payout_ratio: float = 5 / 6
-
-    def __init__(self, bet_amount: typing.SupportsFloat) -> None:
-        super().__init__(6, bet_amount)
-
-
-class LayOdds8(LayOdds):
-    losing_numbers: list[int] = [8]
-    payout_ratio: float = 5 / 6
-
-    def __init__(self, bet_amount: typing.SupportsFloat) -> None:
-        super().__init__(8, bet_amount)
-
-
-class LayOdds9(LayOdds):
-    losing_numbers: list[int] = [9]
-    payout_ratio: float = 2 / 3
-
-    def __init__(self, bet_amount: typing.SupportsFloat) -> None:
-        super().__init__(9, bet_amount)
-
-
-class LayOdds10(LayOdds):
-    losing_numbers: list[int] = [10]
-    payout_ratio: float = 1 / 2
-
-    def __init__(self, bet_amount: typing.SupportsFloat) -> None:
-        super().__init__(10, bet_amount)

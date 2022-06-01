@@ -1,25 +1,22 @@
-import pytest
-import crapssim
 import numpy as np
+import pytest
 
-import crapssim.bet.hard_way
-import crapssim.bet.one_roll
 import crapssim.bet.place
 from crapssim.bet import Bet, PassLine, Come
 from crapssim.bet.one_roll import CAndE
-from crapssim.bet.pass_line import DontCome, Odds4, Odds6, Odds
+from crapssim.bet.pass_line import DontCome, Odds
 from crapssim.table import Table
 
 
 # Check EV of bets on a "per-roll" basis
 
 @pytest.mark.parametrize("bet, ev", [
-    (crapssim.bet.place.Place4(1), -0.0167),
-    (crapssim.bet.place.Place5(1), -0.0111),
-    (crapssim.bet.place.Place6(1), -0.0046),
-    (crapssim.bet.place.Place8(1), -0.0046),
-    (crapssim.bet.place.Place9(1), -0.0111),
-    (crapssim.bet.place.Place10(1), -0.0167),
+    (crapssim.bet.place.Place(4, 1), -0.0167),
+    (crapssim.bet.place.Place(5, 1), -0.0111),
+    (crapssim.bet.place.Place(6, 1), -0.0046),
+    (crapssim.bet.place.Place(8, 1), -0.0046),
+    (crapssim.bet.place.Place(9, 1), -0.0111),
+    (crapssim.bet.place.Place(10, 1), -0.0167),
     (crapssim.bet.one_roll.Field(1), -0.0556),
     (crapssim.bet.one_roll.Any7(1), -0.1667),
     (crapssim.bet.one_roll.Two(1), -0.1389),
