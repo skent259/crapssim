@@ -7,7 +7,7 @@ import crapssim.bet.one_roll
 import crapssim.bet.place
 from crapssim.bet import Bet, PassLine, Come
 from crapssim.bet.one_roll import CAndE
-from crapssim.bet.pass_line import DontCome, Odds4, Odds6
+from crapssim.bet.pass_line import DontCome, Odds4, Odds6, Odds
 from crapssim.table import Table
 
 
@@ -28,10 +28,10 @@ from crapssim.table import Table
     (crapssim.bet.one_roll.Boxcars(1), -0.1389),
     (crapssim.bet.one_roll.AnyCraps(1), -0.1111),
     (crapssim.bet.one_roll.CAndE(1), -0.1111),
-    (crapssim.bet.hard_way.Hard4(1), -0.0278),
-    (crapssim.bet.hard_way.Hard6(1), -0.0278),
-    (crapssim.bet.hard_way.Hard8(1), -0.0278),
-    (crapssim.bet.hard_way.Hard10(1), -0.0278),
+    (crapssim.bet.hard_way.HardWay(4, 1), -0.0278),
+    (crapssim.bet.hard_way.HardWay(6, 1), -0.0278),
+    (crapssim.bet.hard_way.HardWay(8, 1), -0.0278),
+    (crapssim.bet.hard_way.HardWay(10, 1), -0.0278),
 ])
 def test_ev_oneroll(bet, ev):
     t = Table()
@@ -156,7 +156,7 @@ def test_pass_line_odds_allowed():
     table.add_player()
     table.players[0].bets_on_table = [PassLine(5)]
     table.point.number = 6
-    bet = Odds6(25)
+    bet = Odds(6, 25)
     assert bet.allowed(table.players[0])
 
 
@@ -165,7 +165,7 @@ def test_pass_line_odds_too_high():
     table.add_player()
     table.players[0].bets_on_table = [PassLine(5)]
     table.point.number = 4
-    bet = Odds4(25)
+    bet = Odds(4, 25)
     assert bet.allowed(table.players[0]) is False
 
 
@@ -175,7 +175,7 @@ def test_come_odds_allowed():
     come_bet = Come(5)
     come_bet.point = 6
     table.players[0].bets_on_table = [come_bet]
-    bet = Odds6(25)
+    bet = Odds(6, 25)
     assert bet.allowed(table.players[0])
 
 
@@ -185,5 +185,5 @@ def test_come_odds_not_allowed():
     come_bet = Come(5)
     come_bet.point = 6
     table.players[0].bets_on_table = [come_bet]
-    bet = Odds6(9000)
+    bet = Odds(6, 9000)
     assert bet.allowed(table.players[0]) is False
