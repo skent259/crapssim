@@ -212,7 +212,8 @@ class Place682Come(AggregateStrategy):
             point_off = player.table.point.status == 'Off'
             has_place_6 = Place(6, self.six_eight_amount) in player.bets_on_table
             has_place_8 = Place(8, self.six_eight_amount) in player.bets_on_table
-            less_than_four_bets = player.count_bets_by_type(Place, PassLine, Come) < 4
+            less_than_four_bets = len(tuple(x for x in player.bets_on_table if
+                                      isinstance(x, (Place, PassLine, Come)))) < 4
             return point_off and (has_place_6 or has_place_8) and less_than_four_bets
 
         pass_line_strategy = BetIfTrue(PassLine(pass_come_amount), pass_line_key)

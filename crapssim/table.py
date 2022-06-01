@@ -464,8 +464,6 @@ class Player:
         A function that implements a particular betting strategy.  See betting_strategies.py
     name : string, default = "Player"
         Name of the player
-    unit : typing.SupportsFloat, default=5
-        Standard amount of bet to be used by bet_strategy
 
     Attributes
     ----------
@@ -475,8 +473,6 @@ class Player:
         Name of the player
     bet_strategy :
         A function that implements a particular betting strategy. See betting_strategies.py.
-    unit : typing.SupportsFloat
-        Standard amount of bet to be used by bet_strategy
     bets_on_table : list
         List of betting objects for the player
     """
@@ -513,22 +509,6 @@ class Player:
         if bet in self.bets_on_table and bet.is_removable(self):
             self.bankroll += bet.bet_amount
             self.bets_on_table.remove(bet)
-
-    def get_bets_by_type(self, *bet_types: typing.Type[Bet]) -> list[Bet]:
-        if len(bet_types) == 0:
-            bet_types = (Bet,)
-        else:
-            bet_types = tuple(bet_types)
-        bets = []
-
-        for bet in self.bets_on_table:
-            if isinstance(bet, bet_types):
-                bets.append(bet)
-        return bets
-
-    def count_bets_by_type(self, *bet_types: typing.Type[Bet]) -> int:
-        """ returns the total number of bets in self.bets_on_table that match bets_to_check """
-        return len(self.get_bets_by_type(*bet_types))
 
     def add_strategy_bets(self) -> None:
         """ Implement the given betting strategy
