@@ -475,8 +475,6 @@ class Player:
         Name of the player
     bet_strategy :
         A function that implements a particular betting strategy. See betting_strategies.py.
-    strat_info : dict[str, typing.Any]
-        Variables to be used by the players bet_strategy
     unit : typing.SupportsFloat
         Standard amount of bet to be used by bet_strategy
     bets_on_table : list
@@ -492,7 +490,6 @@ class Player:
                  unit: typing.SupportsFloat = 5):
         self.bankroll: float = float(bankroll)
         self.bet_strategy: Strategy = bet_strategy
-        self.strat_info: dict[str, typing.Any] = {}
         self.name: str = name
         self.unit: float = float(unit)
         self.bets_on_table: list[Bet] = []
