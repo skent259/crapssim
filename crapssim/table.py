@@ -105,7 +105,7 @@ class Table:
         """
         if name is None:
             name = f'Player {len(self.players)}'
-        self.players.append(Player(table=self, bankroll=bankroll, bet_strategy=strategy, name=name, unit=unit))
+        self.players.append(Player(table=self, bankroll=bankroll, bet_strategy=strategy, name=name))
 
     def _setup_run(self, verbose: bool) -> None:
         """
@@ -479,19 +479,15 @@ class Player:
         Standard amount of bet to be used by bet_strategy
     bets_on_table : list
         List of betting objects for the player
-    total_bet_amount : int
-        Sum of bet value for the player
     """
 
     def __init__(self, table: Table,
                  bankroll: typing.SupportsFloat,
                  bet_strategy: Strategy = BetPassLine(5),
-                 name: str = "Player",
-                 unit: typing.SupportsFloat = 5):
+                 name: str = "Player"):
         self.bankroll: float = float(bankroll)
         self.bet_strategy: Strategy = bet_strategy
         self.name: str = name
-        self.unit: float = float(unit)
         self.bets_on_table: list[Bet] = []
         self._table: Table = table
 
