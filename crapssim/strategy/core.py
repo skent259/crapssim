@@ -75,6 +75,7 @@ class AggregateStrategy(Strategy):
                 strategy.update_bets(player)
 
     def completed(self, player: 'Player') -> None:
+        print([x.completed(player) for x in self.strategies])
         return all(x.completed(player) for x in self.strategies)
 
     def __repr__(self) -> str:
