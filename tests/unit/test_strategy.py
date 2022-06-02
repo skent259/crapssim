@@ -6,7 +6,6 @@ from crapssim import Player, Table
 from crapssim.bet import Bet, PassLine, Come, HardWay
 from crapssim.strategy import Strategy, AggregateStrategy, BetIfTrue, RemoveIfTrue, IfBetNotExist, \
     BetPointOff, BetPointOn, CountStrategy, PlaceBetAndMove
-from crapssim.strategy.core import BetWithAlternate
 
 
 @pytest.fixture
@@ -327,45 +326,4 @@ def test_count_strategy_key_fails_too_many_bets(player):
     assert not strategy.key(player)
 
 
-def test_bet_with_alternate_key_false(player):
-    bet = MagicMock()
-    alt_bet = MagicMock()
-    key = MagicMock(return_value=False)
-    player.add_bet = MagicMock()
-    strategy = BetWithAlternate(bet, alt_bet, key)
-    strategy.update_bets(player)
-    player.add_bet.assert_called_with(bet)
 
-
-def test_bet_with_alternate_key_true_bet_not_on_table(player):
-    bet = MagicMock()
-    alt_bet = MagicMock()
-    key = MagicMock(return_value=True)
-    player.add_bet = MagicMock()
-    strategy = BetWithAlternate(bet, alt_bet, key)
-    strategy.update_bets(player)
-    player.add_bet.assert_called_once_with(alt_bet)
-
-
-def test_bet_with_alternate_key_true_original_bet_removed(player):
-    bet = MagicMock()
-    alt_bet = MagicMock()
-    key = MagicMock(return_value=True)
-    player.bets_on_table = [bet]
-    player.add_bet = MagicMock()
-    player.remove_bet = MagicMock()
-    strategy = BetWithAlternate(bet, alt_bet, key)
-    strategy.update_bets(player)
-    player.remove_bet.assert_called_once_with(bet)
-
-
-def test_bet_with_alternate_key_true_alt_bet_added(player):
-    bet = MagicMock()
-    alt_bet = MagicMock()
-    key = MagicMock(return_value=True)
-    player.bets_on_table = [bet]
-    player.add_bet = MagicMock()
-    player.remove_bet = MagicMock()
-    strategy = BetWithAlternate(bet, alt_bet, key)
-    strategy.update_bets(player)
-    player.add_bet.assert_called_once_with(alt_bet)

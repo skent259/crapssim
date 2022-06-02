@@ -248,33 +248,23 @@ class CountStrategy(BetIfTrue):
                f'bet={self.bet})'
 
 
-class BetWithAlternate(Strategy):
-    """Strategy that places a bet (if it's not already placed) if a given key is False. If the key
-    is True, either places the alternative bet or replaces the initial bet with the alternative
-    bet."""
-
-    def __init__(self, bet: Bet, alt_bet: Bet, key: typing.Callable[['Player'], bool]):
-        super().__init__()
-        self.bet = bet
-        self.alt_bet = alt_bet
-        self.key = key
+class BetWithAlternates(Strategy):
+    """Strategy that tries to place a bet, if that bet already exists moves to the next bet
+    in the list and tries to place that one stopping once a bet can be placed that isn't already
+    on the table."""
+    def __init__(self, bets: typing.Iterable[Bet]):
+        self.bets = bets
 
     def update_bets(self, player: 'Player') -> None:
-        if not self.key(player):
-            IfBetNotExist(self.bet).update_bets(player)
-        elif self.key(player):
-            if self.bet in player.bets_on_table:
-                player.remove_bet(self.bet)
-            if self.alt_bet not in player.bets_on_table:
-                player.add_bet(self.alt_bet)
-
-    def __repr__(self):
-        return f'{self.__class__.__name__}(bet={self.bet}, alt_bet={self.alt_bet}, key={self.key})'
+        for bet in self.bets:
+            if bet.allowed(player) and bet not in player.bets_on_table:
+                player.add_bet(bet)
+                return
 
 
 class PlaceBetAndMove(Strategy):
-    """Strategy that makes Place bets and then moves the bet to other Places if an AllowsOdds bet
-    gets moved to a bet with the same number."""
+    """Strategy that makes Place bets and then moves the bet to other Places if a PassLine,
+    DontPass, Come or DontCOme bet gets moved to a bet with the same number."""
     def __init__(self, starting_bets: list[Place],
                  check_bets: list[PassLine | DontPass | Come | DontCome],
                  bet_movements: dict[Place, Place | None]):
