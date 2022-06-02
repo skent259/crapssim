@@ -4,7 +4,8 @@ import pytest
 
 from crapssim import Player, Table
 from crapssim.bet import Bet
-from crapssim.strategy import Strategy, AggregateStrategy, BetIfTrue, RemoveIfTrue, IfBetNotExist
+from crapssim.strategy import Strategy, AggregateStrategy, BetIfTrue, RemoveIfTrue, IfBetNotExist, \
+    BetPointOff
 
 
 @pytest.fixture
@@ -228,6 +229,24 @@ def test_if_bet_not_exist_repr(player):
     bet = MagicMock()
     strategy = IfBetNotExist(bet)
     assert repr(strategy) == f'IfBetNotExist(bet={bet})'
+
+
+def test_bet_point_off_add_bet(player):
+    player.table.point.number = None
+    player.add_bet = MagicMock()
+    bet = MagicMock()
+    strategy = BetPointOff(bet)
+    strategy.update_bets(player)
+    player.add_bet.assert_called_with(bet)
+
+
+def test_bet_point_off_dont_add_bet(player):
+    player.table.point.number = 6
+    player.add_bet = MagicMock()
+    bet = MagicMock()
+    strategy = BetPointOff(bet)
+    strategy.update_bets(player)
+    player.add_bet.assert_not_called()
 
 
 
