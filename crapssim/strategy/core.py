@@ -255,11 +255,17 @@ class CountStrategy(BetIfTrue):
         return self.get_bets_of_type_count(player) < self.count
 
     def get_bets_of_type_count(self, player):
-        return len(player.get_bets_by_types(bet_types=self.bet_types))
+        return len(player.get_bets_by_type(bet_type=self.bet_types))
 
     def __repr__(self) -> str:
         return f'{self.__class__.__name__}(bet_types={self.bet_types}, count={self.count}, ' \
                f'bet={self.bet})'
+
+
+class RemoveByType(RemoveIfTrue):
+    """Remove any bets that are of the given type(s)."""
+    def __init__(self, bet_type: typing.Type[Bet] | tuple[typing.Type[Bet], ...]):
+        super().__init__(lambda b, p: isinstance(b, bet_type))
 
 
 class PlaceBetAndMove(Strategy):
