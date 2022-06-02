@@ -212,7 +212,7 @@ class BetPointOn(BetIfTrue):
 
 class CountStrategy(BetIfTrue):
     """Strategy that checks how many bets exist of a certain type. If the number of bets of that
-    type is less than the given count, it places the bet."""
+    type is less than the given count, it places the bet (if the bet isn't already on the table.)"""
     def __init__(self, bet_types: typing.Iterable[typing.Type[Bet]], count: int, bet: Bet):
         """If there are less than count number of bets placed by player with a given bet_type, it
         adds the given bet.
@@ -229,15 +229,23 @@ class CountStrategy(BetIfTrue):
         self.bet_types = bet_types
         self.count = count
 
-        def key(player: "Player") -> bool:
-            bets_of_type = [x for x in player.bets_on_table if isinstance(x, tuple(self.bet_types))]
-            bets_of_type_count = len(bets_of_type)
-            return bets_of_type_count < self.count and bet not in player.bets_on_table
+        super().__init__(bet, key=self.key)
 
-        super().__init__(bet, key=key)
+    def key(self, player: "Player") -> bool:
+        return self.less_than_count_bets_of_type(player) and self.bet_is_not_on_table(player)
+
+    def bet_is_not_on_table(self, player) -> bool:
+        return self.bet not in player.bets_on_table
+
+    def less_than_count_bets_of_type(self, player):
+        return self.get_bets_of_type_count(player) < self.count
+
+    def get_bets_of_type_count(self, player):
+        return len(player.get_bets_by_types(bet_types=self.bet_types))
 
     def __repr__(self) -> str:
-        return f'{self.__class__.__name__}(bet={self.bet})'
+        return f'{self.__class__.__name__}(bet_types={self.bet_types}, count={self.count}, ' \
+               f'bet={self.bet})'
 
 
 class PlaceBetAndMove(Strategy):

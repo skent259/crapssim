@@ -3,9 +3,9 @@ from unittest.mock import MagicMock, Mock, call
 import pytest
 
 from crapssim import Player, Table
-from crapssim.bet import Bet
+from crapssim.bet import Bet, PassLine, Come, HardWay
 from crapssim.strategy import Strategy, AggregateStrategy, BetIfTrue, RemoveIfTrue, IfBetNotExist, \
-    BetPointOff, BetPointOn
+    BetPointOff, BetPointOn, CountStrategy
 
 
 @pytest.fixture
@@ -265,6 +265,47 @@ def test_bet_point_on_dont_add_bet(player):
     strategy = BetPointOn(bet)
     strategy.update_bets(player)
     player.add_bet.assert_not_called()
+
+
+def test_count_strategy_get_bets_of_type_count(player):
+    bet1, bet2, bet3 = PassLine(1), Come(1), HardWay(4, 1)
+    player.bets_on_table = [bet1, bet2, bet3]
+    strategy = CountStrategy((HardWay, ), 0, PassLine(5))
+    assert strategy.get_bets_of_type_count(player) == 1
+
+
+def test_count_strategy_less_than_count_bets_of_type(player):
+    bet1, bet2, bet3 = PassLine(1), Come(1), HardWay(4, 1)
+    player.bets_on_table = [bet1, bet2, bet3]
+    strategy = CountStrategy((HardWay, ), 2, PassLine(5))
+    assert strategy.less_than_count_bets_of_type(player)
+
+
+def test_count_strategy_greater_than_count_bets_of_type(player):
+    bet1, bet2, bet3 = PassLine(1), Come(1), HardWay(4, 1)
+    player.bets_on_table = [bet1, bet2, bet3]
+    strategy = CountStrategy((PassLine, Come), 2, PassLine(5))
+    assert not strategy.less_than_count_bets_of_type(player)
+
+
+def test_bet_is_not_on_table(player):
+    bet1, bet2 = PassLine(5), Come(1)
+    player.bets_on_table = [bet1, bet2]
+    strategy = CountStrategy((PassLine, Come), 2, PassLine(1))
+    assert strategy.bet_is_not_on_table(player)
+
+
+def test_bet_is_on_table(player):
+    bet1, bet2 = PassLine(1), Come(1)
+    player.bets_on_table = [bet1]
+    strategy = CountStrategy((PassLine, Come), 2, PassLine(1))
+    assert not strategy.bet_is_not_on_table(player)
+
+
+def test_count_strategy_repr():
+    strategy = CountStrategy((PassLine, Come), 2, PassLine(1))
+    assert repr(strategy) == f'CountStrategy(bet_types=({PassLine},' \
+                             f' {Come}), count=2, bet={PassLine(1)})'
 
 
 
