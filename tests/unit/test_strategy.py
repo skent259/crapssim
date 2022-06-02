@@ -1,4 +1,4 @@
-from unittest.mock import MagicMock, Mock
+from unittest.mock import MagicMock, Mock, call
 
 import pytest
 
@@ -154,7 +154,51 @@ def test_bet_if_true_repr(bet_if_true):
     assert repr(bet_if_true) == f'BetIfTrue(bet={bet_if_true.bet}, key={bet_if_true.key})'
 
 
-@pytest.fixture
-def remove_if_true():
+def test_remove_if_true_key_called_for_each_bet(player):
     key = MagicMock(return_value=True)
-    return RemoveIfTrue(key=key)
+    remove_if_true = RemoveIfTrue(key=key)
+    remove_if_true.key = MagicMock(return_value=True)
+    player.bets_on_table = [MagicMock(), MagicMock()]
+    before_bets = player.bets_on_table
+    remove_if_true.update_bets(player)
+    remove_if_true.key.assert_has_calls([call(before_bets[0], player),
+                                         call(before_bets[1], player)])
+
+
+def test_remove_if_true_no_bets_removed(player):
+    key = MagicMock(return_value=False)
+    remove_if_true = RemoveIfTrue(key=key)
+    bet1, bet2, bet3 = MagicMock(), MagicMock(), MagicMock()
+    player.bets_on_table = [bet1, bet2, bet3]
+    remove_if_true.update_bets(player)
+    assert player.bets_on_table == [bet1, bet2, bet3]
+
+
+def test_remove_if_true_one_bet_removed(player):
+    bet1, bet2, bet3 = MagicMock(), MagicMock(), MagicMock()
+    player.bets_on_table = [bet1, bet2, bet3]
+
+    def key(bet, player):
+        return bet == bet2
+
+    strategy = RemoveIfTrue(key=key)
+    strategy.update_bets(player)
+    assert player.bets_on_table == [bet1, bet3]
+
+
+def test_remove_if_true_two_bets_removed(player):
+    bet1, bet2, bet3 = MagicMock(), MagicMock(), MagicMock()
+    player.bets_on_table = [bet1, bet2, bet3]
+
+    def key(bet, player):
+        return bet == bet1 or bet == bet3
+
+    strategy = RemoveIfTrue(key=key)
+    strategy.update_bets(player)
+    assert player.bets_on_table == [bet2]
+
+
+def test_remove_if_true_repr():
+    key = MagicMock()
+    strategy = RemoveIfTrue(key)
+    assert repr(strategy) == f'RemoveIfTrue(key={key})'
