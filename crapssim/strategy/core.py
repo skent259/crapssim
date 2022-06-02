@@ -248,20 +248,6 @@ class CountStrategy(BetIfTrue):
                f'bet={self.bet})'
 
 
-class BetWithAlternates(Strategy):
-    """Strategy that tries to place a bet, if that bet already exists moves to the next bet
-    in the list and tries to place that one stopping once a bet can be placed that isn't already
-    on the table."""
-    def __init__(self, bets: typing.Iterable[Bet]):
-        self.bets = bets
-
-    def update_bets(self, player: 'Player') -> None:
-        for bet in self.bets:
-            if bet.allowed(player) and bet not in player.bets_on_table:
-                player.add_bet(bet)
-                return
-
-
 class PlaceBetAndMove(Strategy):
     """Strategy that makes Place bets and then moves the bet to other Places if a PassLine,
     DontPass, Come or DontCOme bet gets moved to a bet with the same number."""
