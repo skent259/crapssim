@@ -6,6 +6,7 @@ from crapssim import Player, Table
 from crapssim.bet import Bet, PassLine, Come, HardWay
 from crapssim.strategy import Strategy, AggregateStrategy, BetIfTrue, RemoveIfTrue, IfBetNotExist, \
     BetPointOff, BetPointOn, CountStrategy, PlaceBetAndMove
+from crapssim.strategy.core import ReplaceIfTrue
 
 
 @pytest.fixture
@@ -203,6 +204,49 @@ def test_remove_if_true_repr():
     key = MagicMock()
     strategy = RemoveIfTrue(key)
     assert repr(strategy) == f'RemoveIfTrue(key={key})'
+
+
+def test_replace_if_true_no_initial_bets_no_bets_added(player):
+    bet = MagicMock()
+    key = MagicMock(return_value=True)
+    player.add_bet = MagicMock()
+    strategy = ReplaceIfTrue(bet, key)
+    strategy.update_bets(player)
+    player.add_bet.assert_not_called()
+
+
+def test_replace_if_true_no_initial_bets_no_bets_removed(player):
+    bet = MagicMock()
+    key = MagicMock(return_value=True)
+    player.add_bet = MagicMock()
+    player.remove_bet = MagicMock()
+    strategy = ReplaceIfTrue(bet, key)
+    strategy.update_bets(player)
+    player.remove_bet.assert_not_called()
+
+
+def test_replace_if_true_key_true_has_initial_bets_removed(player):
+    bet1 = MagicMock()
+    bet2 = MagicMock()
+    key = MagicMock(return_value=True)
+    player.bets_on_table = [bet1]
+    player.add_bet = MagicMock()
+    player.remove_bet = MagicMock()
+    strategy = ReplaceIfTrue(bet2, key)
+    strategy.update_bets(player)
+    player.remove_bet.assert_called_once_with(bet1)
+
+
+def test_replace_if_true_key_true_has_replacement_bet_added(player):
+    bet1 = MagicMock()
+    bet2 = MagicMock()
+    key = MagicMock(return_value=True)
+    player.bets_on_table = [bet1]
+    player.add_bet = MagicMock()
+    player.remove_bet = MagicMock()
+    strategy = ReplaceIfTrue(bet2, key)
+    strategy.update_bets(player)
+    player.add_bet.assert_called_once_with(bet2)
 
 
 def test_if_bet_not_exists_bet_doesnt_exist_add_bet(player):

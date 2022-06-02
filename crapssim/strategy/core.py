@@ -154,6 +154,20 @@ class RemoveIfTrue(Strategy):
         return f'{self.__class__.__name__}(key={self.key})'
 
 
+class ReplaceIfTrue(Strategy):
+    """Strategy that iterates through the bets on the table and if the given key is true, replaces
+    the bet with the given bet."""
+    def __init__(self, bet: Bet, key: typing.Callable[[Bet, 'Player'], bool]):
+        self.key = key
+        self.bet = bet
+
+    def update_bets(self, player: 'Player') -> None:
+        for bet in player.bets_on_table:
+            if self.key(bet, player):
+                player.remove_bet(bet)
+                player.add_bet(self.bet)
+
+
 class IfBetNotExist(BetIfTrue):
     """Strategy that adds a bet if it isn't on the table for that player. Equivalent of
     BetIfTrue(bet, lambda p: bet not in p.bets_on_table)"""
