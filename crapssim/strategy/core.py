@@ -233,6 +233,7 @@ class CountStrategy(BetIfTrue):
             bets_of_type = [x for x in player.bets_on_table if isinstance(x, tuple(self.bet_types))]
             bets_of_type_count = len(bets_of_type)
             return bets_of_type_count < self.count and bet not in player.bets_on_table
+
         super().__init__(bet, key=key)
 
     def __repr__(self) -> str:
