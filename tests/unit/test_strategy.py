@@ -228,3 +228,6 @@ def test_if_bet_not_exist_repr(player):
     bet = MagicMock()
     strategy = IfBetNotExist(bet)
     assert repr(strategy) == f'IfBetNotExist(bet={bet})'
+
+
+

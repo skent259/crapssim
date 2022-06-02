@@ -2,7 +2,6 @@
 strategies with the intended usage. Each of the strategies included in this package are intended
 to be used as building blocks when creating strategies."""
 
-import inspect
 import typing
 from abc import ABC, abstractmethod
 
@@ -116,6 +115,11 @@ class BetIfTrue(Strategy):
         return f'{self.__class__.__name__}(bet={self.bet}, ' \
                f'key={self.key})'
 
+    def __eq__(self, other: object) -> bool:
+        if isinstance(other, Strategy):
+            return isinstance(other, type(self)) and self.bet == other.bet
+        raise NotImplementedError
+
 
 class RemoveIfTrue(Strategy):
     """Strategy that removes all bets that are True for a given key. The key takes the Bet and the
@@ -183,11 +187,6 @@ class BetPointOff(BetIfTrue):
         """
         super().__init__(bet,
                          lambda p: p.table.point.status == "Off" and bet not in p.bets_on_table)
-
-    def __eq__(self, other: object) -> bool:
-        if isinstance(other, Strategy):
-            return isinstance(other, BetPointOff) and self.bet == other.bet
-        raise NotImplementedError
 
     def __repr__(self) -> str:
         return f'{self.__class__.__name__}(bet={self.bet})'
