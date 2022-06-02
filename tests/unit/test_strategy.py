@@ -4,7 +4,7 @@ import pytest
 
 from crapssim import Player, Table
 from crapssim.bet import Bet
-from crapssim.strategy import Strategy, AggregateStrategy, BetIfTrue, RemoveIfTrue
+from crapssim.strategy import Strategy, AggregateStrategy, BetIfTrue, RemoveIfTrue, IfBetNotExist
 
 
 @pytest.fixture
@@ -202,3 +202,29 @@ def test_remove_if_true_repr():
     key = MagicMock()
     strategy = RemoveIfTrue(key)
     assert repr(strategy) == f'RemoveIfTrue(key={key})'
+
+
+def test_if_bet_not_exists_bet_doesnt_exist_add_bet(player):
+    bet1 = MagicMock()
+    bet2 = MagicMock()
+    player.bets_on_table = [bet1]
+    player.add_bet = MagicMock()
+    strategy = IfBetNotExist(bet2)
+    strategy.update_bets(player)
+    player.add_bet.assert_called_once_with(bet2)
+
+
+def test_if_bet_exists_dont_add_bet(player):
+    bet1 = MagicMock()
+    bet2 = MagicMock()
+    player.bets_on_table = [bet1, bet2]
+    player.add_bet = MagicMock()
+    strategy = IfBetNotExist(bet2)
+    strategy.update_bets(player)
+    player.add_bet.assert_not_called()
+
+
+def test_if_bet_not_exist_repr(player):
+    bet = MagicMock()
+    strategy = IfBetNotExist(bet)
+    assert repr(strategy) == f'IfBetNotExist(bet={bet})'
