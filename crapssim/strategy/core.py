@@ -248,6 +248,27 @@ class CountStrategy(BetIfTrue):
                f'bet={self.bet})'
 
 
+class BetWithAlternate(Strategy):
+    """Strategy that places a bet (if it's not already placed) if a given key is False. If the key
+    is True, either places the alternative bet or replaces the initial bet with the alternative
+    bet."""
+
+    def __init__(self, bet: Bet, alt_bet: Bet, key: typing.Callable[['Player'], bool]):
+        super().__init__()
+        self.bet = bet
+        self.alt_bet = alt_bet
+        self.key = key
+
+    def update_bets(self, player: 'Player') -> None:
+        if not self.key(player):
+            IfBetNotExist(self.bet).update_bets(player)
+        elif self.key(player):
+            if self.bet in player.bets_on_table:
+                player.remove_bet(self.bet)
+            if self.alt_bet not in player.bets_on_table:
+                player.add_bet(self.alt_bet)
+
+
 class PlaceBetAndMove(Strategy):
     """Strategy that makes Place bets and then moves the bet to other Places if an AllowsOdds bet
     gets moved to a bet with the same number."""
