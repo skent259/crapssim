@@ -460,7 +460,7 @@ class Player:
             self.bankroll -= bet.bet_amount
             self.bets_on_table.append(new_bet)
 
-    def get_bets_by_type(self, bet_type: typing.Type[Bet] | tuple[typing.Type[Bet]]):
+    def get_bets_by_type(self, bet_type: typing.Type[Bet] | tuple[typing.Type[Bet], ...]):
         return [x for x in self.bets_on_table if isinstance(x, bet_type)]
 
     def remove_bet(self, bet: Bet) -> None:
