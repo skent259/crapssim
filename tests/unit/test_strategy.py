@@ -308,4 +308,19 @@ def test_count_strategy_repr():
                              f' {Come}), count=2, bet={PassLine(1)})'
 
 
+def test_count_strategy_key_passes(player):
+    strategy = CountStrategy((PassLine, Come), 2, PassLine(1))
+    player.bets_on_table = [Come(1)]
+    assert strategy.key(player)
 
+
+def test_count_strategy_key_fails_bet_on_table(player):
+    strategy = CountStrategy((PassLine, Come), 2, PassLine(1))
+    player.bets_on_table = [PassLine(1)]
+    assert not strategy.key(player)
+
+
+def test_count_strategy_key_fails_too_many_bets(player):
+    strategy = CountStrategy((PassLine, Come), 2, PassLine(1))
+    player.bets_on_table = [Come(1), Come(1)]
+    assert not strategy.key(player)
