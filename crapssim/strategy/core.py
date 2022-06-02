@@ -268,6 +268,9 @@ class BetWithAlternate(Strategy):
             if self.alt_bet not in player.bets_on_table:
                 player.add_bet(self.alt_bet)
 
+    def __repr__(self):
+        return f'{self.__class__.__name__}(bet={self.bet}, alt_bet={self.alt_bet}, key={self.key})'
+
 
 class PlaceBetAndMove(Strategy):
     """Strategy that makes Place bets and then moves the bet to other Places if an AllowsOdds bet
