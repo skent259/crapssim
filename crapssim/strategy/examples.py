@@ -212,18 +212,15 @@ class Place682Come(AggregateStrategy):
             point_off = player.table.point.status == 'Off'
             has_place_6 = Place(6, self.six_eight_amount) in player.bets_on_table
             has_place_8 = Place(8, self.six_eight_amount) in player.bets_on_table
-            less_than_four_bets = len(tuple(x for x in player.bets_on_table if
-                                      isinstance(x, (Place, PassLine, Come)))) < 4
+            less_than_four_bets = len(player.get_bets_by_types((Place, PassLine, Come))) < 4
             return point_off and (has_place_6 or has_place_8) and less_than_four_bets
 
         pass_line_strategy = BetIfTrue(PassLine(pass_come_amount), pass_line_key)
 
         def come_key(player: "Player") -> bool:
             point_on = player.table.point.status == 'On'
-            come_count_lt_2 = len([b for b in player.bets_on_table if isinstance(b, Come)]) < 2
-            place_passline_come_count = len(
-                [b for b in player.bets_on_table if isinstance(b, (PassLine, Come, Place))]
-            )
+            come_count_lt_2 = len(player.get_bets_by_types((Come, ))) < 2
+            place_passline_come_count = len(player.get_bets_by_types((PassLine, Come, Place)))
             pass_line_place_come_lt_4 = place_passline_come_count < 4
             return point_on and come_count_lt_2 and pass_line_place_come_lt_4
 
@@ -301,7 +298,7 @@ class HammerLock(Strategy):
         ----------
         player
         """
-        place_bets = [bet for bet in player.bets_on_table if isinstance(bet, Place)]
+        place_bets = player.get_bets_by_types((Place, ))
         winning_place_bets = [bet for bet in place_bets if bet.get_status(player.table) == 'win']
         self.place_win_count += len(winning_place_bets)
         if player.table.point.status == 'On' and player.table.dice.total == 7:
@@ -541,7 +538,7 @@ class Place68CPR(Strategy):
         player
             The player to check the bets for.
         """
-        place_bets = [x for x in player.bets_on_table if isinstance(x, Place)]
+        place_bets = player.get_bets_by_types((Place, ))
         place_six_bets = [x for x in place_bets if x.number == 6]
         place_six_win_amounts = [x.get_win_amount(player.table) for x in place_six_bets]
         self.six_winnings = sum(place_six_win_amounts)
@@ -607,8 +604,7 @@ class Place68DontCome2Odds(AggregateStrategy):
         self.dont_come_amount = dont_come_amount
         super().__init__(BetPlace({6: six_eight_amount, 8: six_eight_amount}, skip_point=False),
                          BetIfTrue(DontCome(dont_come_amount),
-                                   lambda p: not any(isinstance(x, DontCome)
-                                                     for x in p.bets_on_table)),
+                                   lambda p: len(p.get_bets_by_types((DontCome, ))) == 0),
                          OddsStrategy(DontCome, 2))
 
     def __repr__(self) -> str:
