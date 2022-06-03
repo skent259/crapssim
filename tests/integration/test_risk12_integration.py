@@ -1,7 +1,7 @@
 import pytest
 
 from crapssim.strategy.examples import Risk12
-from crapssim.table import Table
+from crapssim.table import Table, TableUpdate
 from crapssim.bet import PassLine, Place
 from crapssim.bet.one_roll import Field
 
@@ -1820,5 +1820,5 @@ def test_risk12_integration(point, last_roll, strat_info, bets_before, dice_resu
     table.add_player(bankroll=float("inf"), strategy=strategy)  # ADD STRATEGY HERE
     table.players[0].bets_on_table = bets_before
     table.dice.result = dice_result
-    table.add_player_bets()
+    TableUpdate().run_strategies(table)
     assert table.players[0].bets_on_table == bets_after

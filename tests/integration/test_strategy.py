@@ -7,6 +7,7 @@ from crapssim.strategy import BetPassLine, PassLineOdds, BetPlace, BetDontPass, 
 from crapssim.strategy.examples import Pass2Come, PassLinePlace68, PassLinePlace68Move59, \
     Place682Come, IronCross, HammerLock, Risk12, Knockout, DiceDoctor, Place68DontCome2Odds, \
     Place68CPR
+from crapssim.table import TableUpdate
 
 
 @pytest.mark.parametrize(['strategy', 'rolls', 'correct_bets'],
@@ -183,7 +184,7 @@ def test_strategies_compare_bets(strategy, rolls: list[tuple[int, int]],
     table = Table()
     table.add_player(strategy=strategy)
     table.fixed_run(rolls)
-    table.add_player_bets(verbose=False)
+    TableUpdate().run_strategies(table)
 
     bets = table.players[0].bets_on_table
 

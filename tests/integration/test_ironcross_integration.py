@@ -1,7 +1,7 @@
 import pytest
 
 from crapssim.strategy.examples import IronCross
-from crapssim.table import Table
+from crapssim.table import Table, TableUpdate
 from crapssim.bet import PassLine
 from crapssim.bet.one_roll import Field
 from crapssim.bet.pass_line import Odds
@@ -1817,5 +1817,5 @@ def test_ironcross_integration(point, last_roll, strat_info, bets_before, dice_r
     table.last_roll = last_roll
     table.players[0].bets_on_table = bets_before
     table.dice.result = dice_result
-    table.add_player_bets()
+    TableUpdate().run_strategies(table)
     assert table.players[0].bets_on_table == bets_after
