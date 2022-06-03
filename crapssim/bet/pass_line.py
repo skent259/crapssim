@@ -2,6 +2,7 @@ import typing
 from abc import abstractmethod
 
 from crapssim.bet import WinningLosingNumbersBet, Bet
+from crapssim.point import Point
 
 if typing.TYPE_CHECKING:
     from crapssim.table import Table, Player
@@ -45,35 +46,34 @@ class PassLine(WinningLosingNumbersBet):
 
 
 class Come(WinningLosingNumbersBet):
-    def __init__(self, bet_amount: typing.SupportsFloat, point: int | None = None):
+    def __init__(self, bet_amount: typing.SupportsFloat, point: Point | int | None = None):
         super().__init__(bet_amount)
+
+        if point is None or isinstance(point, int):
+            point = Point(point)
+
         self.point = point
-        self._status: str | None = None
 
     def get_payout_ratio(self, table: "Table") -> float:
         return 1.0
 
     def get_winning_numbers(self, table: "Table") -> list[int]:
-        if self.point is None:
+        if self.point == Point(None):
             return [7, 11]
-        return [self.point]
+        return [self.point.number]
 
     def get_losing_numbers(self, table: "Table") -> list[int]:
-        if self.point is None:
+        if self.point == Point(None):
             return [2, 3, 12]
         return [7]
 
-    def get_status(self, table: "Table") -> str | None:
-        return self._status
-
-    def update(self, table: "Table") -> None:
-        if self.point is None and table.dice.total in (4, 5, 6, 8, 9, 10):
-            self.point = table.dice.total
-        else:
-            self._status = super().get_status(table)
+    def update_point(self, player: 'Player'):
+        if self.point.status == 'Off' and player.table.dice.total in (4, 5, 6, 8, 9, 10):
+            player.bets_on_table.remove(self)
+            player.bets_on_table.append(Come(self.bet_amount, player.table.dice.total))
 
     def is_removable(self, player: "Player") -> bool:
-        if self.point is not None:
+        if self.point.status == 'On':
             return False
         return True
 
@@ -84,7 +84,7 @@ class Come(WinningLosingNumbersBet):
 
     def get_odds_bet(self, bet_amount: typing.SupportsFloat, table: "Table") -> "Odds":
         if self.point is not None:
-            return Odds(self.point, bet_amount)
+            return Odds(self.point.number, bet_amount)
         else:
             raise ValueError
 

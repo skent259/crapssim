@@ -5,6 +5,7 @@ import crapssim.bet.place
 from crapssim.bet import Bet, PassLine, Come
 from crapssim.bet.one_roll import CAndE
 from crapssim.bet.pass_line import DontCome, Odds
+from crapssim.point import Point
 from crapssim.table import Table
 
 
@@ -141,7 +142,7 @@ def test_come_is_removable_without_point():
 
 def test_come_is_irremovable_with_point():
     bet = Come(5)
-    bet.point = 10
+    bet.point = Point(10)
     table = Table()
     table.add_player()
     table.point.number = 6

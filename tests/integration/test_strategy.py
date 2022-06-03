@@ -183,7 +183,7 @@ def test_strategies_compare_bets(strategy, rolls: list[tuple[int, int]],
                                  correct_bets: {(str, str, float)}):
     table = Table()
     table.add_player(strategy=strategy)
-    table.fixed_run(rolls)
+    table.fixed_run(rolls, verbose=True)
     TableUpdate().run_strategies(table)
 
     bets = table.players[0].bets_on_table

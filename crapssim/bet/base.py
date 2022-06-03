@@ -74,7 +74,7 @@ class Bet(ABC):
             return True
         return False
 
-    def update_point(self, dice: 'Dice'):
+    def update_point(self, player: 'Player'):
         pass
 
     def update(self, table: "Table") -> None:

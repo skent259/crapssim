@@ -3,7 +3,7 @@ import pytest
 from crapssim import Table
 from crapssim.bet import Come
 from crapssim.strategy import BetPassLine
-from crapssim.table import Point
+from crapssim.point import Point
 
 
 def test_ensure_one_player():

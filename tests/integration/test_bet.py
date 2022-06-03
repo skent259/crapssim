@@ -7,7 +7,8 @@ from crapssim.bet.hard_way import HardWay
 from crapssim.bet.one_roll import Field, Any7, Two, Three, Yo, Boxcars, AnyCraps, CAndE
 from crapssim.bet.place import Place
 from crapssim.bet.pass_line import DontPass, DontCome, Odds, LayOdds
-from crapssim.table import Point, TableUpdate
+from crapssim.table import TableUpdate
+from crapssim.point import Point
 
 
 @pytest.mark.parametrize('bet_one, bet_two', [

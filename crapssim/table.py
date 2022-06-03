@@ -2,6 +2,7 @@ import typing
 
 from crapssim.dice import Dice
 from .bet import Bet
+from .point import Point
 from .strategy import Strategy, BetPassLine
 
 
@@ -17,7 +18,7 @@ class TableUpdate:
         self.update_table_stats(table)
         self.roll(table, dice_outcome, verbose)
         self.after_roll(table)
-        self.update_bets(table)
+        self.update_bets(table, verbose)
         self.update_points(table, verbose)
 
     @staticmethod
@@ -43,9 +44,9 @@ class TableUpdate:
             player.bet_strategy.after_roll(player)
 
     @staticmethod
-    def update_bets(table: 'Table'):
+    def update_bets(table: 'Table', verbose=False):
         for player in table.players:
-            player.update_bet()
+            player.update_bet(verbose=verbose)
 
     @staticmethod
     def update_table_stats(table: 'Table'):
@@ -65,7 +66,7 @@ class TableUpdate:
     @staticmethod
     def update_points(table: 'Table', verbose: bool):
         for player, bet in table.yield_player_bets():
-            bet.update_point(table.dice)
+            bet.update_point(player)
         table.point.update(table.dice)
 
         if verbose:
@@ -260,89 +261,6 @@ class Table:
         The total sum of all players total_bet_amounts and bankroll.
         """
         return sum([p.total_bet_amount + p.bankroll for p in self.players])
-
-
-class Point:
-    """
-    The point on a craps table.
-
-    Attributes
-    ----------
-    number : int
-        The point number (in [4, 5, 6, 8, 9, 10]) is status == 'On'
-    """
-
-    def __init__(self) -> None:
-        self.number: int | None = None
-
-    @property
-    def status(self) -> str:
-        if self.number is None:
-            return 'Off'
-        else:
-            return 'On'
-
-    def __eq__(self, other: object) -> bool:
-        if isinstance(other, str):
-            return self.status.lower() == other.lower() or str(self.number) == other
-        elif isinstance(other, int) and other in (4, 5, 6, 8, 9, 10):
-            return other == self.number
-        elif isinstance(other, Point):
-            return other.status == self.status and other.number == self.number
-        else:
-            raise NotImplementedError
-
-    def __gt__(self, other: object) -> bool:
-        if self.number is None:
-            raise NotImplementedError
-        if isinstance(other, str):
-            return self.number > int(other)
-        elif isinstance(other, int):
-            return self.number > other
-        elif isinstance(other, Point):
-            if other.number is None:
-                raise NotImplementedError
-            return self.number > other.number
-        else:
-            raise NotImplementedError
-
-    def __lt__(self, other: object) -> bool:
-        if self.number is None:
-            raise NotImplementedError
-        if isinstance(other, str):
-            return self.number < int(other)
-        elif isinstance(other, int):
-            return self.number < other
-        elif isinstance(other, Point):
-            if other.number is None:
-                raise NotImplementedError
-            return self.number < other.number
-        else:
-            raise NotImplementedError
-
-    def __ge__(self, other: object) -> bool:
-        if self.number is None:
-            raise NotImplementedError
-        return self.__eq__(other) or self.__gt__(other)
-
-    def __le__(self, other: object) -> bool:
-        if self.number is None:
-            raise NotImplementedError
-        return self.__eq__(other) or self.__lt__(other)
-
-    def update(self, dice_object: Dice) -> None:
-        """
-        Given a Dice object update the points status and number.
-
-        Parameters
-        ----------
-        dice_object : Dice
-            The Dice you want to update the point with
-        """
-        if self.status == "Off" and dice_object.total in [4, 5, 6, 8, 9, 10]:
-            self.number = dice_object.total
-        elif self.status == "On" and dice_object.total in [7, self.number]:
-            self.number = None
 
 
 class Player:
