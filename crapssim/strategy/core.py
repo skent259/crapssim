@@ -182,6 +182,14 @@ class ReplaceIfTrue(Strategy):
         self.bet = bet
 
     def update_bets(self, player: 'Player') -> None:
+        """Iterate through each bet for the player and if the self.key(bet, player) is True, remove
+        the bet and replace it with self.bet.
+
+        Parameters
+        ----------
+        player
+            The player to check the bets for.
+        """
         for bet in player.bets_on_table:
             if self.key(bet, player):
                 player.remove_bet(bet)
