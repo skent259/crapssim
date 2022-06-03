@@ -5,7 +5,7 @@ import pytest
 from crapssim import Player, Table
 from crapssim.bet import Bet, PassLine, Come, HardWay
 from crapssim.strategy import Strategy, AggregateStrategy, BetIfTrue, RemoveIfTrue, IfBetNotExist, \
-    BetPointOff, BetPointOn, CountStrategy, PlaceBetAndMove
+    BetPointOff, BetPointOn, CountStrategy
 from crapssim.strategy.core import ReplaceIfTrue
 
 
