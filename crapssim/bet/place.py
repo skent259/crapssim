@@ -16,11 +16,6 @@ class Place(WinningLosingNumbersBet):
         self.number = number
         self.winning_numbers = [number]
 
-    def update(self, table: "Table") -> None:
-        # place bets are inactive when point is "Off"
-        if table.point == "On":
-            super().update(table)
-
     def get_payout_ratio(self, table: "Table") -> float:
         return self.payout_ratio
 
