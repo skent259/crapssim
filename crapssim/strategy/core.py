@@ -6,7 +6,6 @@ import typing
 from abc import ABC, abstractmethod
 
 from crapssim.bet import Bet, PassLine, Come
-from crapssim.bet.place import Place
 from crapssim.bet.pass_line import DontPass, DontCome, Odds, LayOdds
 
 if typing.TYPE_CHECKING:
@@ -73,7 +72,7 @@ class AggregateStrategy(Strategy):
             if not strategy.completed(player):
                 strategy.update_bets(player)
 
-    def completed(self, player: 'Player') -> None:
+    def completed(self, player: 'Player') -> bool:
         return all(x.completed(player) for x in self.strategies)
 
     def __repr__(self) -> str:
