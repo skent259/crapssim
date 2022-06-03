@@ -1,9 +1,80 @@
-import copy
 import typing
 
 from crapssim.dice import Dice
-from .bet import Bet, PassLine
+from .bet import Bet
 from .strategy import Strategy, BetPassLine
+
+
+class TableUpdate:
+    """Object for processing a table after the dice has been rolled."""
+    def run(self, table: 'Table',
+            dice_outcome: typing.Iterable[int] | None = None,
+            verbose: bool = False):
+        """Run through the roll logic of the table."""
+        self.set_new_shooter(table)
+        self.run_strategies(table)
+        self.before_roll(table)
+        self.update_table_stats(table)
+        self.roll(table, dice_outcome)
+        if verbose:
+            self.print_roll(table.dice.total, tuple(table.dice.result))
+        self.after_roll(table)
+        self.update_bets(table)
+        self.update_points(table)
+
+    @staticmethod
+    def before_roll(table: 'Table'):
+        table.last_roll = table.dice.total
+
+    @staticmethod
+    def roll(table: 'Table',
+             fixed_outcome: typing.Iterable[int] | None = None):
+        if fixed_outcome is not None:
+            table.dice.fixed_roll(fixed_outcome)
+        else:
+            table.dice.roll()
+
+    @staticmethod
+    def after_roll(table: 'Table'):
+        for player in table.players:
+            player.bet_strategy.after_roll(player)
+
+    @staticmethod
+    def update_bets(table: 'Table'):
+        for player in table.players:
+            player.update_bet()
+
+    @staticmethod
+    def update_table_stats(table: 'Table'):
+        table.pass_rolls += 1
+        if table.point == "On" and (table.dice.total == 7 or
+                                    table.dice.total == table.point.number):
+            table.pass_rolls = 0
+
+    @staticmethod
+    def set_new_shooter(table: 'Table'):
+        if table.n_shooters == 0 or (table.point == "On" and table.dice.total == 7):
+            table.new_shooter = True
+            table.n_shooters += 1
+        else:
+            table.new_shooter = False
+
+    @staticmethod
+    def update_points(table: 'Table'):
+        for player, bet in table.yield_player_bets():
+            bet.update_point(table.dice)
+        table.point.update(table.dice)
+
+    @staticmethod
+    def run_strategies(table: 'Table'):
+        for player in table.players:
+            player.bet_strategy.update_bets(player)
+
+    @staticmethod
+    def print_roll(dice_total: int, dice_result: tuple[int, int]):
+        print("")
+        print("Dice out!")
+        print(f"Shooter rolled {dice_total} {dice_result}")
 
 
 class Table:
@@ -46,8 +117,13 @@ class Table:
                                                                   10: 6}}
         self.pass_rolls: int = 0
         self.last_roll: int | None = None
-        self.n_shooters: int = 1
+        self.n_shooters: int = 0
         self.new_shooter: bool = True
+
+    def yield_player_bets(self) -> typing.Generator[tuple['Player', 'Bet'], None, None]:
+        for player in self.players:
+            for bet in player.bets_on_table:
+                yield player, bet
 
     def add_player(self, bankroll: typing.SupportsFloat = 100, strategy: Strategy = BetPassLine(5),
                    name: str = None) -> None:
@@ -106,12 +182,11 @@ class Table:
 
         continue_rolling = True
         while continue_rolling:
-            self.add_player_bets(verbose=verbose)
-            self.roll_and_update(verbose)
-
+            TableUpdate().run(self, verbose=verbose)
             continue_rolling = self.should_keep_rolling(max_rolls, max_shooter, runout)
 
-    def fixed_run(self, dice_outcomes: typing.Iterable[typing.Iterable], verbose: bool = False) -> None:
+    def fixed_run(self, dice_outcomes: typing.Iterable[typing.Iterable], verbose: bool = False) \
+            -> None:
         """
         Give a series of fixed dice outcome and run as if that is what was rolled.
 
@@ -122,79 +197,10 @@ class Table:
         verbose
             If true, print results from table during each roll
         """
+        self._setup_run(verbose=verbose)
 
         for dice_outcome in dice_outcomes:
-            self.add_player_bets(verbose=verbose)
-            self.fixed_roll_and_update(dice_outcome, verbose=verbose)
-
-    def roll_and_update(self, verbose: bool = False) -> None:
-        """
-        Roll dice, update player bets, and update table.
-
-        Parameters
-        ----------
-        verbose
-            If true, prints out information about the roll and the bets
-        """
-        self.roll(verbose=verbose)
-        self.update_player_bets(verbose=verbose)
-        self.update_table(verbose=verbose)
-
-    def fixed_roll_and_update(self, dice_outcome: typing.Iterable[int], verbose: bool = False) -> None:
-        """
-        Roll dice with fixed dice_outcome, update player bets, and update table.
-
-        Parameters
-        ----------
-        dice_outcome
-            Iterable of the two integers representing the chosen dice faces.
-        verbose
-            If true, prints out information about the roll and the bets
-        """
-        self.fixed_roll(dice_outcome=dice_outcome, verbose=verbose)
-        self.update_player_bets(verbose=verbose)
-        self.update_table(verbose=verbose)
-
-    def roll(self, verbose: bool = False) -> None:
-        """
-        Convenience method to roll the dice with two random numbers.
-
-        Parameters
-        ----------
-        verbose
-            If true, prints out that the Dice are out and what number the shooter rolled.
-
-        """
-        self.new_shooter = False
-        self.dice.roll()
-        for player in self.players:
-            player.bet_strategy.after_roll(player)
-
-        if verbose:
-            print("")
-            print("Dice out!")
-            print(f"Shooter rolled {self.dice.total} {self.dice.result}")
-
-    def fixed_roll(self, dice_outcome: typing.Iterable[int], verbose: bool = False) -> None:
-        """
-        Convenience method to roll the dice with two fixed numbers.
-
-        Parameters
-        ----------
-        verbose
-            If true, prints out that the Dice are out and what number the shooter rolled.
-        dice_outcome
-            Iterable of two integers representing the chosen dice faces.
-        """
-        self.new_shooter = False
-        self.dice.fixed_roll(dice_outcome)
-        for player in self.players:
-            player.bet_strategy.after_roll(player)
-
-        if verbose:
-            print("")
-            print("Dice out!")
-            print(f"Shooter rolled {self.dice.total} {self.dice.result}")
+            TableUpdate().run(self, dice_outcome, verbose=verbose)
 
     def should_keep_rolling(self, max_rolls: float | int, max_shooter: float | int,
                             runout: bool) -> bool:
@@ -247,17 +253,6 @@ class Table:
                 if verbose:
                     print(f"{p.name}'s current bets: {p.bets_on_table}")
 
-    def update_player_bets(self, verbose: bool = False) -> None:
-        """ Check bets for wins/losses, payout wins to their bankroll, remove_bet bets that have resolved
-
-        Parameters
-        ----------
-        verbose : bool
-            If True, prints whether the player won, lost, etc and the amount
-        """
-        for p in self.players:
-            p.update_bet(verbose)
-
     def update_table(self, verbose: bool = False) -> None:
         """ update table attributes based on previous dice roll
 
@@ -280,7 +275,6 @@ class Table:
             print(f"Point is {self.point.status} ({self.point.number})")
             print(f"Total Player Cash is ${self.total_player_cash}")
 
-
     @property
     def player_has_bets(self) -> bool:
         """
@@ -289,7 +283,6 @@ class Table:
         Returns
         -------
         True if any of the players have bets on the table, otherwise False.
-
         """
         return sum([len(p.bets_on_table) for p in self.players]) > 0
 

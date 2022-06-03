@@ -3,7 +3,8 @@ import typing
 from abc import ABC, abstractmethod
 
 if typing.TYPE_CHECKING:
-    from crapssim import Table, Player
+    from crapssim.table import Table, Player
+    from crapssim.dice import Dice
 
 
 class Bet(ABC):
@@ -72,6 +73,9 @@ class Bet(ABC):
         if self.get_status(table) is not None:
             return True
         return False
+
+    def update_point(self, dice: 'Dice'):
+        pass
 
     def update(self, table: "Table") -> None:
         """

@@ -7,7 +7,7 @@ from crapssim.bet.hard_way import HardWay
 from crapssim.bet.one_roll import Field, Any7, Two, Three, Yo, Boxcars, AnyCraps, CAndE
 from crapssim.bet.place import Place
 from crapssim.bet.pass_line import DontPass, DontCome, Odds, LayOdds
-from crapssim.table import Point
+from crapssim.table import Point, TableUpdate
 
 
 @pytest.mark.parametrize('bet_one, bet_two', [
@@ -849,7 +849,7 @@ def test_fire(rolls, correct_status, correct_win_amt, correct_remove):
 
     # table.fixed_run(rolls)
     for roll in rolls:
-        table.fixed_roll_and_update(roll)
+        TableUpdate().run(table, roll)
 
     status, win_amt, remove = bet.get_status(table), \
                               bet.get_win_amount(table), \
@@ -894,8 +894,7 @@ def test_bet_allowed_new_shooter(bet, new_shooter, allowed):
     table = Table()
     table.add_player()
 
-    if new_shooter is False:
-        table.fixed_roll((3, 4))
+    table.new_shooter = new_shooter
 
     assert bet.allowed(player=table.players[0]) == allowed
 
