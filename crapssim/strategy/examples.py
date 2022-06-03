@@ -3,11 +3,11 @@ in order to do the intended """
 
 import typing
 
-from crapssim.bet import PassLine, Come, DontPass, DontCome, Place
+from crapssim.bet import PassLine, Come
 from crapssim.bet.one_roll import Field
 from crapssim.bet.place import Place
 from crapssim.bet.pass_line import DontPass, DontCome
-from crapssim.strategy import OddsStrategy, Strategy
+from crapssim.strategy import OddsStrategy
 from crapssim.strategy.core import CountStrategy, BetPointOff, Strategy, \
     IfBetNotExist, BetIfTrue, AggregateStrategy, BetPointOn, RemoveIfTrue, RemoveByType
 from crapssim.strategy.simple_bet import Place5Amount, Place6Amount, Place8Amount, Place9Amount
