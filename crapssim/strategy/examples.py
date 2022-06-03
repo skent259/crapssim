@@ -91,7 +91,8 @@ class PassLinePlace68(AggregateStrategy):
 
 
 class PlaceInside(AggregateStrategy):
-    """Strategy to have Place bets on all the inside (5, 6, 8, 9) numbers."""
+    """Strategy to have Place bets on all the inside (5, 6, 8, 9) numbers. Equivalent to
+    Place5Amount(x) + Place6Amount(x) + Place8Amount(x) + Place9Amount(x)"""
     def __init__(self, bet_amount: typing.SupportsFloat | dict[int, float]):
         self.bet_amount = bet_amount
         if isinstance(bet_amount, typing.SupportsFloat):
