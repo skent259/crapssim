@@ -6,7 +6,7 @@ from crapssim import Player, Table
 from crapssim.bet import Bet, PassLine, Come, HardWay
 from crapssim.strategy import Strategy, AggregateStrategy, BetIfTrue, RemoveIfTrue, IfBetNotExist, \
     BetPointOff, BetPointOn, CountStrategy
-from crapssim.strategy.core import ReplaceIfTrue
+from crapssim.strategy.core import ReplaceIfTrue, RemoveByType
 
 
 @pytest.fixture
@@ -329,14 +329,14 @@ def test_bet_point_on_dont_add_bet(player):
 def test_count_strategy_get_bets_of_type_count(player):
     bet1, bet2, bet3 = PassLine(1), Come(1), HardWay(4, 1)
     player.bets_on_table = [bet1, bet2, bet3]
-    strategy = CountStrategy((HardWay, ), 0, PassLine(5))
+    strategy = CountStrategy((HardWay,), 0, PassLine(5))
     assert strategy.get_bets_of_type_count(player) == 1
 
 
 def test_count_strategy_less_than_count_bets_of_type(player):
     bet1, bet2, bet3 = PassLine(1), Come(1), HardWay(4, 1)
     player.bets_on_table = [bet1, bet2, bet3]
-    strategy = CountStrategy((HardWay, ), 2, PassLine(5))
+    strategy = CountStrategy((HardWay,), 2, PassLine(5))
     assert strategy.less_than_count_bets_of_type(player)
 
 
@@ -363,7 +363,7 @@ def test_bet_is_on_table(player):
 
 def test_count_strategy_repr():
     strategy = CountStrategy((PassLine, Come), 2, PassLine(1))
-    assert repr(strategy) == f'CountStrategy(bet_types=({PassLine},' \
+    assert repr(strategy) == f'CountStrategy(bet_type=({PassLine},' \
                              f' {Come}), count=2, bet={PassLine(1)})'
 
 
@@ -383,3 +383,22 @@ def test_count_strategy_key_fails_too_many_bets(player):
     strategy = CountStrategy((PassLine, Come), 2, PassLine(1))
     player.bets_on_table = [Come(1), Come(1)]
     assert not strategy.key(player)
+
+
+def test_remove_by_type_remove_bet_called(player):
+    strategy = RemoveByType(PassLine)
+    player.remove_bet = MagicMock()
+    bet = MagicMock(PassLine)
+    player.bets_on_table = [bet]
+    strategy.update_bets(player)
+    player.remove_bet.assert_called_once_with(bet)
+
+
+def test_remove_by_type_remove_bet_not_called(player):
+    strategy = RemoveByType(PassLine)
+    player.remove_bet = MagicMock()
+    bet1 = MagicMock(Come)
+    bet2 = MagicMock(HardWay)
+    player.bets_on_table = [bet1, bet2]
+    strategy.update_bets(player)
+    player.remove_bet.assert_not_called()
