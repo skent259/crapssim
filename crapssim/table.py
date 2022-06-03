@@ -280,25 +280,6 @@ class Table:
             print(f"Point is {self.point.status} ({self.point.number})")
             print(f"Total Player Cash is ${self.total_player_cash}")
 
-    def get_player(self, player_name: str) -> typing.Union['Player', bool]:
-        """
-        Given the name of a player return the player object.
-
-        Parameters
-        ----------
-        player_name : str
-            Name of the player
-
-        Returns
-        -------
-        Player, bool
-            If player is found return player, otherwise return False
-
-        """
-        for p in self.players:
-            if p.name == player_name:
-                return p
-        return False
 
     @property
     def player_has_bets(self) -> bool:

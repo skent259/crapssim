@@ -66,8 +66,8 @@ for i in range(n_sim):
         table.add_player(bankroll=100, strategy=s)
 
     table.run(max_rolls=float("inf"), max_shooter=10, verbose=False)
-    for s in strategies:
-        print(f"{i}, {s}, {table.get_player(s).bankroll}, {bankroll}, {table.dice.n_rolls}")
+    for p in table.players:
+        print(f"{i}, {p.bet_strategy}, {p.bankroll}, {bankroll}, {table.dice.n_rolls}")
 ```
 
 For more advanced strategies, you need to write a custom function that can perform the strategy.  Some building blocks and examples can be found in [strategy.py](./crapssim/strategy.py)
