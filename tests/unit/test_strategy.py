@@ -160,11 +160,12 @@ def test_remove_if_true_key_called_for_each_bet(player):
     key = MagicMock(return_value=True)
     remove_if_true = RemoveIfTrue(key=key)
     remove_if_true.key = MagicMock(return_value=True)
-    player.bets_on_table = [MagicMock(), MagicMock()]
-    before_bets = player.bets_on_table
+    bet1 = MagicMock()
+    bet2 = MagicMock()
+    player.bets_on_table = [bet1, bet2]
     remove_if_true.update_bets(player)
-    remove_if_true.key.assert_has_calls([call(before_bets[0], player),
-                                         call(before_bets[1], player)])
+    remove_if_true.key.assert_has_calls([call(bet1, player),
+                                         call(bet2, player)])
 
 
 def test_remove_if_true_no_bets_removed(player):
@@ -198,6 +199,20 @@ def test_remove_if_true_two_bets_removed(player):
     strategy = RemoveIfTrue(key=key)
     strategy.update_bets(player)
     assert player.bets_on_table == [bet2]
+
+
+
+def test_remove_if_true_calls_remove_bet(player):
+    bet1, bet2, bet3 = MagicMock(), MagicMock(), MagicMock()
+    player.bets_on_table = [bet1, bet2, bet3]
+    player.remove_bet = MagicMock()
+
+    def key(bet, player):
+        return bet == bet1 or bet == bet3
+
+    strategy = RemoveIfTrue(key=key)
+    strategy.update_bets(player)
+    player.remove_bet.assert_has_calls([call(bet1), call(bet3)])
 
 
 def test_remove_if_true_repr():

@@ -68,11 +68,31 @@ class AggregateStrategy(Strategy):
         self.strategies = strategies
 
     def update_bets(self, player: 'Player') -> None:
+        """Go through each of the strategies and run its update_bets method if the strategy has
+        not been completed.
+
+        Parameters
+        ----------
+        player
+            The player to update the bets for.
+        """
         for strategy in self.strategies:
             if not strategy.completed(player):
                 strategy.update_bets(player)
 
     def completed(self, player: 'Player') -> bool:
+        """Returns True if all of the strategies in the AggregateStrategy are completed.
+
+        Parameters
+        ----------
+        player
+            The Player to check the strategy for.
+
+        Returns
+        -------
+        A boolean representing whether the given strategy
+
+        """
         return all(x.completed(player) for x in self.strategies)
 
     def __repr__(self) -> str:
@@ -143,11 +163,12 @@ class RemoveIfTrue(Strategy):
         player
             The Player to remove the bets for.
         """
-        new_bets = []
+        bets_to_remove = []
         for bet in player.bets_on_table:
-            if not self.key(bet, player):
-                new_bets.append(bet)
-        player.bets_on_table = new_bets
+            if self.key(bet, player):
+                bets_to_remove.append(bet)
+        for bet in bets_to_remove:
+            player.remove_bet(bet)
 
     def __repr__(self) -> str:
         return f'{self.__class__.__name__}(key={self.key})'
