@@ -4,7 +4,7 @@ from abc import abstractmethod
 from crapssim.bet import WinningLosingNumbersBet, Bet
 
 if typing.TYPE_CHECKING:
-    from crapssim import Table, Player
+    from crapssim.table import Table, Player
 
 
 class PassLine(WinningLosingNumbersBet):
