@@ -307,7 +307,8 @@ class PlaceBetAndMove(Strategy):
         list[AllowsOdds]
             A list of all the check bets that are on the table.
         """
-        return [x for x in player.bets_on_table if x in self.check_bets]
+        return [x for x in player.bets_on_table if x in self.check_bets if
+                isinstance(x, (PassLine, DontPass, Come, DontCome))]
 
     def check_numbers(self, player: 'Player') -> list[int]:
         """Returns the points of all the check bets that are currently on the table.

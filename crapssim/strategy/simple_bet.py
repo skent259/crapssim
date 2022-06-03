@@ -61,7 +61,7 @@ class DontPassAmount(BaseSimpleBet):
 class DontPassOddsAmount(OddsAmountStrategy):
     def __init__(self, bet_amount: typing.SupportsFloat,
                  numbers: tuple[int] = (4, 5, 6, 8, 9, 10)):
-        super().__init__(DontPass(bet_amount), {x: bet_amount for x in numbers})
+        super().__init__(DontPass, {x: bet_amount for x in numbers})
 
 
 class ComeAmount(BaseSimpleBet):
@@ -197,6 +197,6 @@ class BoxcarsAmount(BaseSimpleBet):
 
 
 class FireAmount(BaseSimpleBet):
-    def __init__(self, bet_amount: typing.SupportsFloat,
+    def __init__(self, bet_amount: float,
                  mode=SimpleStrategyMode.ADD_IF_NON_EXISTENT):
         super().__init__(Fire(bet_amount), mode=mode)
