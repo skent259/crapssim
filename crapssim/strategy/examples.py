@@ -662,6 +662,14 @@ class FieldWinProgression(Strategy):
         self.current_progression = 0
 
     def after_roll(self, player: 'Player') -> None:
+        """If the field bet wins, increase the progression by 1, if it loses reset the progression
+        to 0.
+
+        Parameters
+        ----------
+        player
+            The player to check the winning bets for.
+        """
         win = all(x for x in player.bets_on_table if x.get_status(player.table) == 'win')
 
         if win:
@@ -670,6 +678,13 @@ class FieldWinProgression(Strategy):
             self.current_progression = 0
 
     def update_bets(self, player: 'Player') -> None:
+        """If a field bet isn't on the table, place one for the current progression amount.
+
+        Parameters
+        ----------
+        player
+            The player to place the bet for.
+        """
         if self.current_progression >= len(self.progression):
             bet_amount = self.progression[-1]
         else:
