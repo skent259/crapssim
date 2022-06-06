@@ -497,7 +497,7 @@ class HammerLock(Strategy):
         """
         RemoveByType(Place).update_bets(player)
         strategy = IfBetNotExist(PassLine(self.base_amount)) + \
-                   IfBetNotExist(DontPass(self.base_amount))
+            IfBetNotExist(DontPass(self.base_amount))
         strategy.update_bets(player)
 
     def place68(self, player: "Player") -> None:
@@ -589,9 +589,10 @@ class Risk12(Strategy):
         player
             The player to check the bets for.
         """
-        RemoveIfTrue(lambda b, p: isinstance(b, Place)
-                                  and p.table.last_roll is not None
-                                  and p.table.last_roll == 7).update_bets(player)
+        RemoveIfTrue(lambda b,
+                            p: (isinstance(b, Place)
+                                and p.table.last_roll is not None
+                                and p.table.last_roll == 7)).update_bets(player)
         IfBetNotExist(PassLine(5)).update_bets(player)
         IfBetNotExist(Field(5)).update_bets(player)
 
@@ -882,5 +883,3 @@ class DontPassOddsMultiplier(OddsMultiplierStrategy):
 
     def __repr__(self) -> str:
         return f'{self.__class__.__name__}(odds_multiplier={self.get_odds_multiplier_repr()})'
-
-
