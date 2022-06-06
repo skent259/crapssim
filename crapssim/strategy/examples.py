@@ -20,7 +20,8 @@ class BetPlace(Strategy):
     """Strategy that makes multiple Place bets of given amounts. It can also skip making the bet
     if the point is the same as the given bet number."""
 
-    def __init__(self, place_bet_amounts: dict[int, float], skip_point: bool = True):
+    def __init__(self, place_bet_amounts: dict[int, float],
+                 skip_point: bool = True):
         """Strategy for making multiple place bets.
 
         Parameters
