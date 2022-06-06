@@ -1,5 +1,5 @@
 import typing
-from abc import abstractmethod, ABC
+from abc import abstractmethod
 
 from crapssim.bet import WinningLosingNumbersBet, Bet
 from crapssim.point import Point
@@ -262,9 +262,9 @@ class LayOdds(BaseOdds):
     def get_base_amount(self, player_bets: typing.Iterable[Bet], table_point: int | None) -> float:
         base_amount = 0.0
         if table_point == self.number:
-            pass_line_bets = [x for x in player_bets if isinstance(x, PassLine)]
+            pass_line_bets = [x for x in player_bets if isinstance(x, DontPass)]
             base_amount += sum(x.bet_amount for x in pass_line_bets)
-        come_bets = [x for x in player_bets if isinstance(x, Come)]
+        come_bets = [x for x in player_bets if isinstance(x, DontCome)]
         matching_come_bets = [x for x in come_bets if x.point == self.number]
         base_amount += sum(x.bet_amount for x in matching_come_bets)
         return base_amount
