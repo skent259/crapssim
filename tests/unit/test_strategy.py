@@ -3,11 +3,11 @@ from unittest.mock import MagicMock, call
 import pytest
 
 from crapssim import Player, Table
-from crapssim.bet import Bet, PassLine, Come, HardWay, Odds
+from crapssim.bet import Bet, PassLine, Come, HardWay, Odds, DontCome
 from crapssim.strategy import Strategy, AggregateStrategy, BetIfTrue, RemoveIfTrue, IfBetNotExist, \
     BetPointOff, BetPointOn, CountStrategy
 from crapssim.strategy.core import ReplaceIfTrue, RemoveByType
-from crapssim.strategy.odds import OddsAmountStrategy
+from crapssim.strategy.odds import OddsAmountStrategy, OddsMultiplierStrategy
 
 
 @pytest.fixture
@@ -462,3 +462,23 @@ def test_odds_amount_strategy_add_bet_not_called_already_placed(player):
     player.add_bet = MagicMock()
     strategy.update_bets(player)
     player.add_bet.assert_not_called()
+
+
+def test_odds_multiplier_pass_line_point_number():
+    table = Table()
+    table.point.number = 4
+    assert OddsMultiplierStrategy.get_point_number(PassLine(5), table) == 4
+
+
+def test_odds_multiplier_come_point_number():
+    table = Table()
+    table.point.number = 4
+    assert OddsMultiplierStrategy.get_point_number(Come(5, 9), table) == 9
+
+
+def test_odds_multiplier_dont_come_bet_placed(player):
+    strategy = OddsMultiplierStrategy(DontCome, {6: 6})
+    player.bets_on_table = [DontCome(5, 6)]
+    player.add_bet = MagicMock()
+    strategy.update_bets(player)
+    player.add_bet.assert_called_with(Odds(DontCome, 6, 30))

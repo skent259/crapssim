@@ -83,8 +83,7 @@ class OddsMultiplierStrategy(Strategy):
                 return
 
             amount = bet.bet_amount * multiplier
-            odds_bet = Odds(self.base_type, point, amount)
-            IfBetNotExist(odds_bet).update_bets(player)
+            OddsAmountStrategy(self.base_type, {point: amount}).update_bets(player)
 
     def get_odds_multiplier_repr(self) -> int | dict[int, int]:
         """If the odds_multiplier has multiple values return a dictionary with the values,
