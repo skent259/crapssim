@@ -3,9 +3,9 @@ from unittest.mock import MagicMock, call
 import pytest
 
 from crapssim import Player, Table
-from crapssim.bet import Bet, PassLine, Come, HardWay, Odds, DontCome
+from crapssim.bet import Bet, PassLine, Come, HardWay, Odds, DontCome, Place
 from crapssim.strategy import Strategy, AggregateStrategy, BetIfTrue, RemoveIfTrue, IfBetNotExist, \
-    BetPointOff, BetPointOn, CountStrategy
+    BetPointOff, BetPointOn, CountStrategy, BetPlace
 from crapssim.strategy.core import ReplaceIfTrue, RemoveByType
 from crapssim.strategy.odds import OddsAmountStrategy, OddsMultiplierStrategy
 from crapssim.strategy.simple_bet import BaseSimpleBet, SimpleStrategyMode
@@ -525,3 +525,43 @@ def test_base_simple_bet_replace(player):
     strategy.update_bets(player)
     player.remove_bet.assert_called_once_with(PassLine(5))
     player.add_bet.assert_called_once_with(PassLine(5))
+
+
+def test_bet_place_remove_point_bet(player):
+    strategy = BetPlace({5: 5})
+    player.bets_on_table = [Place(5, 5)]
+    player.table.point.number = 5
+    player.remove_bet = MagicMock()
+    strategy.remove_point_bet(player)
+    player.remove_bet.assert_called_once_with(Place(5, 5))
+
+
+def test_bet_place_skip_point(player):
+    strategy = BetPlace({5: 5})
+    player.table.point.number = 5
+    player.add_bet = MagicMock()
+    strategy.update_bets(player)
+    player.add_bet.assert_not_called()
+
+
+def test_bet_place_dont_add_point_off(player):
+    strategy = BetPlace({5: 5})
+    player.add_bet = MagicMock()
+    strategy.update_bets(player)
+    player.add_bet.assert_not_called()
+
+
+def test_bet_place_add_bet(player):
+    strategy = BetPlace({5: 5})
+    player.add_bet = MagicMock()
+    player.table.point.number = 4
+    strategy.update_bets(player)
+    player.add_bet.assert_called_once_with(Place(5, 5))
+
+
+def test_bet_place_add_bet_not_skip_point(player):
+    strategy = BetPlace({5: 5}, skip_point=False)
+    player.add_bet = MagicMock()
+    player.table.point.number = 5
+    strategy.update_bets(player)
+    player.add_bet.assert_called_once_with(Place(5, 5))

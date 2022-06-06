@@ -16,6 +16,62 @@ if typing.TYPE_CHECKING:
     from crapssim.table import Player
 
 
+class BetPlace(Strategy):
+    """Strategy that makes multiple Place bets of given amounts. It can also skip making the bet
+    if the point is the same as the given bet number."""
+
+    def __init__(self, place_bet_amounts: dict[int, float], skip_point: bool = True):
+        """Strategy for making multiple place bets.
+
+        Parameters
+        ----------
+        place_bet_amounts
+            Dictionary of the point to make the Place bet on and the amount of the
+            place bet to make.
+        skip_point
+            If True don't make the bet on the given Place if that's the number the tables Point
+            is on.
+        """
+        super().__init__()
+        self.place_bet_amounts = place_bet_amounts
+        self.skip_point = skip_point
+
+    def update_bets(self, player: 'Player') -> None:
+        """Add the place bets on the numbers and amounts defined by place_bet_amounts.
+
+        Parameters
+        ----------
+        player
+            The player to add the place bets to.
+        """
+        if self.skip_point:
+            self.remove_point_bet(player)
+
+        for number, amount in self.place_bet_amounts.items():
+            if self.skip_point and number == player.table.point.number:
+                continue
+            if player.table.point.status == 'Off':
+                continue
+            IfBetNotExist(Place(number, amount)).update_bets(player)
+
+    @staticmethod
+    def remove_point_bet(player: "Player") -> None:
+        """If skip_point is true and the player has a place bet for the table point number,
+        remove the Place bet.
+
+        Parameters
+        ----------
+        player
+            The player to check and see if they have the given bet.
+        """
+        point = player.table.point.number
+        RemoveIfTrue(lambda b, p: isinstance(b, Place) and b.number == point).update_bets(player)
+
+    def __repr__(self) -> str:
+        return f'{self.__class__.__name__}(place_bet_amounts={self.place_bet_amounts},' \
+               f' skip_point={self.skip_point})'
+
+
 class TwoCome(CountStrategy):
     """Strategy that adds a Come bet of a certain amount if that bet doesn't exist on the table.
     Equivalent to CountStrategy((Come, ), 2, bet)."""
@@ -823,58 +879,3 @@ class DontPassOddsMultiplier(OddsMultiplierStrategy):
         return f'{self.__class__.__name__}(odds_multiplier={self.get_odds_multiplier_repr()})'
 
 
-class BetPlace(Strategy):
-    """Strategy that makes multiple Place bets of given amounts. It can also skip making the bet
-    if the point is the same as the given bet number."""
-
-    def __init__(self, place_bet_amounts: dict[int, float], skip_point: bool = True):
-        """Strategy for making multiple place bets.
-
-        Parameters
-        ----------
-        place_bet_amounts
-            Dictionary of the point to make the Place bet on and the amount of the
-            place bet to make.
-        skip_point
-            If True don't make the bet on the given Place if that's the number the tables Point
-            is on.
-        """
-        super().__init__()
-        self.place_bet_amounts = place_bet_amounts
-        self.skip_point = skip_point
-
-    def update_bets(self, player: 'Player') -> None:
-        """Add the place bets on the numbers and amounts defined by place_bet_amounts.
-
-        Parameters
-        ----------
-        player
-            The player to add the place bet to.
-        """
-        for number, amount in self.place_bet_amounts.items():
-            if self.skip_point and number == player.table.point.number:
-                continue
-            if player.table.point.status == 'Off':
-                continue
-            IfBetNotExist(Place(number, amount)).update_bets(player)
-        self.remove_point_bet(player)
-
-    def remove_point_bet(self, player: "Player") -> None:
-        """If skip_point is true and the player has a place bet for the table point number,
-        remove the Place bet.
-
-        Parameters
-        ----------
-        player
-            The player to check and see if they have the given bet.
-        """
-        if self.skip_point and player.table.point.number in self.place_bet_amounts:
-            bet_amount = self.place_bet_amounts[player.table.point.number]
-            bet = Place(player.table.point.number, bet_amount)
-
-            if bet in player.bets_on_table:
-                player.remove_bet(bet)
-
-    def __repr__(self) -> str:
-        return f'{self.__class__.__name__}(place_bet_amounts={self.place_bet_amounts},' \
-               f' skip_point={self.skip_point})'
