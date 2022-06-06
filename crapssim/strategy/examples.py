@@ -407,8 +407,8 @@ class Place682Come(AggregateStrategy):
         """
         point_on = player.table.point.status == 'On'
         come_count_lt_2 = len(player.get_bets_by_type((Come,))) < 2
-        place_passline_come_count = len(player.get_bets_by_type((PassLine, Come, Place)))
-        pass_line_place_come_lt_4 = place_passline_come_count < 4
+        place_pass_line_come_count = len(player.get_bets_by_type((PassLine, Come, Place)))
+        pass_line_place_come_lt_4 = place_pass_line_come_count < 4
         return point_on and come_count_lt_2 and pass_line_place_come_lt_4
 
     def __repr__(self) -> str:
