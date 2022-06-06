@@ -6,7 +6,8 @@ import typing
 from abc import ABC, abstractmethod
 
 from crapssim.bet import Bet, PassLine, Come
-from crapssim.bet.pass_line import DontPass, DontCome, Odds, LayOdds
+from crapssim.bet.pass_line import DontPass, DontCome
+from crapssim.bet.odds import Odds
 
 if typing.TYPE_CHECKING:
     from crapssim.table import Player
@@ -299,7 +300,20 @@ class RemoveByType(RemoveIfTrue):
         super().__init__(lambda b, p: isinstance(b, bet_type))
 
 
-class OddsStrategy(Strategy):
+class OddsAmountStrategy(Strategy):
+    def __init__(self, base_type: typing.Type[PassLine | DontPass | Come | DontCome],
+                 odds_amounts: dict[int, typing.SupportsFloat]):
+        self.base_type = base_type
+        self.odds_amounts = odds_amounts
+
+    def update_bets(self, player: 'Player') -> None:
+        for number, amount in self.odds_amounts.items():
+            bet = Odds(self.base_type, number, float(amount))
+            if bet.allowed(player) and not bet.already_placed(player):
+                player.add_bet(bet)
+
+
+class OddsMultiplierStrategy(Strategy):
     """Strategy that takes an AllowsOdds object and places Odds on it given either a multiplier,
     or a dictionary of points and multipliers."""
     def __init__(self, base_type: typing.Type[PassLine | DontPass | Come | DontCome],
@@ -346,7 +360,7 @@ class OddsStrategy(Strategy):
                     return
 
                 amount = bet.bet_amount * multiplier
-                odds_bet = bet.get_odds_bet(amount, player.table)
+                odds_bet = Odds(self.base_type, point, amount)
                 IfBetNotExist(odds_bet).update_bets(player)
 
     def get_odds_multiplier_repr(self) -> int | dict[int, int]:
@@ -361,25 +375,3 @@ class OddsStrategy(Strategy):
     def __repr__(self) -> str:
         return f'{self.__class__.__name__}(base_type={self.base_type}, ' \
                f'odds_multiplier={self.get_odds_multiplier_repr()})'
-
-
-class OddsAmountStrategy(Strategy):
-    def __init__(self, base_type: typing.Type[PassLine | DontPass | Come | DontCome],
-                 odds_amounts: dict[int, typing.SupportsFloat]):
-        self.base_type = base_type
-        self.odds_amounts = odds_amounts
-
-    def get_bet_type(self):
-        print(self.base_type)
-        if issubclass(self.base_type, (PassLine, Come)):
-            return Odds
-        elif issubclass(self.base_type, (DontPass, DontCome)):
-            return LayOdds
-        else:
-            raise NotImplementedError
-
-    def update_bets(self, player: 'Player') -> None:
-        for number, amount in self.odds_amounts.items():
-            bet = self.get_bet_type()(number, amount)
-            if bet.allowed(player) and not bet.already_placed(player):
-                player.add_bet(bet)

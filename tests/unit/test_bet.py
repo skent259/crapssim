@@ -2,9 +2,9 @@ import numpy as np
 import pytest
 
 import crapssim.bet.place
-from crapssim.bet import Bet, PassLine, Come
+from crapssim.bet import Bet, PassLine, Come, Odds
 from crapssim.bet.one_roll import CAndE
-from crapssim.bet.pass_line import DontCome, Odds
+from crapssim.bet.pass_line import DontCome
 from crapssim.point import Point
 from crapssim.table import Table
 
@@ -154,7 +154,7 @@ def test_pass_line_odds_allowed():
     table.add_player()
     table.players[0].bets_on_table = [PassLine(5)]
     table.point.number = 6
-    bet = Odds(6, 25)
+    bet = Odds(PassLine, 6, 25)
     assert bet.allowed(table.players[0])
 
 
@@ -163,25 +163,23 @@ def test_pass_line_odds_too_high():
     table.add_player()
     table.players[0].bets_on_table = [PassLine(5)]
     table.point.number = 4
-    bet = Odds(4, 25)
+    bet = Odds(PassLine, 4, 25)
     assert bet.allowed(table.players[0]) is False
 
 
 def test_come_odds_allowed():
     table = Table()
     table.add_player()
-    come_bet = Come(5)
-    come_bet.point = 6
+    come_bet = Come(5, 6)
     table.players[0].bets_on_table = [come_bet]
-    bet = Odds(6, 25)
+    bet = Odds(Come, 6, 25)
     assert bet.allowed(table.players[0])
 
 
 def test_come_odds_not_allowed():
     table = Table()
     table.add_player()
-    come_bet = Come(5)
-    come_bet.point = 6
+    come_bet = Come(5, 6)
     table.players[0].bets_on_table = [come_bet]
-    bet = Odds(6, 9000)
+    bet = Odds(Come, 6, 9000)
     assert bet.allowed(table.players[0]) is False

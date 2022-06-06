@@ -7,7 +7,7 @@ from crapssim.bet import PassLine, Come
 from crapssim.bet.one_roll import Field
 from crapssim.bet.place import Place
 from crapssim.bet.pass_line import DontPass, DontCome
-from crapssim.strategy import OddsStrategy
+from crapssim.strategy import OddsMultiplierStrategy
 from crapssim.strategy.core import CountStrategy, BetPointOff, Strategy, \
     IfBetNotExist, BetIfTrue, AggregateStrategy, BetPointOn, RemoveIfTrue, RemoveByType
 from crapssim.strategy.simple_bet import Place5Amount, Place6Amount, Place8Amount, Place9Amount
@@ -359,7 +359,7 @@ class Place682Come(AggregateStrategy):
 class IronCross(AggregateStrategy):
     """Strategy that bets the PassLine, bets the PassLine Odds, and bets Place on the 5, 6, and 8.
     If the point is on and there is no bet on the field, place a bet on the field. Equivalent to:
-    BetPassLine(...) + PassLineOdds(2), + BetPlace({...}) + BetPointOn(Field(...))"""
+    BetPassLine(...) + PassLineOddsMultiplier(2), + BetPlace({...}) + BetPointOn(Field(...))"""
 
     def __init__(self, base_amount: float):
         """Creates the IronCross strategy based on the base_amount, using that number to determine
@@ -377,7 +377,7 @@ class IronCross(AggregateStrategy):
         place_five_amount = base_amount * 2
 
         super().__init__(BetPassLine(base_amount),
-                         PassLineOdds(2),
+                         PassLineOddsMultiplier(2),
                          BetPlace({5: place_five_amount,
                                    6: place_six_eight_amount,
                                    8: place_six_eight_amount}),
@@ -484,7 +484,7 @@ class HammerLock(Strategy):
             self.place5689(player)
         elif self.place_win_count == 2:
             RemoveByType(Place).update_bets(player)
-        BetDontPassOdds(self.odds_multiplier).update_bets(player)
+        DontPassOddsMultiplier(self.odds_multiplier).update_bets(player)
 
     def __repr__(self) -> str:
         return f'{self.__class__.__name__}(base_amount={self.base_amount})'
@@ -571,14 +571,14 @@ class Knockout(AggregateStrategy):
 
     Equivalent to:
     BetPassLine(bet_amount) + BetPointOff(DontPass(bet_amount)) +
-    PassLineOdds({4: 3, 5: 4, 6: 5, 8: 5, 9: 4, 10: 3})
+    PassLineOddsMultiplier({4: 3, 5: 4, 6: 5, 8: 5, 9: 4, 10: 3})
     """
 
     def __init__(self, bet_amount: typing.SupportsFloat) -> None:
         self.bet_amount = bet_amount
         super().__init__(BetPassLine(bet_amount),
                          BetPointOff(DontPass(bet_amount)),
-                         PassLineOdds({4: 3, 5: 4, 6: 5, 8: 5, 9: 4, 10: 3}))
+                         PassLineOddsMultiplier({4: 3, 5: 4, 6: 5, 8: 5, 9: 4, 10: 3}))
 
     def __repr__(self) -> str:
         return f'{self.__class__.__name__}(bet_amount={self.bet_amount})'
@@ -731,7 +731,7 @@ class Place68DontCome2Odds(AggregateStrategy):
         super().__init__(BetPlace({6: six_eight_amount, 8: six_eight_amount}, skip_point=False),
                          BetIfTrue(DontCome(dont_come_amount),
                                    lambda p: len(p.get_bets_by_type((DontCome,))) == 0),
-                         OddsStrategy(DontCome, 2))
+                         OddsMultiplierStrategy(DontCome, 2))
 
     def __repr__(self) -> str:
         return f'{self.__class__.__name__}(six_eight_amount={self.six_eight_amount}, ' \
@@ -758,9 +758,9 @@ class BetPassLine(BetPointOff):
         return f'{self.__class__.__name__}(bet_amount={self.bet_amount})'
 
 
-class PassLineOdds(OddsStrategy):
+class PassLineOddsMultiplier(OddsMultiplierStrategy):
     """Strategy that adds an Odds bet to the PassLine bet. Equivalent to
-    OddsStrategy(PassLine, odds)."""
+    OddsMultiplierStrategy(PassLine, odds)."""
 
     def __init__(self, odds_multiplier: dict[int, int] | int | None = None):
         """Add odds to PassLine bets with the multiplier specified by the odds_multiplier variable.
@@ -801,9 +801,9 @@ class BetDontPass(BetPointOff):
         return f'{self.__class__.__name__}(bet_amount={self.bet_amount})'
 
 
-class BetDontPassOdds(OddsStrategy):
+class DontPassOddsMultiplier(OddsMultiplierStrategy):
     """Strategy that adds a LayOdds bet to the DontPass bet. Equivalent to
-    OddsStrategy(DontPass, odds)"""
+    OddsMultiplierStrategy(DontPass, odds)"""
 
     def __init__(self, odds_multiplier: dict[int, int] | int | None = None):
         """Add odds to DontPass bets with the multiplier specified by odds.

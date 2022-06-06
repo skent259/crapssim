@@ -7,7 +7,7 @@ import crapssim.strategy.simple_bet
 def test_first_chunk():
     table = craps.Table()
     your_strat = crapssim.strategy.examples.BetPassLine(5) + \
-                 crapssim.strategy.examples.PassLineOdds(2)
+                 crapssim.strategy.examples.PassLineOddsMultiplier(2)
 
     table.add_player(strategy=your_strat)
     table.run(max_rolls=20, verbose=False)

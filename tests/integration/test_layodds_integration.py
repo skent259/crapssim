@@ -1,7 +1,8 @@
 import pytest
 
-from crapssim.bet.pass_line import DontPass, LayOdds
-from crapssim.strategy import BetDontPass, BetDontPassOdds
+from crapssim.bet.pass_line import DontPass
+from crapssim.bet import Odds
+from crapssim.strategy import BetDontPass, DontPassOddsMultiplier
 from crapssim.table import Table, TableUpdate
 
 
@@ -16,25 +17,25 @@ from crapssim.table import Table, TableUpdate
         4, 4, None, 
         [DontPass(bet_amount=5.0)],
         (2, 2), 
-        [DontPass(bet_amount=5.0), LayOdds(4, bet_amount=10.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 4, bet_amount=10.0)]
     ),
     (
         4, 6, None, 
-        [DontPass(bet_amount=5.0), LayOdds(4, bet_amount=10.0)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 4, bet_amount=10.0)],
         (5, 1), 
-        [DontPass(bet_amount=5.0), LayOdds(4, bet_amount=10.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 4, bet_amount=10.0)]
     ),
     (
         4, 10, None, 
-        [DontPass(bet_amount=5.0), LayOdds(4, bet_amount=10.0)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 4, bet_amount=10.0)],
         (5, 5), 
-        [DontPass(bet_amount=5.0), LayOdds(4, bet_amount=10.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 4, bet_amount=10.0)]
     ),
     (
         4, 6, None, 
-        [DontPass(bet_amount=5.0), LayOdds(4, bet_amount=10.0)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 4, bet_amount=10.0)],
         (5, 1), 
-        [DontPass(bet_amount=5.0), LayOdds(4, bet_amount=10.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 4, bet_amount=10.0)]
     ),
     (
         None, 4, None, 
@@ -46,13 +47,13 @@ from crapssim.table import Table, TableUpdate
         6, 6, None, 
         [DontPass(bet_amount=5.0)],
         (2, 4), 
-        [DontPass(bet_amount=5.0), LayOdds(6, bet_amount=6.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 6, bet_amount=6.0)]
     ),
     (
         6, 10, None, 
-        [DontPass(bet_amount=5.0), LayOdds(6, bet_amount=6.0)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 6, bet_amount=6.0)],
         (5, 5), 
-        [DontPass(bet_amount=5.0), LayOdds(6, bet_amount=6.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 6, bet_amount=6.0)]
     ),
     (
         None, 6, None, 
@@ -64,7 +65,7 @@ from crapssim.table import Table, TableUpdate
         8, 8, None, 
         [DontPass(bet_amount=5.0)],
         (2, 6), 
-        [DontPass(bet_amount=5.0), LayOdds(8, bet_amount=6.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 8, bet_amount=6.0)]
     ),
     (
         None, 7, None, 
@@ -88,13 +89,13 @@ from crapssim.table import Table, TableUpdate
         10, 10, None, 
         [DontPass(bet_amount=5.0)],
         (5, 5), 
-        [DontPass(bet_amount=5.0), LayOdds(10, bet_amount=10.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 10, bet_amount=10.0)]
     ),
     (
         10, 8, None, 
-        [DontPass(bet_amount=5.0), LayOdds(10, bet_amount=10.0)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 10, bet_amount=10.0)],
         (6, 2), 
-        [DontPass(bet_amount=5.0), LayOdds(10, bet_amount=10.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 10, bet_amount=10.0)]
     ),
     (
         None, 10, None, 
@@ -118,13 +119,13 @@ from crapssim.table import Table, TableUpdate
         4, 4, None, 
         [DontPass(bet_amount=5.0)],
         (3, 1), 
-        [DontPass(bet_amount=5.0), LayOdds(4, bet_amount=10.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 4, bet_amount=10.0)]
     ),
     (
         4, 11, None, 
-        [DontPass(bet_amount=5.0), LayOdds(4, bet_amount=10.0)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 4, bet_amount=10.0)],
         (6, 5), 
-        [DontPass(bet_amount=5.0), LayOdds(4, bet_amount=10.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 4, bet_amount=10.0)]
     ),
     (
         None, 7, None, 
@@ -136,43 +137,43 @@ from crapssim.table import Table, TableUpdate
         6, 6, None, 
         [DontPass(bet_amount=5.0)],
         (3, 3), 
-        [DontPass(bet_amount=5.0), LayOdds(6, bet_amount=6.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 6, bet_amount=6.0)]
     ),
     (
         6, 2, None, 
-        [DontPass(bet_amount=5.0), LayOdds(6, bet_amount=6.0)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 6, bet_amount=6.0)],
         (1, 1), 
-        [DontPass(bet_amount=5.0), LayOdds(6, bet_amount=6.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 6, bet_amount=6.0)]
     ),
     (
         6, 12, None, 
-        [DontPass(bet_amount=5.0), LayOdds(6, bet_amount=6.0)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 6, bet_amount=6.0)],
         (6, 6), 
-        [DontPass(bet_amount=5.0), LayOdds(6, bet_amount=6.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 6, bet_amount=6.0)]
     ),
     (
         6, 8, None, 
-        [DontPass(bet_amount=5.0), LayOdds(6, bet_amount=6.0)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 6, bet_amount=6.0)],
         (4, 4), 
-        [DontPass(bet_amount=5.0), LayOdds(6, bet_amount=6.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 6, bet_amount=6.0)]
     ),
     (
         6, 9, None, 
-        [DontPass(bet_amount=5.0), LayOdds(6, bet_amount=6.0)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 6, bet_amount=6.0)],
         (3, 6), 
-        [DontPass(bet_amount=5.0), LayOdds(6, bet_amount=6.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 6, bet_amount=6.0)]
     ),
     (
         6, 8, None, 
-        [DontPass(bet_amount=5.0), LayOdds(6, bet_amount=6.0)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 6, bet_amount=6.0)],
         (2, 6), 
-        [DontPass(bet_amount=5.0), LayOdds(6, bet_amount=6.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 6, bet_amount=6.0)]
     ),
     (
         6, 10, None, 
-        [DontPass(bet_amount=5.0), LayOdds(6, bet_amount=6.0)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 6, bet_amount=6.0)],
         (4, 6), 
-        [DontPass(bet_amount=5.0), LayOdds(6, bet_amount=6.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 6, bet_amount=6.0)]
     ),
     (
         None, 7, None, 
@@ -184,7 +185,7 @@ from crapssim.table import Table, TableUpdate
         10, 10, None, 
         [DontPass(bet_amount=5.0)],
         (4, 6), 
-        [DontPass(bet_amount=5.0), LayOdds(10, bet_amount=10.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 10, bet_amount=10.0)]
     ),
     (
         None, 7, None, 
@@ -196,55 +197,55 @@ from crapssim.table import Table, TableUpdate
         9, 9, None, 
         [DontPass(bet_amount=5.0)],
         (3, 6), 
-        [DontPass(bet_amount=5.0), LayOdds(9, bet_amount=7.5)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 9, bet_amount=7.5)]
     ),
     (
         9, 6, None, 
-        [DontPass(bet_amount=5.0), LayOdds(9, bet_amount=7.5)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 9, bet_amount=7.5)],
         (5, 1), 
-        [DontPass(bet_amount=5.0), LayOdds(9, bet_amount=7.5)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 9, bet_amount=7.5)]
     ),
     (
         9, 10, None, 
-        [DontPass(bet_amount=5.0), LayOdds(9, bet_amount=7.5)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 9, bet_amount=7.5)],
         (6, 4), 
-        [DontPass(bet_amount=5.0), LayOdds(9, bet_amount=7.5)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 9, bet_amount=7.5)]
     ),
     (
         9, 6, None, 
-        [DontPass(bet_amount=5.0), LayOdds(9, bet_amount=7.5)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 9, bet_amount=7.5)],
         (5, 1), 
-        [DontPass(bet_amount=5.0), LayOdds(9, bet_amount=7.5)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 9, bet_amount=7.5)]
     ),
     (
         9, 8, None, 
-        [DontPass(bet_amount=5.0), LayOdds(9, bet_amount=7.5)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 9, bet_amount=7.5)],
         (2, 6), 
-        [DontPass(bet_amount=5.0), LayOdds(9, bet_amount=7.5)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 9, bet_amount=7.5)]
     ),
     (
         9, 6, None, 
-        [DontPass(bet_amount=5.0), LayOdds(9, bet_amount=7.5)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 9, bet_amount=7.5)],
         (2, 4), 
-        [DontPass(bet_amount=5.0), LayOdds(9, bet_amount=7.5)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 9, bet_amount=7.5)]
     ),
     (
         9, 3, None, 
-        [DontPass(bet_amount=5.0), LayOdds(9, bet_amount=7.5)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 9, bet_amount=7.5)],
         (2, 1), 
-        [DontPass(bet_amount=5.0), LayOdds(9, bet_amount=7.5)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 9, bet_amount=7.5)]
     ),
     (
         9, 10, None, 
-        [DontPass(bet_amount=5.0), LayOdds(9, bet_amount=7.5)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 9, bet_amount=7.5)],
         (6, 4), 
-        [DontPass(bet_amount=5.0), LayOdds(9, bet_amount=7.5)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 9, bet_amount=7.5)]
     ),
     (
         9, 3, None, 
-        [DontPass(bet_amount=5.0), LayOdds(9, bet_amount=7.5)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 9, bet_amount=7.5)],
         (1, 2), 
-        [DontPass(bet_amount=5.0), LayOdds(9, bet_amount=7.5)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 9, bet_amount=7.5)]
     ),
     (
         None, 7, None, 
@@ -256,61 +257,61 @@ from crapssim.table import Table, TableUpdate
         6, 6, None, 
         [DontPass(bet_amount=5.0)],
         (4, 2), 
-        [DontPass(bet_amount=5.0), LayOdds(6, bet_amount=6.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 6, bet_amount=6.0)]
     ),
     (
         6, 9, None, 
-        [DontPass(bet_amount=5.0), LayOdds(6, bet_amount=6.0)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 6, bet_amount=6.0)],
         (4, 5), 
-        [DontPass(bet_amount=5.0), LayOdds(6, bet_amount=6.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 6, bet_amount=6.0)]
     ),
     (
         6, 10, None, 
-        [DontPass(bet_amount=5.0), LayOdds(6, bet_amount=6.0)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 6, bet_amount=6.0)],
         (4, 6), 
-        [DontPass(bet_amount=5.0), LayOdds(6, bet_amount=6.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 6, bet_amount=6.0)]
     ),
     (
         6, 8, None, 
-        [DontPass(bet_amount=5.0), LayOdds(6, bet_amount=6.0)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 6, bet_amount=6.0)],
         (6, 2), 
-        [DontPass(bet_amount=5.0), LayOdds(6, bet_amount=6.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 6, bet_amount=6.0)]
     ),
     (
         6, 8, None, 
-        [DontPass(bet_amount=5.0), LayOdds(6, bet_amount=6.0)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 6, bet_amount=6.0)],
         (5, 3), 
-        [DontPass(bet_amount=5.0), LayOdds(6, bet_amount=6.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 6, bet_amount=6.0)]
     ),
     (
         6, 10, None, 
-        [DontPass(bet_amount=5.0), LayOdds(6, bet_amount=6.0)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 6, bet_amount=6.0)],
         (6, 4), 
-        [DontPass(bet_amount=5.0), LayOdds(6, bet_amount=6.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 6, bet_amount=6.0)]
     ),
     (
         6, 5, None, 
-        [DontPass(bet_amount=5.0), LayOdds(6, bet_amount=6.0)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 6, bet_amount=6.0)],
         (4, 1), 
-        [DontPass(bet_amount=5.0), LayOdds(6, bet_amount=6.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 6, bet_amount=6.0)]
     ),
     (
         6, 2, None, 
-        [DontPass(bet_amount=5.0), LayOdds(6, bet_amount=6.0)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 6, bet_amount=6.0)],
         (1, 1), 
-        [DontPass(bet_amount=5.0), LayOdds(6, bet_amount=6.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 6, bet_amount=6.0)]
     ),
     (
         6, 11, None, 
-        [DontPass(bet_amount=5.0), LayOdds(6, bet_amount=6.0)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 6, bet_amount=6.0)],
         (5, 6), 
-        [DontPass(bet_amount=5.0), LayOdds(6, bet_amount=6.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 6, bet_amount=6.0)]
     ),
     (
         6, 5, None, 
-        [DontPass(bet_amount=5.0), LayOdds(6, bet_amount=6.0)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 6, bet_amount=6.0)],
         (3, 2), 
-        [DontPass(bet_amount=5.0), LayOdds(6, bet_amount=6.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 6, bet_amount=6.0)]
     ),
     (
         None, 7, None, 
@@ -328,37 +329,37 @@ from crapssim.table import Table, TableUpdate
         5, 5, None, 
         [DontPass(bet_amount=5.0)],
         (1, 4), 
-        [DontPass(bet_amount=5.0), LayOdds(5, bet_amount=7.5)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 5, bet_amount=7.5)]
     ),
     (
         5, 6, None, 
-        [DontPass(bet_amount=5.0), LayOdds(5, bet_amount=7.5)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 5, bet_amount=7.5)],
         (5, 1), 
-        [DontPass(bet_amount=5.0), LayOdds(5, bet_amount=7.5)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 5, bet_amount=7.5)]
     ),
     (
         5, 3, None, 
-        [DontPass(bet_amount=5.0), LayOdds(5, bet_amount=7.5)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 5, bet_amount=7.5)],
         (1, 2), 
-        [DontPass(bet_amount=5.0), LayOdds(5, bet_amount=7.5)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 5, bet_amount=7.5)]
     ),
     (
         5, 11, None, 
-        [DontPass(bet_amount=5.0), LayOdds(5, bet_amount=7.5)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 5, bet_amount=7.5)],
         (5, 6), 
-        [DontPass(bet_amount=5.0), LayOdds(5, bet_amount=7.5)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 5, bet_amount=7.5)]
     ),
     (
         5, 10, None, 
-        [DontPass(bet_amount=5.0), LayOdds(5, bet_amount=7.5)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 5, bet_amount=7.5)],
         (6, 4), 
-        [DontPass(bet_amount=5.0), LayOdds(5, bet_amount=7.5)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 5, bet_amount=7.5)]
     ),
     (
         5, 8, None, 
-        [DontPass(bet_amount=5.0), LayOdds(5, bet_amount=7.5)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 5, bet_amount=7.5)],
         (2, 6), 
-        [DontPass(bet_amount=5.0), LayOdds(5, bet_amount=7.5)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 5, bet_amount=7.5)]
     ),
     (
         None, 5, None, 
@@ -370,43 +371,43 @@ from crapssim.table import Table, TableUpdate
         4, 4, None, 
         [DontPass(bet_amount=5.0)],
         (3, 1), 
-        [DontPass(bet_amount=5.0), LayOdds(4, bet_amount=10.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 4, bet_amount=10.0)]
     ),
     (
         4, 2, None, 
-        [DontPass(bet_amount=5.0), LayOdds(4, bet_amount=10.0)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 4, bet_amount=10.0)],
         (1, 1), 
-        [DontPass(bet_amount=5.0), LayOdds(4, bet_amount=10.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 4, bet_amount=10.0)]
     ),
     (
         4, 5, None, 
-        [DontPass(bet_amount=5.0), LayOdds(4, bet_amount=10.0)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 4, bet_amount=10.0)],
         (3, 2), 
-        [DontPass(bet_amount=5.0), LayOdds(4, bet_amount=10.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 4, bet_amount=10.0)]
     ),
     (
         4, 3, None, 
-        [DontPass(bet_amount=5.0), LayOdds(4, bet_amount=10.0)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 4, bet_amount=10.0)],
         (1, 2), 
-        [DontPass(bet_amount=5.0), LayOdds(4, bet_amount=10.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 4, bet_amount=10.0)]
     ),
     (
         4, 10, None, 
-        [DontPass(bet_amount=5.0), LayOdds(4, bet_amount=10.0)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 4, bet_amount=10.0)],
         (6, 4), 
-        [DontPass(bet_amount=5.0), LayOdds(4, bet_amount=10.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 4, bet_amount=10.0)]
     ),
     (
         4, 5, None, 
-        [DontPass(bet_amount=5.0), LayOdds(4, bet_amount=10.0)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 4, bet_amount=10.0)],
         (3, 2), 
-        [DontPass(bet_amount=5.0), LayOdds(4, bet_amount=10.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 4, bet_amount=10.0)]
     ),
     (
         4, 6, None, 
-        [DontPass(bet_amount=5.0), LayOdds(4, bet_amount=10.0)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 4, bet_amount=10.0)],
         (1, 5), 
-        [DontPass(bet_amount=5.0), LayOdds(4, bet_amount=10.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 4, bet_amount=10.0)]
     ),
     (
         None, 7, None, 
@@ -418,13 +419,13 @@ from crapssim.table import Table, TableUpdate
         6, 6, None, 
         [DontPass(bet_amount=5.0)],
         (4, 2), 
-        [DontPass(bet_amount=5.0), LayOdds(6, bet_amount=6.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 6, bet_amount=6.0)]
     ),
     (
         6, 3, None, 
-        [DontPass(bet_amount=5.0), LayOdds(6, bet_amount=6.0)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 6, bet_amount=6.0)],
         (2, 1), 
-        [DontPass(bet_amount=5.0), LayOdds(6, bet_amount=6.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 6, bet_amount=6.0)]
     ),
     (
         None, 7, None, 
@@ -436,25 +437,25 @@ from crapssim.table import Table, TableUpdate
         6, 6, None, 
         [DontPass(bet_amount=5.0)],
         (2, 4), 
-        [DontPass(bet_amount=5.0), LayOdds(6, bet_amount=6.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 6, bet_amount=6.0)]
     ),
     (
         6, 8, None, 
-        [DontPass(bet_amount=5.0), LayOdds(6, bet_amount=6.0)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 6, bet_amount=6.0)],
         (6, 2), 
-        [DontPass(bet_amount=5.0), LayOdds(6, bet_amount=6.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 6, bet_amount=6.0)]
     ),
     (
         6, 3, None, 
-        [DontPass(bet_amount=5.0), LayOdds(6, bet_amount=6.0)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 6, bet_amount=6.0)],
         (1, 2), 
-        [DontPass(bet_amount=5.0), LayOdds(6, bet_amount=6.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 6, bet_amount=6.0)]
     ),
     (
         6, 9, None, 
-        [DontPass(bet_amount=5.0), LayOdds(6, bet_amount=6.0)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 6, bet_amount=6.0)],
         (4, 5), 
-        [DontPass(bet_amount=5.0), LayOdds(6, bet_amount=6.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 6, bet_amount=6.0)]
     ),
     (
         None, 6, None, 
@@ -466,7 +467,7 @@ from crapssim.table import Table, TableUpdate
         6, 6, None, 
         [DontPass(bet_amount=5.0)],
         (5, 1), 
-        [DontPass(bet_amount=5.0), LayOdds(6, bet_amount=6.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 6, bet_amount=6.0)]
     ),
     (
         None, 7, None, 
@@ -484,13 +485,13 @@ from crapssim.table import Table, TableUpdate
         5, 5, None, 
         [DontPass(bet_amount=5.0)],
         (1, 4), 
-        [DontPass(bet_amount=5.0), LayOdds(5, bet_amount=7.5)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 5, bet_amount=7.5)]
     ),
     (
         5, 4, None, 
-        [DontPass(bet_amount=5.0), LayOdds(5, bet_amount=7.5)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 5, bet_amount=7.5)],
         (3, 1), 
-        [DontPass(bet_amount=5.0), LayOdds(5, bet_amount=7.5)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 5, bet_amount=7.5)]
     ),
     (
         None, 7, None, 
@@ -514,7 +515,7 @@ from crapssim.table import Table, TableUpdate
         8, 8, None, 
         [DontPass(bet_amount=5.0)],
         (4, 4), 
-        [DontPass(bet_amount=5.0), LayOdds(8, bet_amount=6.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 8, bet_amount=6.0)]
     ),
     (
         None, 8, None, 
@@ -526,7 +527,7 @@ from crapssim.table import Table, TableUpdate
         10, 10, None, 
         [DontPass(bet_amount=5.0)],
         (5, 5), 
-        [DontPass(bet_amount=5.0), LayOdds(10, bet_amount=10.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 10, bet_amount=10.0)]
     ),
     (
         None, 10, None, 
@@ -538,7 +539,7 @@ from crapssim.table import Table, TableUpdate
         8, 8, None, 
         [DontPass(bet_amount=5.0)],
         (6, 2), 
-        [DontPass(bet_amount=5.0), LayOdds(8, bet_amount=6.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 8, bet_amount=6.0)]
     ),
     (
         None, 7, None, 
@@ -550,7 +551,7 @@ from crapssim.table import Table, TableUpdate
         6, 6, None, 
         [DontPass(bet_amount=5.0)],
         (4, 2), 
-        [DontPass(bet_amount=5.0), LayOdds(6, bet_amount=6.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 6, bet_amount=6.0)]
     ),
     (
         None, 7, None, 
@@ -568,31 +569,31 @@ from crapssim.table import Table, TableUpdate
         9, 9, None, 
         [DontPass(bet_amount=5.0)],
         (6, 3), 
-        [DontPass(bet_amount=5.0), LayOdds(9, bet_amount=7.5)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 9, bet_amount=7.5)]
     ),
     (
         9, 5, None, 
-        [DontPass(bet_amount=5.0), LayOdds(9, bet_amount=7.5)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 9, bet_amount=7.5)],
         (3, 2), 
-        [DontPass(bet_amount=5.0), LayOdds(9, bet_amount=7.5)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 9, bet_amount=7.5)]
     ),
     (
         9, 8, None, 
-        [DontPass(bet_amount=5.0), LayOdds(9, bet_amount=7.5)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 9, bet_amount=7.5)],
         (5, 3), 
-        [DontPass(bet_amount=5.0), LayOdds(9, bet_amount=7.5)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 9, bet_amount=7.5)]
     ),
     (
         9, 4, None, 
-        [DontPass(bet_amount=5.0), LayOdds(9, bet_amount=7.5)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 9, bet_amount=7.5)],
         (2, 2), 
-        [DontPass(bet_amount=5.0), LayOdds(9, bet_amount=7.5)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 9, bet_amount=7.5)]
     ),
     (
         9, 6, None, 
-        [DontPass(bet_amount=5.0), LayOdds(9, bet_amount=7.5)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 9, bet_amount=7.5)],
         (5, 1), 
-        [DontPass(bet_amount=5.0), LayOdds(9, bet_amount=7.5)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 9, bet_amount=7.5)]
     ),
     (
         None, 9, None, 
@@ -604,7 +605,7 @@ from crapssim.table import Table, TableUpdate
         8, 8, None, 
         [DontPass(bet_amount=5.0)],
         (3, 5), 
-        [DontPass(bet_amount=5.0), LayOdds(8, bet_amount=6.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 8, bet_amount=6.0)]
     ),
     (
         None, 7, None, 
@@ -622,7 +623,7 @@ from crapssim.table import Table, TableUpdate
         5, 5, None, 
         [DontPass(bet_amount=5.0)],
         (1, 4), 
-        [DontPass(bet_amount=5.0), LayOdds(5, bet_amount=7.5)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 5, bet_amount=7.5)]
     ),
     (
         None, 5, None, 
@@ -640,31 +641,31 @@ from crapssim.table import Table, TableUpdate
         5, 5, None, 
         [DontPass(bet_amount=5.0)],
         (3, 2), 
-        [DontPass(bet_amount=5.0), LayOdds(5, bet_amount=7.5)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 5, bet_amount=7.5)]
     ),
     (
         5, 8, None, 
-        [DontPass(bet_amount=5.0), LayOdds(5, bet_amount=7.5)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 5, bet_amount=7.5)],
         (5, 3), 
-        [DontPass(bet_amount=5.0), LayOdds(5, bet_amount=7.5)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 5, bet_amount=7.5)]
     ),
     (
         5, 6, None, 
-        [DontPass(bet_amount=5.0), LayOdds(5, bet_amount=7.5)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 5, bet_amount=7.5)],
         (2, 4), 
-        [DontPass(bet_amount=5.0), LayOdds(5, bet_amount=7.5)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 5, bet_amount=7.5)]
     ),
     (
         5, 10, None, 
-        [DontPass(bet_amount=5.0), LayOdds(5, bet_amount=7.5)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 5, bet_amount=7.5)],
         (5, 5), 
-        [DontPass(bet_amount=5.0), LayOdds(5, bet_amount=7.5)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 5, bet_amount=7.5)]
     ),
     (
         5, 9, None, 
-        [DontPass(bet_amount=5.0), LayOdds(5, bet_amount=7.5)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 5, bet_amount=7.5)],
         (5, 4), 
-        [DontPass(bet_amount=5.0), LayOdds(5, bet_amount=7.5)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 5, bet_amount=7.5)]
     ),
     (
         None, 5, None, 
@@ -700,31 +701,31 @@ from crapssim.table import Table, TableUpdate
         6, 6, None, 
         [DontPass(bet_amount=5.0)],
         (2, 4), 
-        [DontPass(bet_amount=5.0), LayOdds(6, bet_amount=6.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 6, bet_amount=6.0)]
     ),
     (
         6, 2, None, 
-        [DontPass(bet_amount=5.0), LayOdds(6, bet_amount=6.0)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 6, bet_amount=6.0)],
         (1, 1), 
-        [DontPass(bet_amount=5.0), LayOdds(6, bet_amount=6.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 6, bet_amount=6.0)]
     ),
     (
         6, 8, None, 
-        [DontPass(bet_amount=5.0), LayOdds(6, bet_amount=6.0)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 6, bet_amount=6.0)],
         (2, 6), 
-        [DontPass(bet_amount=5.0), LayOdds(6, bet_amount=6.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 6, bet_amount=6.0)]
     ),
     (
         6, 8, None, 
-        [DontPass(bet_amount=5.0), LayOdds(6, bet_amount=6.0)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 6, bet_amount=6.0)],
         (4, 4), 
-        [DontPass(bet_amount=5.0), LayOdds(6, bet_amount=6.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 6, bet_amount=6.0)]
     ),
     (
         6, 5, None, 
-        [DontPass(bet_amount=5.0), LayOdds(6, bet_amount=6.0)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 6, bet_amount=6.0)],
         (4, 1), 
-        [DontPass(bet_amount=5.0), LayOdds(6, bet_amount=6.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 6, bet_amount=6.0)]
     ),
     (
         None, 6, None, 
@@ -742,43 +743,43 @@ from crapssim.table import Table, TableUpdate
         5, 5, None, 
         [DontPass(bet_amount=5.0)],
         (3, 2), 
-        [DontPass(bet_amount=5.0), LayOdds(5, bet_amount=7.5)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 5, bet_amount=7.5)]
     ),
     (
         5, 9, None, 
-        [DontPass(bet_amount=5.0), LayOdds(5, bet_amount=7.5)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 5, bet_amount=7.5)],
         (3, 6), 
-        [DontPass(bet_amount=5.0), LayOdds(5, bet_amount=7.5)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 5, bet_amount=7.5)]
     ),
     (
         5, 9, None, 
-        [DontPass(bet_amount=5.0), LayOdds(5, bet_amount=7.5)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 5, bet_amount=7.5)],
         (3, 6), 
-        [DontPass(bet_amount=5.0), LayOdds(5, bet_amount=7.5)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 5, bet_amount=7.5)]
     ),
     (
         5, 4, None, 
-        [DontPass(bet_amount=5.0), LayOdds(5, bet_amount=7.5)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 5, bet_amount=7.5)],
         (2, 2), 
-        [DontPass(bet_amount=5.0), LayOdds(5, bet_amount=7.5)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 5, bet_amount=7.5)]
     ),
     (
         5, 6, None, 
-        [DontPass(bet_amount=5.0), LayOdds(5, bet_amount=7.5)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 5, bet_amount=7.5)],
         (2, 4), 
-        [DontPass(bet_amount=5.0), LayOdds(5, bet_amount=7.5)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 5, bet_amount=7.5)]
     ),
     (
         5, 8, None, 
-        [DontPass(bet_amount=5.0), LayOdds(5, bet_amount=7.5)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 5, bet_amount=7.5)],
         (4, 4), 
-        [DontPass(bet_amount=5.0), LayOdds(5, bet_amount=7.5)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 5, bet_amount=7.5)]
     ),
     (
         5, 4, None, 
-        [DontPass(bet_amount=5.0), LayOdds(5, bet_amount=7.5)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 5, bet_amount=7.5)],
         (3, 1), 
-        [DontPass(bet_amount=5.0), LayOdds(5, bet_amount=7.5)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 5, bet_amount=7.5)]
     ),
     (
         None, 5, None, 
@@ -790,13 +791,13 @@ from crapssim.table import Table, TableUpdate
         5, 5, None, 
         [DontPass(bet_amount=5.0)],
         (3, 2), 
-        [DontPass(bet_amount=5.0), LayOdds(5, bet_amount=7.5)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 5, bet_amount=7.5)]
     ),
     (
         5, 10, None, 
-        [DontPass(bet_amount=5.0), LayOdds(5, bet_amount=7.5)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 5, bet_amount=7.5)],
         (4, 6), 
-        [DontPass(bet_amount=5.0), LayOdds(5, bet_amount=7.5)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 5, bet_amount=7.5)]
     ),
     (
         None, 5, None, 
@@ -820,19 +821,19 @@ from crapssim.table import Table, TableUpdate
         10, 10, None, 
         [DontPass(bet_amount=5.0)],
         (5, 5), 
-        [DontPass(bet_amount=5.0), LayOdds(10, bet_amount=10.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 10, bet_amount=10.0)]
     ),
     (
         10, 4, None, 
-        [DontPass(bet_amount=5.0), LayOdds(10, bet_amount=10.0)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 10, bet_amount=10.0)],
         (2, 2), 
-        [DontPass(bet_amount=5.0), LayOdds(10, bet_amount=10.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 10, bet_amount=10.0)]
     ),
     (
         10, 8, None, 
-        [DontPass(bet_amount=5.0), LayOdds(10, bet_amount=10.0)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 10, bet_amount=10.0)],
         (2, 6), 
-        [DontPass(bet_amount=5.0), LayOdds(10, bet_amount=10.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 10, bet_amount=10.0)]
     ),
     (
         None, 7, None, 
@@ -844,37 +845,37 @@ from crapssim.table import Table, TableUpdate
         6, 6, None, 
         [DontPass(bet_amount=5.0)],
         (2, 4), 
-        [DontPass(bet_amount=5.0), LayOdds(6, bet_amount=6.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 6, bet_amount=6.0)]
     ),
     (
         6, 10, None, 
-        [DontPass(bet_amount=5.0), LayOdds(6, bet_amount=6.0)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 6, bet_amount=6.0)],
         (5, 5), 
-        [DontPass(bet_amount=5.0), LayOdds(6, bet_amount=6.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 6, bet_amount=6.0)]
     ),
     (
         6, 5, None, 
-        [DontPass(bet_amount=5.0), LayOdds(6, bet_amount=6.0)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 6, bet_amount=6.0)],
         (3, 2), 
-        [DontPass(bet_amount=5.0), LayOdds(6, bet_amount=6.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 6, bet_amount=6.0)]
     ),
     (
         6, 10, None, 
-        [DontPass(bet_amount=5.0), LayOdds(6, bet_amount=6.0)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 6, bet_amount=6.0)],
         (4, 6), 
-        [DontPass(bet_amount=5.0), LayOdds(6, bet_amount=6.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 6, bet_amount=6.0)]
     ),
     (
         6, 5, None, 
-        [DontPass(bet_amount=5.0), LayOdds(6, bet_amount=6.0)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 6, bet_amount=6.0)],
         (1, 4), 
-        [DontPass(bet_amount=5.0), LayOdds(6, bet_amount=6.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 6, bet_amount=6.0)]
     ),
     (
         6, 8, None, 
-        [DontPass(bet_amount=5.0), LayOdds(6, bet_amount=6.0)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 6, bet_amount=6.0)],
         (3, 5), 
-        [DontPass(bet_amount=5.0), LayOdds(6, bet_amount=6.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 6, bet_amount=6.0)]
     ),
     (
         None, 7, None, 
@@ -886,7 +887,7 @@ from crapssim.table import Table, TableUpdate
         10, 10, None, 
         [DontPass(bet_amount=5.0)],
         (5, 5), 
-        [DontPass(bet_amount=5.0), LayOdds(10, bet_amount=10.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 10, bet_amount=10.0)]
     ),
     (
         None, 7, None, 
@@ -898,13 +899,13 @@ from crapssim.table import Table, TableUpdate
         5, 5, None, 
         [DontPass(bet_amount=5.0)],
         (3, 2), 
-        [DontPass(bet_amount=5.0), LayOdds(5, bet_amount=7.5)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 5, bet_amount=7.5)]
     ),
     (
         5, 8, None, 
-        [DontPass(bet_amount=5.0), LayOdds(5, bet_amount=7.5)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 5, bet_amount=7.5)],
         (6, 2), 
-        [DontPass(bet_amount=5.0), LayOdds(5, bet_amount=7.5)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 5, bet_amount=7.5)]
     ),
     (
         None, 5, None, 
@@ -922,7 +923,7 @@ from crapssim.table import Table, TableUpdate
         5, 5, None, 
         [DontPass(bet_amount=5.0)],
         (2, 3), 
-        [DontPass(bet_amount=5.0), LayOdds(5, bet_amount=7.5)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 5, bet_amount=7.5)]
     ),
     (
         None, 5, None, 
@@ -934,19 +935,19 @@ from crapssim.table import Table, TableUpdate
         5, 5, None, 
         [DontPass(bet_amount=5.0)],
         (2, 3), 
-        [DontPass(bet_amount=5.0), LayOdds(5, bet_amount=7.5)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 5, bet_amount=7.5)]
     ),
     (
         5, 6, None, 
-        [DontPass(bet_amount=5.0), LayOdds(5, bet_amount=7.5)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 5, bet_amount=7.5)],
         (5, 1), 
-        [DontPass(bet_amount=5.0), LayOdds(5, bet_amount=7.5)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 5, bet_amount=7.5)]
     ),
     (
         5, 8, None, 
-        [DontPass(bet_amount=5.0), LayOdds(5, bet_amount=7.5)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 5, bet_amount=7.5)],
         (5, 3), 
-        [DontPass(bet_amount=5.0), LayOdds(5, bet_amount=7.5)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 5, bet_amount=7.5)]
     ),
     (
         None, 5, None, 
@@ -964,13 +965,13 @@ from crapssim.table import Table, TableUpdate
         4, 4, None, 
         [DontPass(bet_amount=5.0)],
         (2, 2), 
-        [DontPass(bet_amount=5.0), LayOdds(4, bet_amount=10.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 4, bet_amount=10.0)]
     ),
     (
         4, 8, None, 
-        [DontPass(bet_amount=5.0), LayOdds(4, bet_amount=10.0)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 4, bet_amount=10.0)],
         (2, 6), 
-        [DontPass(bet_amount=5.0), LayOdds(4, bet_amount=10.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 4, bet_amount=10.0)]
     ),
     (
         None, 7, None, 
@@ -982,91 +983,91 @@ from crapssim.table import Table, TableUpdate
         5, 5, None, 
         [DontPass(bet_amount=5.0)],
         (2, 3), 
-        [DontPass(bet_amount=5.0), LayOdds(5, bet_amount=7.5)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 5, bet_amount=7.5)]
     ),
     (
         5, 9, None, 
-        [DontPass(bet_amount=5.0), LayOdds(5, bet_amount=7.5)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 5, bet_amount=7.5)],
         (4, 5), 
-        [DontPass(bet_amount=5.0), LayOdds(5, bet_amount=7.5)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 5, bet_amount=7.5)]
     ),
     (
         5, 2, None, 
-        [DontPass(bet_amount=5.0), LayOdds(5, bet_amount=7.5)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 5, bet_amount=7.5)],
         (1, 1), 
-        [DontPass(bet_amount=5.0), LayOdds(5, bet_amount=7.5)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 5, bet_amount=7.5)]
     ),
     (
         5, 3, None, 
-        [DontPass(bet_amount=5.0), LayOdds(5, bet_amount=7.5)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 5, bet_amount=7.5)],
         (1, 2), 
-        [DontPass(bet_amount=5.0), LayOdds(5, bet_amount=7.5)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 5, bet_amount=7.5)]
     ),
     (
         5, 6, None, 
-        [DontPass(bet_amount=5.0), LayOdds(5, bet_amount=7.5)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 5, bet_amount=7.5)],
         (1, 5), 
-        [DontPass(bet_amount=5.0), LayOdds(5, bet_amount=7.5)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 5, bet_amount=7.5)]
     ),
     (
         5, 8, None, 
-        [DontPass(bet_amount=5.0), LayOdds(5, bet_amount=7.5)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 5, bet_amount=7.5)],
         (6, 2), 
-        [DontPass(bet_amount=5.0), LayOdds(5, bet_amount=7.5)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 5, bet_amount=7.5)]
     ),
     (
         5, 6, None, 
-        [DontPass(bet_amount=5.0), LayOdds(5, bet_amount=7.5)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 5, bet_amount=7.5)],
         (5, 1), 
-        [DontPass(bet_amount=5.0), LayOdds(5, bet_amount=7.5)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 5, bet_amount=7.5)]
     ),
     (
         5, 8, None, 
-        [DontPass(bet_amount=5.0), LayOdds(5, bet_amount=7.5)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 5, bet_amount=7.5)],
         (4, 4), 
-        [DontPass(bet_amount=5.0), LayOdds(5, bet_amount=7.5)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 5, bet_amount=7.5)]
     ),
     (
         5, 10, None, 
-        [DontPass(bet_amount=5.0), LayOdds(5, bet_amount=7.5)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 5, bet_amount=7.5)],
         (6, 4), 
-        [DontPass(bet_amount=5.0), LayOdds(5, bet_amount=7.5)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 5, bet_amount=7.5)]
     ),
     (
         5, 4, None, 
-        [DontPass(bet_amount=5.0), LayOdds(5, bet_amount=7.5)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 5, bet_amount=7.5)],
         (1, 3), 
-        [DontPass(bet_amount=5.0), LayOdds(5, bet_amount=7.5)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 5, bet_amount=7.5)]
     ),
     (
         5, 6, None, 
-        [DontPass(bet_amount=5.0), LayOdds(5, bet_amount=7.5)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 5, bet_amount=7.5)],
         (1, 5), 
-        [DontPass(bet_amount=5.0), LayOdds(5, bet_amount=7.5)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 5, bet_amount=7.5)]
     ),
     (
         5, 9, None, 
-        [DontPass(bet_amount=5.0), LayOdds(5, bet_amount=7.5)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 5, bet_amount=7.5)],
         (6, 3), 
-        [DontPass(bet_amount=5.0), LayOdds(5, bet_amount=7.5)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 5, bet_amount=7.5)]
     ),
     (
         5, 8, None, 
-        [DontPass(bet_amount=5.0), LayOdds(5, bet_amount=7.5)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 5, bet_amount=7.5)],
         (5, 3), 
-        [DontPass(bet_amount=5.0), LayOdds(5, bet_amount=7.5)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 5, bet_amount=7.5)]
     ),
     (
         5, 9, None, 
-        [DontPass(bet_amount=5.0), LayOdds(5, bet_amount=7.5)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 5, bet_amount=7.5)],
         (6, 3), 
-        [DontPass(bet_amount=5.0), LayOdds(5, bet_amount=7.5)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 5, bet_amount=7.5)]
     ),
     (
         5, 9, None, 
-        [DontPass(bet_amount=5.0), LayOdds(5, bet_amount=7.5)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 5, bet_amount=7.5)],
         (6, 3), 
-        [DontPass(bet_amount=5.0), LayOdds(5, bet_amount=7.5)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 5, bet_amount=7.5)]
     ),
     (
         None, 7, None, 
@@ -1078,7 +1079,7 @@ from crapssim.table import Table, TableUpdate
         4, 4, None, 
         [DontPass(bet_amount=5.0)],
         (1, 3), 
-        [DontPass(bet_amount=5.0), LayOdds(4, bet_amount=10.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 4, bet_amount=10.0)]
     ),
     (
         None, 4, None, 
@@ -1090,7 +1091,7 @@ from crapssim.table import Table, TableUpdate
         5, 5, None, 
         [DontPass(bet_amount=5.0)],
         (2, 3), 
-        [DontPass(bet_amount=5.0), LayOdds(5, bet_amount=7.5)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 5, bet_amount=7.5)]
     ),
     (
         None, 7, None, 
@@ -1102,19 +1103,19 @@ from crapssim.table import Table, TableUpdate
         4, 4, None, 
         [DontPass(bet_amount=5.0)],
         (3, 1), 
-        [DontPass(bet_amount=5.0), LayOdds(4, bet_amount=10.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 4, bet_amount=10.0)]
     ),
     (
         4, 2, None, 
-        [DontPass(bet_amount=5.0), LayOdds(4, bet_amount=10.0)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 4, bet_amount=10.0)],
         (1, 1), 
-        [DontPass(bet_amount=5.0), LayOdds(4, bet_amount=10.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 4, bet_amount=10.0)]
     ),
     (
         4, 6, None, 
-        [DontPass(bet_amount=5.0), LayOdds(4, bet_amount=10.0)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 4, bet_amount=10.0)],
         (3, 3), 
-        [DontPass(bet_amount=5.0), LayOdds(4, bet_amount=10.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 4, bet_amount=10.0)]
     ),
     (
         None, 7, None, 
@@ -1126,25 +1127,25 @@ from crapssim.table import Table, TableUpdate
         9, 9, None, 
         [DontPass(bet_amount=5.0)],
         (4, 5), 
-        [DontPass(bet_amount=5.0), LayOdds(9, bet_amount=7.5)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 9, bet_amount=7.5)]
     ),
     (
         9, 8, None, 
-        [DontPass(bet_amount=5.0), LayOdds(9, bet_amount=7.5)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 9, bet_amount=7.5)],
         (3, 5), 
-        [DontPass(bet_amount=5.0), LayOdds(9, bet_amount=7.5)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 9, bet_amount=7.5)]
     ),
     (
         9, 8, None, 
-        [DontPass(bet_amount=5.0), LayOdds(9, bet_amount=7.5)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 9, bet_amount=7.5)],
         (4, 4), 
-        [DontPass(bet_amount=5.0), LayOdds(9, bet_amount=7.5)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 9, bet_amount=7.5)]
     ),
     (
         9, 6, None, 
-        [DontPass(bet_amount=5.0), LayOdds(9, bet_amount=7.5)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 9, bet_amount=7.5)],
         (5, 1), 
-        [DontPass(bet_amount=5.0), LayOdds(9, bet_amount=7.5)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 9, bet_amount=7.5)]
     ),
     (
         None, 7, None, 
@@ -1168,7 +1169,7 @@ from crapssim.table import Table, TableUpdate
         9, 9, None, 
         [DontPass(bet_amount=5.0)],
         (6, 3), 
-        [DontPass(bet_amount=5.0), LayOdds(9, bet_amount=7.5)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 9, bet_amount=7.5)]
     ),
     (
         None, 7, None, 
@@ -1180,19 +1181,19 @@ from crapssim.table import Table, TableUpdate
         6, 6, None, 
         [DontPass(bet_amount=5.0)],
         (3, 3), 
-        [DontPass(bet_amount=5.0), LayOdds(6, bet_amount=6.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 6, bet_amount=6.0)]
     ),
     (
         6, 12, None, 
-        [DontPass(bet_amount=5.0), LayOdds(6, bet_amount=6.0)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 6, bet_amount=6.0)],
         (6, 6), 
-        [DontPass(bet_amount=5.0), LayOdds(6, bet_amount=6.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 6, bet_amount=6.0)]
     ),
     (
         6, 9, None, 
-        [DontPass(bet_amount=5.0), LayOdds(6, bet_amount=6.0)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 6, bet_amount=6.0)],
         (3, 6), 
-        [DontPass(bet_amount=5.0), LayOdds(6, bet_amount=6.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 6, bet_amount=6.0)]
     ),
     (
         None, 6, None, 
@@ -1204,25 +1205,25 @@ from crapssim.table import Table, TableUpdate
         6, 6, None, 
         [DontPass(bet_amount=5.0)],
         (1, 5), 
-        [DontPass(bet_amount=5.0), LayOdds(6, bet_amount=6.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 6, bet_amount=6.0)]
     ),
     (
         6, 10, None, 
-        [DontPass(bet_amount=5.0), LayOdds(6, bet_amount=6.0)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 6, bet_amount=6.0)],
         (4, 6), 
-        [DontPass(bet_amount=5.0), LayOdds(6, bet_amount=6.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 6, bet_amount=6.0)]
     ),
     (
         6, 12, None, 
-        [DontPass(bet_amount=5.0), LayOdds(6, bet_amount=6.0)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 6, bet_amount=6.0)],
         (6, 6), 
-        [DontPass(bet_amount=5.0), LayOdds(6, bet_amount=6.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 6, bet_amount=6.0)]
     ),
     (
         6, 4, None, 
-        [DontPass(bet_amount=5.0), LayOdds(6, bet_amount=6.0)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 6, bet_amount=6.0)],
         (2, 2), 
-        [DontPass(bet_amount=5.0), LayOdds(6, bet_amount=6.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 6, bet_amount=6.0)]
     ),
     (
         None, 7, None, 
@@ -1234,7 +1235,7 @@ from crapssim.table import Table, TableUpdate
         6, 6, None, 
         [DontPass(bet_amount=5.0)],
         (4, 2), 
-        [DontPass(bet_amount=5.0), LayOdds(6, bet_amount=6.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 6, bet_amount=6.0)]
     ),
     (
         None, 6, None, 
@@ -1246,13 +1247,13 @@ from crapssim.table import Table, TableUpdate
         8, 8, None, 
         [DontPass(bet_amount=5.0)],
         (5, 3), 
-        [DontPass(bet_amount=5.0), LayOdds(8, bet_amount=6.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 8, bet_amount=6.0)]
     ),
     (
         8, 10, None, 
-        [DontPass(bet_amount=5.0), LayOdds(8, bet_amount=6.0)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 8, bet_amount=6.0)],
         (4, 6), 
-        [DontPass(bet_amount=5.0), LayOdds(8, bet_amount=6.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 8, bet_amount=6.0)]
     ),
     (
         None, 8, None, 
@@ -1270,37 +1271,37 @@ from crapssim.table import Table, TableUpdate
         9, 9, None, 
         [DontPass(bet_amount=5.0)],
         (3, 6), 
-        [DontPass(bet_amount=5.0), LayOdds(9, bet_amount=7.5)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 9, bet_amount=7.5)]
     ),
     (
         9, 12, None, 
-        [DontPass(bet_amount=5.0), LayOdds(9, bet_amount=7.5)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 9, bet_amount=7.5)],
         (6, 6), 
-        [DontPass(bet_amount=5.0), LayOdds(9, bet_amount=7.5)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 9, bet_amount=7.5)]
     ),
     (
         9, 5, None, 
-        [DontPass(bet_amount=5.0), LayOdds(9, bet_amount=7.5)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 9, bet_amount=7.5)],
         (3, 2), 
-        [DontPass(bet_amount=5.0), LayOdds(9, bet_amount=7.5)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 9, bet_amount=7.5)]
     ),
     (
         9, 4, None, 
-        [DontPass(bet_amount=5.0), LayOdds(9, bet_amount=7.5)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 9, bet_amount=7.5)],
         (2, 2), 
-        [DontPass(bet_amount=5.0), LayOdds(9, bet_amount=7.5)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 9, bet_amount=7.5)]
     ),
     (
         9, 11, None, 
-        [DontPass(bet_amount=5.0), LayOdds(9, bet_amount=7.5)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 9, bet_amount=7.5)],
         (5, 6), 
-        [DontPass(bet_amount=5.0), LayOdds(9, bet_amount=7.5)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 9, bet_amount=7.5)]
     ),
     (
         9, 11, None, 
-        [DontPass(bet_amount=5.0), LayOdds(9, bet_amount=7.5)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 9, bet_amount=7.5)],
         (6, 5), 
-        [DontPass(bet_amount=5.0), LayOdds(9, bet_amount=7.5)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 9, bet_amount=7.5)]
     ),
     (
         None, 7, None, 
@@ -1330,7 +1331,7 @@ from crapssim.table import Table, TableUpdate
         8, 8, None, 
         [DontPass(bet_amount=5.0)],
         (4, 4), 
-        [DontPass(bet_amount=5.0), LayOdds(8, bet_amount=6.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 8, bet_amount=6.0)]
     ),
     (
         None, 8, None, 
@@ -1348,7 +1349,7 @@ from crapssim.table import Table, TableUpdate
         5, 5, None, 
         [DontPass(bet_amount=5.0)],
         (2, 3), 
-        [DontPass(bet_amount=5.0), LayOdds(5, bet_amount=7.5)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 5, bet_amount=7.5)]
     ),
     (
         None, 7, None, 
@@ -1360,13 +1361,13 @@ from crapssim.table import Table, TableUpdate
         5, 5, None, 
         [DontPass(bet_amount=5.0)],
         (3, 2), 
-        [DontPass(bet_amount=5.0), LayOdds(5, bet_amount=7.5)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 5, bet_amount=7.5)]
     ),
     (
         5, 8, None, 
-        [DontPass(bet_amount=5.0), LayOdds(5, bet_amount=7.5)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 5, bet_amount=7.5)],
         (2, 6), 
-        [DontPass(bet_amount=5.0), LayOdds(5, bet_amount=7.5)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 5, bet_amount=7.5)]
     ),
     (
         None, 5, None, 
@@ -1378,19 +1379,19 @@ from crapssim.table import Table, TableUpdate
         5, 5, None, 
         [DontPass(bet_amount=5.0)],
         (1, 4), 
-        [DontPass(bet_amount=5.0), LayOdds(5, bet_amount=7.5)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 5, bet_amount=7.5)]
     ),
     (
         5, 8, None, 
-        [DontPass(bet_amount=5.0), LayOdds(5, bet_amount=7.5)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 5, bet_amount=7.5)],
         (2, 6), 
-        [DontPass(bet_amount=5.0), LayOdds(5, bet_amount=7.5)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 5, bet_amount=7.5)]
     ),
     (
         5, 4, None, 
-        [DontPass(bet_amount=5.0), LayOdds(5, bet_amount=7.5)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 5, bet_amount=7.5)],
         (1, 3), 
-        [DontPass(bet_amount=5.0), LayOdds(5, bet_amount=7.5)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 5, bet_amount=7.5)]
     ),
     (
         None, 5, None, 
@@ -1402,25 +1403,25 @@ from crapssim.table import Table, TableUpdate
         9, 9, None, 
         [DontPass(bet_amount=5.0)],
         (6, 3), 
-        [DontPass(bet_amount=5.0), LayOdds(9, bet_amount=7.5)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 9, bet_amount=7.5)]
     ),
     (
         9, 3, None, 
-        [DontPass(bet_amount=5.0), LayOdds(9, bet_amount=7.5)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 9, bet_amount=7.5)],
         (2, 1), 
-        [DontPass(bet_amount=5.0), LayOdds(9, bet_amount=7.5)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 9, bet_amount=7.5)]
     ),
     (
         9, 5, None, 
-        [DontPass(bet_amount=5.0), LayOdds(9, bet_amount=7.5)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 9, bet_amount=7.5)],
         (2, 3), 
-        [DontPass(bet_amount=5.0), LayOdds(9, bet_amount=7.5)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 9, bet_amount=7.5)]
     ),
     (
         9, 8, None, 
-        [DontPass(bet_amount=5.0), LayOdds(9, bet_amount=7.5)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 9, bet_amount=7.5)],
         (5, 3), 
-        [DontPass(bet_amount=5.0), LayOdds(9, bet_amount=7.5)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 9, bet_amount=7.5)]
     ),
     (
         None, 7, None, 
@@ -1432,7 +1433,7 @@ from crapssim.table import Table, TableUpdate
         8, 8, None, 
         [DontPass(bet_amount=5.0)],
         (6, 2), 
-        [DontPass(bet_amount=5.0), LayOdds(8, bet_amount=6.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 8, bet_amount=6.0)]
     ),
     (
         None, 7, None, 
@@ -1474,7 +1475,7 @@ from crapssim.table import Table, TableUpdate
         9, 9, None, 
         [DontPass(bet_amount=5.0)],
         (3, 6), 
-        [DontPass(bet_amount=5.0), LayOdds(9, bet_amount=7.5)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 9, bet_amount=7.5)]
     ),
     (
         None, 9, None, 
@@ -1486,13 +1487,13 @@ from crapssim.table import Table, TableUpdate
         5, 5, None, 
         [DontPass(bet_amount=5.0)],
         (3, 2), 
-        [DontPass(bet_amount=5.0), LayOdds(5, bet_amount=7.5)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 5, bet_amount=7.5)]
     ),
     (
         5, 4, None, 
-        [DontPass(bet_amount=5.0), LayOdds(5, bet_amount=7.5)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 5, bet_amount=7.5)],
         (3, 1), 
-        [DontPass(bet_amount=5.0), LayOdds(5, bet_amount=7.5)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 5, bet_amount=7.5)]
     ),
     (
         None, 7, None, 
@@ -1504,109 +1505,109 @@ from crapssim.table import Table, TableUpdate
         10, 10, None, 
         [DontPass(bet_amount=5.0)],
         (6, 4), 
-        [DontPass(bet_amount=5.0), LayOdds(10, bet_amount=10.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 10, bet_amount=10.0)]
     ),
     (
         10, 3, None, 
-        [DontPass(bet_amount=5.0), LayOdds(10, bet_amount=10.0)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 10, bet_amount=10.0)],
         (2, 1), 
-        [DontPass(bet_amount=5.0), LayOdds(10, bet_amount=10.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 10, bet_amount=10.0)]
     ),
     (
         10, 2, None, 
-        [DontPass(bet_amount=5.0), LayOdds(10, bet_amount=10.0)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 10, bet_amount=10.0)],
         (1, 1), 
-        [DontPass(bet_amount=5.0), LayOdds(10, bet_amount=10.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 10, bet_amount=10.0)]
     ),
     (
         10, 2, None, 
-        [DontPass(bet_amount=5.0), LayOdds(10, bet_amount=10.0)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 10, bet_amount=10.0)],
         (1, 1), 
-        [DontPass(bet_amount=5.0), LayOdds(10, bet_amount=10.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 10, bet_amount=10.0)]
     ),
     (
         10, 6, None, 
-        [DontPass(bet_amount=5.0), LayOdds(10, bet_amount=10.0)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 10, bet_amount=10.0)],
         (1, 5), 
-        [DontPass(bet_amount=5.0), LayOdds(10, bet_amount=10.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 10, bet_amount=10.0)]
     ),
     (
         10, 11, None, 
-        [DontPass(bet_amount=5.0), LayOdds(10, bet_amount=10.0)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 10, bet_amount=10.0)],
         (5, 6), 
-        [DontPass(bet_amount=5.0), LayOdds(10, bet_amount=10.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 10, bet_amount=10.0)]
     ),
     (
         10, 11, None, 
-        [DontPass(bet_amount=5.0), LayOdds(10, bet_amount=10.0)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 10, bet_amount=10.0)],
         (5, 6), 
-        [DontPass(bet_amount=5.0), LayOdds(10, bet_amount=10.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 10, bet_amount=10.0)]
     ),
     (
         10, 8, None, 
-        [DontPass(bet_amount=5.0), LayOdds(10, bet_amount=10.0)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 10, bet_amount=10.0)],
         (3, 5), 
-        [DontPass(bet_amount=5.0), LayOdds(10, bet_amount=10.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 10, bet_amount=10.0)]
     ),
     (
         10, 3, None, 
-        [DontPass(bet_amount=5.0), LayOdds(10, bet_amount=10.0)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 10, bet_amount=10.0)],
         (2, 1), 
-        [DontPass(bet_amount=5.0), LayOdds(10, bet_amount=10.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 10, bet_amount=10.0)]
     ),
     (
         10, 8, None, 
-        [DontPass(bet_amount=5.0), LayOdds(10, bet_amount=10.0)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 10, bet_amount=10.0)],
         (2, 6), 
-        [DontPass(bet_amount=5.0), LayOdds(10, bet_amount=10.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 10, bet_amount=10.0)]
     ),
     (
         10, 3, None, 
-        [DontPass(bet_amount=5.0), LayOdds(10, bet_amount=10.0)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 10, bet_amount=10.0)],
         (2, 1), 
-        [DontPass(bet_amount=5.0), LayOdds(10, bet_amount=10.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 10, bet_amount=10.0)]
     ),
     (
         10, 6, None, 
-        [DontPass(bet_amount=5.0), LayOdds(10, bet_amount=10.0)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 10, bet_amount=10.0)],
         (1, 5), 
-        [DontPass(bet_amount=5.0), LayOdds(10, bet_amount=10.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 10, bet_amount=10.0)]
     ),
     (
         10, 8, None, 
-        [DontPass(bet_amount=5.0), LayOdds(10, bet_amount=10.0)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 10, bet_amount=10.0)],
         (3, 5), 
-        [DontPass(bet_amount=5.0), LayOdds(10, bet_amount=10.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 10, bet_amount=10.0)]
     ),
     (
         10, 11, None, 
-        [DontPass(bet_amount=5.0), LayOdds(10, bet_amount=10.0)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 10, bet_amount=10.0)],
         (5, 6), 
-        [DontPass(bet_amount=5.0), LayOdds(10, bet_amount=10.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 10, bet_amount=10.0)]
     ),
     (
         10, 4, None, 
-        [DontPass(bet_amount=5.0), LayOdds(10, bet_amount=10.0)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 10, bet_amount=10.0)],
         (3, 1), 
-        [DontPass(bet_amount=5.0), LayOdds(10, bet_amount=10.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 10, bet_amount=10.0)]
     ),
     (
         10, 4, None, 
-        [DontPass(bet_amount=5.0), LayOdds(10, bet_amount=10.0)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 10, bet_amount=10.0)],
         (3, 1), 
-        [DontPass(bet_amount=5.0), LayOdds(10, bet_amount=10.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 10, bet_amount=10.0)]
     ),
     (
         10, 6, None, 
-        [DontPass(bet_amount=5.0), LayOdds(10, bet_amount=10.0)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 10, bet_amount=10.0)],
         (2, 4), 
-        [DontPass(bet_amount=5.0), LayOdds(10, bet_amount=10.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 10, bet_amount=10.0)]
     ),
     (
         10, 6, None, 
-        [DontPass(bet_amount=5.0), LayOdds(10, bet_amount=10.0)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 10, bet_amount=10.0)],
         (3, 3), 
-        [DontPass(bet_amount=5.0), LayOdds(10, bet_amount=10.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 10, bet_amount=10.0)]
     ),
     (
         None, 7, None, 
@@ -1618,7 +1619,7 @@ from crapssim.table import Table, TableUpdate
         6, 6, None, 
         [DontPass(bet_amount=5.0)],
         (4, 2), 
-        [DontPass(bet_amount=5.0), LayOdds(6, bet_amount=6.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 6, bet_amount=6.0)]
     ),
     (
         None, 6, None, 
@@ -1630,13 +1631,13 @@ from crapssim.table import Table, TableUpdate
         5, 5, None, 
         [DontPass(bet_amount=5.0)],
         (2, 3), 
-        [DontPass(bet_amount=5.0), LayOdds(5, bet_amount=7.5)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 5, bet_amount=7.5)]
     ),
     (
         5, 8, None, 
-        [DontPass(bet_amount=5.0), LayOdds(5, bet_amount=7.5)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 5, bet_amount=7.5)],
         (4, 4), 
-        [DontPass(bet_amount=5.0), LayOdds(5, bet_amount=7.5)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 5, bet_amount=7.5)]
     ),
     (
         None, 5, None, 
@@ -1648,31 +1649,31 @@ from crapssim.table import Table, TableUpdate
         6, 6, None, 
         [DontPass(bet_amount=5.0)],
         (4, 2), 
-        [DontPass(bet_amount=5.0), LayOdds(6, bet_amount=6.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 6, bet_amount=6.0)]
     ),
     (
         6, 4, None, 
-        [DontPass(bet_amount=5.0), LayOdds(6, bet_amount=6.0)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 6, bet_amount=6.0)],
         (1, 3), 
-        [DontPass(bet_amount=5.0), LayOdds(6, bet_amount=6.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 6, bet_amount=6.0)]
     ),
     (
         6, 9, None, 
-        [DontPass(bet_amount=5.0), LayOdds(6, bet_amount=6.0)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 6, bet_amount=6.0)],
         (6, 3), 
-        [DontPass(bet_amount=5.0), LayOdds(6, bet_amount=6.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 6, bet_amount=6.0)]
     ),
     (
         6, 11, None, 
-        [DontPass(bet_amount=5.0), LayOdds(6, bet_amount=6.0)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 6, bet_amount=6.0)],
         (6, 5), 
-        [DontPass(bet_amount=5.0), LayOdds(6, bet_amount=6.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 6, bet_amount=6.0)]
     ),
     (
         6, 2, None, 
-        [DontPass(bet_amount=5.0), LayOdds(6, bet_amount=6.0)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 6, bet_amount=6.0)],
         (1, 1), 
-        [DontPass(bet_amount=5.0), LayOdds(6, bet_amount=6.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 6, bet_amount=6.0)]
     ),
     (
         None, 6, None, 
@@ -1690,19 +1691,19 @@ from crapssim.table import Table, TableUpdate
         9, 9, None, 
         [DontPass(bet_amount=5.0)],
         (3, 6), 
-        [DontPass(bet_amount=5.0), LayOdds(9, bet_amount=7.5)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 9, bet_amount=7.5)]
     ),
     (
         9, 11, None, 
-        [DontPass(bet_amount=5.0), LayOdds(9, bet_amount=7.5)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 9, bet_amount=7.5)],
         (5, 6), 
-        [DontPass(bet_amount=5.0), LayOdds(9, bet_amount=7.5)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 9, bet_amount=7.5)]
     ),
     (
         9, 6, None, 
-        [DontPass(bet_amount=5.0), LayOdds(9, bet_amount=7.5)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 9, bet_amount=7.5)],
         (5, 1), 
-        [DontPass(bet_amount=5.0), LayOdds(9, bet_amount=7.5)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 9, bet_amount=7.5)]
     ),
     (
         None, 7, None, 
@@ -1714,19 +1715,19 @@ from crapssim.table import Table, TableUpdate
         9, 9, None, 
         [DontPass(bet_amount=5.0)],
         (6, 3), 
-        [DontPass(bet_amount=5.0), LayOdds(9, bet_amount=7.5)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 9, bet_amount=7.5)]
     ),
     (
         9, 8, None, 
-        [DontPass(bet_amount=5.0), LayOdds(9, bet_amount=7.5)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 9, bet_amount=7.5)],
         (4, 4), 
-        [DontPass(bet_amount=5.0), LayOdds(9, bet_amount=7.5)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 9, bet_amount=7.5)]
     ),
     (
         9, 8, None, 
-        [DontPass(bet_amount=5.0), LayOdds(9, bet_amount=7.5)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 9, bet_amount=7.5)],
         (5, 3), 
-        [DontPass(bet_amount=5.0), LayOdds(9, bet_amount=7.5)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 9, bet_amount=7.5)]
     ),
     (
         None, 7, None, 
@@ -1744,7 +1745,7 @@ from crapssim.table import Table, TableUpdate
         8, 8, None, 
         [DontPass(bet_amount=5.0)],
         (5, 3), 
-        [DontPass(bet_amount=5.0), LayOdds(8, bet_amount=6.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 8, bet_amount=6.0)]
     ),
     (
         None, 8, None, 
@@ -1756,25 +1757,25 @@ from crapssim.table import Table, TableUpdate
         6, 6, None, 
         [DontPass(bet_amount=5.0)],
         (2, 4), 
-        [DontPass(bet_amount=5.0), LayOdds(6, bet_amount=6.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 6, bet_amount=6.0)]
     ),
     (
         6, 9, None, 
-        [DontPass(bet_amount=5.0), LayOdds(6, bet_amount=6.0)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 6, bet_amount=6.0)],
         (3, 6), 
-        [DontPass(bet_amount=5.0), LayOdds(6, bet_amount=6.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 6, bet_amount=6.0)]
     ),
     (
         6, 10, None, 
-        [DontPass(bet_amount=5.0), LayOdds(6, bet_amount=6.0)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 6, bet_amount=6.0)],
         (5, 5), 
-        [DontPass(bet_amount=5.0), LayOdds(6, bet_amount=6.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 6, bet_amount=6.0)]
     ),
     (
         6, 5, None, 
-        [DontPass(bet_amount=5.0), LayOdds(6, bet_amount=6.0)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 6, bet_amount=6.0)],
         (4, 1), 
-        [DontPass(bet_amount=5.0), LayOdds(6, bet_amount=6.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 6, bet_amount=6.0)]
     ),
     (
         None, 6, None, 
@@ -1786,13 +1787,13 @@ from crapssim.table import Table, TableUpdate
         8, 8, None, 
         [DontPass(bet_amount=5.0)],
         (6, 2), 
-        [DontPass(bet_amount=5.0), LayOdds(8, bet_amount=6.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 8, bet_amount=6.0)]
     ),
     (
         8, 10, None, 
-        [DontPass(bet_amount=5.0), LayOdds(8, bet_amount=6.0)],
+        [DontPass(bet_amount=5.0), Odds(DontPass, 8, bet_amount=6.0)],
         (5, 5), 
-        [DontPass(bet_amount=5.0), LayOdds(8, bet_amount=6.0)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 8, bet_amount=6.0)]
     ),
     (
         None, 8, None, 
@@ -1804,14 +1805,14 @@ from crapssim.table import Table, TableUpdate
         9, 9, None, 
         [DontPass(bet_amount=5.0)],
         (6, 3), 
-        [DontPass(bet_amount=5.0), LayOdds(9, bet_amount=7.5)]
+        [DontPass(bet_amount=5.0), Odds(DontPass, 9, bet_amount=7.5)]
     )
 ])
 def test_layodds_integration(point, last_roll, strat_info, bets_before, dice_result, bets_after):
     table = Table()
     table.add_player(bankroll=float("inf"), strategy=(BetDontPass(5) +
-                                                      BetDontPassOdds({4: 2, 5: 1.5, 6: 6 / 5,
-                                                                       8: 6 / 5, 9: 1.5, 10: 2})))
+                                                      DontPassOddsMultiplier({4: 2, 5: 1.5, 6: 6 / 5,
+                                                                              8: 6 / 5, 9: 1.5, 10: 2})))
     table.point.number = point
     table.last_roll = last_roll
     table.players[0].bets_on_table = bets_before

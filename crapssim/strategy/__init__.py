@@ -5,7 +5,7 @@ after the previous bets and table have been updated.
 """
 
 from crapssim.strategy.core import Strategy, AggregateStrategy, BetIfTrue, RemoveIfTrue, \
-    IfBetNotExist, BetPointOff, BetPointOn, CountStrategy, OddsStrategy
+    IfBetNotExist, BetPointOff, BetPointOn, CountStrategy, OddsMultiplierStrategy
 
-from crapssim.strategy.examples import BetPassLine, PassLineOdds, BetDontPass, BetDontPassOdds, \
+from crapssim.strategy.examples import BetPassLine, PassLineOddsMultiplier, BetDontPass, DontPassOddsMultiplier, \
     BetPlace
