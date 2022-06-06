@@ -1,10 +1,10 @@
 import typing
 
-from crapssim.bet import PassLine, DontPass, Come, DontCome, Odds
+from crapssim.bet import PassLine, DontPass, Come, DontCome, Odds, Bet
 from crapssim.strategy import Strategy, IfBetNotExist, AggregateStrategy
 
 if typing.TYPE_CHECKING:
-    from crapssim import Player
+    from crapssim import Player, Table
 
 
 class OddsAmountStrategy(Strategy):
@@ -57,6 +57,15 @@ class OddsMultiplierStrategy(Strategy):
         else:
             self.odds_multiplier = odds_multiplier
 
+    @staticmethod
+    def get_point_number(bet: Bet, table: 'Table'):
+        if isinstance(bet, (PassLine, DontPass)):
+            return table.point.number
+        elif isinstance(bet, (Come, DontCome)):
+            return bet.point.number
+        else:
+            raise NotImplementedError
+
     def update_bets(self, player: 'Player') -> None:
         """Add an Odds bet to the given base_types in the amount determined by the odds_multiplier.
 
@@ -65,23 +74,17 @@ class OddsMultiplierStrategy(Strategy):
         player
             The player to add the odds bet to.
         """
-        for bet in player.bets_on_table:
-            if isinstance(bet, self.base_type):
-                if isinstance(bet, (PassLine, DontPass)):
-                    point = player.table.point.number
-                elif isinstance(bet, (Come, DontCome)):
-                    point = bet.point
-                else:
-                    raise NotImplementedError
+        for bet in [x for x in player.bets_on_table if isinstance(x, self.base_type)]:
+            point = self.get_point_number(bet, player.table)
 
-                if point in self.odds_multiplier:
-                    multiplier = self.odds_multiplier[point]
-                else:
-                    return
+            if point in self.odds_multiplier:
+                multiplier = self.odds_multiplier[point]
+            else:
+                return
 
-                amount = bet.bet_amount * multiplier
-                odds_bet = Odds(self.base_type, point, amount)
-                IfBetNotExist(odds_bet).update_bets(player)
+            amount = bet.bet_amount * multiplier
+            odds_bet = Odds(self.base_type, point, amount)
+            IfBetNotExist(odds_bet).update_bets(player)
 
     def get_odds_multiplier_repr(self) -> int | dict[int, int]:
         """If the odds_multiplier has multiple values return a dictionary with the values,

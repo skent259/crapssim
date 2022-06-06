@@ -1,12 +1,13 @@
-from unittest.mock import MagicMock, Mock, call
+from unittest.mock import MagicMock, Mock, call, PropertyMock
 
 import pytest
 
 from crapssim import Player, Table
-from crapssim.bet import Bet, PassLine, Come, HardWay
+from crapssim.bet import Bet, PassLine, Come, HardWay, Odds
 from crapssim.strategy import Strategy, AggregateStrategy, BetIfTrue, RemoveIfTrue, IfBetNotExist, \
     BetPointOff, BetPointOn, CountStrategy
 from crapssim.strategy.core import ReplaceIfTrue, RemoveByType
+from crapssim.strategy.odds import OddsAmountStrategy
 
 
 @pytest.fixture
@@ -402,3 +403,62 @@ def test_remove_by_type_remove_bet_not_called(player):
     player.bets_on_table = [bet1, bet2]
     strategy.update_bets(player)
     player.remove_bet.assert_not_called()
+
+
+def test_odds_amount_strategy_add_bet_called_pass_line(player):
+    strategy = OddsAmountStrategy(PassLine, {4: 5, 5: 5})
+    player.bets_on_table = [PassLine(5)]
+    player.add_bet = MagicMock()
+    player.table.point.number = 4
+    strategy.update_bets(player)
+    player.add_bet.assert_called_with(Odds(PassLine, 4, 5))
+
+
+def test_odds_amount_strategy_add_bet_not_called_pass_line(player):
+    strategy = OddsAmountStrategy(PassLine, {4: 5, 5: 5})
+    player.bets_on_table = [PassLine(5)]
+    player.add_bet = MagicMock()
+    player.table.point.number = 6
+    strategy.update_bets(player)
+    player.add_bet.assert_not_called()
+
+
+def test_odds_amount_strategy_add_bet_called_come(player):
+    strategy = OddsAmountStrategy(Come, {4: 5, 5: 5})
+    player.bets_on_table = [Come(5, 4)]
+    player.add_bet = MagicMock()
+    strategy.update_bets(player)
+    player.add_bet.assert_called_with(Odds(Come, 4, 5))
+
+
+def test_odds_amount_strategy_add_bet_not_called_come_wrong_numbers(player):
+    strategy = OddsAmountStrategy(Come, {4: 5, 5: 5})
+    player.bets_on_table = [Come(5, 8)]
+    player.add_bet = MagicMock()
+    strategy.update_bets(player)
+    player.add_bet.assert_not_called()
+
+
+def test_odds_amount_strategy_add_bet_not_called_come_bet_wrong_type(player):
+    strategy = OddsAmountStrategy(Come, {4: 5, 5: 5})
+    player.bets_on_table = [PassLine(5)]
+    player.add_bet = MagicMock()
+    player.table.point.number = 4
+    strategy.update_bets(player)
+    player.add_bet.assert_not_called()
+
+
+def test_odds_amount_strategy_add_bet_not_called_amount_too_high(player):
+    strategy = OddsAmountStrategy(Come, {4: 9999, 5: 5})
+    player.bets_on_table = [Come(5, 4)]
+    player.add_bet = MagicMock()
+    strategy.update_bets(player)
+    player.add_bet.assert_not_called()
+
+
+def test_odds_amount_strategy_add_bet_not_called_already_placed(player):
+    strategy = OddsAmountStrategy(Come, {4: 5, 5: 5})
+    player.bets_on_table = [Come(5, 4), Odds(Come, 4, 5)]
+    player.add_bet = MagicMock()
+    strategy.update_bets(player)
+    player.add_bet.assert_not_called()
