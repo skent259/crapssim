@@ -126,7 +126,6 @@ class BetIfTrue(Strategy):
         player
             The Player to add the bet for.
         """
-        print(player.bets_on_table, self.bet)
         if self.key(player):
             player.add_bet(self.bet)
 
