@@ -8,12 +8,10 @@ if typing.TYPE_CHECKING:
     from crapssim.table import Table, Player
 
 
-class PassLineLikeBase(WinningLosingNumbersBet, ABC):
+class PassLine(WinningLosingNumbersBet):
     def get_payout_ratio(self, table: "Table") -> float:
         return 1.0
 
-
-class PassLine(PassLineLikeBase):
     @staticmethod
     def get_odds_bet(bet_amount: typing.SupportsFloat, table: "Table") -> "Odds":
         if table.point.number is not None:
@@ -47,7 +45,10 @@ class PassLine(PassLineLikeBase):
         return False
 
 
-class Come(PassLineLikeBase):
+class Come(WinningLosingNumbersBet):
+    def get_payout_ratio(self, table: "Table") -> float:
+        return 1.0
+
     def __init__(self, bet_amount: typing.SupportsFloat, point: Point | int | None = None):
         super().__init__(bet_amount)
 
@@ -97,7 +98,10 @@ class Come(PassLineLikeBase):
         return f'{self.__class__.__name__}(bet_amount={self.bet_amount}, point={self.point})'
 
 
-class DontPass(PassLineLikeBase):
+class DontPass(WinningLosingNumbersBet):
+    def get_payout_ratio(self, table: "Table") -> float:
+        return 1.0
+
     def get_winning_numbers(self, table: "Table") -> list[int]:
         if table.point.number is None:
             return [2, 3]
@@ -126,7 +130,10 @@ class DontPass(PassLineLikeBase):
             raise NotImplementedError
 
 
-class DontCome(PassLineLikeBase):
+class DontCome(WinningLosingNumbersBet):
+    def get_payout_ratio(self, table: "Table") -> float:
+        return 1.0
+
     def __init__(self, bet_amount: typing.SupportsFloat, point: int | None = None) -> None:
         super().__init__(bet_amount)
 
