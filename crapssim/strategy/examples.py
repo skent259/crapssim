@@ -171,29 +171,7 @@ class PlaceInside(AggregateStrategy):
 
 class Place68Move59(Strategy):
     """Strategy that makes place bets on the six and eight, and then if a PassLine or Come bet with
-    that point comes up, moves to the place bet to 5 or 9.
-
-        Equivalent to:
-        starting_bets = [
-            Place6(six_eight_amount),
-            Place8(six_eight_amount)
-        ]
-        check_bets = [
-            PassLine(pass_come_amount, point=6),
-            PassLine(pass_come_amount, point=8),
-            Come(pass_come_amount, point=6),
-            Come(pass_come_amount, point=8)
-        ]
-        bet_movements = {
-            Place6(six_eight_amount):
-            Place5(5),
-            Place8(six_eight_amount): Place5(5),
-            Place5(five_nine_amount): Place9(five_nine_amount),
-            Place9(five_nine_amount): None
-        }
-
-        PlaceBetAndMove(starting_bets, check_bets, bet_movements)"""
-
+    that point comes up, moves to the place bet to 5 or 9."""
     def __init__(self, pass_come_amount: float = 5,
                  six_eight_amount: float = 6,
                  five_nine_amount: float = 5):
