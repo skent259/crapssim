@@ -301,6 +301,7 @@ class RemoveByType(RemoveIfTrue):
 
 
 class OddsAmountStrategy(Strategy):
+    """Strategy that takes places odds on a given number for a given bet type."""
     def __init__(self, base_type: typing.Type[PassLine | DontPass | Come | DontCome],
                  odds_amounts: dict[int, typing.SupportsFloat]):
         self.base_type = base_type

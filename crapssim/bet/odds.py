@@ -1,5 +1,4 @@
 import typing
-from abc import abstractmethod
 from crapssim.bet import Bet, PassLine, Come, DontPass, DontCome, WinningLosingNumbersBet
 
 if typing.TYPE_CHECKING:
@@ -62,7 +61,7 @@ class Odds(WinningLosingNumbersBet):
         return self.bet_amount <= self.get_max_bet(player)
 
     def get_placed_key(self) -> typing.Hashable:
-        return self.__class__, self.number
+        return self.__class__, self.base_type, self.number
 
     def __repr__(self):
         return f'Odds(base_type={self.base_type}, number={self.number}, ' \
