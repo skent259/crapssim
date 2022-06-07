@@ -8,7 +8,7 @@ from crapssim.strategy import Strategy, AggregateStrategy, BetIfTrue, RemoveIfTr
     BetPointOff, BetPointOn, CountStrategy, BetPlace
 from crapssim.strategy.core import ReplaceIfTrue, RemoveByType
 from crapssim.strategy.examples import TwoCome, Pass2Come, PassLinePlace68, PlaceInside, \
-    Place68Move59
+    Place68Move59, Place682Come
 from crapssim.strategy.odds import OddsAmountStrategy, OddsMultiplierStrategy
 from crapssim.strategy.simple_bet import BaseSimpleBet, SimpleStrategyMode
 
@@ -768,5 +768,70 @@ def test_place_68_move_59_no_more_than_2_come_bets(player):
     player.table.point.number = 6
     player.bets_on_table = [PassLine(5), Place(8, 6), Place(5, 5)]
     player.add_bet = MagicMock()
+    strategy.update_bets(player)
+    player.add_bet.assert_not_called()
+
+
+def test_place_68_2_come_pass_line_bet_not_repeated(player):
+    strategy = Place682Come()
+    player.add_bet = MagicMock()
+    player.bets_on_table = [PassLine(5)]
+    strategy.update_bets(player)
+    player.add_bet.assert_not_called()
+
+
+def test_place_68_2_come_come_bet_not_repeated(player):
+    strategy = Place682Come()
+    player.table.point.number = 6
+    player.add_bet = MagicMock()
+    player.bets_on_table = [Come(5, None)]
+    strategy.update_bets(player)
+    player.add_bet.ass()
+
+
+def test_place_68_2_come_should_place_pass_line_come(player):
+    assert Place682Come.should_place_pass_line_or_come(player)
+
+
+def test_place_68_2_come_shouldnt_place_pass_line_come(player):
+    player.bets_on_table = [PassLine(5), Come(5, 6), Place(5, 5), Place(9, 5)]
+    assert Place682Come.should_place_pass_line_or_come(player)
+
+
+def test_place_68_2_come_pass_line_added(player):
+    strategy = Place682Come()
+    player.add_bet = MagicMock()
+    strategy.update_bets(player)
+    player.add_bet.assert_called_once_with(PassLine(5))
+
+
+def test_place_68_2_come_pass_line_not_added_too_many_come(player):
+    strategy = Place682Come()
+    player.add_bet = MagicMock()
+    player.bets_on_table = [Come(5, 6), Come(9, 5)]
+    strategy.update_bets(player)
+    player.add_bet.assert_not_called()
+
+
+def test_place_68_2_come_come_added_point_on(player):
+    strategy = Place682Come()
+    player.add_bet = MagicMock()
+    player.table.point.number = 6
+    strategy.place_pass_line_come(player)
+    player.add_bet.assert_called_once_with(Come(5))
+
+
+def test_place_68_2_come_add_come_and_place(player):
+    strategy = Place682Come()
+    player.table.point.number = 6
+    strategy.update_bets(player)
+    assert player.bets_on_table == [Come(5), Place(6, 6), Place(8, 6)]
+
+
+def test_place_68_2_come_dont_add_come(player):
+    strategy = Place682Come()
+    player.table.point.number = 6
+    player.add_bet = MagicMock()
+    player.bets_on_table = [PassLine(5), Come(5, 8), Place(5, 5), Place(9, 5)]
     strategy.update_bets(player)
     player.add_bet.assert_not_called()

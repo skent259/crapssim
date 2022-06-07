@@ -310,9 +310,8 @@ class Place682Come(AggregateStrategy):
     table. If the point is On, places the 6 and 8 and if there are less than 2 Come bets on the
     table and less than 4 bets overall places a Come bet."""
 
-    def __init__(self, pass_come_amount: float = 5,
-                 six_eight_amount: float = 6,
-                 five_nine_amount: float = 5):
+    def __init__(self, pass_come_amount: float = 5, six_eight_amount: float = 6,
+                 five_nine_amount: float = 5, *strategies: Strategy):
         """Place the six and the eight and place two come bets moving the six and eight to five or
         nine if the Come or PassLine bets points come up to those numbers. Also, if there is a
         Place6 or Place8 bet and the point if Off make a PassLine bet.
@@ -326,39 +325,14 @@ class Place682Come(AggregateStrategy):
         five_nine_amount
             The amount of the Place5 and Place9 bets.
         """
+        super().__init__(*strategies)
         self.pass_come_amount = pass_come_amount
         self.six_eight_amount = six_eight_amount
         self.five_nine_amount = five_nine_amount
 
-        pass_line_strategy = BetIfTrue(PassLine(pass_come_amount), self.pass_line_key)
-        come_strategy = BetIfTrue(Come(pass_come_amount), self.come_key)
-        place_strategy = Place68Move59(pass_come_amount=pass_come_amount,
-                                       six_eight_amount=six_eight_amount,
-                                       five_nine_amount=five_nine_amount)
-        super().__init__(pass_line_strategy, come_strategy, place_strategy)
-
-    def pass_line_key(self, player: "Player") -> bool:
-        """Return True if the point is Off, the player has a Place 6 or Place 8 bet, and the
-        player has less than 4 bets.
-
-        Parameters
-        ----------
-        player
-            The player to check the bets for.
-
-        Returns
-        -------
-        True if the point is Off, the player has a Place 6 or Place 8 bet, and the
-        player has less than 4 bets, else False.
-        """
-        point_off = player.table.point.status == 'Off'
-        less_than_four_bets = len(player.get_bets_by_type((Place, PassLine, Come))) < 4
-        return point_off and less_than_four_bets
-
     @staticmethod
-    def come_key(player: "Player") -> bool:
-        """Return True if the point is On, the player has less than 2 come bets, and the
-        player has less than 4 PassLine, Come and Place bets.
+    def should_place_pass_line_or_come(player: 'Player') -> bool:
+        """If the player has less than 2 PassLine or Come bets return True, otherwise return False.
 
         Parameters
         ----------
@@ -367,14 +341,39 @@ class Place682Come(AggregateStrategy):
 
         Returns
         -------
-        True if the point is On, the player has less than 2 come bets, and the
-        player has less than 4 PassLine, Come and Place bets else returns False.
+        True if the player has less than 2 Come and PassLine bets, otherwise False.
         """
-        point_on = player.table.point.status == 'On'
-        come_count_lt_2 = len(player.get_bets_by_type((Come, PassLine))) < 2
-        place_pass_line_come_count = len(player.get_bets_by_type((PassLine, Come, Place)))
-        pass_line_place_come_lt_4 = place_pass_line_come_count < 4
-        return point_on and come_count_lt_2 and pass_line_place_come_lt_4
+        pass_come_count = len([x for x in player.bets_on_table if isinstance(x, (PassLine, Come))])
+        return pass_come_count < 2
+
+    def place_pass_line_come(self, player: 'Player'):
+        """If the point is Off and the player doesn't have a PassLine bet, place a PassLine bet.
+        If the point is On and the player doesn't have a Come bet, place a Come bet.
+
+        Parameters
+        ----------
+        player
+            The player to make the bets for.
+        """
+        BetPointOff(PassLine(self.pass_come_amount)).update_bets(player)
+        BetPointOn(Come(self.pass_come_amount)).update_bets(player)
+
+    def update_bets(self, player: 'Player') -> None:
+        """If the player has less than 2 PassLine and Come bets, make the bet (depending on whether
+        the point is on or off.) If the point is on, place the 6 and 8 unless there is a PassLine or
+        Come bet with those then move them to the 5 or 9.
+
+        Parameters
+        ----------
+        player
+            The player to check on and make the bets for.
+        """
+        if self.should_place_pass_line_or_come(player):
+            self.place_pass_line_come(player)
+
+        Place68Move59(self.pass_come_amount,
+                      self.six_eight_amount,
+                      self.five_nine_amount).update_bets(player)
 
     def __repr__(self) -> str:
         return f'{self.__class__.__name__}(pass_come_amount={self.pass_come_amount}, ' \
@@ -461,8 +460,8 @@ class HammerLock(Strategy):
             The player to place the bets for.
         """
         RemoveByType(Place).update_bets(player)
-        strategy = IfBetNotExist(PassLine(self.base_amount)) + \
-                   IfBetNotExist(DontPass(self.base_amount))
+        strategy = (IfBetNotExist(PassLine(self.base_amount)) +
+                    IfBetNotExist(DontPass(self.base_amount)))
         strategy.update_bets(player)
 
     def place68(self, player: "Player") -> None:
