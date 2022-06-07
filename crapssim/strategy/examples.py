@@ -553,10 +553,6 @@ class Risk12(Strategy):
         player
             The player to check the bets for.
         """
-        # RemoveIfTrue(lambda b,
-        #                     p: (isinstance(b, Place)
-        #                         and p.table.last_roll is not None
-        #                         and p.table.last_roll == 7)).update_bets(player)
         IfBetNotExist(PassLine(5)).update_bets(player)
         IfBetNotExist(Field(5)).update_bets(player)
 
