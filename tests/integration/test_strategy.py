@@ -82,7 +82,6 @@ from crapssim.table import TableUpdate
  (PassLinePlace68Move59(pass_line_amount=5, six_eight_amount=6, five_nine_amount=5),
   [(3, 3), (4, 4)],
   [Place(number=8, bet_amount=6.0),
-   Place(number=9, bet_amount=5.0),
    Place(number=5, bet_amount=5.0),
    PassLine(bet_amount=5.0)]),
  (Place682Come(pass_come_amount=5, six_eight_amount=6, five_nine_amount=5),

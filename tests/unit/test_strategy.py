@@ -7,7 +7,7 @@ from crapssim.bet import Bet, PassLine, Come, HardWay, Odds, DontCome, Place
 from crapssim.strategy import Strategy, AggregateStrategy, BetIfTrue, RemoveIfTrue, IfBetNotExist, \
     BetPointOff, BetPointOn, CountStrategy, BetPlace
 from crapssim.strategy.core import ReplaceIfTrue, RemoveByType
-from crapssim.strategy.examples import TwoCome, Pass2Come
+from crapssim.strategy.examples import TwoCome, Pass2Come, PassLinePlace68, PlaceInside
 from crapssim.strategy.odds import OddsAmountStrategy, OddsMultiplierStrategy
 from crapssim.strategy.simple_bet import BaseSimpleBet, SimpleStrategyMode
 
@@ -626,3 +626,80 @@ def test_pass_2_come_point_off_come_2_dont_add(player):
     player.table.point.number = 4
     strategy.update_bets(player)
     player.add_bet.assert_not_called()
+
+
+def test_pass_line_place_six_eight_pass_line(player):
+    strategy = PassLinePlace68()
+    player.add_bet = MagicMock()
+    strategy.update_bets(player)
+    player.add_bet.assert_called_once_with(PassLine(5))
+
+
+def test_pass_line_place_six_eight_place_six_eight(player):
+    strategy = PassLinePlace68()
+    player.bets_on_table = [PassLine(5)]
+    player.table.point.number = 5
+    player.add_bet = MagicMock()
+    strategy.update_bets(player)
+    player.add_bet.assert_has_calls((call(Place(6, 6)), call(Place(8, 6))))
+
+
+def test_pass_line_place_six_eight_place_six_eight_skip_point(player):
+    strategy = PassLinePlace68()
+    player.bets_on_table = [PassLine(5)]
+    player.table.point.number = 6
+    player.add_bet = MagicMock()
+    strategy.update_bets(player)
+    player.add_bet.assert_called_once_with(Place(8, 6))
+
+
+def test_pass_line_place_six_eight_place_six_eight_not_skip_point(player):
+    strategy = PassLinePlace68(skip_point=False)
+    player.bets_on_table = [PassLine(5)]
+    player.table.point.number = 6
+    player.add_bet = MagicMock()
+    strategy.update_bets(player)
+    player.add_bet.assert_has_calls((call(Place(6, 6)), call(Place(8, 6))))
+
+
+def test_pass_line_place_six_eight_place_six_eight_doesnt_place_twice(player):
+    strategy = PassLinePlace68()
+    player.bets_on_table = [PassLine(5), Place(6, 6), Place(8, 6)]
+    player.table.point.number = 6
+    player.add_bet = MagicMock()
+    strategy.update_bets(player)
+    player.add_bet.assert_not_called()
+
+
+def test_place_inside_place_bets_dict(player):
+    strategy = PlaceInside({5: 5, 6: 6, 8: 6, 9: 5})
+    player.table.point.number = 6
+    player.add_bet = MagicMock()
+    strategy.update_bets(player)
+    player.add_bet.assert_has_calls([call(Place(5, 5)),
+                                     call(Place(6, 6)),
+                                     call(Place(8, 6)),
+                                     call(Place(9, 5))])
+
+
+def test_place_inside_place_bets_int(player):
+    strategy = PlaceInside(5)
+    player.table.point.number = 6
+    player.add_bet = MagicMock()
+    strategy.update_bets(player)
+    player.add_bet.assert_has_calls([call(Place(5, 5)),
+                                     call(Place(6, 6)),
+                                     call(Place(8, 6)),
+                                     call(Place(9, 5))])
+
+
+def test_place_inside_bets_dont_double(player):
+    strategy = PlaceInside(5)
+    player.table.point.number = 6
+    player.bets_on_table = [Place(5, 5), Place(6, 6), Place(8, 6), Place(9, 5)]
+    player.add_bet = MagicMock()
+    strategy.update_bets(player)
+    player.add_bet.assert_not_called()
+
+
+
