@@ -306,9 +306,9 @@ class PassLinePlace68Move59(AggregateStrategy):
 
 
 class Place682Come(AggregateStrategy):
-    """Strategy that makes place bets on the 6 and 8 places two come bets moving the six and eight
-    to five or nine if the Come or PassLine bets points come up to those numbers. Also, if there is
-    a Place6 or Place8 bet and the point if Off make a PassLine bet."""
+    """Strategy that bets the PassLine if the point is off and there are less than 4 bets on the
+    table. If the point is On, places the 6 and 8 and if there are less than 2 Come bets on the
+    table and less than 4 bets overall places a Come bet."""
 
     def __init__(self, pass_come_amount: float = 5,
                  six_eight_amount: float = 6,
@@ -352,10 +352,8 @@ class Place682Come(AggregateStrategy):
         player has less than 4 bets, else False.
         """
         point_off = player.table.point.status == 'Off'
-        has_place_6 = Place(6, self.six_eight_amount) in player.bets_on_table
-        has_place_8 = Place(8, self.six_eight_amount) in player.bets_on_table
         less_than_four_bets = len(player.get_bets_by_type((Place, PassLine, Come))) < 4
-        return point_off and (has_place_6 or has_place_8) and less_than_four_bets
+        return point_off and less_than_four_bets
 
     @staticmethod
     def come_key(player: "Player") -> bool:
@@ -373,7 +371,7 @@ class Place682Come(AggregateStrategy):
         player has less than 4 PassLine, Come and Place bets else returns False.
         """
         point_on = player.table.point.status == 'On'
-        come_count_lt_2 = len(player.get_bets_by_type((Come,))) < 2
+        come_count_lt_2 = len(player.get_bets_by_type((Come, PassLine))) < 2
         place_pass_line_come_count = len(player.get_bets_by_type((PassLine, Come, Place)))
         pass_line_place_come_lt_4 = place_pass_line_come_count < 4
         return point_on and come_count_lt_2 and pass_line_place_come_lt_4
