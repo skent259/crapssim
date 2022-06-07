@@ -8,7 +8,7 @@ from crapssim.strategy import Strategy, AggregateStrategy, BetIfTrue, RemoveIfTr
     BetPointOff, BetPointOn, CountStrategy, BetPlace
 from crapssim.strategy.core import ReplaceIfTrue, RemoveByType
 from crapssim.strategy.examples import TwoCome, Pass2Come, PassLinePlace68, PlaceInside, \
-    Place68Move59, Place682Come, HammerLock, Risk12
+    Place68Move59, Place682Come, HammerLock, Risk12, DiceDoctor
 from crapssim.strategy.odds import OddsAmountStrategy, OddsMultiplierStrategy
 from crapssim.strategy.simple_bet import BaseSimpleBet, SimpleStrategyMode
 
@@ -977,6 +977,47 @@ def test_risk_12_reset_prepoint_winnings(player):
     assert strategy.pre_point_winnings == 0
 
 
-def test_risk_12_point_off(player):
+def test_risk_12_point_off_add_bets(player):
     strategy = Risk12()
+    player.add_bet = MagicMock()
+    strategy.point_off(player)
+    player.add_bet.assert_has_calls([call(PassLine(5)), call(Field(5))])
 
+
+def test_risk_12_point_on_5_pre_point_winnings(player):
+    strategy = Risk12()
+    strategy.pre_point_winnings = 5
+    player.add_bet = MagicMock()
+    player.table.point.number = 5
+    strategy.point_on(player)
+    player.add_bet.assert_has_calls([call(Place(6, 6))])
+
+
+def test_risk_12_point_on_10_pre_point_winnings(player):
+    strategy = Risk12()
+    strategy.pre_point_winnings = 10
+    player.add_bet = MagicMock()
+    player.table.point.number = 5
+    strategy.point_on(player)
+    player.add_bet.assert_has_calls([call(Place(6, 6)), call(Place(8, 6))])
+
+
+def test_dice_doctor_win_increase_progression(player):
+    strategy = DiceDoctor()
+    bet = Field(5)
+    bet.get_status = MagicMock(return_value='win')
+    player.table.dice.total = 2
+    player.bets_on_table = [bet]
+    strategy.after_roll(player)
+    assert strategy.current_progression == 1
+
+
+def test_dice_doctor_lose_progression(player):
+    strategy = DiceDoctor()
+    strategy.current_progression = 4
+    bet = Field(5)
+    bet.get_status = MagicMock(return_value='lose')
+    player.table.dice.total = 7
+    player.bets_on_table = [bet]
+    strategy.after_roll(player)
+    assert strategy.current_progression == 0

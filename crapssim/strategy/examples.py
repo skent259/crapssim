@@ -630,7 +630,7 @@ class FieldWinProgression(Strategy):
         player
             The player to check the winning bets for.
         """
-        win = all(x for x in player.bets_on_table if x.get_status(player.table) == 'win')
+        win = all(x.get_status(player.table) == 'win' for x in player.bets_on_table)
 
         if win:
             self.current_progression += 1
