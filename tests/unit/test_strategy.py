@@ -594,11 +594,35 @@ def test_two_come_two_existing_come_bets(player):
     player.add_bet.assert_not_called()
 
 
-def test_pass_2_come_point_off(player):
+def test_pass_2_come_point_off_passline(player):
     strategy = Pass2Come(5)
     player.add_bet = MagicMock()
     strategy.update_bets(player)
     player.add_bet.assert_called_with(PassLine(5))
 
 
+def test_pass_2_come_point_on_come(player):
+    strategy = Pass2Come(5)
+    player.add_bet = MagicMock()
+    player.bets_on_table = [PassLine(5)]
+    player.table.point.number = 4
+    strategy.update_bets(player)
+    player.add_bet.assert_called_with(Come(5))
 
+
+def test_pass_2_come_point_on_come_2(player):
+    strategy = Pass2Come(5)
+    player.add_bet = MagicMock()
+    player.bets_on_table = [PassLine(5), Come(5, 6)]
+    player.table.point.number = 4
+    strategy.update_bets(player)
+    player.add_bet.assert_called_with(Come(5))
+
+
+def test_pass_2_come_point_off_come_2_dont_add(player):
+    strategy = Pass2Come(5)
+    player.add_bet = MagicMock()
+    player.bets_on_table = [PassLine(5), Come(5, 6), Come(5, 10)]
+    player.table.point.number = 4
+    strategy.update_bets(player)
+    player.add_bet.assert_not_called()
