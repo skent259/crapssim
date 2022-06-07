@@ -213,7 +213,19 @@ class Place68Move59(Strategy):
         self.six_eight_amount = six_eight_amount
         self.five_nine_amount = five_nine_amount
 
-    def get_pass_line_come_points(self, player: 'Player'):
+    def get_pass_line_come_points(self, player: 'Player') -> list[int]:
+        """Get the point number (or the table point number in the case of PassLine) for any PassLine
+        or Come bets on the table.
+
+        Parameters
+        ----------
+        player
+            The player to check the bets for.
+
+        Returns
+        -------
+        A list of integers of the points for the PassLine and Come bets.
+        """
         pass_line_come_points = []
         for number in (6, 8, 9, 10):
             if (player.table.point.number == number and
@@ -223,8 +235,18 @@ class Place68Move59(Strategy):
                 pass_line_come_points.append(number)
         return pass_line_come_points
 
-
     def update_bets(self, player: 'Player') -> None:
+        """Do nothing if the point status is Off, otherwise go through the numbers 6, 8, 5 and 9.
+        If the player has both a PassLine or Come bet for that number and a Place bet, remove the
+        Place bet, otherwise move on to the next number. If the player doesn't have a PassLine or
+        Come bet for that number, and the place bet for that number isn't already on the table,
+        make a Place bet for that number.
+
+        Parameters
+        ----------
+        player
+            The player to check on bets and add bets for.
+        """
         place_amounts = {5: self.five_nine_amount,
                          6: self.six_eight_amount,
                          8: self.six_eight_amount,
