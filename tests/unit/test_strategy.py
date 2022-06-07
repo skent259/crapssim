@@ -7,7 +7,7 @@ from crapssim.bet import Bet, PassLine, Come, HardWay, Odds, DontCome, Place
 from crapssim.strategy import Strategy, AggregateStrategy, BetIfTrue, RemoveIfTrue, IfBetNotExist, \
     BetPointOff, BetPointOn, CountStrategy, BetPlace
 from crapssim.strategy.core import ReplaceIfTrue, RemoveByType
-from crapssim.strategy.examples import TwoCome
+from crapssim.strategy.examples import TwoCome, Pass2Come
 from crapssim.strategy.odds import OddsAmountStrategy, OddsMultiplierStrategy
 from crapssim.strategy.simple_bet import BaseSimpleBet, SimpleStrategyMode
 
@@ -592,6 +592,13 @@ def test_two_come_two_existing_come_bets(player):
     player.table.point.number = 5
     strategy.update_bets(player)
     player.add_bet.assert_not_called()
+
+
+def test_pass_2_come_point_off(player):
+    strategy = Pass2Come(5)
+    player.add_bet = MagicMock()
+    strategy.update_bets(player)
+    player.add_bet.assert_called_with(PassLine(5))
 
 
 

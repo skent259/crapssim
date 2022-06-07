@@ -126,7 +126,7 @@ class BetIfTrue(Strategy):
         player
             The Player to add the bet for.
         """
-        if self.key(player):
+        if self.key(player) and self.bet.allowed(player):
             player.add_bet(self.bet)
 
     def __repr__(self) -> str:
@@ -288,7 +288,8 @@ class CountStrategy(BetIfTrue):
         Returns True if the player has less than count number of bets for a given type and the
         bet that is intended to be placed isn't already on the table, otherwise returns False.
         """
-        return self.less_than_count_bets_of_type(player) and self.bet_is_not_on_table(player)
+        return (self.less_than_count_bets_of_type(player)
+                and self.bet_is_not_on_table(player))
 
     def bet_is_not_on_table(self, player: 'Player') -> bool:
         """Returns True if the selected bet isn't already on the table.
