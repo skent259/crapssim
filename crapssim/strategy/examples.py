@@ -213,6 +213,17 @@ class Place68Move59(Strategy):
         self.six_eight_amount = six_eight_amount
         self.five_nine_amount = five_nine_amount
 
+    def get_pass_line_come_points(self, player: 'Player'):
+        pass_line_come_points = []
+        for number in (6, 8, 9, 10):
+            if (player.table.point.number == number and
+                    PassLine(self.pass_come_amount) in player.bets_on_table):
+                pass_line_come_points.append(number)
+            elif Come(self.pass_come_amount, number) in player.bets_on_table:
+                pass_line_come_points.append(number)
+        return pass_line_come_points
+
+
     def update_bets(self, player: 'Player') -> None:
         place_amounts = {5: self.five_nine_amount,
                          6: self.six_eight_amount,
@@ -225,13 +236,7 @@ class Place68Move59(Strategy):
         for number in (6, 8, 5, 9):
             bet = Place(number, place_amounts[number])
 
-            if (PassLine(self.pass_come_amount) in player.bets_on_table
-                    and player.table.point.number == number):
-                if bet in player.bets_on_table:
-                    player.remove_bet(bet)
-                continue
-
-            if Come(self.pass_come_amount, number) in player.bets_on_table:
+            if number in self.get_pass_line_come_points(player):
                 if bet in player.bets_on_table:
                     player.remove_bet(bet)
                 continue
