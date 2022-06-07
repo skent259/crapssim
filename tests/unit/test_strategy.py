@@ -3,12 +3,12 @@ from unittest.mock import MagicMock, call
 import pytest
 
 from crapssim import Player, Table
-from crapssim.bet import Bet, PassLine, Come, HardWay, Odds, DontCome, Place
+from crapssim.bet import Bet, PassLine, Come, HardWay, Odds, DontCome, Place, DontPass, Field
 from crapssim.strategy import Strategy, AggregateStrategy, BetIfTrue, RemoveIfTrue, IfBetNotExist, \
     BetPointOff, BetPointOn, CountStrategy, BetPlace
 from crapssim.strategy.core import ReplaceIfTrue, RemoveByType
 from crapssim.strategy.examples import TwoCome, Pass2Come, PassLinePlace68, PlaceInside, \
-    Place68Move59, Place682Come
+    Place68Move59, Place682Come, HammerLock, Risk12
 from crapssim.strategy.odds import OddsAmountStrategy, OddsMultiplierStrategy
 from crapssim.strategy.simple_bet import BaseSimpleBet, SimpleStrategyMode
 
@@ -129,6 +129,7 @@ def example_bet():
 
         def get_status(self, table: "Table") -> str | None:
             return None
+
     return ExampleBet(1)
 
 
@@ -203,7 +204,6 @@ def test_remove_if_true_two_bets_removed(player):
     strategy = RemoveIfTrue(key=key)
     strategy.update_bets(player)
     assert player.bets_on_table == [bet2]
-
 
 
 def test_remove_if_true_calls_remove_bet(player):
@@ -795,7 +795,7 @@ def test_place_68_2_come_should_place_pass_line_come(player):
 
 def test_place_68_2_come_shouldnt_place_pass_line_come(player):
     player.bets_on_table = [PassLine(5), Come(5, 6), Place(5, 5), Place(9, 5)]
-    assert Place682Come.should_place_pass_line_or_come(player)
+    assert not Place682Come.should_place_pass_line_or_come(player)
 
 
 def test_place_68_2_come_pass_line_added(player):
@@ -835,3 +835,148 @@ def test_place_68_2_come_dont_add_come(player):
     player.bets_on_table = [PassLine(5), Come(5, 8), Place(5, 5), Place(9, 5)]
     strategy.update_bets(player)
     player.add_bet.assert_not_called()
+
+
+def test_hammerlock_point_start_six_eight_amount(player):
+    strategy = HammerLock(5)
+    assert strategy.start_six_eight_amount == 12
+
+
+def test_hammerlock_end_six_eight_amount(player):
+    strategy = HammerLock(5)
+    assert strategy.end_six_eight_amount == 6
+
+
+def test_hammerlock_five_nine_amount(player):
+    strategy = HammerLock(5)
+    assert strategy.five_nine_amount == 5
+
+
+def test_hammerlock_odds_multiplier(player):
+    strategy = HammerLock(5)
+    assert strategy.odds_multiplier == 6
+
+
+def test_hammerlock_1_win_after_roll(player):
+    strategy = HammerLock(5)
+    bet1 = Place(6, 5)
+    bet1.get_status = MagicMock(return_value='win')
+    player.bets_on_table = [bet1]
+    strategy.after_roll(player)
+    assert strategy.place_win_count == 1
+
+
+def test_hammerlock_2_win_after_roll(player):
+    strategy = HammerLock(5)
+    bet = Place(6, 5)
+    bet.get_status = MagicMock(return_value='win')
+    player.bets_on_table = [bet, bet]
+    strategy.after_roll(player)
+    assert strategy.place_win_count == 2
+
+
+def test_hammerlock_lose_place_win_count_0(player):
+    strategy = HammerLock(5)
+    strategy.place_win_count = 2
+    player.table.point.number = 6
+    player.table.dice.result = (3, 4)
+    player.table.dice.total = 7
+    strategy.after_roll(player)
+    assert strategy.place_win_count == 0
+
+
+def test_hammerlock_point_off_bets(player):
+    strategy = HammerLock(5)
+    player.add_bet = MagicMock()
+    strategy.point_off(player)
+    player.add_bet.assert_has_calls([call(PassLine(5)), call(DontPass(5))])
+
+
+def test_hammerlock_place_68(player):
+    strategy = HammerLock(5)
+    player.table.point.number = 5
+    player.add_bet = MagicMock()
+    player.bets_on_table = [PassLine(5)]
+    strategy.place68(player)
+    player.add_bet.assert_has_calls([call(Place(6, 12)), call(Place(8, 12))])
+
+
+def test_hammerlock_place_5689_removed_bets(player):
+    strategy = HammerLock(5)
+    player.table.point.number = 4
+    player.bets_on_table = [Place(6, 12), Place(8, 12)]
+    player.remove_bet = MagicMock()
+    player.add_bet = MagicMock()
+    strategy.place5689(player)
+    player.remove_bet.assert_has_calls([call(Place(6, 12)),
+                                        call(Place(8, 12))])
+
+
+def test_hammerlock_place_5689_added_bets(player):
+    strategy = HammerLock(5)
+    player.table.point.number = 4
+    player.add_bet = MagicMock()
+    strategy.place5689(player)
+    player.add_bet.assert_has_calls([call(Place(5, 5)),
+                                     call(Place(6, 6)),
+                                     call(Place(8, 6)),
+                                     call(Place(9, 5))])
+
+
+@pytest.mark.parametrize('place_win_count', [0, 1, 2])
+def test_hammerlock_always_add_dont_odds(player, place_win_count):
+    strategy = HammerLock(5)
+    strategy.place68 = MagicMock()
+    strategy.place5689 = MagicMock()
+    player.table.point.number = 4
+    player.bets_on_table = [DontPass(5)]
+    player.add_bet = MagicMock()
+    strategy.update_bets(player)
+    player.add_bet.assert_called_with(Odds(DontPass, 4, 30))
+
+
+def test_risk_12_player_won_field_bet(player):
+    strategy = Risk12()
+    player.bets_on_table = [Field(5)]
+    player.table.dice.total = 4
+    strategy.after_roll(player)
+    assert strategy.pre_point_winnings == 10
+
+
+def test_risk_12_player_won_double_field_bet(player):
+    strategy = Risk12()
+    player.bets_on_table = [Field(5)]
+    player.table.dice.total = 12
+    strategy.after_roll(player)
+    assert strategy.pre_point_winnings == 15
+
+
+def test_risk_12_player_won_pass_line_bet(player):
+    strategy = Risk12()
+    player.bets_on_table = [PassLine(5)]
+    player.table.dice.total = 7
+    strategy.after_roll(player)
+    assert strategy.pre_point_winnings == 10
+
+
+def test_risk_12_player_won_pass_line_bet_and_field(player):
+    strategy = Risk12()
+    player.bets_on_table = [PassLine(5), Field(5)]
+    player.table.dice.total = 11
+    strategy.after_roll(player)
+    assert strategy.pre_point_winnings == 20
+
+
+def test_risk_12_reset_prepoint_winnings(player):
+    strategy = Risk12()
+    strategy.pre_point_winnings = 20
+    player.table.point.number = 4
+    player.bets_on_table = [PassLine(5)]
+    player.table.dice.total = 7
+    strategy.after_roll(player)
+    assert strategy.pre_point_winnings == 0
+
+
+def test_risk_12_point_off(player):
+    strategy = Risk12()
+
