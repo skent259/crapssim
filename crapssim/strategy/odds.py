@@ -9,10 +9,26 @@ if typing.TYPE_CHECKING:
 
 class OddsAmountStrategy(Strategy):
     """Strategy that takes places odds on a given number for a given bet type."""
+
     def __init__(self, base_type: typing.Type[PassLine | DontPass | Come | DontCome],
                  odds_amounts: dict[int, typing.SupportsFloat]):
         self.base_type = base_type
         self.odds_amounts = odds_amounts
+
+    def completed(self, player: 'Player') -> bool:
+        """Return True if there are no bets of base_type on the table.
+
+        Parameters
+        ----------
+        player
+            The player whose bets to check for.
+
+        Returns
+        -------
+        True if there are no base type bets on the table, otherwise False.
+        """
+        return len([x for x in player.bets_on_table if isinstance(x, self.base_type)]) == 0
+
 
     def update_bets(self, player: 'Player') -> None:
         for number, amount in self.odds_amounts.items():
@@ -36,6 +52,7 @@ class DarkSideOddsAmount(AggregateStrategy):
 class OddsMultiplierStrategy(Strategy):
     """Strategy that takes an AllowsOdds object and places Odds on it given either a multiplier,
     or a dictionary of points and multipliers."""
+
     def __init__(self, base_type: typing.Type[PassLine | DontPass | Come | DontCome],
                  odds_multiplier: dict[int, int] | int):
         """Takes an AllowsOdds item (ex. PassLine, Come, DontPass) and adds a BaseOdds bet
@@ -84,6 +101,20 @@ class OddsMultiplierStrategy(Strategy):
 
             amount = bet.bet_amount * multiplier
             OddsAmountStrategy(self.base_type, {point: amount}).update_bets(player)
+
+    def completed(self, player: 'Player') -> bool:
+        """Return True if there are no bets of base_type on the table.
+
+        Parameters
+        ----------
+        player
+            The player whose bets to check for.
+
+        Returns
+        -------
+        True if there are no base type bets on the table, otherwise False.
+        """
+        return len([x for x in player.bets_on_table if isinstance(x, self.base_type)]) == 0
 
     def get_odds_multiplier_repr(self) -> int | dict[int, int]:
         """If the odds_multiplier has multiple values return a dictionary with the values,

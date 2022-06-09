@@ -26,6 +26,9 @@ class BaseSimpleBet(Strategy):
         self.bet = bet
         self.mode = mode
 
+    def completed(self, player: 'Player') -> bool:
+        return player.bankroll < self.bet.bet_amount and len(player.bets_on_table) == 0
+
     def update_bets(self, player: 'Player') -> None:
         if not self.bet.allowed(player):
             return

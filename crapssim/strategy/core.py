@@ -29,10 +29,10 @@ class Strategy(ABC):
             The Player to check for bets, etc.
         """
 
+    @abstractmethod
     def completed(self, player: 'Player') -> bool:
         """If True, the Strategy is completed and the Player stops playing. If False, the Player
         keeps playing the Strategy."""
-        return False
 
     @abstractmethod
     def update_bets(self, player: 'Player') -> None:
@@ -129,6 +129,22 @@ class BetIfTrue(Strategy):
         if self.key(player) and self.bet.allowed(player):
             player.add_bet(self.bet)
 
+    def completed(self, player: 'Player') -> bool:
+        """The strategy is completed when the player  can't make a bet because their bankroll is too
+         low and the player doesn't have any bets left on the table.
+
+        Parameters
+        ----------
+        player
+            The player to check whether the
+
+        Returns
+        -------
+        True if the Player can't continue the strategy, otherwise False.
+        """
+        return (self.bet.bet_amount > player.bankroll and
+                sum(x.bet_amount for x in player.bets_on_table) == 0)
+
     def __repr__(self) -> str:
         return f'{self.__class__.__name__}(bet={self.bet}, ' \
                f'key={self.key})'
@@ -169,6 +185,20 @@ class RemoveIfTrue(Strategy):
         for bet in bets_to_remove:
             player.remove_bet(bet)
 
+    def completed(self, player: 'Player') -> bool:
+        """The strategy is completed when the player doesn't have any bets left on the table.
+
+        Parameters
+        ----------
+        player
+            The player to check whether the
+
+        Returns
+        -------
+        True if the Player can't continue the strategy, otherwise False.
+        """
+        return sum(x.bet_amount for x in player.bets_on_table) == 0
+
     def __repr__(self) -> str:
         return f'{self.__class__.__name__}(key={self.key})'
 
@@ -193,6 +223,22 @@ class ReplaceIfTrue(Strategy):
             if self.key(bet, player):
                 player.remove_bet(bet)
                 player.add_bet(self.bet)
+
+    def completed(self, player: 'Player') -> bool:
+        """The strategy is completed when the player  can't make a bet because their bankroll is too
+         low and the player doesn't have any bets left on the table.
+
+        Parameters
+        ----------
+        player
+            The player to check whether the
+
+        Returns
+        -------
+        True if the Player can't continue the strategy, otherwise False.
+        """
+        return (self.bet.bet_amount > player.bankroll and
+                sum(x.bet_amount for x in player.bets_on_table) == 0)
 
 
 class IfBetNotExist(BetIfTrue):

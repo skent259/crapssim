@@ -310,7 +310,7 @@ class Player:
         existing_bets: list[Bet] = bet.already_placed_bets(self)
         new_bet = sum(existing_bets + [bet])
 
-        if new_bet.allowed(self):
+        if new_bet.allowed(self) and new_bet.bet_amount <= self.bankroll + bet.bet_amount:
             for bet in existing_bets:
                 self.bets_on_table.remove(bet)
             self.bankroll -= bet.bet_amount
