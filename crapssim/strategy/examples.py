@@ -55,7 +55,6 @@ class BetPlace(Strategy):
         True if there are no Place bets on the table and the player can't make any more Place bets
         because their bankroll is too low.
         """
-        print(self.place_bet_amounts.values())
         return (player.bankroll < min(x for x in self.place_bet_amounts.values())
                 and len([x for x in player.bets if isinstance(x, Place)]) == 0)
 

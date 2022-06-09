@@ -38,7 +38,6 @@ class BaseSimpleBet(Strategy):
             player.add_bet(self.bet)
         elif self.mode == SimpleStrategyMode.REPLACE:
             existing_bets = self.bet.already_placed_bets(player)
-            print(existing_bets)
             for bet in existing_bets:
                 player.remove_bet(bet)
             player.add_bet(self.bet)
