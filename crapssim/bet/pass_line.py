@@ -21,11 +21,6 @@ class PassLine(WinningLosingNumbersBet):
             return [2, 3, 12]
         return [7]
 
-    def get_status(self, table: "Table") -> str | None:
-        if table.point.status == 'Off' and table.last_roll in (4, 5, 6, 8, 9, 10):
-            return None
-        return super().get_status(table)
-
     def is_removable(self, player: "Player") -> bool:
         if player.table.point.status == 'On':
             return False
@@ -102,11 +97,6 @@ class DontPass(WinningLosingNumbersBet):
         if player.table.point.status == 'Off':
             return True
         return False
-
-    def get_status(self, table: "Table") -> str | None:
-        if table.point.status is None and table.dice.total in (4, 5, 6, 8, 9, 10):
-            return None
-        return super().get_status(table)
 
 
 class DontCome(WinningLosingNumbersBet):

@@ -494,7 +494,7 @@ class HammerLock(Strategy):
         player
         """
         place_bets = player.get_bets_by_type((Place,))
-        winning_place_bets = [bet for bet in place_bets if bet.get_status(player.table) == 'win']
+        winning_place_bets = [bet for bet in place_bets if bet.get_result(player.table).won]
         self.place_win_count += len(winning_place_bets)
         if player.table.point.status == 'On' and player.table.dice.total == 7:
             self.place_win_count = 0
@@ -599,11 +599,9 @@ class Risk12(Strategy):
         player
             The player to check the bets for.
         """
-        if player.table.point.status == 'Off' and any(
-                x.get_status(player.table) == 'win' for x in player.bets):
-            self.pre_point_winnings += sum(x.get_return_amount(player.table)
-                                           for x in player.bets
-                                           if x.get_status(player.table) == 'win')
+        bet_results = [x.get_result(player.table) for x in player.bets]
+        if player.table.point.status == 'Off' and any(x.won for x in bet_results):
+            self.pre_point_winnings += sum(x.bankroll_change for x in bet_results)
         elif player.table.point.status == 'On' and player.table.dice.total == 7:
             self.pre_point_winnings = 0
 
@@ -709,7 +707,8 @@ class FieldWinProgression(Strategy):
         player
             The player to check the winning bets for.
         """
-        win = all(x.get_status(player.table) == 'win' for x in player.bets)
+
+        win = all(x.get_result(player.table).won for x in player.bets)
 
         if win:
             self.current_progression += 1
@@ -795,10 +794,12 @@ class Place68CPR(Strategy):
         """
         place_bets = player.get_bets_by_type((Place,))
         place_six_bets = [x for x in place_bets if x.number == 6]
-        place_six_win_amounts = [x.get_win_amount(player.table) for x in place_six_bets]
+        place_six_win_amounts = [x.get_result(player.table).amount - x.amount
+                                 for x in place_six_bets if x.get_result(player.table).won]
         self.six_winnings = sum(place_six_win_amounts)
         place_eight_bets = [x for x in place_bets if x.number == 8]
-        place_eight_win_amounts = [x.get_win_amount(player.table) for x in place_eight_bets]
+        place_eight_win_amounts = [x.get_result(player.table).amount - x.amount
+                                   for x in place_eight_bets if x.get_result(player.table).won]
         self.eight_winnings = sum(place_eight_win_amounts)
 
     def ensure_bets_exist(self, player: 'Player') -> None:

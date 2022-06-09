@@ -1,49 +1,40 @@
 import typing
 
-from crapssim.bet import Bet
+from crapssim.bet import Bet, BetResult
 
 if typing.TYPE_CHECKING:
     from crapssim import Table, Player
 
 
 class Fire(Bet):
-    def __init__(self, bet_amount: float):
-        super().__init__(bet_amount)
-        self.bet_amount: float = bet_amount
+    def __init__(self, amount: float):
+        super().__init__(amount)
         self.points_made: list[int] = []
-        self.current_point: int | None = None
-        self._status: str | None = None
+        self.ended: bool = False
 
-    def get_status(self, table: "Table") -> str | None:
-        return self._status
+    def update_point(self, player: 'Player'):
+        if player.table.point.status == 'Off':
+            return
 
-    def should_remove(self, table: "Table") -> bool:
-        if len(self.points_made) == 6 or self._status == "lose":
-            return True
-        return False
+        point_number = player.table.point.number
+        dice_total = player.table.dice.total
+        if point_number == dice_total and point_number not in self.points_made:
+            self.points_made.append(point_number)
+        elif dice_total == 7:
+            self.ended = True
 
-    def update(self, table: "Table") -> None:
-        if self.current_point is None and table.dice.total in (4, 5, 6, 8, 9, 10):
-            self.current_point = table.dice.total
-        elif self.current_point is not None and self.current_point == table.dice.total:
-            self.point_made(table)
-        elif self.current_point is not None and table.dice.total == 7:
-            self._status = 'lose'
-
-    def point_made(self, table: "Table") -> None:
-        if table.dice.total not in self.points_made:
-            self.points_made = self.points_made + [table.dice.total]
-            if len(self.points_made) in table.settings['fire_points']:
-                self._status = 'win'
+    def get_result(self, table: "Table") -> BetResult:
+        if self.ended and len(self.points_made) in table.settings['fire_points']:
+            payout_ratio = table.settings['fire_points'][len(self.points_made)]
+            result_amount = payout_ratio * self.amount + self.amount
+            remove = True
+        elif self.ended and len(self.points_made) not in table.settings['fire_points']:
+            result_amount = -1 * self.amount
+            remove = True
         else:
-            self._status = None
-        self.current_point = None
+            result_amount = 0
+            remove = False
+        return BetResult(result_amount, remove)
 
     def allowed(self, player: "Player") -> bool:
         return player.table.new_shooter
-
-    def get_payout_ratio(self, table: "Table") -> float:
-        if len(self.points_made) in table.settings['fire_points']:
-            return float(table.settings['fire_points'][len(self.points_made)])
-        else:
-            raise NotImplementedError

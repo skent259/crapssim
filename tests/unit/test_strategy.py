@@ -3,7 +3,8 @@ from unittest.mock import MagicMock, call
 import pytest
 
 from crapssim import Player, Table
-from crapssim.bet import Bet, PassLine, Come, HardWay, Odds, DontCome, Place, DontPass, Field
+from crapssim.bet import Bet, PassLine, Come, HardWay, Odds, DontCome, Place, DontPass, Field, \
+    BetResult
 from crapssim.strategy import Strategy, AggregateStrategy, BetIfTrue, RemoveIfTrue, IfBetNotExist, \
     BetPointOff, BetPointOn, CountStrategy, BetPlace
 from crapssim.strategy.core import ReplaceIfTrue, RemoveByType
@@ -137,8 +138,8 @@ def example_bet():
         def get_payout_ratio(self, table: "Table") -> float:
             return 1.0
 
-        def get_status(self, table: "Table") -> str | None:
-            return None
+        def get_result(self, table: "Table") -> BetResult:
+            return BetResult(0, False)
 
     return ExampleBet(1)
 
@@ -870,7 +871,7 @@ def test_hammerlock_odds_multiplier(player):
 def test_hammerlock_1_win_after_roll(player):
     strategy = HammerLock(5)
     bet1 = Place(6, 5)
-    bet1.get_status = MagicMock(return_value='win')
+    bet1.get_result = MagicMock(return_value=BetResult(1, True))
     player.bets = [bet1]
     strategy.after_roll(player)
     assert strategy.place_win_count == 1
@@ -879,7 +880,7 @@ def test_hammerlock_1_win_after_roll(player):
 def test_hammerlock_2_win_after_roll(player):
     strategy = HammerLock(5)
     bet = Place(6, 5)
-    bet.get_status = MagicMock(return_value='win')
+    bet.get_result = MagicMock(return_value=BetResult(1, True))
     player.bets = [bet, bet]
     strategy.after_roll(player)
     assert strategy.place_win_count == 2
@@ -1055,8 +1056,8 @@ def test_place_68_cpr_after_roll_6_winnings_increase(player):
     strategy = Place68CPR(6)
     bet6 = Place(6, 6)
     bet8 = Place(8, 6)
-    bet6.get_status = MagicMock(return_value='win')
-    bet8.get_status = MagicMock(return_value=None)
+    bet6.get_result = MagicMock(return_value=BetResult(13, True))
+    bet8.get_result = MagicMock(return_value=BetResult(0, False))
     player.bets = [bet6, bet8]
     player.table.point.number = 6
     strategy.after_roll(player)
@@ -1067,8 +1068,8 @@ def test_place_68_cpr_after_roll_winnings_dont_change(player):
     strategy = Place68CPR(6)
     bet6 = Place(6, 6)
     bet8 = Place(8, 6)
-    bet6.get_status = MagicMock(return_value=None)
-    bet8.get_status = MagicMock(return_value=None)
+    bet6.get_result = MagicMock(return_value=BetResult(0, False))
+    bet8.get_result = MagicMock(return_value=BetResult(0, False))
     player.bets = [bet6, bet8]
     player.table.point.number = 6
     strategy.after_roll(player)

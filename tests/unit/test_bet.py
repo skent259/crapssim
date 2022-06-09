@@ -40,9 +40,10 @@ def test_ev_oneroll(bet, ev):
     for d1 in range(1, 7):
         for d2 in range(1, 7):
             t.dice.fixed_roll([d1, d2])
-            status, win_amt, remove = bet.get_status(t), bet.get_win_amount(t), bet.should_remove(t)
+            result = bet.get_result(t)
 
-            outcomes.append(win_amt if status == "win" else -1 if status == "lose" else 0)
+            outcomes.append(result.amount - bet.amount if result.won
+                            else -1 if result.lost else 0)
 
     assert round(np.mean(outcomes), 4) == ev
 

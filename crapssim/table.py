@@ -1,7 +1,7 @@
 import typing
 
 from crapssim.dice import Dice
-from .bet import Bet
+from .bet import Bet, BetResult
 from .point import Point
 from .strategy import Strategy, BetPassLine
 
@@ -334,20 +334,17 @@ class Player:
 
     def update_bet(self, verbose: bool = False) -> None:
         for bet in self.bets[:]:
-            bet.update(self.table)
-
-            self.bankroll += bet.get_return_amount(self.table)
+            result = bet.get_result(self.table)
+            self.bankroll += result.bankroll_change
 
             if verbose:
-                self.print_bet_update(bet)
+                self.print_bet_update(bet, result)
 
-            if bet.should_remove(self.table):
+            if result.remove:
                 self.bets.remove(bet)
 
-    def print_bet_update(self, bet: Bet) -> None:
-        status = bet.get_status(self.table)
-        win_amount = bet.get_win_amount(self.table)
-        if status == "win":
-            print(f"{self.name} won ${win_amount} on {bet}!")
-        elif status == "lose":
+    def print_bet_update(self, bet: Bet, result: BetResult) -> None:
+        if result.won:
+            print(f"{self.name} won ${result.amount - bet.amount} on {bet}!")
+        elif result.lost:
             print(f"{self.name} lost ${bet.amount} on {bet}.")

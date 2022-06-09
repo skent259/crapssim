@@ -704,9 +704,11 @@ def test_get_field_non_default_table_payout_ratio(dice1, dice2, correct_ratio):
 ])
 def test_get_fire_default_table_payout_ratio(points_made, correct_ratio):
     table = Table()
-    bet = Fire(5)
+    bet = Fire(1)
     bet.points_made = points_made
-    assert bet.get_payout_ratio(table) == correct_ratio
+    bet.ended = True
+    ratio = (bet.get_result(table).amount - bet.amount) / bet.amount
+    assert ratio == correct_ratio
 
 
 @pytest.mark.parametrize('points_made, correct_ratio', [
@@ -718,21 +720,27 @@ def test_get_fire_default_table_payout_ratio(points_made, correct_ratio):
 def test_get_fire_non_default_table_payout_ratio(points_made, correct_ratio):
     table = Table()
     table.settings['fire_points'] = {3: 6, 4: 9, 5: 69, 6: 420}
-    bet = Fire(5)
+    bet = Fire(1)
     bet.points_made = points_made
-    assert bet.get_payout_ratio(table) == correct_ratio
+    bet.ended = True
+    ratio = (bet.get_result(table).amount - bet.amount) / bet.amount
+    assert ratio == correct_ratio
 
 
 @pytest.mark.parametrize('rolls, correct_status, correct_win_amt, correct_remove', [
     ([(6, 1)], None, 0.0, False),
     ([(2, 2), (3, 1), (4, 3), (6, 6)], None, 0.0, False),
     ([(2, 2), (4, 3)], 'lose', 0.0, True),
-    ([(2, 2), (2, 2), (3, 3), (3, 3), (4, 3), (4, 4), (4, 4), (5, 5), (5, 5)], 'win', 24, False),
-    ([(2, 2), (2, 2), (3, 3), (3, 3), (4, 3), (4, 4), (4, 4), (5, 5), (5, 5), (5, 5), (5, 5)], None, 0.0, False),
-    ([(2, 2), (2, 2), (3, 3), (3, 3), (4, 3), (4, 4), (4, 4), (5, 5), (5, 5), (5, 5), (3, 4)], 'lose', 0.0, True),
-    ([(2, 2), (2, 2), (3, 3), (3, 3), (4, 3), (4, 4), (4, 4), (5, 5), (5, 5), (2, 3), (2, 3)], 'win', 249, False),
-    ([(2, 2), (2, 2), (3, 3), (3, 3), (4, 3), (4, 4), (4, 4), (5, 5), (5, 5), (2, 3), (2, 3), (4, 5), (4, 5)],
-     'win', 999, True)
+    ([(2, 2), (2, 2), (3, 3), (3, 3), (4, 3), (4, 4), (4, 4), (5, 5), (5, 5)], None, 0.0, False),
+    ([(2, 2), (2, 2), (3, 3), (3, 3), (4, 3), (4, 4), (4, 4), (5, 5), (5, 5), (5, 5), (5, 5)],
+     None, 0.0, False),
+    ([(2, 2), (2, 2), (3, 3), (3, 3), (4, 3), (4, 4), (4, 4), (5, 5), (5, 5), (5, 5), (3, 4)],
+     'win', 24, True),
+    ([(2, 2), (2, 2), (3, 3), (3, 3), (4, 3), (4, 4), (4, 4), (5, 5), (5, 5), (2, 3), (2, 3)],
+     None, 0.0, False),
+    ([(2, 2), (2, 2), (3, 3), (3, 3), (4, 3), (4, 4), (4, 4), (5, 5), (5, 5), (2, 3), (2, 3),
+      (4, 5), (4, 5)],
+     None, 0.0, False)
 ])
 def test_fire(rolls, correct_status, correct_win_amt, correct_remove):
     table = Table()
@@ -744,11 +752,23 @@ def test_fire(rolls, correct_status, correct_win_amt, correct_remove):
     for roll in rolls:
         TableUpdate().run(table, roll)
 
-    status, win_amt, remove = bet.get_status(table), \
-                              bet.get_win_amount(table), \
-                              bet.should_remove(table)
+    result = bet.get_result(table)
+    print(result.amount)
+    if result.won:
+        status = 'win'
+    elif result.lost:
+        status = 'lose'
+    else:
+        status = None
 
-    assert (status, win_amt, remove) == (correct_status, correct_win_amt, correct_remove)
+    if result.won:
+        win_amount = result.amount - bet.amount
+    else:
+        win_amount = 0
+
+    remove = result.remove
+
+    assert (status, win_amount, remove) == (correct_status, correct_win_amt, correct_remove)
 
 
 @pytest.mark.parametrize('bet, point_number, allowed', [

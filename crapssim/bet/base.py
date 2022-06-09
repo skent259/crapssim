@@ -1,9 +1,35 @@
 import copy
 import typing
 from abc import ABC, abstractmethod
+from dataclasses import dataclass
 
 if typing.TYPE_CHECKING:
     from crapssim.table import Table, Player
+
+
+@dataclass(frozen=True)
+class BetResult:
+    amount: float
+    remove: bool
+
+    @property
+    def won(self) -> bool:
+        return self.amount > 0
+
+    @property
+    def lost(self) -> bool:
+        return self.amount < 0
+
+    @property
+    def pushed(self) -> bool:
+        return self.amount == 0
+
+    @property
+    def bankroll_change(self) -> float:
+        if self.won:
+            return self.amount
+        else:
+            return 0
 
 
 class Bet(ABC):
@@ -25,7 +51,7 @@ class Bet(ABC):
         self.amount: float = float(bet_amount)
 
     @abstractmethod
-    def get_payout_ratio(self, table: "Table") -> float:
+    def get_result(self, table: "Table") -> BetResult:
         pass
 
     def is_removable(self, player: "Player") -> bool:
@@ -46,41 +72,7 @@ class Bet(ABC):
         """
         return True
 
-    @abstractmethod
-    def get_status(self, table: "Table") -> str | None:
-        pass
-
-    def get_win_amount(self, table: "Table") -> float:
-        if self.get_status(table) == "win":
-            return self.get_payout_ratio(table) * self.amount
-        return 0.0
-
-    def get_return_amount(self, table: "Table") -> float:
-        status = self.get_status(table)
-        if status == "win":
-            return self.get_win_amount(table) + self.amount
-        if status is None and self.should_remove(table) is True:
-            return self.amount
-        else:
-            return 0
-
-    def should_remove(self, table: "Table") -> bool:
-        if self.get_status(table) is not None:
-            return True
-        return False
-
     def update_point(self, player: 'Player'):
-        pass
-
-    def update(self, table: "Table") -> None:
-        """
-        Returns whether the bets status is win, lose or None and if win the amount won.
-
-        Returns
-        -------
-        tuple[str | None, float]
-            The status of the bet and the amount of the winnings.
-        """
         pass
 
     def get_hash_key(self) -> typing.Hashable:
@@ -144,9 +136,19 @@ class WinningLosingNumbersBet(Bet, ABC):
     def get_losing_numbers(self, table: "Table") -> list[int]:
         pass
 
-    def get_status(self, table: "Table") -> str | None:
+    @abstractmethod
+    def get_payout_ratio(self, table: "Table") -> float:
+        pass
+
+    def get_result(self, table: "Table") -> BetResult:
         if table.dice.total in self.get_winning_numbers(table):
-            return "win"
+            result_amount = self.get_payout_ratio(table) * self.amount + self.amount
+            should_remove = True
         elif table.dice.total in self.get_losing_numbers(table):
-            return "lose"
-        return None
+            result_amount = -1 * self.amount
+            should_remove = True
+        else:
+            result_amount = 0
+            should_remove = False
+
+        return BetResult(result_amount, should_remove)
