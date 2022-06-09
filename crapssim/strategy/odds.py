@@ -1,7 +1,7 @@
 import typing
 
 from crapssim.bet import PassLine, DontPass, Come, DontCome, Odds, Bet
-from crapssim.strategy import Strategy, IfBetNotExist, AggregateStrategy
+from crapssim.strategy import Strategy, AggregateStrategy
 
 if typing.TYPE_CHECKING:
     from crapssim import Player, Table

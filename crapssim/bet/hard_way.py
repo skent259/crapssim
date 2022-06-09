@@ -3,7 +3,7 @@ import typing
 from crapssim.bet.base import Bet
 
 if typing.TYPE_CHECKING:
-    from crapssim import Table, Player
+    from crapssim import Table
 
 
 class HardWay(Bet):

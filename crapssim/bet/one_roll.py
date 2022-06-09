@@ -1,10 +1,10 @@
 import typing
-from abc import ABC, abstractmethod
+from abc import ABC
 
 from crapssim.bet import WinningLosingNumbersBet, Bet
 
 if typing.TYPE_CHECKING:
-    from crapssim import Table, Player
+    from crapssim import Table
 
 
 class OneRollBet(WinningLosingNumbersBet, ABC):

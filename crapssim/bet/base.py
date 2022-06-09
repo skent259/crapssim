@@ -4,7 +4,6 @@ from abc import ABC, abstractmethod
 
 if typing.TYPE_CHECKING:
     from crapssim.table import Table, Player
-    from crapssim.dice import Dice
 
 
 class Bet(ABC):

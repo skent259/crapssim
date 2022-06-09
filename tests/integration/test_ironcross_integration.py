@@ -1,10 +1,10 @@
 import pytest
 
-from crapssim.strategy.examples import IronCross
-from crapssim.table import Table, TableUpdate
 from crapssim.bet import PassLine, Odds
 from crapssim.bet.one_roll import Field
 from crapssim.bet.place import Place
+from crapssim.strategy.examples import IronCross
+from crapssim.table import Table, TableUpdate
 
 
 @pytest.mark.parametrize("point, last_roll, strat_info, bets_before, dice_result, bets_after", [

@@ -1,4 +1,3 @@
-import pytest
 import crapssim as craps
 import crapssim.strategy.examples
 import crapssim.strategy.simple_bet

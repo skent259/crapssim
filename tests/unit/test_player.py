@@ -1,4 +1,4 @@
-from crapssim import Table, Dice
+from crapssim import Table
 from crapssim.bet import PassLine
 from crapssim.strategy import BetPassLine
 

@@ -1,4 +1,5 @@
 import typing
+
 from crapssim.bet import Bet, PassLine, Come, DontPass, DontCome, WinningLosingNumbersBet
 
 if typing.TYPE_CHECKING:

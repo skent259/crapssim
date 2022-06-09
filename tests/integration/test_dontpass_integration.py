@@ -1,8 +1,8 @@
 import pytest
 
+from crapssim.bet.pass_line import DontPass
 from crapssim.strategy import BetDontPass
 from crapssim.table import Table, TableUpdate
-from crapssim.bet.pass_line import DontPass
 
 
 @pytest.mark.parametrize("point, last_roll, strat_info, bets_before, dice_result, bets_after", [

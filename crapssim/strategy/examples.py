@@ -5,8 +5,8 @@ import typing
 
 from crapssim.bet import PassLine, Come
 from crapssim.bet.one_roll import Field
-from crapssim.bet.place import Place
 from crapssim.bet.pass_line import DontPass, DontCome
+from crapssim.bet.place import Place
 from crapssim.strategy import OddsMultiplierStrategy
 from crapssim.strategy.core import CountStrategy, BetPointOff, Strategy, \
     IfBetNotExist, BetIfTrue, AggregateStrategy, BetPointOn, RemoveIfTrue, RemoveByType

@@ -2,13 +2,13 @@ import pytest
 
 from crapssim import Table, Dice
 from crapssim.bet import PassLine, Come, Odds
-from crapssim.bet.side import Fire
 from crapssim.bet.hard_way import HardWay
 from crapssim.bet.one_roll import Field, Any7, Two, Three, Yo, Boxcars, AnyCraps, CAndE
-from crapssim.bet.place import Place
 from crapssim.bet.pass_line import DontPass, DontCome
-from crapssim.table import TableUpdate
+from crapssim.bet.place import Place
+from crapssim.bet.side import Fire
 from crapssim.point import Point
+from crapssim.table import TableUpdate
 
 
 @pytest.mark.parametrize('bet_one, bet_two', [

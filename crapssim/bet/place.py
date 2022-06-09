@@ -1,9 +1,9 @@
 import typing
 
-from crapssim.bet import WinningLosingNumbersBet, Bet
+from crapssim.bet import WinningLosingNumbersBet
 
 if typing.TYPE_CHECKING:
-    from crapssim import Table, Player
+    from crapssim import Table
 
 
 class Place(WinningLosingNumbersBet):

@@ -1,7 +1,7 @@
 import pytest
 
-from crapssim.bet.pass_line import DontPass
 from crapssim.bet import Odds
+from crapssim.bet.pass_line import DontPass
 from crapssim.strategy import BetDontPass, DontPassOddsMultiplier
 from crapssim.table import Table, TableUpdate
 

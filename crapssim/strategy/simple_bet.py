@@ -3,12 +3,11 @@ is allowed."""
 import enum
 import typing
 
-from crapssim.strategy.core import Strategy
-from crapssim.strategy.odds import OddsAmountStrategy
-
 from crapssim.bet import PassLine, DontPass, Bet, DontCome, Place, HardWay, Field, Three, Two, \
     Any7, Yo, Boxcars, Fire
 from crapssim.strategy import BetIfTrue
+from crapssim.strategy.core import Strategy
+from crapssim.strategy.odds import OddsAmountStrategy
 
 if typing.TYPE_CHECKING:
     from crapssim.table import Player
