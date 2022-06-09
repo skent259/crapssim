@@ -29,10 +29,6 @@ class Bet(ABC):
     def get_payout_ratio(self, table: "Table") -> float:
         pass
 
-    @property
-    def name(self) -> str:
-        return self.__class__.__name__
-
     def is_removable(self, player: "Player") -> bool:
         return True
 
