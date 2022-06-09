@@ -31,8 +31,8 @@ class Field(OneRollBet):
         super().__init__([2, 3, 4, 9, 10, 11, 12], bet_amount)
 
     def get_payout_ratio(self, table: "Table") -> float:
-        if table.dice.total in table.settings['field_payouts']:
-            return float(table.settings['field_payouts'][table.dice.total])
+        if table.dice.total in table.settings.field_payouts:
+            return float(table.settings.field_payouts[table.dice.total])
         return 0.0
 
 

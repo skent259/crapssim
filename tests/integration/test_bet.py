@@ -8,7 +8,7 @@ from crapssim.bet.pass_line import DontPass, DontCome
 from crapssim.bet.place import Place
 from crapssim.bet.side import Fire
 from crapssim.point import Point
-from crapssim.table import TableUpdate
+from crapssim.table import TableUpdate, TableSettings
 
 
 @pytest.mark.parametrize('bet_one, bet_two', [
@@ -692,7 +692,9 @@ def test_get_field_default_table_payout_ratio(dice1, dice2, correct_ratio):
 ])
 def test_get_field_non_default_table_payout_ratio(dice1, dice2, correct_ratio):
     table = Table()
-    table.settings['field_payouts'].update({3: 14, 12: 3, 4: 14000})
+    new_field_payouts = table.settings.field_payouts
+    new_field_payouts.update({3: 14, 12: 3, 4: 14000})
+    table.settings = TableSettings(field_payouts=new_field_payouts)
     table.dice.fixed_roll((dice1, dice2))
     assert Field(5).get_payout_ratio(table) == correct_ratio
 
@@ -719,7 +721,7 @@ def test_get_fire_default_table_payout_ratio(points_made, correct_ratio):
 ])
 def test_get_fire_non_default_table_payout_ratio(points_made, correct_ratio):
     table = Table()
-    table.settings['fire_points'] = {3: 6, 4: 9, 5: 69, 6: 420}
+    table.settings = TableSettings(fire_points={3: 6, 4: 9, 5: 69, 6: 420})
     bet = Fire(1)
     bet.points_made = points_made
     bet.ended = True
