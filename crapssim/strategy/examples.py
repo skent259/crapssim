@@ -7,7 +7,7 @@ from crapssim.bet import PassLine, Come
 from crapssim.bet.one_roll import Field
 from crapssim.bet.pass_line import DontPass, DontCome
 from crapssim.bet.place import Place
-from crapssim.strategy import OddsMultiplierStrategy
+from crapssim.strategy import OddsMultiplierStrategy, PassLineOddsMultiplier, DontPassOddsMultiplier
 from crapssim.strategy.core import CountStrategy, BetPointOff, Strategy, \
     IfBetNotExist, BetIfTrue, AggregateStrategy, BetPointOn, RemoveIfTrue, RemoveByType
 from crapssim.strategy.simple_bet import Place5Amount, Place6Amount, Place8Amount, Place9Amount
@@ -893,28 +893,6 @@ class BetPassLine(BetPointOff):
         return f'{self.__class__.__name__}(amount={self.bet_amount})'
 
 
-class PassLineOddsMultiplier(OddsMultiplierStrategy):
-    """Strategy that adds an Odds bet to the PassLine bet. Equivalent to
-    OddsMultiplierStrategy(PassLine, odds)."""
-
-    def __init__(self, odds_multiplier: dict[int, int] | int | None = None):
-        """Add odds to PassLine bets with the multiplier specified by the odds_multiplier variable.
-
-        Parameters
-        ----------
-        odds_multiplier
-            If odds_multiplier is an integer the bet amount is the PassLine bet amount *
-            odds_multiplier.  If it's a dictionary it uses the PassLine bet's point to determine
-            the multiplier. Defaults to {4: 3, 5: 4, 6: 5, 8: 5, 9: 4, 10: 3} which are 345x odds.
-            """
-        if odds_multiplier is None:
-            odds_multiplier = {4: 3, 5: 4, 6: 5, 8: 5, 9: 4, 10: 3}
-        super().__init__(PassLine, odds_multiplier)
-
-    def __repr__(self) -> str:
-        return f'{self.__class__.__name__}(odds_multiplier={self.get_odds_multiplier_repr()})'
-
-
 class BetDontPass(BetPointOff):
     """Strategy that adds a DontPass bet if the point is off and the player doesn't have a DontPass
     bet of the given amount already on the table.
@@ -936,23 +914,3 @@ class BetDontPass(BetPointOff):
         return f'{self.__class__.__name__}(amount={self.bet_amount})'
 
 
-class DontPassOddsMultiplier(OddsMultiplierStrategy):
-    """Strategy that adds a LayOdds bet to the DontPass bet. Equivalent to
-    OddsMultiplierStrategy(DontPass, odds)"""
-
-    def __init__(self, odds_multiplier: dict[int, int] | int | None = None):
-        """Add odds to DontPass bets with the multiplier specified by odds.
-
-        Parameters
-        ----------
-        odds_multiplier
-            If odds_multiplier is an integer the bet amount is the PassLine bet amount *
-            odds_multiplier. If it's a dictionary it uses the PassLine bet's point to determine the
-            multiplier. Defaults to 6.
-        """
-        if odds_multiplier is None:
-            odds_multiplier = 6
-        super().__init__(DontPass, odds_multiplier)
-
-    def __repr__(self) -> str:
-        return f'{self.__class__.__name__}(odds_multiplier={self.get_odds_multiplier_repr()})'
