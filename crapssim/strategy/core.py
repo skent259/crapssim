@@ -142,8 +142,8 @@ class BetIfTrue(Strategy):
         -------
         True if the Player can't continue the strategy, otherwise False.
         """
-        return (self.bet.bet_amount > player.bankroll and
-                sum(x.bet_amount for x in player.bets_on_table) == 0)
+        return (self.bet.amount > player.bankroll and
+                sum(x.amount for x in player.bets_on_table) == 0)
 
     def __repr__(self) -> str:
         return f'{self.__class__.__name__}(bet={self.bet}, ' \
@@ -197,7 +197,7 @@ class RemoveIfTrue(Strategy):
         -------
         True if the Player can't continue the strategy, otherwise False.
         """
-        return sum(x.bet_amount for x in player.bets_on_table) == 0
+        return sum(x.amount for x in player.bets_on_table) == 0
 
     def __repr__(self) -> str:
         return f'{self.__class__.__name__}(key={self.key})'
@@ -237,8 +237,8 @@ class ReplaceIfTrue(Strategy):
         -------
         True if the Player can't continue the strategy, otherwise False.
         """
-        return (self.bet.bet_amount > player.bankroll and
-                sum(x.bet_amount for x in player.bets_on_table) == 0)
+        return (self.bet.amount > player.bankroll and
+                sum(x.amount for x in player.bets_on_table) == 0)
 
 
 class IfBetNotExist(BetIfTrue):

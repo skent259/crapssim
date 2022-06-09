@@ -23,7 +23,7 @@ class Bet(ABC):
     """
 
     def __init__(self, bet_amount: typing.SupportsFloat):
-        self.bet_amount: float = float(bet_amount)
+        self.amount: float = float(bet_amount)
 
     @abstractmethod
     def get_payout_ratio(self, table: "Table") -> float:
@@ -57,15 +57,15 @@ class Bet(ABC):
 
     def get_win_amount(self, table: "Table") -> float:
         if self.get_status(table) == "win":
-            return self.get_payout_ratio(table) * self.bet_amount
+            return self.get_payout_ratio(table) * self.amount
         return 0.0
 
     def get_return_amount(self, table: "Table") -> float:
         status = self.get_status(table)
         if status == "win":
-            return self.get_win_amount(table) + self.bet_amount
+            return self.get_win_amount(table) + self.amount
         if status is None and self.should_remove(table) is True:
-            return self.bet_amount
+            return self.amount
         else:
             return 0
 
@@ -89,7 +89,7 @@ class Bet(ABC):
         pass
 
     def get_hash_key(self) -> typing.Hashable:
-        return self.get_placed_key(), self.bet_amount
+        return self.get_placed_key(), self.amount
 
     def get_placed_key(self) -> typing.Hashable:
         return type(self)
@@ -109,17 +109,17 @@ class Bet(ABC):
         return hash(self.get_hash_key())
 
     def __repr__(self) -> str:
-        return f'{self.__class__.__name__}(bet_amount={self.bet_amount})'
+        return f'{self.__class__.__name__}(amount={self.amount})'
 
     def __add__(self, other: 'Bet') -> 'Bet':
         if isinstance(other, typing.SupportsFloat):
-            bet_amount = self.bet_amount - float(other)
+            bet_amount = self.amount - float(other)
         elif self.get_placed_key() == other.get_placed_key():
-            bet_amount = self.bet_amount + other.bet_amount
+            bet_amount = self.amount + other.amount
         else:
             raise NotImplementedError
         new_bet = copy.copy(self)
-        new_bet.bet_amount = bet_amount
+        new_bet.amount = bet_amount
         return new_bet
 
     def __radd__(self, other):
@@ -127,13 +127,13 @@ class Bet(ABC):
 
     def __sub__(self, other: 'Bet') -> 'Bet':
         if isinstance(other, typing.SupportsFloat):
-            bet_amount = self.bet_amount - float(other)
+            bet_amount = self.amount - float(other)
         elif self.get_placed_key() == other.get_placed_key():
-            bet_amount = self.bet_amount - other.bet_amount
+            bet_amount = self.amount - other.amount
         else:
             raise NotImplementedError
         new_bet = copy.copy(self)
-        new_bet.bet_amount = bet_amount
+        new_bet.amount = bet_amount
         return new_bet
 
     def __rsub__(self, other):

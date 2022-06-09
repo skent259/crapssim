@@ -115,7 +115,7 @@ class CAndE(OneRollBet):
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, Bet):
             raise NotImplementedError
-        return isinstance(other, CAndE) and self.bet_amount == other.bet_amount
+        return isinstance(other, CAndE) and self.amount == other.amount
 
     def __hash__(self) -> int:
-        return hash((CAndE, self.bet_amount))
+        return hash((CAndE, self.amount))

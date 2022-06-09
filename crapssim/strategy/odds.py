@@ -99,7 +99,7 @@ class OddsMultiplierStrategy(Strategy):
             else:
                 return
 
-            amount = bet.bet_amount * multiplier
+            amount = bet.amount * multiplier
             OddsAmountStrategy(self.base_type, {point: amount}).update_bets(player)
 
     def completed(self, player: 'Player') -> bool:

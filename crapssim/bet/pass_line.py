@@ -62,7 +62,7 @@ class Come(WinningLosingNumbersBet):
     def update_point(self, player: 'Player'):
         if self.point.status == 'Off' and player.table.dice.total in (4, 5, 6, 8, 9, 10):
             player.bets_on_table.remove(self)
-            player.bets_on_table.append(Come(self.bet_amount, player.table.dice.total))
+            player.bets_on_table.append(Come(self.amount, player.table.dice.total))
 
     def is_removable(self, player: "Player") -> bool:
         if self.point.status == 'On':
@@ -75,13 +75,13 @@ class Come(WinningLosingNumbersBet):
         return False
 
     def get_hash_key(self) -> typing.Hashable:
-        return type(self), self.bet_amount, self.point
+        return type(self), self.amount, self.point
 
     def get_placed_key(self) -> typing.Hashable:
         return Come, self.point
 
     def __repr__(self) -> str:
-        return f'{self.__class__.__name__}(bet_amount={self.bet_amount}, point={self.point})'
+        return f'{self.__class__.__name__}(bet_amount={self.amount}, point={self.point})'
 
 
 class DontPass(WinningLosingNumbersBet):
@@ -134,7 +134,7 @@ class DontCome(WinningLosingNumbersBet):
     def update_point(self, player: 'Player'):
         if self.point.status == 'Off' and player.table.dice.total in (4, 5, 6, 8, 9, 10):
             player.bets_on_table.remove(self)
-            player.bets_on_table.append(DontCome(self.bet_amount, player.table.dice.total))
+            player.bets_on_table.append(DontCome(self.amount, player.table.dice.total))
 
     def allowed(self, player: "Player") -> bool:
         if player.table.point.status == 'On':
@@ -142,10 +142,10 @@ class DontCome(WinningLosingNumbersBet):
         return False
 
     def get_hash_key(self):
-        return type(self), self.bet_amount, self.point
+        return type(self), self.amount, self.point
 
     def get_placed_key(self) -> typing.Hashable:
         return DontCome, self.point
 
     def __repr__(self) -> str:
-        return f'{self.__class__.__name__}(bet_amount={self.bet_amount}, point={self.point})'
+        return f'{self.__class__.__name__}(bet_amount={self.amount}, point={self.point})'

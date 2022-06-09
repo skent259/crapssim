@@ -300,7 +300,7 @@ class Player:
 
     @property
     def total_bet_amount(self) -> float:
-        return sum(x.bet_amount for x in self.bets_on_table)
+        return sum(x.amount for x in self.bets_on_table)
 
     @property
     def table(self) -> Table:
@@ -309,12 +309,12 @@ class Player:
     def add_bet(self, bet: Bet) -> None:
         existing_bets: list[Bet] = bet.already_placed_bets(self)
         new_bet = sum(existing_bets + [bet])
-        amount_available_to_bet = self.bankroll + sum(x.bet_amount for x in existing_bets)
+        amount_available_to_bet = self.bankroll + sum(x.amount for x in existing_bets)
 
-        if new_bet.allowed(self) and new_bet.bet_amount <= amount_available_to_bet:
+        if new_bet.allowed(self) and new_bet.amount <= amount_available_to_bet:
             for bet in existing_bets:
                 self.bets_on_table.remove(bet)
-            self.bankroll -= bet.bet_amount
+            self.bankroll -= bet.amount
             self.bets_on_table.append(new_bet)
 
     def get_bets_by_type(self, bet_type: typing.Type[Bet] | tuple[typing.Type[Bet], ...]):
@@ -322,7 +322,7 @@ class Player:
 
     def remove_bet(self, bet: Bet) -> None:
         if bet in self.bets_on_table and bet.is_removable(self):
-            self.bankroll += bet.bet_amount
+            self.bankroll += bet.amount
             self.bets_on_table.remove(bet)
 
     def add_strategy_bets(self) -> None:
@@ -350,4 +350,4 @@ class Player:
         if status == "win":
             print(f"{self.name} won ${win_amount} on {bet}!")
         elif status == "lose":
-            print(f"{self.name} lost ${bet.bet_amount} on {bet}.")
+            print(f"{self.name} lost ${bet.amount} on {bet}.")

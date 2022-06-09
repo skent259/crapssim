@@ -44,7 +44,7 @@ class Odds(WinningLosingNumbersBet):
                 and x.get_winning_numbers(player.table) == self.get_winning_numbers(player.table)]
 
     def get_base_amount(self, player: "Player"):
-        return sum(x.bet_amount for x in self.get_base_bets(player))
+        return sum(x.amount for x in self.get_base_bets(player))
 
     def get_max_odds(self, table: "Table") -> float:
         if self.light_side:
@@ -58,11 +58,11 @@ class Odds(WinningLosingNumbersBet):
         return self.get_max_odds(player.table) * self.get_base_amount(player)
 
     def allowed(self, player: "Player") -> bool:
-        return self.bet_amount <= self.get_max_bet(player)
+        return self.amount <= self.get_max_bet(player)
 
     def get_placed_key(self) -> typing.Hashable:
         return self.__class__, self.base_type, self.number
 
     def __repr__(self):
         return f'Odds(base_type={self.base_type}, number={self.number}, ' \
-               f'bet_amount={self.bet_amount})'
+               f'bet_amount={self.amount})'

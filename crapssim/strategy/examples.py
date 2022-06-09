@@ -116,11 +116,11 @@ class TwoCome(CountStrategy):
 
 
 class Pass2Come(AggregateStrategy):
-    """Places a PassLine bet and two Come bets. Equivalent to BetPassLine(bet_amount) +
-    TwoCome(bet_amount)"""
+    """Places a PassLine bet and two Come bets. Equivalent to BetPassLine(amount) +
+    TwoCome(amount)"""
 
     def __init__(self, bet_amount: float):
-        """Place a PassLine bet and two Come bets of the given bet_amount.
+        """Place a PassLine bet and two Come bets of the given amount.
 
         Parameters
         ----------
@@ -131,7 +131,7 @@ class Pass2Come(AggregateStrategy):
         super().__init__(BetPassLine(bet_amount), TwoCome(bet_amount))
 
     def __repr__(self) -> str:
-        return f'{self.__class__.__name__}(bet_amount={self.bet_amount})'
+        return f'{self.__class__.__name__}(amount={self.bet_amount})'
 
 
 class PassLinePlace68(AggregateStrategy):
@@ -202,7 +202,7 @@ class PlaceInside(AggregateStrategy):
                          Place9Amount(amount_dict[9]))
 
     def __repr__(self) -> str:
-        return f'{self.__class__.__name__}(bet_amount={self.bet_amount})'
+        return f'{self.__class__.__name__}(amount={self.bet_amount})'
 
 
 class Place68Move59(Strategy):
@@ -656,7 +656,7 @@ class Knockout(AggregateStrategy):
     """PassLine and Don't bet prior to point, 345x PassLine Odds after point.
 
     Equivalent to:
-    BetPassLine(bet_amount) + BetPointOff(DontPass(bet_amount)) +
+    BetPassLine(amount) + BetPointOff(DontPass(amount)) +
     PassLineOddsMultiplier({4: 3, 5: 4, 6: 5, 8: 5, 9: 4, 10: 3})
     """
 
@@ -667,7 +667,7 @@ class Knockout(AggregateStrategy):
                          PassLineOddsMultiplier({4: 3, 5: 4, 6: 5, 8: 5, 9: 4, 10: 3}))
 
     def __repr__(self) -> str:
-        return f'{self.__class__.__name__}(bet_amount={self.bet_amount})'
+        return f'{self.__class__.__name__}(amount={self.bet_amount})'
 
 
 class FieldWinProgression(Strategy):
@@ -754,7 +754,7 @@ class Place68CPR(Strategy):
     the bet amount. If the bet is won again, it is reduced to the original bet amount."""
 
     def __init__(self, bet_amount: float = 6) -> None:
-        """If point is on place the 6 & 8 of the bet_amount. If you win press the bet 2 . If you win
+        """If point is on place the 6 & 8 of the amount. If you win press the bet 2 . If you win
         again reduce the bet.
 
         Parameters
@@ -843,7 +843,7 @@ class Place68CPR(Strategy):
         self.press(player)
 
     def __repr__(self) -> str:
-        return f'{self.__class__.__name__}(bet_amount={self.bet_amount})'
+        return f'{self.__class__.__name__}(amount={self.bet_amount})'
 
 
 class Place68DontCome2Odds(AggregateStrategy):
@@ -875,10 +875,10 @@ class Place68DontCome2Odds(AggregateStrategy):
 
 class BetPassLine(BetPointOff):
     """Strategy that adds a PassLine bet if the point is Off and the player doesn't have a PassLine
-    bet already on the table. Equivalent to BetPointOff(PassLine(bet_amount))."""
+    bet already on the table. Equivalent to BetPointOff(PassLine(amount))."""
 
     def __init__(self, bet_amount: typing.SupportsFloat):
-        """Adds a PassLine bet for the given bet_amount if the point is Off and the player doesn't
+        """Adds a PassLine bet for the given amount if the point is Off and the player doesn't
         have a PassLine bet for that amount already on the table.
 
         Parameters
@@ -890,7 +890,7 @@ class BetPassLine(BetPointOff):
         super().__init__(PassLine(bet_amount))
 
     def __repr__(self) -> str:
-        return f'{self.__class__.__name__}(bet_amount={self.bet_amount})'
+        return f'{self.__class__.__name__}(amount={self.bet_amount})'
 
 
 class PassLineOddsMultiplier(OddsMultiplierStrategy):
@@ -918,11 +918,11 @@ class PassLineOddsMultiplier(OddsMultiplierStrategy):
 class BetDontPass(BetPointOff):
     """Strategy that adds a DontPass bet if the point is off and the player doesn't have a DontPass
     bet of the given amount already on the table.
-    Equivalent to BetPointOff(DontPass(bet_amount))."""
+    Equivalent to BetPointOff(DontPass(amount))."""
 
     def __init__(self, bet_amount: float):
-        """If the point is off and the player doesn't have a DontPass(bet_amount) bet on the table
-        place a DontPass(bet_amount) bet.
+        """If the point is off and the player doesn't have a DontPass(amount) bet on the table
+        place a DontPass(amount) bet.
 
         Parameters
         ----------
@@ -933,7 +933,7 @@ class BetDontPass(BetPointOff):
         super().__init__(DontPass(bet_amount))
 
     def __repr__(self) -> str:
-        return f'{self.__class__.__name__}(bet_amount={self.bet_amount})'
+        return f'{self.__class__.__name__}(amount={self.bet_amount})'
 
 
 class DontPassOddsMultiplier(OddsMultiplierStrategy):
