@@ -41,7 +41,7 @@ class TableUpdate:
     @staticmethod
     def after_roll(table: 'Table'):
         for player in table.players:
-            player.bet_strategy.after_roll(player)
+            player.strategy.after_roll(player)
 
     @staticmethod
     def update_bets(table: 'Table', verbose=False):
@@ -76,7 +76,7 @@ class TableUpdate:
     @staticmethod
     def run_strategies(table: 'Table'):
         for player in table.players:
-            player.bet_strategy.update_bets(player)
+            player.strategy.update_bets(player)
 
 
 class Table:
@@ -225,13 +225,13 @@ class Table:
         if runout:
             return (self.dice.n_rolls < max_rolls
                     and self.n_shooters <= max_shooter
-                    and not any(x.bet_strategy.completed(x) for x in self.players)
+                    and not any(x.strategy.completed(x) for x in self.players)
                     ) or self.player_has_bets
         else:
             return (
                     self.dice.n_rolls < max_rolls
                     and self.n_shooters <= max_shooter
-                    and not any(x.bet_strategy.completed(x) for x in self.players)
+                    and not any(x.strategy.completed(x) for x in self.players)
             )
 
     def ensure_one_player(self) -> None:
@@ -293,7 +293,7 @@ class Player:
                  bet_strategy: Strategy = BetPassLine(5),
                  name: str = "Player"):
         self.bankroll: float = float(bankroll)
-        self.bet_strategy: Strategy = bet_strategy
+        self.strategy: Strategy = bet_strategy
         self.name: str = name
         self.bets: list[Bet] = []
         self._table: Table = table
@@ -329,8 +329,8 @@ class Player:
         """ Implement the given betting strategy
 
         """
-        if self.bet_strategy is not None:
-            self.bet_strategy.update_bets(self)
+        if self.strategy is not None:
+            self.strategy.update_bets(self)
 
     def update_bet(self, verbose: bool = False) -> None:
         for bet in self.bets[:]:

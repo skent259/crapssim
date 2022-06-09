@@ -28,4 +28,4 @@ def test_second_chunk():
 
         table.run(max_rolls=float("inf"), max_shooter=10, verbose=False)
         for p in table.players:
-            print(f"{i}, {p.bet_strategy}, {p.bankroll}, {bankroll}, {table.dice.n_rolls}")
+            print(f"{i}, {p.strategy}, {p.bankroll}, {bankroll}, {table.dice.n_rolls}")

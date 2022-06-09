@@ -12,7 +12,7 @@ def test_ensure_one_player():
     table.ensure_one_player()
     count_one = len(table.players)
     bankroll = table.players[0].bankroll
-    strategy = table.players[0].bet_strategy.__class__
+    strategy = table.players[0].strategy.__class__
     assert (count_zero, count_one, bankroll, strategy) == (0, 1, 100, BetPassLine)
 
 
