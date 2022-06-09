@@ -115,6 +115,14 @@ class TableSettings:
     def max_dont_odds(self):
         return dict(self._max_dont_odds)
 
+    def __hash__(self):
+        return hash((self._field_payouts, self._fire_points, self._max_odds, self._max_dont_odds))
+
+    def __eq__(self, other):
+        if isinstance(other, TableSettings):
+            return ((self._field_payouts, self._fire_points, self._max_odds, self._max_dont_odds) ==
+            (other._field_payouts, other._fire_points, other._max_odds, other._max_dont_odds))
+
 
 class Table:
     """
