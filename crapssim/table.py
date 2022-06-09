@@ -225,13 +225,13 @@ class Table:
         if runout:
             return (self.dice.n_rolls < max_rolls
                     and self.n_shooters <= max_shooter
-                    and any(x.bet_strategy.completed(x) for x in self.players)
+                    and not any(x.bet_strategy.completed(x) for x in self.players)
                     ) or self.player_has_bets
         else:
             return (
                     self.dice.n_rolls < max_rolls
                     and self.n_shooters <= max_shooter
-                    and any(x.bet_strategy.completed(x) for x in self.players)
+                    and not any(x.bet_strategy.completed(x) for x in self.players)
             )
 
     def ensure_one_player(self) -> None:
