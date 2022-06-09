@@ -95,7 +95,7 @@ class Bet(ABC):
         return type(self)
 
     def already_placed_bets(self, player: "Player"):
-        return [x for x in player.bets_on_table if x.get_placed_key() == self.get_placed_key()]
+        return [x for x in player.bets if x.get_placed_key() == self.get_placed_key()]
 
     def already_placed(self, player: "Player") -> bool:
         return len(self.already_placed_bets(player)) > 0

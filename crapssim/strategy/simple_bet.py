@@ -27,14 +27,14 @@ class BaseSimpleBet(Strategy):
         self.mode = mode
 
     def completed(self, player: 'Player') -> bool:
-        return player.bankroll < self.bet.amount and len(player.bets_on_table) == 0
+        return player.bankroll < self.bet.amount and len(player.bets) == 0
 
     def update_bets(self, player: 'Player') -> None:
         if not self.bet.allowed(player):
             return
 
         if self.mode == SimpleStrategyMode.ADD_IF_NON_EXISTENT:
-            BetIfTrue(self.bet, lambda p: self.bet not in p.bets_on_table).update_bets(player)
+            BetIfTrue(self.bet, lambda p: self.bet not in p.bets).update_bets(player)
         elif self.mode == SimpleStrategyMode.ADD_OR_INCREASE:
             player.add_bet(self.bet)
         elif self.mode == SimpleStrategyMode.REPLACE:

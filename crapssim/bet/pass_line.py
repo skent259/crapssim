@@ -61,8 +61,8 @@ class Come(WinningLosingNumbersBet):
 
     def update_point(self, player: 'Player'):
         if self.point.status == 'Off' and player.table.dice.total in (4, 5, 6, 8, 9, 10):
-            player.bets_on_table.remove(self)
-            player.bets_on_table.append(Come(self.amount, player.table.dice.total))
+            player.bets.remove(self)
+            player.bets.append(Come(self.amount, player.table.dice.total))
 
     def is_removable(self, player: "Player") -> bool:
         if self.point.status == 'On':
@@ -133,8 +133,8 @@ class DontCome(WinningLosingNumbersBet):
 
     def update_point(self, player: 'Player'):
         if self.point.status == 'Off' and player.table.dice.total in (4, 5, 6, 8, 9, 10):
-            player.bets_on_table.remove(self)
-            player.bets_on_table.append(DontCome(self.amount, player.table.dice.total))
+            player.bets.remove(self)
+            player.bets.append(DontCome(self.amount, player.table.dice.total))
 
     def allowed(self, player: "Player") -> bool:
         if player.table.point.status == 'On':

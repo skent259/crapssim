@@ -27,7 +27,7 @@ class OddsAmountStrategy(Strategy):
         -------
         True if there are no base type bets on the table, otherwise False.
         """
-        return len([x for x in player.bets_on_table if isinstance(x, self.base_type)]) == 0
+        return len([x for x in player.bets if isinstance(x, self.base_type)]) == 0
 
 
     def update_bets(self, player: 'Player') -> None:
@@ -91,7 +91,7 @@ class OddsMultiplierStrategy(Strategy):
         player
             The player to add the odds bet to.
         """
-        for bet in [x for x in player.bets_on_table if isinstance(x, self.base_type)]:
+        for bet in [x for x in player.bets if isinstance(x, self.base_type)]:
             point = self.get_point_number(bet, player.table)
 
             if point in self.odds_multiplier:
@@ -114,7 +114,7 @@ class OddsMultiplierStrategy(Strategy):
         -------
         True if there are no base type bets on the table, otherwise False.
         """
-        return len([x for x in player.bets_on_table if isinstance(x, self.base_type)]) == 0
+        return len([x for x in player.bets if isinstance(x, self.base_type)]) == 0
 
     def get_odds_multiplier_repr(self) -> int | dict[int, int]:
         """If the odds_multiplier has multiple values return a dictionary with the values,

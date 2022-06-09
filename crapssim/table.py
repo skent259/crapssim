@@ -124,7 +124,7 @@ class Table:
 
     def yield_player_bets(self) -> typing.Generator[tuple['Player', 'Bet'], None, None]:
         for player in self.players:
-            for bet in player.bets_on_table:
+            for bet in player.bets:
                 yield player, bet
 
     def add_player(self, bankroll: typing.SupportsFloat = 100, strategy: Strategy = BetPassLine(5),
@@ -249,7 +249,7 @@ class Table:
         -------
         True if any of the players have bets on the table, otherwise False.
         """
-        return sum([len(p.bets_on_table) for p in self.players]) > 0
+        return sum([len(p.bets) for p in self.players]) > 0
 
     @property
     def total_player_cash(self) -> float:
@@ -284,7 +284,7 @@ class Player:
         Name of the player
     bet_strategy :
         A function that implements a particular betting strategy. See betting_strategies.py.
-    bets_on_table : list
+    bets : list
         List of betting objects for the player
     """
 
@@ -295,12 +295,12 @@ class Player:
         self.bankroll: float = float(bankroll)
         self.bet_strategy: Strategy = bet_strategy
         self.name: str = name
-        self.bets_on_table: list[Bet] = []
+        self.bets: list[Bet] = []
         self._table: Table = table
 
     @property
     def total_bet_amount(self) -> float:
-        return sum(x.amount for x in self.bets_on_table)
+        return sum(x.amount for x in self.bets)
 
     @property
     def table(self) -> Table:
@@ -313,17 +313,17 @@ class Player:
 
         if new_bet.allowed(self) and new_bet.amount <= amount_available_to_bet:
             for bet in existing_bets:
-                self.bets_on_table.remove(bet)
+                self.bets.remove(bet)
             self.bankroll -= bet.amount
-            self.bets_on_table.append(new_bet)
+            self.bets.append(new_bet)
 
     def get_bets_by_type(self, bet_type: typing.Type[Bet] | tuple[typing.Type[Bet], ...]):
-        return [x for x in self.bets_on_table if isinstance(x, bet_type)]
+        return [x for x in self.bets if isinstance(x, bet_type)]
 
     def remove_bet(self, bet: Bet) -> None:
-        if bet in self.bets_on_table and bet.is_removable(self):
+        if bet in self.bets and bet.is_removable(self):
             self.bankroll += bet.amount
-            self.bets_on_table.remove(bet)
+            self.bets.remove(bet)
 
     def add_strategy_bets(self) -> None:
         """ Implement the given betting strategy
@@ -333,7 +333,7 @@ class Player:
             self.bet_strategy.update_bets(self)
 
     def update_bet(self, verbose: bool = False) -> None:
-        for bet in self.bets_on_table[:]:
+        for bet in self.bets[:]:
             bet.update(self.table)
 
             self.bankroll += bet.get_return_amount(self.table)
@@ -342,7 +342,7 @@ class Player:
                 self.print_bet_update(bet)
 
             if bet.should_remove(self.table):
-                self.bets_on_table.remove(bet)
+                self.bets.remove(bet)
 
     def print_bet_update(self, bet: Bet) -> None:
         status = bet.get_status(self.table)

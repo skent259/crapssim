@@ -738,7 +738,7 @@ def test_fire(rolls, correct_status, correct_win_amt, correct_remove):
     table = Table()
     table.add_player()
     table.players[0].add_bet(Fire(1))
-    bet = table.players[0].bets_on_table[0]
+    bet = table.players[0].bets[0]
 
     # table.fixed_run(rolls)
     for roll in rolls:

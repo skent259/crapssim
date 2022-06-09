@@ -20,7 +20,7 @@ def test_wrong_point_off():
     table = Table()
     table.add_player(bankroll=500)
     table.players[0].add_bet(Come(100))
-    assert (len(table.players[0].bets_on_table),
+    assert (len(table.players[0].bets),
             table.players[0].bankroll) == (0, 500)
 
 
@@ -28,7 +28,7 @@ def test_wrong_point_on():
     table = Table()
     table.point.number = 4
     table.add_player(bankroll=500)
-    assert (len(table.players[0].bets_on_table),
+    assert (len(table.players[0].bets),
             table.players[0].bankroll) == (0, 500)
 
 

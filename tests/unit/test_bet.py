@@ -152,7 +152,7 @@ def test_come_is_irremovable_with_point():
 def test_pass_line_odds_allowed():
     table = Table()
     table.add_player()
-    table.players[0].bets_on_table = [PassLine(5)]
+    table.players[0].bets = [PassLine(5)]
     table.point.number = 6
     bet = Odds(PassLine, 6, 25)
     assert bet.allowed(table.players[0])
@@ -161,7 +161,7 @@ def test_pass_line_odds_allowed():
 def test_pass_line_odds_too_high():
     table = Table()
     table.add_player()
-    table.players[0].bets_on_table = [PassLine(5)]
+    table.players[0].bets = [PassLine(5)]
     table.point.number = 4
     bet = Odds(PassLine, 4, 25)
     assert bet.allowed(table.players[0]) is False
@@ -171,7 +171,7 @@ def test_come_odds_allowed():
     table = Table()
     table.add_player()
     come_bet = Come(5, 6)
-    table.players[0].bets_on_table = [come_bet]
+    table.players[0].bets = [come_bet]
     bet = Odds(Come, 6, 25)
     assert bet.allowed(table.players[0])
 
@@ -180,6 +180,6 @@ def test_come_odds_not_allowed():
     table = Table()
     table.add_player()
     come_bet = Come(5, 6)
-    table.players[0].bets_on_table = [come_bet]
+    table.players[0].bets = [come_bet]
     bet = Odds(Come, 6, 9000)
     assert bet.allowed(table.players[0]) is False

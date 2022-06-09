@@ -26,8 +26,8 @@ def test_existing_bet():
     bet_two = PassLine(50)
     table.players[0].add_bet(bet_two)
 
-    bet_count = len(table.players[0].bets_on_table)
-    bet_amount = table.players[0].bets_on_table[0].amount
+    bet_count = len(table.players[0].bets)
+    bet_amount = table.players[0].bets[0].amount
     bankroll = table.players[0].bankroll
     total_bet_amount = table.players[0].total_bet_amount
 

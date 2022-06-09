@@ -143,7 +143,7 @@ class BetIfTrue(Strategy):
         True if the Player can't continue the strategy, otherwise False.
         """
         return (self.bet.amount > player.bankroll and
-                sum(x.amount for x in player.bets_on_table) == 0)
+                sum(x.amount for x in player.bets) == 0)
 
     def __repr__(self) -> str:
         return f'{self.__class__.__name__}(bet={self.bet}, ' \
@@ -179,7 +179,7 @@ class RemoveIfTrue(Strategy):
             The Player to remove the bets for.
         """
         bets_to_remove = []
-        for bet in player.bets_on_table:
+        for bet in player.bets:
             if self.key(bet, player):
                 bets_to_remove.append(bet)
         for bet in bets_to_remove:
@@ -197,7 +197,7 @@ class RemoveIfTrue(Strategy):
         -------
         True if the Player can't continue the strategy, otherwise False.
         """
-        return sum(x.amount for x in player.bets_on_table) == 0
+        return sum(x.amount for x in player.bets) == 0
 
     def __repr__(self) -> str:
         return f'{self.__class__.__name__}(key={self.key})'
@@ -219,7 +219,7 @@ class ReplaceIfTrue(Strategy):
         player
             The player to check the bets for.
         """
-        for bet in player.bets_on_table:
+        for bet in player.bets:
             if self.key(bet, player):
                 player.remove_bet(bet)
                 player.add_bet(self.bet)
@@ -238,12 +238,12 @@ class ReplaceIfTrue(Strategy):
         True if the Player can't continue the strategy, otherwise False.
         """
         return (self.bet.amount > player.bankroll and
-                sum(x.amount for x in player.bets_on_table) == 0)
+                sum(x.amount for x in player.bets) == 0)
 
 
 class IfBetNotExist(BetIfTrue):
     """Strategy that adds a bet if it isn't on the table for that player. Equivalent of
-    BetIfTrue(bet, lambda p: bet not in p.bets_on_table)"""
+    BetIfTrue(bet, lambda p: bet not in p.bets)"""
 
     def __init__(self, bet: Bet):
         """The strategy adds the given bet object to the table if it is not already on the table.
@@ -253,7 +253,7 @@ class IfBetNotExist(BetIfTrue):
         bet
             The bet to add if it isn't already on the table.
         """
-        super().__init__(bet, lambda p: bet not in p.bets_on_table)
+        super().__init__(bet, lambda p: bet not in p.bets)
 
     def __repr__(self) -> str:
         return f'{self.__class__.__name__}(bet={self.bet})'
@@ -262,7 +262,7 @@ class IfBetNotExist(BetIfTrue):
 class BetPointOff(BetIfTrue):
     """Strategy that adds a bet if the table point is Off, and the Player doesn't have a bet on the
     table. Equivalent to BetIfTrue(bet, lambda p: p.table.point.status == "Off"
-                                        and bet not in p.bets_on_table)"""
+                                        and bet not in p.bets)"""
     def __init__(self, bet: Bet):
         """Adds the given bet if the table point is Off and the player doesn't have that bet on the
         table.
@@ -273,7 +273,7 @@ class BetPointOff(BetIfTrue):
             The bet to add if the point is Off.
         """
         super().__init__(bet,
-                         lambda p: p.table.point.status == "Off" and bet not in p.bets_on_table)
+                         lambda p: p.table.point.status == "Off" and bet not in p.bets)
 
     def __repr__(self) -> str:
         return f'{self.__class__.__name__}(bet={self.bet})'
@@ -282,7 +282,7 @@ class BetPointOff(BetIfTrue):
 class BetPointOn(BetIfTrue):
     """Strategy that adds a bet if the table point is On, and the Player doesn't have a bet on the
     table. Equivalent to BetIfTrue(bet, lambda p: p.table.point.status == "On"
-                                        and bet not in p.bets_on_table)"""
+                                        and bet not in p.bets)"""
     def __init__(self, bet: Bet):
         """Add a bet if the point is On.
 
@@ -291,7 +291,7 @@ class BetPointOn(BetIfTrue):
         bet
             The bet to add if the point is On.
         """
-        super().__init__(bet, lambda p: p.table.point.status == "On" and bet not in p.bets_on_table)
+        super().__init__(bet, lambda p: p.table.point.status == "On" and bet not in p.bets)
 
     def __repr__(self) -> str:
         return f'{self.__class__.__name__}(bet={self.bet})'
@@ -349,7 +349,7 @@ class CountStrategy(BetIfTrue):
         -------
         True if the selected bet isn't already on the table, otherwise returns False.
         """
-        return self.bet not in player.bets_on_table
+        return self.bet not in player.bets
 
     def less_than_count_bets_of_type(self, player: 'Player') -> bool:
         """Returns True if there are less than count the number of bets on the table for the

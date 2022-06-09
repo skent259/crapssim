@@ -57,7 +57,7 @@ class BetPlace(Strategy):
         """
         print(self.place_bet_amounts.values())
         return (player.bankroll < min(x for x in self.place_bet_amounts.values())
-                and len([x for x in player.bets_on_table if isinstance(x, Place)]) == 0)
+                and len([x for x in player.bets if isinstance(x, Place)]) == 0)
 
     def update_bets(self, player: 'Player') -> None:
         """Add the place bets on the numbers and amounts defined by place_bet_amounts.
@@ -76,7 +76,7 @@ class BetPlace(Strategy):
             if player.table.point.status == 'Off':
                 continue
             if self.skip_come:
-                come_numbers = [x.point.number for x in player.bets_on_table if isinstance(x, Come)]
+                come_numbers = [x.point.number for x in player.bets if isinstance(x, Come)]
                 if number in come_numbers:
                     continue
             IfBetNotExist(Place(number, amount)).update_bets(player)
@@ -243,7 +243,7 @@ class Place68Move59(Strategy):
         -------
         True if the strategy can't continue, otherwise False.
         """
-        return (len(player.bets_on_table) == 0 and
+        return (len(player.bets) == 0 and
                 player.bankroll < self.pass_come_amount and
                 player.bankroll < self.six_eight_amount and
                 player.bankroll < self.five_nine_amount)
@@ -264,9 +264,9 @@ class Place68Move59(Strategy):
         pass_line_come_points = []
         for number in (6, 8, 9, 10):
             if (player.table.point.number == number and
-                    PassLine(self.pass_come_amount) in player.bets_on_table):
+                    PassLine(self.pass_come_amount) in player.bets):
                 pass_line_come_points.append(number)
-            elif Come(self.pass_come_amount, number) in player.bets_on_table:
+            elif Come(self.pass_come_amount, number) in player.bets:
                 pass_line_come_points.append(number)
         return pass_line_come_points
 
@@ -294,11 +294,11 @@ class Place68Move59(Strategy):
             bet = Place(number, place_amounts[number])
 
             if number in self.get_pass_line_come_points(player):
-                if bet in player.bets_on_table:
+                if bet in player.bets:
                     player.remove_bet(bet)
                 continue
 
-            if len([x for x in player.bets_on_table if isinstance(x, Place)]) < 2:
+            if len([x for x in player.bets if isinstance(x, Place)]) < 2:
                 IfBetNotExist(bet).update_bets(player)
 
 
@@ -378,7 +378,7 @@ class Place682Come(AggregateStrategy):
         -------
         True if the player has less than 2 Come and PassLine bets, otherwise False.
         """
-        pass_come_count = len([x for x in player.bets_on_table if isinstance(x, (PassLine, Come))])
+        pass_come_count = len([x for x in player.bets if isinstance(x, (PassLine, Come))])
         return pass_come_count < 2
 
     def place_pass_line_come(self, player: 'Player'):
@@ -484,7 +484,7 @@ class HammerLock(Strategy):
         -------
 
         """
-        return player.bankroll < self.base_amount and len(player.bets_on_table) == 0
+        return player.bankroll < self.base_amount and len(player.bets) == 0
 
     def after_roll(self, player: 'Player') -> None:
         """Update the place_win_count based on how many Place bets are won. If table.point.status is
@@ -589,7 +589,7 @@ class Risk12(Strategy):
         -------
         True if the player can no longer continue the strategy, otherwise False.
         """
-        return player.bankroll < 5 and len(player.bets_on_table) == 0
+        return player.bankroll < 5 and len(player.bets) == 0
 
     def after_roll(self, player: 'Player') -> None:
         """Determine the pre-point winnings which is used to determine which bets to place when the
@@ -601,9 +601,9 @@ class Risk12(Strategy):
             The player to check the bets for.
         """
         if player.table.point.status == 'Off' and any(
-                x.get_status(player.table) == 'win' for x in player.bets_on_table):
+                x.get_status(player.table) == 'win' for x in player.bets):
             self.pre_point_winnings += sum(x.get_return_amount(player.table)
-                                           for x in player.bets_on_table
+                                           for x in player.bets
                                            if x.get_status(player.table) == 'win')
         elif player.table.point.status == 'On' and player.table.dice.total == 7:
             self.pre_point_winnings = 0
@@ -699,7 +699,7 @@ class FieldWinProgression(Strategy):
         True if the
         """
         return (player.bankroll < min(float(x) for x in self.progression)
-                and len(player.bets_on_table) == 0)
+                and len(player.bets) == 0)
 
     def after_roll(self, player: 'Player') -> None:
         """If the field bet wins, increase the progression by 1, if it loses reset the progression
@@ -710,7 +710,7 @@ class FieldWinProgression(Strategy):
         player
             The player to check the winning bets for.
         """
-        win = all(x.get_status(player.table) == 'win' for x in player.bets_on_table)
+        win = all(x.get_status(player.table) == 'win' for x in player.bets)
 
         if win:
             self.current_progression += 1
@@ -784,7 +784,7 @@ class Place68CPR(Strategy):
         -------
 
         """
-        return player.bankroll < self.starting_amount and len(player.bets_on_table) == 0
+        return player.bankroll < self.starting_amount and len(player.bets) == 0
 
     def after_roll(self, player: 'Player') -> None:
         """Get the winnings on the Place 6 and 8 bets to determine whether to press or regress.
@@ -813,8 +813,8 @@ class Place68CPR(Strategy):
         if player.table.point.status == 'Off':
             return
         for number in (6, 8):
-            if (Place(number, self.starting_amount) not in player.bets_on_table and
-                    Place(number, self.press_amount) not in player.bets_on_table):
+            if (Place(number, self.starting_amount) not in player.bets and
+                    Place(number, self.press_amount) not in player.bets):
                 player.add_bet(Place(number, self.starting_amount))
 
     def press(self, player: 'Player') -> None:

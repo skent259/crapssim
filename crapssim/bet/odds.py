@@ -40,7 +40,7 @@ class Odds(WinningLosingNumbersBet):
             return {4: 1 / 2, 5: 2 / 3, 6: 5 / 6, 8: 5 / 6, 9: 2 / 3, 10: 1 / 2}[self.number]
 
     def get_base_bets(self, player: "Player") -> list[Bet]:
-        return [x for x in player.bets_on_table if isinstance(x, self.base_type)
+        return [x for x in player.bets if isinstance(x, self.base_type)
                 and x.get_winning_numbers(player.table) == self.get_winning_numbers(player.table)]
 
     def get_base_amount(self, player: "Player"):

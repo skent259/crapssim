@@ -1814,7 +1814,7 @@ def test_ironcross_integration(point, last_roll, strat_info, bets_before, dice_r
     table.add_player(bankroll=float("inf"), strategy=IronCross(5))  # ADD STRATEGY HERE
     table.point.number = point
     table.last_roll = last_roll
-    table.players[0].bets_on_table = bets_before
+    table.players[0].bets = bets_before
     table.dice.result = dice_result
     TableUpdate().run_strategies(table)
-    assert table.players[0].bets_on_table == bets_after
+    assert table.players[0].bets == bets_after
