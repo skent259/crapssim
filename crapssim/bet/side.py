@@ -24,11 +24,11 @@ class Fire(Bet):
             self.ended = True
 
     def get_result(self, table: "Table") -> BetResult:
-        if self.ended and len(self.points_made) in table.settings.fire_points:
-            payout_ratio = table.settings.fire_points[len(self.points_made)]
+        if self.ended and len(self.points_made) in table.settings['fire_points']:
+            payout_ratio = table.settings['fire_points'][len(self.points_made)]
             result_amount = payout_ratio * self.amount + self.amount
             remove = True
-        elif self.ended and len(self.points_made) not in table.settings.fire_points:
+        elif self.ended and len(self.points_made) not in table.settings['fire_points']:
             result_amount = -1 * self.amount
             remove = True
         else:

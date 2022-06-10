@@ -1,5 +1,4 @@
 import typing
-from dataclasses import dataclass
 
 from crapssim.dice import Dice
 from .bet import Bet, BetResult
@@ -9,7 +8,6 @@ from .strategy import Strategy, BetPassLine
 
 class TableUpdate:
     """Object for processing a table after the dice has been rolled."""
-
     def run(self, table: 'Table',
             dice_outcome: typing.Iterable[int] | None = None,
             verbose: bool = False):
@@ -81,41 +79,6 @@ class TableUpdate:
             player.strategy.update_bets(player)
 
 
-class TableSettings:
-    def __init__(self, field_payouts: dict[int, int] = None,
-                 fire_points: dict[int, int] = None,
-                 max_odds: dict[int, int] = None,
-                 max_dont_odds: dict[int, int] = None):
-        if field_payouts is None:
-            field_payouts = {2: 2, 3: 1, 4: 1, 9: 1, 10: 1, 11: 1, 12: 2}
-        if fire_points is None:
-            fire_points = {4: 24, 5: 249, 6: 999}
-        if max_odds is None:
-            max_odds = {4: 3, 5: 4, 6: 5, 8: 5, 9: 4, 10: 3}
-        if max_dont_odds is None:
-            max_dont_odds = {4: 6, 5: 6, 6: 6, 8: 6, 9: 6, 10: 6}
-        self._field_payouts: set[tuple[int, int]] = {(x[0], x[1]) for x in field_payouts.items()}
-        self._fire_points: set[tuple[int, int]] = {(x[0], x[1]) for x in fire_points.items()}
-        self._max_odds: set[tuple[int, int]] = {(x[0], x[1]) for x in max_odds.items()}
-        self._max_dont_odds: set[tuple[int, int]] = {(x[0], x[1]) for x in max_dont_odds.items()}
-
-    @property
-    def field_payouts(self):
-        return dict(self._field_payouts)
-
-    @property
-    def fire_points(self):
-        return dict(self._fire_points)
-
-    @property
-    def max_odds(self):
-        return dict(self._max_odds)
-
-    @property
-    def max_dont_odds(self):
-        return dict(self._max_dont_odds)
-
-
 class Table:
     """
     Craps Table that contains Dice, Players, the Players' bets, and updates
@@ -148,7 +111,12 @@ class Table:
         self.players: list[Player] = []
         self.point: Point = Point()
         self.dice: Dice = Dice()
-        self.settings: TableSettings = TableSettings()
+        self.settings: dict[str, typing.Any] = {'field_payouts': {2: 2, 3: 1, 4: 1, 9: 1, 10: 1,
+                                                                  11: 1, 12: 2},
+                                                'fire_points': {4: 24, 5: 249, 6: 999},
+                                                'max_odds': {4: 3, 5: 4, 6: 5, 8: 5, 9: 4, 10: 3},
+                                                'max_dont_odds': {4: 6, 5: 6, 6: 6, 8: 6, 9: 6,
+                                                                  10: 6}}
         self.pass_rolls: int = 0
         self.last_roll: int | None = None
         self.n_shooters: int = 0

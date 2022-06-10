@@ -49,9 +49,9 @@ class Odds(WinningLosingNumbersBet):
 
     def get_max_odds(self, table: "Table") -> float:
         if self.light_side:
-            return table.settings.max_odds[self.number]
+            return table.settings['max_odds'][self.number]
         elif self.dark_side:
-            return table.settings.max_dont_odds[self.number]
+            return table.settings['max_dont_odds'][self.number]
         else:
             raise NotImplementedError
 
