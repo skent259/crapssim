@@ -1,4 +1,5 @@
 import pytest
+
 from crapssim.dice import Dice
 
 

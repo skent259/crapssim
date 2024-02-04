@@ -43,9 +43,8 @@ import crapssim as craps
 
 table = craps.Table()
 your_strat = craps.strategy.passline_odds2
-you = craps.Player(bankroll=200, bet_strategy=your_strat)
 
-table.add_player(you)
+table.add_player(bankroll=100, strategy=your_strat)
 table.run(max_rolls=20)
 ```
 
@@ -64,11 +63,11 @@ strategies = {
 for i in range(n_sim):
     table = craps.Table()
     for s in strategies:
-        table.add_player(craps.Player(bankroll, strategies[s], s))
+        table.add_player(bankroll=100, strategy=s)
 
     table.run(max_rolls=float("inf"), max_shooter=10, verbose=False)
-    for s in strategies:
-        print(f"{i}, {s}, {table.get_player(s).bankroll}, {bankroll}, {table.dice.n_rolls}")
+    for p in table.players:
+        print(f"{i}, {p.strategy}, {p.bankroll}, {bankroll}, {table.dice.n_rolls}")
 ```
 
 For more advanced strategies, you need to write a custom function that can perform the strategy.  Some building blocks and examples can be found in [strategy.py](./crapssim/strategy.py)
