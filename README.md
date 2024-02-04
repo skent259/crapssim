@@ -26,13 +26,13 @@ Current blog posts include:
 
 ## Installation
 
-You can install crapssim with
+For a normal user, it is recommended to install the official release. You will 
+need an installation of python version 3.10 or newer.  Then, run the following 
+code in your terminal: 
 
 ```python
 pip install crapssim
 ```
-
-This requires Python >=3.6 and pip to be installed on your computer.
 
 ## Getting Started
 
