@@ -1,13 +1,14 @@
 import pytest
 
 from crapssim import Table
-from crapssim.bet import PassLine, Come, Place, DontPass, Field, DontCome, Odds
-from crapssim.strategy import BetPassLine, PassLineOddsMultiplier, BetPlace, BetDontPass, \
-    DontPassOddsMultiplier, \
-    BetIfTrue
-from crapssim.strategy.examples import Pass2Come, PassLinePlace68, PassLinePlace68Move59, \
-    Place682Come, IronCross, HammerLock, Risk12, Knockout, DiceDoctor, Place68DontCome2Odds, \
-    Place68CPR
+from crapssim.bet import Come, DontCome, DontPass, Field, Odds, PassLine, Place
+from crapssim.strategy import (BetDontPass, BetIfTrue, BetPassLine, BetPlace,
+                               DontPassOddsMultiplier, PassLineOddsMultiplier)
+from crapssim.strategy.examples import (DiceDoctor, HammerLock, IronCross,
+                                        Knockout, Pass2Come, PassLinePlace68,
+                                        PassLinePlace68Move59, Place68CPR,
+                                        Place68DontCome2Odds, Place682Come,
+                                        Risk12)
 from crapssim.table import TableUpdate
 
 

@@ -1,8 +1,6 @@
 import pytest
 
-from crapssim.bet import PassLine, Odds
-from crapssim.bet.pass_line import DontPass
-from crapssim.bet.place import Place
+from crapssim.bet import DontPass, Odds, PassLine, Place
 from crapssim.strategy.examples import HammerLock
 from crapssim.table import Table, TableUpdate
 

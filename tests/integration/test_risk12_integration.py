@@ -2,8 +2,7 @@ import copy
 
 import pytest
 
-from crapssim.bet import PassLine, Place
-from crapssim.bet.one_roll import Field
+from crapssim.bet import Field, PassLine, Place
 from crapssim.strategy.examples import Risk12
 from crapssim.table import Table, TableUpdate
 

@@ -1,8 +1,6 @@
 import pytest
 
-from crapssim.bet import PassLine, Odds
-from crapssim.bet.one_roll import Field
-from crapssim.bet.place import Place
+from crapssim.bet import Field, Odds, PassLine, Place
 from crapssim.strategy.examples import IronCross
 from crapssim.table import Table, TableUpdate
 

@@ -1,7 +1,6 @@
 import pytest
 
-from crapssim.bet import PassLine, Odds
-from crapssim.bet.pass_line import DontPass
+from crapssim.bet import DontPass, Odds, PassLine
 from crapssim.strategy.examples import Knockout
 from crapssim.table import Table, TableUpdate
 

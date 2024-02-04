@@ -1,35 +1,32 @@
 import numpy as np
 import pytest
 
-import crapssim.bet.place
-from crapssim.bet import Bet, PassLine, Come, Odds
-from crapssim.bet.one_roll import CAndE
-from crapssim.bet.pass_line import DontCome
+import crapssim.bet
+from crapssim.bet import Bet, CAndE, Come, DontCome, Odds, PassLine
 from crapssim.point import Point
 from crapssim.table import Table
-
 
 # Check EV of bets on a "per-roll" basis
 
 @pytest.mark.parametrize("bet, ev", [
-    (crapssim.bet.place.Place(4, 1), -0.0167),
-    (crapssim.bet.place.Place(5, 1), -0.0111),
-    (crapssim.bet.place.Place(6, 1), -0.0046),
-    (crapssim.bet.place.Place(8, 1), -0.0046),
-    (crapssim.bet.place.Place(9, 1), -0.0111),
-    (crapssim.bet.place.Place(10, 1), -0.0167),
-    (crapssim.bet.one_roll.Field(1), -0.0556),
-    (crapssim.bet.one_roll.Any7(1), -0.1667),
-    (crapssim.bet.one_roll.Two(1), -0.1389),
-    (crapssim.bet.one_roll.Three(1), -0.1111),
-    (crapssim.bet.one_roll.Yo(1), -0.1111),
-    (crapssim.bet.one_roll.Boxcars(1), -0.1389),
-    (crapssim.bet.one_roll.AnyCraps(1), -0.1111),
-    (crapssim.bet.one_roll.CAndE(1), -0.1111),
-    (crapssim.bet.hard_way.HardWay(4, 1), -0.0278),
-    (crapssim.bet.hard_way.HardWay(6, 1), -0.0278),
-    (crapssim.bet.hard_way.HardWay(8, 1), -0.0278),
-    (crapssim.bet.hard_way.HardWay(10, 1), -0.0278),
+    (crapssim.bet.Place(4, 1), -0.0167),
+    (crapssim.bet.Place(5, 1), -0.0111),
+    (crapssim.bet.Place(6, 1), -0.0046),
+    (crapssim.bet.Place(8, 1), -0.0046),
+    (crapssim.bet.Place(9, 1), -0.0111),
+    (crapssim.bet.Place(10, 1), -0.0167),
+    (crapssim.bet.Field(1), -0.0556),
+    (crapssim.bet.Any7(1), -0.1667),
+    (crapssim.bet.Two(1), -0.1389),
+    (crapssim.bet.Three(1), -0.1111),
+    (crapssim.bet.Yo(1), -0.1111),
+    (crapssim.bet.Boxcars(1), -0.1389),
+    (crapssim.bet.AnyCraps(1), -0.1111),
+    (crapssim.bet.CAndE(1), -0.1111),
+    (crapssim.bet.HardWay(4, 1), -0.0278),
+    (crapssim.bet.HardWay(6, 1), -0.0278),
+    (crapssim.bet.HardWay(8, 1), -0.0278),
+    (crapssim.bet.HardWay(10, 1), -0.0278),
 ])
 def test_ev_oneroll(bet, ev):
     t = Table()

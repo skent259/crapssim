@@ -3,14 +3,14 @@ in order to do the intended """
 
 import typing
 
-from crapssim.bet import PassLine, Come
-from crapssim.bet.one_roll import Field
-from crapssim.bet.pass_line import DontPass, DontCome
-from crapssim.bet.place import Place
-from crapssim.strategy import OddsMultiplierStrategy, PassLineOddsMultiplier, DontPassOddsMultiplier
-from crapssim.strategy.core import CountStrategy, BetPointOff, Strategy, \
-    IfBetNotExist, BetIfTrue, AggregateStrategy, BetPointOn, RemoveIfTrue, RemoveByType
-from crapssim.strategy.simple_bet import Place5Amount, Place6Amount, Place8Amount, Place9Amount
+from crapssim.bet import Come, DontCome, DontPass, Field, PassLine, Place
+from crapssim.strategy import (DontPassOddsMultiplier, OddsMultiplierStrategy,
+                               PassLineOddsMultiplier)
+from crapssim.strategy.core import (AggregateStrategy, BetIfTrue, BetPointOff,
+                                    BetPointOn, CountStrategy, IfBetNotExist,
+                                    RemoveByType, RemoveIfTrue, Strategy)
+from crapssim.strategy.simple_bet import (Place5Amount, Place6Amount,
+                                          Place8Amount, Place9Amount)
 
 if typing.TYPE_CHECKING:
     from crapssim.table import Player

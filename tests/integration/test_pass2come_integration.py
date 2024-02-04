@@ -1,6 +1,6 @@
 import pytest
 
-from crapssim.bet import PassLine, Come
+from crapssim.bet import Come, PassLine
 from crapssim.strategy.examples import Pass2Come
 from crapssim.table import Table, TableUpdate
 
