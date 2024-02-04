@@ -1,9 +1,9 @@
 import pytest
 
-from crapssim import Table, Player
-from crapssim.bet import Come, PassLine
-from crapssim.strategy import passline
-from crapssim.table import Point
+from crapssim import Table
+from crapssim.bet import Come
+from crapssim.point import Point
+from crapssim.strategy import BetPassLine
 
 
 def test_ensure_one_player():
@@ -12,25 +12,23 @@ def test_ensure_one_player():
     table.ensure_one_player()
     count_one = len(table.players)
     bankroll = table.players[0].bankroll
-    strategy = table.players[0].bet_strategy
-    assert (count_zero, count_one, bankroll, strategy) == (0, 1, 100, passline)
+    strategy = table.players[0].strategy.__class__
+    assert (count_zero, count_one, bankroll, strategy) == (0, 1, 100, BetPassLine)
 
 
 def test_wrong_point_off():
     table = Table()
-    table.point.status = 'Off'
     table.add_player(bankroll=500)
     table.players[0].add_bet(Come(100))
-    assert (len(table.players[0].bets_on_table),
+    assert (len(table.players[0].bets),
             table.players[0].bankroll) == (0, 500)
 
 
 def test_wrong_point_on():
     table = Table()
-    table.point.status = 'On'
     table.point.number = 4
     table.add_player(bankroll=500)
-    assert (len(table.players[0].bets_on_table),
+    assert (len(table.players[0].bets),
             table.players[0].bankroll) == (0, 500)
 
 
@@ -43,7 +41,6 @@ def test_wrong_point_on():
 ])
 def test_point_equality(status, number, comparison):
     point = Point()
-    point.status = status
     point.number = number
     assert point == comparison
 
@@ -54,7 +51,6 @@ def test_point_equality(status, number, comparison):
 ])
 def test_point_greater_than(number, comparison):
     point = Point()
-    point.status = 'On'
     point.number = number
     assert point > comparison
 
@@ -65,8 +61,6 @@ def test_point_greater_than(number, comparison):
 ])
 def test_point_less_than(number, comparison):
     point = Point()
-    point.status = 'On'
     point.number = number
     assert point < comparison
-
 

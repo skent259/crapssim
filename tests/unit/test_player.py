@@ -1,21 +1,19 @@
-from crapssim import Table, Dice, Player
+from crapssim import Table
 from crapssim.bet import PassLine
-from crapssim.strategy import passline
+from crapssim.strategy import BetPassLine
 
 
 def test_default_strategy():
     table = Table()
     table.add_player()
-    assert table.players[0].bet_strategy == passline
+    assert table.players[0].strategy == BetPassLine(5)
 
 
 def test_irremovable_bet():
     bet = PassLine(50)
     table = Table()
     table.add_player(500)
-    table.fixed_roll_and_update([2, 2])
-    bet.update(table)
-    print(table.point.status)
+    table.fixed_run([(2, 2)])
     assert bet.is_removable(table.players[0]) is False
 
 
@@ -27,8 +25,8 @@ def test_existing_bet():
     bet_two = PassLine(50)
     table.players[0].add_bet(bet_two)
 
-    bet_count = len(table.players[0].bets_on_table)
-    bet_amount = table.players[0].bets_on_table[0].bet_amount
+    bet_count = len(table.players[0].bets)
+    bet_amount = table.players[0].bets[0].amount
     bankroll = table.players[0].bankroll
     total_bet_amount = table.players[0].total_bet_amount
 
