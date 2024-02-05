@@ -1,16 +1,21 @@
 import typing
 
 from crapssim.dice import Dice
+
 from .bet import Bet, BetResult
 from .point import Point
-from .strategy import Strategy, BetPassLine
+from .strategy import BetPassLine, Strategy
 
 
 class TableUpdate:
     """Object for processing a table after the dice has been rolled."""
-    def run(self, table: 'Table',
-            dice_outcome: typing.Iterable[int] | None = None,
-            verbose: bool = False):
+
+    def run(
+        self,
+        table: "Table",
+        dice_outcome: typing.Iterable[int] | None = None,
+        verbose: bool = False,
+    ):
         """Run through the roll logic of the table."""
         self.set_new_shooter(table)
         self.run_strategies(table)
@@ -22,13 +27,15 @@ class TableUpdate:
         self.update_points(table, verbose)
 
     @staticmethod
-    def before_roll(table: 'Table'):
+    def before_roll(table: "Table"):
         table.last_roll = table.dice.total
 
     @staticmethod
-    def roll(table: 'Table',
-             fixed_outcome: typing.Iterable[int] | None = None,
-             verbose: bool = False):
+    def roll(
+        table: "Table",
+        fixed_outcome: typing.Iterable[int] | None = None,
+        verbose: bool = False,
+    ):
         if fixed_outcome is not None:
             table.dice.fixed_roll(fixed_outcome)
         else:
@@ -39,24 +46,25 @@ class TableUpdate:
             print(f"Shooter rolled {table.dice.total} {table.dice.result}")
 
     @staticmethod
-    def after_roll(table: 'Table'):
+    def after_roll(table: "Table"):
         for player in table.players:
             player.strategy.after_roll(player)
 
     @staticmethod
-    def update_bets(table: 'Table', verbose=False):
+    def update_bets(table: "Table", verbose=False):
         for player in table.players:
             player.update_bet(verbose=verbose)
 
     @staticmethod
-    def update_table_stats(table: 'Table'):
+    def update_table_stats(table: "Table"):
         table.pass_rolls += 1
-        if table.point == "On" and (table.dice.total == 7 or
-                                    table.dice.total == table.point.number):
+        if table.point == "On" and (
+            table.dice.total == 7 or table.dice.total == table.point.number
+        ):
             table.pass_rolls = 0
 
     @staticmethod
-    def set_new_shooter(table: 'Table'):
+    def set_new_shooter(table: "Table"):
         if table.n_shooters == 0 or (table.point == "On" and table.dice.total == 7):
             table.new_shooter = True
             table.n_shooters += 1
@@ -64,7 +72,7 @@ class TableUpdate:
             table.new_shooter = False
 
     @staticmethod
-    def update_points(table: 'Table', verbose: bool):
+    def update_points(table: "Table", verbose: bool):
         for player, bet in table.yield_player_bets():
             bet.update_point(player)
         table.point.update(table.dice)
@@ -74,7 +82,7 @@ class TableUpdate:
             print(f"Total Player Cash is ${table.total_player_cash}")
 
     @staticmethod
-    def run_strategies(table: 'Table'):
+    def run_strategies(table: "Table"):
         for player in table.players:
             player.strategy.update_bets(player)
 
@@ -111,25 +119,29 @@ class Table:
         self.players: list[Player] = []
         self.point: Point = Point()
         self.dice: Dice = Dice()
-        self.settings: dict[str, typing.Any] = {'field_payouts': {2: 2, 3: 1, 4: 1, 9: 1, 10: 1,
-                                                                  11: 1, 12: 2},
-                                                'fire_points': {4: 24, 5: 249, 6: 999},
-                                                'max_odds': {4: 3, 5: 4, 6: 5, 8: 5, 9: 4, 10: 3},
-                                                'max_dont_odds': {4: 6, 5: 6, 6: 6, 8: 6, 9: 6,
-                                                                  10: 6}}
+        self.settings: dict[str, typing.Any] = {
+            "field_payouts": {2: 2, 3: 1, 4: 1, 9: 1, 10: 1, 11: 1, 12: 2},
+            "fire_points": {4: 24, 5: 249, 6: 999},
+            "max_odds": {4: 3, 5: 4, 6: 5, 8: 5, 9: 4, 10: 3},
+            "max_dont_odds": {4: 6, 5: 6, 6: 6, 8: 6, 9: 6, 10: 6},
+        }
         self.pass_rolls: int = 0
         self.last_roll: int | None = None
         self.n_shooters: int = 0
         self.new_shooter: bool = True
 
-    def yield_player_bets(self) -> typing.Generator[tuple['Player', 'Bet'], None, None]:
+    def yield_player_bets(self) -> typing.Generator[tuple["Player", "Bet"], None, None]:
         for player in self.players:
             for bet in player.bets:
                 yield player, bet
 
-    def add_player(self, bankroll: typing.SupportsFloat = 100, strategy: Strategy = BetPassLine(5),
-                   name: str = None) -> None:
-        """ Add player object to the table
+    def add_player(
+        self,
+        bankroll: typing.SupportsFloat = 100,
+        strategy: Strategy = BetPassLine(5),
+        name: str = None,
+    ) -> None:
+        """Add player object to the table
 
         Parameters
         ----------
@@ -143,8 +155,10 @@ class Table:
 
         """
         if name is None:
-            name = f'Player {len(self.players)}'
-        self.players.append(Player(table=self, bankroll=bankroll, bet_strategy=strategy, name=name))
+            name = f"Player {len(self.players)}"
+        self.players.append(
+            Player(table=self, bankroll=bankroll, bet_strategy=strategy, name=name)
+        )
 
     def _setup_run(self, verbose: bool) -> None:
         """
@@ -161,10 +175,13 @@ class Table:
         if verbose:
             print(f"Initial players: {[p.name for p in self.players]}")
 
-    def run(self, max_rolls: int,
-            max_shooter: float | int = float("inf"),
-            verbose: bool = True,
-            runout: bool = False) -> None:
+    def run(
+        self,
+        max_rolls: int,
+        max_shooter: float | int = float("inf"),
+        verbose: bool = True,
+        runout: bool = False,
+    ) -> None:
         """
         Runs the craps table until a stopping condition is met.
 
@@ -187,8 +204,9 @@ class Table:
             TableUpdate().run(self, verbose=verbose)
             continue_rolling = self.should_keep_rolling(max_rolls, max_shooter, runout)
 
-    def fixed_run(self, dice_outcomes: typing.Iterable[typing.Iterable], verbose: bool = False) \
-            -> None:
+    def fixed_run(
+        self, dice_outcomes: typing.Iterable[typing.Iterable], verbose: bool = False
+    ) -> None:
         """
         Give a series of fixed dice outcome and run as if that is what was rolled.
 
@@ -204,8 +222,9 @@ class Table:
         for dice_outcome in dice_outcomes:
             TableUpdate().run(self, dice_outcome, verbose=verbose)
 
-    def should_keep_rolling(self, max_rolls: float | int, max_shooter: float | int,
-                            runout: bool) -> bool:
+    def should_keep_rolling(
+        self, max_rolls: float | int, max_shooter: float | int, runout: bool
+    ) -> bool:
         """
         Determines whether the program should keep running or not.
 
@@ -223,20 +242,20 @@ class Table:
         If True, the program should continue running. If False the program should stop running.
         """
         if runout:
-            return (self.dice.n_rolls < max_rolls
-                    and self.n_shooters <= max_shooter
-                    and not any(x.strategy.completed(x) for x in self.players)
-                    ) or self.player_has_bets
+            return (
+                self.dice.n_rolls < max_rolls
+                and self.n_shooters <= max_shooter
+                and not any(x.strategy.completed(x) for x in self.players)
+            ) or self.player_has_bets
         else:
             return (
-                    self.dice.n_rolls < max_rolls
-                    and self.n_shooters <= max_shooter
-                    and not any(x.strategy.completed(x) for x in self.players)
+                self.dice.n_rolls < max_rolls
+                and self.n_shooters <= max_shooter
+                and not any(x.strategy.completed(x) for x in self.players)
             )
 
     def ensure_one_player(self) -> None:
-        """ Make sure there is at least one player at the table
-        """
+        """Make sure there is at least one player at the table"""
         if len(self.players) == 0:
             self.add_player()
 
@@ -288,10 +307,13 @@ class Player:
         List of betting objects for the player
     """
 
-    def __init__(self, table: Table,
-                 bankroll: typing.SupportsFloat,
-                 bet_strategy: Strategy = BetPassLine(5),
-                 name: str = "Player"):
+    def __init__(
+        self,
+        table: Table,
+        bankroll: typing.SupportsFloat,
+        bet_strategy: Strategy = BetPassLine(5),
+        name: str = "Player",
+    ):
         self.bankroll: float = float(bankroll)
         self.strategy: Strategy = bet_strategy
         self.name: str = name
@@ -311,13 +333,15 @@ class Player:
         new_bet = sum(existing_bets + [bet])
         amount_available_to_bet = self.bankroll + sum(x.amount for x in existing_bets)
 
-        if new_bet.allowed(self) and new_bet.amount <= amount_available_to_bet:
+        if new_bet.is_allowed(self) and new_bet.amount <= amount_available_to_bet:
             for bet in existing_bets:
                 self.bets.remove(bet)
             self.bankroll -= bet.amount
             self.bets.append(new_bet)
 
-    def get_bets_by_type(self, bet_type: typing.Type[Bet] | tuple[typing.Type[Bet], ...]):
+    def get_bets_by_type(
+        self, bet_type: typing.Type[Bet] | tuple[typing.Type[Bet], ...]
+    ):
         return [x for x in self.bets if isinstance(x, bet_type)]
 
     def remove_bet(self, bet: Bet) -> None:
@@ -326,9 +350,7 @@ class Player:
             self.bets.remove(bet)
 
     def add_strategy_bets(self) -> None:
-        """ Implement the given betting strategy
-
-        """
+        """Implement the given betting strategy"""
         if self.strategy is not None:
             self.strategy.update_bets(self)
 

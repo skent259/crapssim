@@ -9,7 +9,7 @@ if typing.TYPE_CHECKING:
     from crapssim.table import Player, Table
 
 
-@dataclass(frozen=True)
+@dataclass(slots=True, frozen=True)
 class BetResult:
     amount: float
     remove: bool
@@ -40,17 +40,17 @@ class Bet(ABC):
 
     Parameters
     ----------
-    bet_amount : typing.SupportsFloat
+    amount : typing.SupportsFloat
         Wagered amount for the bet
 
     Attributes
     ----------
-    bet_amount: float
+    amount: float
         Wagered amount for the bet
     """
 
-    def __init__(self, bet_amount: typing.SupportsFloat):
-        self.amount: float = float(bet_amount)
+    def __init__(self, amount: typing.SupportsFloat):
+        self.amount: float = float(amount)
 
     @abstractmethod
     def get_result(self, table: "Table") -> BetResult:
@@ -59,7 +59,7 @@ class Bet(ABC):
     def is_removable(self, player: "Player") -> bool:
         return True
 
-    def allowed(self, player: "Player") -> bool:
+    def is_allowed(self, player: "Player") -> bool:
         """
         Checks whether the bet is allowed to be placed on the given table.
 
@@ -74,7 +74,7 @@ class Bet(ABC):
         """
         return True
 
-    def update_point(self, player: 'Player'):
+    def update_point(self, player: "Player"):
         pass
 
     def get_hash_key(self) -> typing.Hashable:
@@ -98,31 +98,31 @@ class Bet(ABC):
         return hash(self.get_hash_key())
 
     def __repr__(self) -> str:
-        return f'{self.__class__.__name__}(amount={self.amount})'
+        return f"{self.__class__.__name__}(amount={self.amount})"
 
-    def __add__(self, other: 'Bet') -> 'Bet':
+    def __add__(self, other: "Bet") -> "Bet":
         if isinstance(other, typing.SupportsFloat):
-            bet_amount = self.amount - float(other)
+            amount = self.amount - float(other)
         elif self.get_placed_key() == other.get_placed_key():
-            bet_amount = self.amount + other.amount
+            amount = self.amount + other.amount
         else:
             raise NotImplementedError
         new_bet = copy.copy(self)
-        new_bet.amount = bet_amount
+        new_bet.amount = amount
         return new_bet
 
     def __radd__(self, other):
         return self.__add__(other)
 
-    def __sub__(self, other: 'Bet') -> 'Bet':
+    def __sub__(self, other: "Bet") -> "Bet":
         if isinstance(other, typing.SupportsFloat):
-            bet_amount = self.amount - float(other)
+            amount = self.amount - float(other)
         elif self.get_placed_key() == other.get_placed_key():
-            bet_amount = self.amount - other.amount
+            amount = self.amount - other.amount
         else:
             raise NotImplementedError
         new_bet = copy.copy(self)
-        new_bet.amount = bet_amount
+        new_bet.amount = amount
         return new_bet
 
     def __rsub__(self, other):
@@ -158,6 +158,7 @@ class WinningLosingNumbersBet(Bet, ABC):
 
 # Passline and related bets ---------------------------------------------------
 
+
 class PassLine(WinningLosingNumbersBet):
     def get_payout_ratio(self, table: "Table") -> float:
         return 1.0
@@ -173,19 +174,15 @@ class PassLine(WinningLosingNumbersBet):
         return [7]
 
     def is_removable(self, player: "Player") -> bool:
-        if player.table.point.status == 'On':
-            return False
-        return True
+        return player.table.point.status == "Off"
 
-    def allowed(self, player: "Player") -> bool:
-        if player.table.point.status == 'Off':
-            return True
-        return False
+    def is_allowed(self, player: "Player") -> bool:
+        return player.table.point.status == "Off"
 
 
 class Come(WinningLosingNumbersBet):
-    def __init__(self, bet_amount: typing.SupportsFloat, point: Point | int | None = None):
-        super().__init__(bet_amount)
+    def __init__(self, amount: typing.SupportsFloat, point: Point | int | None = None):
+        super().__init__(amount)
 
         if point is None or isinstance(point, int):
             point = Point(point)
@@ -205,20 +202,17 @@ class Come(WinningLosingNumbersBet):
             return [2, 3, 12]
         return [7]
 
-    def update_point(self, player: 'Player'):
-        if self.point.status == 'Off' and player.table.dice.total in (4, 5, 6, 8, 9, 10):
+    def update_point(self, player: "Player"):
+        possible_points = (4, 5, 6, 7, 8, 9, 10)
+        if self.point.status == "Off" and player.table.dice.total in possible_points:
             player.bets.remove(self)
             player.bets.append(Come(self.amount, player.table.dice.total))
 
     def is_removable(self, player: "Player") -> bool:
-        if self.point.status == 'On':
-            return False
-        return True
+        return self.point.status == "Off"
 
-    def allowed(self, player: "Player") -> bool:
-        if player.table.point.status == 'On':
-            return True
-        return False
+    def is_allowed(self, player: "Player") -> bool:
+        return player.table.point.status == "On"
 
     def get_hash_key(self) -> typing.Hashable:
         return type(self), self.amount, self.point
@@ -227,7 +221,7 @@ class Come(WinningLosingNumbersBet):
         return Come, self.point
 
     def __repr__(self) -> str:
-        return f'{self.__class__.__name__}(bet_amount={self.amount}, point={self.point})'
+        return f"{self.__class__.__name__}(amount={self.amount}, point={self.point})"
 
 
 class DontPass(WinningLosingNumbersBet):
@@ -244,15 +238,13 @@ class DontPass(WinningLosingNumbersBet):
             return [7, 11]
         return [table.point.number]
 
-    def allowed(self, player: "Player") -> bool:
-        if player.table.point.status == 'Off':
-            return True
-        return False
+    def is_allowed(self, player: "Player") -> bool:
+        return player.table.point.status == "Off"
 
 
 class DontCome(WinningLosingNumbersBet):
-    def __init__(self, bet_amount: typing.SupportsFloat, point: int | None = None) -> None:
-        super().__init__(bet_amount)
+    def __init__(self, amount: typing.SupportsFloat, point: int | None = None) -> None:
+        super().__init__(amount)
 
         if point is None or isinstance(point, int):
             point = Point(point)
@@ -272,15 +264,14 @@ class DontCome(WinningLosingNumbersBet):
             return [7, 11]
         return [self.point.number]
 
-    def update_point(self, player: 'Player'):
-        if self.point.status == 'Off' and player.table.dice.total in (4, 5, 6, 8, 9, 10):
+    def update_point(self, player: "Player"):
+        possible_points = (4, 5, 6, 7, 8, 9, 10)
+        if self.point.status == "Off" and player.table.dice.total in possible_points:
             player.bets.remove(self)
             player.bets.append(DontCome(self.amount, player.table.dice.total))
 
-    def allowed(self, player: "Player") -> bool:
-        if player.table.point.status == 'On':
-            return True
-        return False
+    def is_allowed(self, player: "Player") -> bool:
+        return player.table.point.status == "On"
 
     def get_hash_key(self):
         return type(self), self.amount, self.point
@@ -289,16 +280,20 @@ class DontCome(WinningLosingNumbersBet):
         return DontCome, self.point
 
     def __repr__(self) -> str:
-        return f'{self.__class__.__name__}(bet_amount={self.amount}, point={self.point})'
+        return f"{self.__class__.__name__}(amount={self.amount}, point={self.point})"
 
 
 # Odds bets -------------------------------------------------------------------
 
+
 class Odds(WinningLosingNumbersBet):
-    def __init__(self, base_type: typing.Type[PassLine | DontPass | Come | DontCome],
-                 number: int,
-                 bet_amount: float):
-        super().__init__(bet_amount)
+    def __init__(
+        self,
+        base_type: typing.Type[PassLine | DontPass | Come | DontCome],
+        number: int,
+        amount: float,
+    ):
+        super().__init__(amount)
         self.base_type = base_type
         self.number = number
 
@@ -323,47 +318,59 @@ class Odds(WinningLosingNumbersBet):
             return [self.number]
 
     def get_payout_ratio(self, table: "Table") -> float:
+        light_ratios = {4: 2, 5: 3 / 2, 6: 6 / 5, 8: 6 / 5, 9: 3 / 2, 10: 2}
+        dark_ratios = {n: 1 / x for n, x in light_ratios.items()}
+
         if self.light_side:
-            return {4: 2 / 1, 5: 3 / 2, 6: 6 / 5, 8: 6 / 5, 9: 3 / 2, 10: 2 / 1}[self.number]
+            return light_ratios[self.number]
         elif self.dark_side:
-            return {4: 1 / 2, 5: 2 / 3, 6: 5 / 6, 8: 5 / 6, 9: 2 / 3, 10: 1 / 2}[self.number]
+            return dark_ratios[self.number]
 
     def get_base_bets(self, player: "Player") -> list[Bet]:
-        return [x for x in player.bets if isinstance(x, self.base_type)
-                and x.get_winning_numbers(player.table) == self.get_winning_numbers(player.table)]
+        return [
+            x
+            for x in player.bets
+            if isinstance(x, self.base_type)
+            and x.get_winning_numbers(player.table)
+            == self.get_winning_numbers(player.table)
+        ]
 
     def get_base_amount(self, player: "Player"):
         return sum(x.amount for x in self.get_base_bets(player))
 
     def get_max_odds(self, table: "Table") -> float:
         if self.light_side:
-            return table.settings['max_odds'][self.number]
+            return table.settings["max_odds"][self.number]
         elif self.dark_side:
-            return table.settings['max_dont_odds'][self.number]
+            return table.settings["max_dont_odds"][self.number]
         else:
             raise NotImplementedError
 
     def get_max_bet(self, player: "Player") -> float:
         return self.get_max_odds(player.table) * self.get_base_amount(player)
 
-    def allowed(self, player: "Player") -> bool:
+    def is_allowed(self, player: "Player") -> bool:
         return self.amount <= self.get_max_bet(player)
 
     def get_placed_key(self) -> typing.Hashable:
         return self.__class__, self.base_type, self.number
 
     def __repr__(self):
-        return f'Odds(base_type={self.base_type}, number={self.number}, ' \
-               f'bet_amount={self.amount})'
+        return (
+            f"Odds(base_type={self.base_type}, number={self.number}, "
+            f"amount={self.amount})"
+        )
+
 
 # Place bets ------------------------------------------------------------------
+
 
 class Place(WinningLosingNumbersBet):
     payout_ratios = {4: 9 / 5, 5: 7 / 5, 6: 7 / 6, 8: 7 / 6, 9: 7 / 5, 10: 9 / 5}
     losing_numbers: list[int] = [7]
 
-    def __init__(self, number: int, bet_amount: typing.SupportsFloat):
-        super().__init__(bet_amount)
+    def __init__(self, number: int, amount: typing.SupportsFloat):
+        super().__init__(amount)
         self.payout_ratio = self.payout_ratios[number]
         self.number = number
         self.winning_numbers = [number]
@@ -381,45 +388,52 @@ class Place(WinningLosingNumbersBet):
         return Place, self.number
 
     def __repr__(self) -> str:
-        return f'Place(number={self.winning_numbers[0]}, bet_amount={self.amount})'
+        return f"Place(number={self.winning_numbers[0]}, amount={self.amount})"
 
 
 # OneRollBets -----------------------------------------------------------------
+
 
 class OneRollBet(WinningLosingNumbersBet, ABC):
     """WinningLosingNumbersBet where if the number isn't in the winning_numbers,
     it is in the losing_numbers."""
 
-    def __init__(self, winning_numbers: list[int], bet_amount: typing.SupportsFloat):
+    def __init__(self, winning_numbers: list[int], amount: typing.SupportsFloat):
         self.winning_numbers = winning_numbers
-        super().__init__(bet_amount)
+        super().__init__(amount)
 
     def get_winning_numbers(self, table: "Table") -> list[int]:
         return self.winning_numbers
 
     def get_losing_numbers(self, table: "Table") -> list[int]:
-        return [x for x in (2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12)
-                if x not in self.get_winning_numbers(table)]
+        return [
+            x
+            for x in (2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12)
+            if x not in self.get_winning_numbers(table)
+        ]
 
     def get_placed_key(self) -> typing.Hashable:
         return OneRollBet, tuple(self.winning_numbers)
 
 
 class Field(OneRollBet):
-    def __init__(self, bet_amount: typing.SupportsFloat):
-        super().__init__([2, 3, 4, 9, 10, 11, 12], bet_amount)
+    def __init__(self, amount: typing.SupportsFloat):
+        super().__init__(winning_numbers=[2, 3, 4, 9, 10, 11, 12], amount=amount)
 
     def get_payout_ratio(self, table: "Table") -> float:
-        if table.dice.total in table.settings['field_payouts']:
-            return float(table.settings['field_payouts'][table.dice.total])
+        if table.dice.total in table.settings["field_payouts"]:
+            return float(table.settings["field_payouts"][table.dice.total])
         return 0.0
 
 
 class StaticRatioOneRollBet(OneRollBet):
-    def __init__(self, winning_numbers: list[int],
-                 payout_ratio: typing.SupportsFloat,
-                 bet_amount: typing.SupportsFloat):
-        super().__init__(winning_numbers, bet_amount)
+    def __init__(
+        self,
+        winning_numbers: list[int],
+        payout_ratio: typing.SupportsFloat,
+        amount: typing.SupportsFloat,
+    ):
+        super().__init__(winning_numbers, amount)
         self.payout_ratio = payout_ratio
 
     def get_payout_ratio(self, table: "Table") -> float:
@@ -433,55 +447,55 @@ class Any7(StaticRatioOneRollBet):
     payout_ratio: int = 4
     winning_numbers: list[int] = [7]
 
-    def __init__(self, bet_amount: typing.SupportsFloat):
-        super().__init__(self.winning_numbers, self.payout_ratio, bet_amount)
+    def __init__(self, amount: typing.SupportsFloat):
+        super().__init__(self.winning_numbers, self.payout_ratio, amount)
 
 
 class Two(StaticRatioOneRollBet):
     payout_ratio: int = 30
     winning_numbers: list[int] = [2]
 
-    def __init__(self, bet_amount: typing.SupportsFloat) -> None:
-        super().__init__(self.winning_numbers, self.payout_ratio, bet_amount)
+    def __init__(self, amount: typing.SupportsFloat) -> None:
+        super().__init__(self.winning_numbers, self.payout_ratio, amount)
 
 
 class Three(StaticRatioOneRollBet):
     payout_ratio: int = 15
     winning_numbers: list[int] = [3]
 
-    def __init__(self, bet_amount: typing.SupportsFloat):
-        super().__init__(self.winning_numbers, self.payout_ratio, bet_amount)
+    def __init__(self, amount: typing.SupportsFloat):
+        super().__init__(self.winning_numbers, self.payout_ratio, amount)
 
 
 class Yo(StaticRatioOneRollBet):
     payout_ratio: int = 15
     winning_numbers: list[int] = [11]
 
-    def __init__(self, bet_amount: typing.SupportsFloat):
-        super().__init__(self.winning_numbers, self.payout_ratio, bet_amount)
+    def __init__(self, amount: typing.SupportsFloat):
+        super().__init__(self.winning_numbers, self.payout_ratio, amount)
 
 
 class Boxcars(StaticRatioOneRollBet):
     payout_ratio: int = 30
     winning_numbers: list[int] = [12]
 
-    def __init__(self, bet_amount: typing.SupportsFloat):
-        super().__init__(self.winning_numbers, self.payout_ratio, bet_amount)
+    def __init__(self, amount: typing.SupportsFloat):
+        super().__init__(self.winning_numbers, self.payout_ratio, amount)
 
 
 class AnyCraps(StaticRatioOneRollBet):
     payout_ratio: int = 7
     winning_numbers: list[int] = [2, 3, 12]
 
-    def __init__(self, bet_amount: typing.SupportsFloat):
-        super().__init__(self.winning_numbers, self.payout_ratio, bet_amount)
+    def __init__(self, amount: typing.SupportsFloat):
+        super().__init__(self.winning_numbers, self.payout_ratio, amount)
 
 
 class CAndE(OneRollBet):
     winning_numbers: list[int] = [2, 3, 11, 12]
 
-    def __init__(self, bet_amount: typing.SupportsFloat):
-        super().__init__(self.winning_numbers, bet_amount)
+    def __init__(self, amount: typing.SupportsFloat):
+        super().__init__(self.winning_numbers, amount)
 
     def get_payout_ratio(self, table: "Table") -> float:
         if table.dice.total in [2, 3, 12]:
@@ -502,11 +516,12 @@ class CAndE(OneRollBet):
 
 # HardWay Bets ----------------------------------------------------------------
 
+
 class HardWay(Bet):
     payout_ratios = {4: 7, 6: 9, 8: 9, 10: 7}
 
-    def __init__(self, number: int, bet_amount: typing.SupportsFloat) -> None:
-        super().__init__(bet_amount)
+    def __init__(self, number: int, amount: typing.SupportsFloat) -> None:
+        super().__init__(amount)
         self.number = number
         self.payout_ratio = self.payout_ratios[number]
 
@@ -529,7 +544,9 @@ class HardWay(Bet):
             should_remove = False
         return BetResult(result_amount, should_remove)
 
+
 # Fire bet -------------------------------------------------------------------
+
 
 class Fire(Bet):
     def __init__(self, amount: float):
@@ -537,8 +554,8 @@ class Fire(Bet):
         self.points_made: list[int] = []
         self.ended: bool = False
 
-    def update_point(self, player: 'Player'):
-        if player.table.point.status == 'Off':
+    def update_point(self, player: "Player"):
+        if player.table.point.status == "Off":
             return
 
         point_number = player.table.point.number
@@ -549,11 +566,11 @@ class Fire(Bet):
             self.ended = True
 
     def get_result(self, table: "Table") -> BetResult:
-        if self.ended and len(self.points_made) in table.settings['fire_points']:
-            payout_ratio = table.settings['fire_points'][len(self.points_made)]
+        if self.ended and len(self.points_made) in table.settings["fire_points"]:
+            payout_ratio = table.settings["fire_points"][len(self.points_made)]
             result_amount = payout_ratio * self.amount + self.amount
             remove = True
-        elif self.ended and len(self.points_made) not in table.settings['fire_points']:
+        elif self.ended and len(self.points_made) not in table.settings["fire_points"]:
             result_amount = -1 * self.amount
             remove = True
         else:
@@ -561,5 +578,5 @@ class Fire(Bet):
             remove = False
         return BetResult(result_amount, remove)
 
-    def allowed(self, player: "Player") -> bool:
+    def is_allowed(self, player: "Player") -> bool:
         return player.table.new_shooter
