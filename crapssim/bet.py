@@ -388,7 +388,7 @@ class Place(WinningLosingNumbersBet):
         return Place, self.number
 
     def __repr__(self) -> str:
-        return f"Place(number={self.winning_numbers[0]}, amount={self.amount})"
+        return f"Place({self.winning_numbers[0]}, amount={self.amount})"
 
 
 # OneRollBets -----------------------------------------------------------------
@@ -524,6 +524,9 @@ class HardWay(Bet):
         super().__init__(amount)
         self.number = number
         self.payout_ratio = self.payout_ratios[number]
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}({self.number}, amount={self.amount})"
 
     @property
     def winning_result(self) -> list[int]:

@@ -50,6 +50,55 @@ def test_ev_oneroll(bet, ev):
     assert round(np.mean(outcomes), 4) == ev
 
 
+@pytest.mark.parametrize(
+    "bet, bet_name",
+    [
+        (crapssim.bet.PassLine(1), "PassLine(amount=1.0)"),
+        (crapssim.bet.Come(1), "Come(amount=1.0, point=Point(number=None))"),
+        (crapssim.bet.DontPass(1), "DontPass(amount=1.0)"),
+        (crapssim.bet.DontCome(1), "DontCome(amount=1.0, point=Point(number=None))"),
+        (
+            crapssim.bet.Odds(crapssim.bet.PassLine, 6, 1),
+            "Odds(base_type=<class 'crapssim.bet.PassLine'>, number=6, amount=1.0)",
+        ),
+        (
+            crapssim.bet.Odds(crapssim.bet.Come, 8, 1),
+            "Odds(base_type=<class 'crapssim.bet.Come'>, number=8, amount=1.0)",
+        ),
+        (
+            crapssim.bet.Odds(crapssim.bet.DontPass, 9, 1),
+            "Odds(base_type=<class 'crapssim.bet.DontPass'>, number=9, amount=1.0)",
+        ),
+        (
+            crapssim.bet.Odds(crapssim.bet.DontCome, 10, 1),
+            "Odds(base_type=<class 'crapssim.bet.DontCome'>, number=10, amount=1.0)",
+        ),
+        (crapssim.bet.Place(4, 1), "Place(4, amount=1.0)"),
+        (crapssim.bet.Place(5, 1), "Place(5, amount=1.0)"),
+        (crapssim.bet.Place(6, 1), "Place(6, amount=1.0)"),
+        (crapssim.bet.Place(8, 1), "Place(8, amount=1.0)"),
+        (crapssim.bet.Place(9, 1), "Place(9, amount=1.0)"),
+        (crapssim.bet.Place(10, 1), "Place(10, amount=1.0)"),
+        (crapssim.bet.Field(1), "Field(amount=1.0)"),
+        (crapssim.bet.Any7(1), "Any7(amount=1.0)"),
+        (crapssim.bet.Two(1), "Two(amount=1.0)"),
+        (crapssim.bet.Three(1), "Three(amount=1.0)"),
+        (crapssim.bet.Yo(1), "Yo(amount=1.0)"),
+        (crapssim.bet.Boxcars(1), "Boxcars(amount=1.0)"),
+        (crapssim.bet.AnyCraps(1), "AnyCraps(amount=1.0)"),
+        (crapssim.bet.CAndE(1), "CAndE(amount=1.0)"),
+        (crapssim.bet.HardWay(4, 1), "HardWay(4, amount=1.0)"),
+        (crapssim.bet.HardWay(6, 1), "HardWay(6, amount=1.0)"),
+        (crapssim.bet.HardWay(8, 1), "HardWay(8, amount=1.0)"),
+        (crapssim.bet.HardWay(10, 1), "HardWay(10, amount=1.0)"),
+        (crapssim.bet.Fire(1), "Fire(amount=1.0)"),
+    ],
+)
+def test_repr_names(bet, bet_name):
+    # Check above visually make sense
+    assert repr(bet) == bet_name
+
+
 def test_come_equality():
     come_one = Come(5)
     come_one.point = 5
