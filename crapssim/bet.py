@@ -77,25 +77,27 @@ class Bet(ABC):
     def update_point(self, player: "Player"):
         pass
 
-    def get_hash_key(self) -> typing.Hashable:
-        return self.get_placed_key(), self.amount
-
-    def get_placed_key(self) -> typing.Hashable:
+    @property
+    def _placed_key(self) -> typing.Hashable:
         return type(self)
 
+    @property
+    def _hash_key(self) -> typing.Hashable:
+        return self._placed_key, self.amount
+
     def already_placed_bets(self, player: "Player"):
-        return [x for x in player.bets if x.get_placed_key() == self.get_placed_key()]
+        return [x for x in player.bets if x._placed_key == self._placed_key]
 
     def already_placed(self, player: "Player") -> bool:
         return len(self.already_placed_bets(player)) > 0
 
     def __eq__(self, other: object) -> bool:
         if isinstance(other, Bet):
-            return self.get_hash_key() == other.get_hash_key()
+            return self._hash_key == other._hash_key
         raise NotImplementedError
 
     def __hash__(self) -> int:
-        return hash(self.get_hash_key())
+        return hash(self._hash_key)
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(amount={self.amount})"
@@ -103,7 +105,7 @@ class Bet(ABC):
     def __add__(self, other: "Bet") -> "Bet":
         if isinstance(other, typing.SupportsFloat):
             amount = self.amount - float(other)
-        elif self.get_placed_key() == other.get_placed_key():
+        elif self._placed_key == other._placed_key:
             amount = self.amount + other.amount
         else:
             raise NotImplementedError
@@ -117,7 +119,7 @@ class Bet(ABC):
     def __sub__(self, other: "Bet") -> "Bet":
         if isinstance(other, typing.SupportsFloat):
             amount = self.amount - float(other)
-        elif self.get_placed_key() == other.get_placed_key():
+        elif self._placed_key == other._placed_key:
             amount = self.amount - other.amount
         else:
             raise NotImplementedError
@@ -214,11 +216,9 @@ class Come(WinningLosingNumbersBet):
     def is_allowed(self, player: "Player") -> bool:
         return player.table.point.status == "On"
 
-    def get_hash_key(self) -> typing.Hashable:
-        return type(self), self.amount, self.point
-
-    def get_placed_key(self) -> typing.Hashable:
-        return Come, self.point
+    @property
+    def _placed_key(self) -> typing.Hashable:
+        return type(self), self.point
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(amount={self.amount}, point={self.point})"
@@ -273,11 +273,9 @@ class DontCome(WinningLosingNumbersBet):
     def is_allowed(self, player: "Player") -> bool:
         return player.table.point.status == "On"
 
-    def get_hash_key(self):
-        return type(self), self.amount, self.point
-
-    def get_placed_key(self) -> typing.Hashable:
-        return DontCome, self.point
+    @property
+    def _placed_key(self) -> typing.Hashable:
+        return type(self), self.point
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(amount={self.amount}, point={self.point})"
@@ -352,8 +350,9 @@ class Odds(WinningLosingNumbersBet):
     def is_allowed(self, player: "Player") -> bool:
         return self.amount <= self.get_max_bet(player)
 
-    def get_placed_key(self) -> typing.Hashable:
-        return self.__class__, self.base_type, self.number
+    @property
+    def _placed_key(self) -> typing.Hashable:
+        return type(self), self.base_type, self.number
 
     def __repr__(self):
         return (
@@ -384,8 +383,9 @@ class Place(WinningLosingNumbersBet):
     def get_losing_numbers(self, table: "Table") -> list[int]:
         return self.losing_numbers
 
-    def get_placed_key(self) -> typing.Hashable:
-        return Place, self.number
+    @property
+    def _placed_key(self) -> typing.Hashable:
+        return type(self), self.number
 
     def __repr__(self) -> str:
         return f"Place({self.winning_numbers[0]}, amount={self.amount})"
@@ -412,8 +412,9 @@ class OneRollBet(WinningLosingNumbersBet, ABC):
             if x not in self.get_winning_numbers(table)
         ]
 
-    def get_placed_key(self) -> typing.Hashable:
-        return OneRollBet, tuple(self.winning_numbers)
+    @property
+    def _placed_key(self) -> typing.Hashable:
+        return type(self), tuple(self.winning_numbers)
 
 
 class Field(OneRollBet):
@@ -439,8 +440,9 @@ class StaticRatioOneRollBet(OneRollBet):
     def get_payout_ratio(self, table: "Table") -> float:
         return float(self.payout_ratio)
 
-    def get_placed_key(self) -> typing.Hashable:
-        return StaticRatioOneRollBet, tuple(self.winning_numbers), self.payout_ratio
+    @property
+    def _placed_key(self) -> typing.Hashable:
+        return type(self), tuple(self.winning_numbers), self.payout_ratio
 
 
 class Any7(StaticRatioOneRollBet):
@@ -532,8 +534,9 @@ class HardWay(Bet):
     def winning_result(self) -> list[int]:
         return [int(self.number / 2), int(self.number / 2)]
 
-    def get_placed_key(self) -> typing.Hashable:
-        return HardWay, self.number
+    @property
+    def _placed_key(self) -> typing.Hashable:
+        return type(self), self.number
 
     def get_result(self, table: "Table") -> BetResult:
         if table.dice.result == self.winning_result:
