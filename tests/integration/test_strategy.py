@@ -29,25 +29,25 @@ from crapssim.table import TableUpdate
 @pytest.mark.parametrize(
     ["strategy", "rolls", "correct_bets"],
     [
-        (BetPassLine(amount=5), [], [PassLine(amount=5.0)]),
-        (BetPassLine(amount=5), [(4, 4)], [PassLine(amount=5.0)]),
+        (BetPassLine(bet_amount=5), [], [PassLine(amount=5.0)]),
+        (BetPassLine(bet_amount=5), [(4, 4)], [PassLine(amount=5.0)]),
         (
-            BetPassLine(amount=5) + PassLineOddsMultiplier(odds_multiplier=1),
+            BetPassLine(bet_amount=5) + PassLineOddsMultiplier(odds_multiplier=1),
             [],
             [PassLine(amount=5.0)],
         ),
         (
-            BetPassLine(amount=5) + PassLineOddsMultiplier(odds_multiplier=1),
+            BetPassLine(bet_amount=5) + PassLineOddsMultiplier(odds_multiplier=1),
             [(4, 4)],
             [Odds(PassLine, 8, amount=5.0), PassLine(amount=5.0)],
         ),
         (
-            BetPassLine(amount=5) + PassLineOddsMultiplier(odds_multiplier=1),
+            BetPassLine(bet_amount=5) + PassLineOddsMultiplier(odds_multiplier=1),
             [(4, 4), (3, 3)],
             [Odds(PassLine, 8, amount=5.0), PassLine(amount=5.0)],
         ),
         (
-            BetPassLine(amount=5)
+            BetPassLine(bet_amount=5)
             + PassLineOddsMultiplier(
                 odds_multiplier={4: 3, 5: 4, 6: 5, 8: 5, 9: 4, 10: 3}
             ),
@@ -55,7 +55,7 @@ from crapssim.table import TableUpdate
             [PassLine(amount=5.0)],
         ),
         (
-            BetPassLine(amount=5)
+            BetPassLine(bet_amount=5)
             + PassLineOddsMultiplier(
                 odds_multiplier={4: 3, 5: 4, 6: 5, 8: 5, 9: 4, 10: 3}
             ),
@@ -63,27 +63,27 @@ from crapssim.table import TableUpdate
             [PassLine(amount=5.0), Odds(PassLine, 10, amount=15.0)],
         ),
         (
-            BetPassLine(amount=5) + PassLineOddsMultiplier(odds_multiplier=2),
+            BetPassLine(bet_amount=5) + PassLineOddsMultiplier(odds_multiplier=2),
             [(2, 2)],
             [PassLine(amount=5.0), Odds(PassLine, 4, amount=10.0)],
         ),
         (
-            BetPassLine(amount=5)
+            BetPassLine(bet_amount=5)
             + PassLineOddsMultiplier(
                 odds_multiplier={4: 3, 5: 4, 6: 5, 8: 5, 9: 4, 10: 3}
             ),
             [(3, 4), (3, 3)],
             [PassLine(amount=5.0), Odds(PassLine, 6, amount=25.0)],
         ),
-        (Pass2Come(amount=5), [], [PassLine(amount=5.0)]),
-        (Pass2Come(amount=5), [(4, 5)], [Come(amount=5.0), PassLine(amount=5.0)]),
+        (Pass2Come(bet_amount=5), [], [PassLine(amount=5.0)]),
+        (Pass2Come(bet_amount=5), [(4, 5)], [Come(amount=5.0), PassLine(amount=5.0)]),
         (
-            Pass2Come(amount=5),
+            Pass2Come(bet_amount=5),
             [(4, 5), (5, 5)],
             [PassLine(amount=5.0), Come(amount=5.0, point=10), Come(amount=5.0)],
         ),
         (
-            Pass2Come(amount=5),
+            Pass2Come(bet_amount=5),
             [(4, 5), (5, 5), (3, 3)],
             [
                 PassLine(amount=5.0),
@@ -91,15 +91,15 @@ from crapssim.table import TableUpdate
                 Come(amount=5.0, point=6),
             ],
         ),
-        (BetPlace(place_amounts={4: 5}, skip_point=True), [], []),
+        (BetPlace(place_bet_amounts={4: 5}, skip_point=True), [], []),
         (
-            BetPlace(place_amounts={5: 5}, skip_point=True),
+            BetPlace(place_bet_amounts={5: 5}, skip_point=True),
             [(3, 3)],
             [Place(number=5, amount=5.0)],
         ),
-        (BetPlace(place_amounts={5: 5}, skip_point=True), [(3, 2)], []),
+        (BetPlace(place_bet_amounts={5: 5}, skip_point=True), [(3, 2)], []),
         (
-            BetPlace(place_amounts={5: 5}, skip_point=False),
+            BetPlace(place_bet_amounts={5: 5}, skip_point=False),
             [(3, 2)],
             [Place(number=5, amount=5.0)],
         ),
@@ -121,14 +121,14 @@ from crapssim.table import TableUpdate
             [(2, 4)],
             [Place(number=8, amount=6.0), PassLine(amount=5.0)],
         ),
-        (BetDontPass(amount=5), [], [DontPass(amount=5.0)]),
+        (BetDontPass(bet_amount=5), [], [DontPass(amount=5.0)]),
         (
-            BetDontPass(amount=5) + DontPassOddsMultiplier(odds_multiplier=1),
+            BetDontPass(bet_amount=5) + DontPassOddsMultiplier(odds_multiplier=1),
             [],
             [DontPass(amount=5.0)],
         ),
         (
-            BetDontPass(amount=5) + DontPassOddsMultiplier(odds_multiplier=6),
+            BetDontPass(bet_amount=5) + DontPassOddsMultiplier(odds_multiplier=6),
             [(3, 3)],
             [Odds(DontPass, 6, amount=30.0), DontPass(amount=5.0)],
         ),
@@ -259,9 +259,9 @@ from crapssim.table import TableUpdate
                 Place(number=6, amount=6.0),
             ],
         ),
-        (Knockout(amount=5), [], [DontPass(amount=5.0), PassLine(amount=5.0)]),
+        (Knockout(bet_amount=5), [], [DontPass(amount=5.0), PassLine(amount=5.0)]),
         (
-            Knockout(amount=5),
+            Knockout(bet_amount=5),
             [(4, 2)],
             [
                 DontPass(amount=5.0),
@@ -291,24 +291,24 @@ from crapssim.table import TableUpdate
                 DontCome(amount=5.0, point=4),
             ],
         ),
-        (Place68CPR(amount=6), [], []),
+        (Place68CPR(bet_amount=6), [], []),
         (
-            Place68CPR(amount=6),
+            Place68CPR(bet_amount=6),
             [(4, 4)],
             [Place(number=8, amount=6.0), Place(number=6, amount=6.0)],
         ),
         (
-            Place68CPR(amount=6),
+            Place68CPR(bet_amount=6),
             [(2, 2), (4, 4)],
             [Place(number=8, amount=12.0), Place(number=6, amount=6.0)],
         ),
         (
-            Place68CPR(amount=6),
+            Place68CPR(bet_amount=6),
             [(2, 2), (4, 4), (4, 4)],
             [Place(number=8, amount=6.0), Place(number=6, amount=6.0)],
         ),
         (
-            Place68CPR(amount=6),
+            Place68CPR(bet_amount=6),
             [(2, 2), (4, 4), (4, 4), (4, 4)],
             [Place(number=8, amount=12.0), Place(number=6, amount=6.0)],
         ),
