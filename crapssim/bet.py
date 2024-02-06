@@ -8,6 +8,8 @@ from crapssim.point import Point
 if typing.TYPE_CHECKING:
     from crapssim.table import Player, Table
 
+ALL_DICE_NUMBERS = {2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12}
+
 
 @dataclass(slots=True, frozen=True)
 class BetResult:
@@ -132,6 +134,11 @@ class Bet(ABC):
 
 
 class WinningLosingNumbersBet(Bet, ABC):
+    """
+    A WinningLosingNumbersBet has winning numbers, losing numbers, and payout ratios
+    (possibly depending on the table) from which the result can be calculated.
+    """
+
     @abstractmethod
     def get_winning_numbers(self, table: "Table") -> list[int]:
         pass
@@ -156,6 +163,22 @@ class WinningLosingNumbersBet(Bet, ABC):
             should_remove = False
 
         return BetResult(result_amount, should_remove)
+
+
+class SimpleBet(WinningLosingNumbersBet, ABC):
+    """
+    A SimpleBet has fixed winning and losing numbers and payout ratio that
+    can be known at instantiation and don't depend on the table.
+    """
+
+    def get_winning_numbers(self, table: "Table") -> list[int]:
+        return self.winning_numbers
+
+    def get_losing_numbers(self, table: "Table") -> list[int]:
+        return self.losing_numbers
+
+    def get_payout_ratio(self, table: "Table") -> float:
+        return float(self.payout_ratio)
 
 
 # Passline and related bets ---------------------------------------------------
@@ -364,24 +387,15 @@ class Odds(WinningLosingNumbersBet):
 # Place bets ------------------------------------------------------------------
 
 
-class Place(WinningLosingNumbersBet):
+class Place(SimpleBet):
     payout_ratios = {4: 9 / 5, 5: 7 / 5, 6: 7 / 6, 8: 7 / 6, 9: 7 / 5, 10: 9 / 5}
     losing_numbers: list[int] = [7]
 
     def __init__(self, number: int, amount: typing.SupportsFloat):
         super().__init__(amount)
-        self.payout_ratio = self.payout_ratios[number]
         self.number = number
+        self.payout_ratio = self.payout_ratios[number]
         self.winning_numbers = [number]
-
-    def get_payout_ratio(self, table: "Table") -> float:
-        return self.payout_ratio
-
-    def get_winning_numbers(self, table: "Table") -> list[int]:
-        return [self.number]
-
-    def get_losing_numbers(self, table: "Table") -> list[int]:
-        return self.losing_numbers
 
     @property
     def _placed_key(self) -> typing.Hashable:
@@ -391,35 +405,18 @@ class Place(WinningLosingNumbersBet):
         return f"Place({self.winning_numbers[0]}, amount={self.amount})"
 
 
-# OneRollBets -----------------------------------------------------------------
+# WinningLosingNumbersBets with variable payouts -----------------------------------------------------------------
 
 
-class OneRollBet(WinningLosingNumbersBet, ABC):
-    """WinningLosingNumbersBet where if the number isn't in the winning_numbers,
-    it is in the losing_numbers."""
-
-    def __init__(self, winning_numbers: list[int], amount: typing.SupportsFloat):
-        self.winning_numbers = winning_numbers
-        super().__init__(amount)
+class Field(WinningLosingNumbersBet):
+    winning_numbers = [2, 3, 4, 9, 10, 11, 12]
+    losing_numbers = [5, 6, 7, 8]
 
     def get_winning_numbers(self, table: "Table") -> list[int]:
         return self.winning_numbers
 
     def get_losing_numbers(self, table: "Table") -> list[int]:
-        return [
-            x
-            for x in (2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12)
-            if x not in self.get_winning_numbers(table)
-        ]
-
-    @property
-    def _placed_key(self) -> typing.Hashable:
-        return type(self), tuple(self.winning_numbers)
-
-
-class Field(OneRollBet):
-    def __init__(self, amount: typing.SupportsFloat):
-        super().__init__(winning_numbers=[2, 3, 4, 9, 10, 11, 12], amount=amount)
+        return self.losing_numbers
 
     def get_payout_ratio(self, table: "Table") -> float:
         if table.dice.total in table.settings["field_payouts"]:
@@ -427,77 +424,15 @@ class Field(OneRollBet):
         return 0.0
 
 
-class StaticRatioOneRollBet(OneRollBet):
-    def __init__(
-        self,
-        winning_numbers: list[int],
-        payout_ratio: typing.SupportsFloat,
-        amount: typing.SupportsFloat,
-    ):
-        super().__init__(winning_numbers, amount)
-        self.payout_ratio = payout_ratio
-
-    def get_payout_ratio(self, table: "Table") -> float:
-        return float(self.payout_ratio)
-
-    @property
-    def _placed_key(self) -> typing.Hashable:
-        return type(self), tuple(self.winning_numbers), self.payout_ratio
-
-
-class Any7(StaticRatioOneRollBet):
-    payout_ratio: int = 4
-    winning_numbers: list[int] = [7]
-
-    def __init__(self, amount: typing.SupportsFloat):
-        super().__init__(self.winning_numbers, self.payout_ratio, amount)
-
-
-class Two(StaticRatioOneRollBet):
-    payout_ratio: int = 30
-    winning_numbers: list[int] = [2]
-
-    def __init__(self, amount: typing.SupportsFloat) -> None:
-        super().__init__(self.winning_numbers, self.payout_ratio, amount)
-
-
-class Three(StaticRatioOneRollBet):
-    payout_ratio: int = 15
-    winning_numbers: list[int] = [3]
-
-    def __init__(self, amount: typing.SupportsFloat):
-        super().__init__(self.winning_numbers, self.payout_ratio, amount)
-
-
-class Yo(StaticRatioOneRollBet):
-    payout_ratio: int = 15
-    winning_numbers: list[int] = [11]
-
-    def __init__(self, amount: typing.SupportsFloat):
-        super().__init__(self.winning_numbers, self.payout_ratio, amount)
-
-
-class Boxcars(StaticRatioOneRollBet):
-    payout_ratio: int = 30
-    winning_numbers: list[int] = [12]
-
-    def __init__(self, amount: typing.SupportsFloat):
-        super().__init__(self.winning_numbers, self.payout_ratio, amount)
-
-
-class AnyCraps(StaticRatioOneRollBet):
-    payout_ratio: int = 7
-    winning_numbers: list[int] = [2, 3, 12]
-
-    def __init__(self, amount: typing.SupportsFloat):
-        super().__init__(self.winning_numbers, self.payout_ratio, amount)
-
-
-class CAndE(OneRollBet):
+class CAndE(WinningLosingNumbersBet):
     winning_numbers: list[int] = [2, 3, 11, 12]
+    losing_numbers: list[int] = list(ALL_DICE_NUMBERS - {2, 3, 11, 12})
 
-    def __init__(self, amount: typing.SupportsFloat):
-        super().__init__(self.winning_numbers, amount)
+    def get_winning_numbers(self, table: "Table") -> list[int]:
+        return self.winning_numbers
+
+    def get_losing_numbers(self, table: "Table") -> list[int]:
+        return self.losing_numbers
 
     def get_payout_ratio(self, table: "Table") -> float:
         if table.dice.total in [2, 3, 12]:
@@ -506,6 +441,45 @@ class CAndE(OneRollBet):
             return 7.0
         else:
             raise NotImplementedError
+
+
+# Simple bets in the middle of the table --------------------------------------
+
+
+class Any7(SimpleBet):
+    winning_numbers: list[int] = [7]
+    losing_numbers: list[int] = list(ALL_DICE_NUMBERS - {7})
+    payout_ratio: int = 4
+
+
+class Two(SimpleBet):
+    winning_numbers: list[int] = [2]
+    losing_numbers: list[int] = list(ALL_DICE_NUMBERS - {2})
+    payout_ratio: int = 30
+
+
+class Three(SimpleBet):
+    winning_numbers: list[int] = [3]
+    losing_numbers: list[int] = list(ALL_DICE_NUMBERS - {3})
+    payout_ratio: int = 15
+
+
+class Yo(SimpleBet):
+    winning_numbers: list[int] = [11]
+    losing_numbers: list[int] = list(ALL_DICE_NUMBERS - {11})
+    payout_ratio: int = 15
+
+
+class Boxcars(SimpleBet):
+    winning_numbers: list[int] = [12]
+    losing_numbers: list[int] = list(ALL_DICE_NUMBERS - {12})
+    payout_ratio: int = 30
+
+
+class AnyCraps(SimpleBet):
+    winning_numbers: list[int] = [2, 3, 12]
+    losing_numbers: list[int] = list(ALL_DICE_NUMBERS - {2, 3, 12})
+    payout_ratio: int = 7
 
 
 # HardWay Bets ----------------------------------------------------------------
