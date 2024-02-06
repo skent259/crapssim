@@ -1,6 +1,6 @@
 import copy
 import typing
-from abc import ABC, abstractmethod
+from abc import ABC, ABCMeta, abstractmethod
 from dataclasses import dataclass
 
 from crapssim.point import Point
@@ -36,7 +36,13 @@ class BetResult:
             return 0
 
 
-class Bet(ABC):
+class MetaBetABC(ABCMeta):
+    # Trick to get a bet like `PassLine` to have it's repr be `crapssim.bet.PassLine`
+    def __repr__(cls):
+        return f"crapssim.bet.{cls.__name__}"
+
+
+class Bet(ABC, metaclass=MetaBetABC):
     """
     A generic bet for the craps table
 
