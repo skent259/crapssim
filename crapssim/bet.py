@@ -507,14 +507,6 @@ class CAndE(OneRollBet):
         else:
             raise NotImplementedError
 
-    def __eq__(self, other: object) -> bool:
-        if not isinstance(other, Bet):
-            raise NotImplementedError
-        return isinstance(other, CAndE) and self.amount == other.amount
-
-    def __hash__(self) -> int:
-        return hash((CAndE, self.amount))
-
 
 # HardWay Bets ----------------------------------------------------------------
 
