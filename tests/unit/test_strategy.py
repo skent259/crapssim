@@ -3,13 +3,42 @@ from unittest.mock import MagicMock, call
 import pytest
 
 from crapssim import Player, Table
-from crapssim.bet import Bet, PassLine, Come, HardWay, Odds, DontCome, Place, DontPass, Field, \
-    BetResult
-from crapssim.strategy import Strategy, AggregateStrategy, BetIfTrue, RemoveIfTrue, IfBetNotExist, \
-    BetPointOff, BetPointOn, CountStrategy, BetPlace
-from crapssim.strategy.core import ReplaceIfTrue, RemoveByType
-from crapssim.strategy.examples import TwoCome, Pass2Come, PassLinePlace68, PlaceInside, \
-    Place68Move59, Place682Come, HammerLock, Risk12, DiceDoctor, Place68CPR
+from crapssim.bet import (
+    Bet,
+    BetResult,
+    Come,
+    DontCome,
+    DontPass,
+    Field,
+    HardWay,
+    Odds,
+    PassLine,
+    Place,
+)
+from crapssim.strategy import (
+    AggregateStrategy,
+    BetIfTrue,
+    BetPlace,
+    BetPointOff,
+    BetPointOn,
+    CountStrategy,
+    IfBetNotExist,
+    RemoveIfTrue,
+    Strategy,
+)
+from crapssim.strategy.core import RemoveByType, ReplaceIfTrue
+from crapssim.strategy.examples import (
+    DiceDoctor,
+    HammerLock,
+    Pass2Come,
+    PassLinePlace68,
+    Place68CPR,
+    Place68Move59,
+    Place682Come,
+    PlaceInside,
+    Risk12,
+    TwoCome,
+)
 from crapssim.strategy.odds import OddsAmountStrategy, OddsMultiplierStrategy
 from crapssim.strategy.simple_bet import BaseSimpleBet, SimpleStrategyMode
 
@@ -17,9 +46,10 @@ from crapssim.strategy.simple_bet import BaseSimpleBet, SimpleStrategyMode
 @pytest.fixture
 def base_strategy():
     class TestStrategy(Strategy):
-        def update_bets(self, player: 'Player') -> None:
+        def update_bets(self, player: "Player") -> None:
             pass
-        def completed(self, player: 'Player') -> bool:
+
+        def completed(self, player: "Player") -> bool:
             return False
 
     return TestStrategy()
@@ -43,12 +73,15 @@ def test_strategy_default_not_completed(base_strategy, player):
 
 def test_strategy_add(base_strategy):
     class AddedStrategy(Strategy):
-        def update_bets(self, player: 'Player') -> None:
+        def update_bets(self, player: "Player") -> None:
             pass
-        def completed(self, player: 'Player') -> bool:
+
+        def completed(self, player: "Player") -> bool:
             return False
 
-    assert base_strategy + AddedStrategy() == AggregateStrategy(base_strategy, AddedStrategy())
+    assert base_strategy + AddedStrategy() == AggregateStrategy(
+        base_strategy, AddedStrategy()
+    )
 
 
 def test_strategy_equality(base_strategy):
@@ -57,30 +90,33 @@ def test_strategy_equality(base_strategy):
 
 def test_strategy_inequality(base_strategy):
     class TestStrategy2(Strategy):
-        def update_bets(self, player: 'Player') -> None:
+        def update_bets(self, player: "Player") -> None:
             pass
-        def completed(self, player: 'Player') -> bool:
+
+        def completed(self, player: "Player") -> bool:
             return False
 
     assert base_strategy != TestStrategy2()
 
 
 def test_strategy_repr(base_strategy):
-    assert repr(base_strategy) == 'TestStrategy()'
+    assert repr(base_strategy) == "TestStrategy()"
 
 
 @pytest.fixture
 def aggregate_strategy() -> AggregateStrategy:
     class TestStrategy1(Strategy):
-        def update_bets(self, player: 'Player') -> None:
+        def update_bets(self, player: "Player") -> None:
             pass
-        def completed(self, player: 'Player') -> bool:
+
+        def completed(self, player: "Player") -> bool:
             return False
 
     class TestStrategy2(Strategy):
-        def update_bets(self, player: 'Player') -> None:
+        def update_bets(self, player: "Player") -> None:
             pass
-        def completed(self, player: 'Player') -> bool:
+
+        def completed(self, player: "Player") -> bool:
             return False
 
     return TestStrategy1() + TestStrategy2()
@@ -129,7 +165,7 @@ def test_aggregate_strategy_completed_calls_all_completed(aggregate_strategy, pl
 
 
 def test_aggregate_repr(aggregate_strategy):
-    assert repr(aggregate_strategy) == 'TestStrategy1() + TestStrategy2()'
+    assert repr(aggregate_strategy) == "TestStrategy1() + TestStrategy2()"
 
 
 @pytest.fixture
@@ -163,13 +199,15 @@ def test_player_add_bet_is_called_if_key_is_true(bet_if_true, player):
 
 def test_player_add_bet_is_not_called_if_key_is_true(bet_if_true, player):
     player.add_bet = MagicMock()
-    bet_if_true.key = MagicMock(return_value=False, name='key')
+    bet_if_true.key = MagicMock(return_value=False, name="key")
     bet_if_true.update_bets(player)
     player.add_bet.assert_not_called()
 
 
 def test_bet_if_true_repr(bet_if_true):
-    assert repr(bet_if_true) == f'BetIfTrue(bet={bet_if_true.bet}, key={bet_if_true.key})'
+    assert (
+        repr(bet_if_true) == f"BetIfTrue(bet={bet_if_true.bet}, key={bet_if_true.key})"
+    )
 
 
 def test_remove_if_true_key_called_for_each_bet(player):
@@ -180,8 +218,7 @@ def test_remove_if_true_key_called_for_each_bet(player):
     bet2 = MagicMock()
     player.bets = [bet1, bet2]
     remove_if_true.update_bets(player)
-    remove_if_true.key.assert_has_calls([call(bet1, player),
-                                         call(bet2, player)])
+    remove_if_true.key.assert_has_calls([call(bet1, player), call(bet2, player)])
 
 
 def test_remove_if_true_no_bets_removed(player):
@@ -233,7 +270,7 @@ def test_remove_if_true_calls_remove_bet(player):
 def test_remove_if_true_repr():
     key = MagicMock()
     strategy = RemoveIfTrue(key)
-    assert repr(strategy) == f'RemoveIfTrue(key={key})'
+    assert repr(strategy) == f"RemoveIfTrue(key={key})"
 
 
 def test_replace_if_true_no_initial_bets_no_bets_added(player):
@@ -302,7 +339,7 @@ def test_if_bet_exists_dont_add_bet(player):
 def test_if_bet_not_exist_repr(player):
     bet = MagicMock()
     strategy = IfBetNotExist(bet)
-    assert repr(strategy) == f'IfBetNotExist(bet={bet})'
+    assert repr(strategy) == f"IfBetNotExist(bet={bet})"
 
 
 def test_bet_point_off_add_bet(player):
@@ -378,8 +415,10 @@ def test_bet_is_on_table(player):
 
 def test_count_strategy_repr():
     strategy = CountStrategy((PassLine, Come), 2, PassLine(1))
-    assert repr(strategy) == f'CountStrategy(bet_type=({PassLine},' \
-                             f' {Come}), count=2, bet={PassLine(1)})'
+    assert (
+        repr(strategy) == f"CountStrategy(bet_type=({PassLine},"
+        f" {Come}), count=2, bet={PassLine(1)})"
+    )
 
 
 def test_count_strategy_key_passes(player):
@@ -513,9 +552,9 @@ def test_base_simple_bet_add_if_non_existent_dont_add(player):
     player.add_bet.assert_not_called()
 
 
-def test_base_simple_bet_not_allowed(player):
+def test_base_simple_bet_is_not_allowed(player):
     bet = MagicMock(PassLine)
-    bet.allowed = MagicMock(return_value=False)
+    bet.is_allowed = MagicMock(return_value=False)
     strategy = BaseSimpleBet(bet)
     strategy.update_bets(player)
     player.add_bet = MagicMock()
@@ -688,10 +727,9 @@ def test_place_inside_place_bets_dict(player):
     player.table.point.number = 6
     player.add_bet = MagicMock()
     strategy.update_bets(player)
-    player.add_bet.assert_has_calls([call(Place(5, 5)),
-                                     call(Place(6, 6)),
-                                     call(Place(8, 6)),
-                                     call(Place(9, 5))])
+    player.add_bet.assert_has_calls(
+        [call(Place(5, 5)), call(Place(6, 6)), call(Place(8, 6)), call(Place(9, 5))]
+    )
 
 
 def test_place_inside_place_bets_int(player):
@@ -699,10 +737,9 @@ def test_place_inside_place_bets_int(player):
     player.table.point.number = 6
     player.add_bet = MagicMock()
     strategy.update_bets(player)
-    player.add_bet.assert_has_calls([call(Place(5, 5)),
-                                     call(Place(6, 6)),
-                                     call(Place(8, 6)),
-                                     call(Place(9, 5))])
+    player.add_bet.assert_has_calls(
+        [call(Place(5, 5)), call(Place(6, 6)), call(Place(8, 6)), call(Place(9, 5))]
+    )
 
 
 def test_place_inside_bets_dont_double(player):
@@ -919,8 +956,7 @@ def test_hammerlock_place_5689_removed_bets(player):
     player.remove_bet = MagicMock()
     player.add_bet = MagicMock()
     strategy.place5689(player)
-    player.remove_bet.assert_has_calls([call(Place(6, 12)),
-                                        call(Place(8, 12))])
+    player.remove_bet.assert_has_calls([call(Place(6, 12)), call(Place(8, 12))])
 
 
 def test_hammerlock_place_5689_added_bets(player):
@@ -928,13 +964,12 @@ def test_hammerlock_place_5689_added_bets(player):
     player.table.point.number = 4
     player.add_bet = MagicMock()
     strategy.place5689(player)
-    player.add_bet.assert_has_calls([call(Place(5, 5)),
-                                     call(Place(6, 6)),
-                                     call(Place(8, 6)),
-                                     call(Place(9, 5))])
+    player.add_bet.assert_has_calls(
+        [call(Place(5, 5)), call(Place(6, 6)), call(Place(8, 6)), call(Place(9, 5))]
+    )
 
 
-@pytest.mark.parametrize('place_win_count', [0, 1, 2])
+@pytest.mark.parametrize("place_win_count", [0, 1, 2])
 def test_hammerlock_always_add_dont_odds(player, place_win_count):
     strategy = HammerLock(5)
     strategy.place68 = MagicMock()
@@ -1016,7 +1051,7 @@ def test_risk_12_point_on_10_pre_point_winnings(player):
 def test_dice_doctor_win_increase_progression(player):
     strategy = DiceDoctor()
     bet = Field(5)
-    bet.get_status = MagicMock(return_value='win')
+    bet.get_status = MagicMock(return_value="win")
     player.table.dice.total = 2
     player.bets = [bet]
     strategy.after_roll(player)
@@ -1027,14 +1062,14 @@ def test_dice_doctor_lose_progression(player):
     strategy = DiceDoctor()
     strategy.current_progression = 4
     bet = Field(5)
-    bet.get_status = MagicMock(return_value='lose')
+    bet.get_status = MagicMock(return_value="lose")
     player.table.dice.total = 7
     player.bets = [bet]
     strategy.after_roll(player)
     assert strategy.current_progression == 0
 
 
-@pytest.mark.parametrize('progression, amount', [(0, 10), (4, 25), (9, 100)])
+@pytest.mark.parametrize("progression, amount", [(0, 10), (4, 25), (9, 100)])
 def test_dice_doctor_bet_amounts(player, progression, amount):
     strategy = DiceDoctor()
     strategy.current_progression = progression
@@ -1043,10 +1078,15 @@ def test_dice_doctor_bet_amounts(player, progression, amount):
     player.add_bet.assert_called_once_with(Field(amount))
 
 
-@pytest.mark.parametrize('attribute, amount', [('bet_amount', 6),
-                                               ('starting_amount', 6),
-                                               ('win_one_amount', 7),
-                                               ('win_two_amount', 14)])
+@pytest.mark.parametrize(
+    "attribute, amount",
+    [
+        ("bet_amount", 6),
+        ("starting_amount", 6),
+        ("win_one_amount", 7),
+        ("win_two_amount", 14),
+    ],
+)
 def test_place_68_cpr_amounts(attribute, amount):
     strategy = Place68CPR()
     assert getattr(strategy, attribute) == amount
@@ -1136,7 +1176,7 @@ def test_place_68_cpr_update_bets_initial_bets_placed_push_6_add_bet(player):
     player.add_bet = MagicMock()
     player.table.point.number = 6
     winning_bet = Place(6, 6)
-    winning_bet.get_status = MagicMock(return_value='win')
+    winning_bet.get_status = MagicMock(return_value="win")
     strategy.six_winnings = 7
     player.bets = [Place(6, 6), Place(8, 6)]
     strategy.update_bets(player)

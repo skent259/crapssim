@@ -1,7 +1,7 @@
 import typing
 
-from crapssim.bet import PassLine, DontPass, Come, DontCome, Odds, Bet
-from crapssim.strategy import Strategy, AggregateStrategy
+from crapssim.bet import Bet, Come, DontCome, DontPass, Odds, PassLine
+from crapssim.strategy import AggregateStrategy, Strategy
 
 if typing.TYPE_CHECKING:
     from crapssim import Player, Table
@@ -10,12 +10,15 @@ if typing.TYPE_CHECKING:
 class OddsAmountStrategy(Strategy):
     """Strategy that takes places odds on a given number for a given bet type."""
 
-    def __init__(self, base_type: typing.Type[PassLine | DontPass | Come | DontCome],
-                 odds_amounts: dict[int, typing.SupportsFloat]):
+    def __init__(
+        self,
+        base_type: typing.Type[PassLine | DontPass | Come | DontCome],
+        odds_amounts: dict[int, typing.SupportsFloat],
+    ):
         self.base_type = base_type
         self.odds_amounts = odds_amounts
 
-    def completed(self, player: 'Player') -> bool:
+    def completed(self, player: "Player") -> bool:
         """Return True if there are no bets of base_type on the table.
 
         Parameters
@@ -29,32 +32,38 @@ class OddsAmountStrategy(Strategy):
         """
         return len([x for x in player.bets if isinstance(x, self.base_type)]) == 0
 
-
-    def update_bets(self, player: 'Player') -> None:
+    def update_bets(self, player: "Player") -> None:
         for number, amount in self.odds_amounts.items():
             bet = Odds(self.base_type, number, float(amount))
-            if bet.allowed(player) and not bet.already_placed(player):
+            if bet.is_allowed(player) and not bet.already_placed(player):
                 player.add_bet(bet)
 
 
 class LightSideOddsAmount(AggregateStrategy):
     def __init__(self, odds_amounts: dict[int, typing.SupportsFloat]):
-        super().__init__(OddsAmountStrategy(PassLine, odds_amounts),
-                         OddsAmountStrategy(Come, odds_amounts))
+        super().__init__(
+            OddsAmountStrategy(PassLine, odds_amounts),
+            OddsAmountStrategy(Come, odds_amounts),
+        )
 
 
 class DarkSideOddsAmount(AggregateStrategy):
     def __init__(self, odds_amounts: dict[int, typing.SupportsFloat]):
-        super().__init__(OddsAmountStrategy(DontPass, odds_amounts),
-                         OddsAmountStrategy(DontCome, odds_amounts))
+        super().__init__(
+            OddsAmountStrategy(DontPass, odds_amounts),
+            OddsAmountStrategy(DontCome, odds_amounts),
+        )
 
 
 class OddsMultiplierStrategy(Strategy):
     """Strategy that takes an AllowsOdds object and places Odds on it given either a multiplier,
     or a dictionary of points and multipliers."""
 
-    def __init__(self, base_type: typing.Type[PassLine | DontPass | Come | DontCome],
-                 odds_multiplier: dict[int, int] | int):
+    def __init__(
+        self,
+        base_type: typing.Type[PassLine | DontPass | Come | DontCome],
+        odds_multiplier: dict[int, int] | int,
+    ):
         """Takes an AllowsOdds item (ex. PassLine, Come, DontPass) and adds a BaseOdds bet
         (either Odds or LayOdds) based on the odds_multiplier given.
 
@@ -75,7 +84,7 @@ class OddsMultiplierStrategy(Strategy):
             self.odds_multiplier = odds_multiplier
 
     @staticmethod
-    def get_point_number(bet: Bet, table: 'Table'):
+    def get_point_number(bet: Bet, table: "Table"):
         if isinstance(bet, (PassLine, DontPass)):
             return table.point.number
         elif isinstance(bet, (Come, DontCome)):
@@ -83,7 +92,7 @@ class OddsMultiplierStrategy(Strategy):
         else:
             raise NotImplementedError
 
-    def update_bets(self, player: 'Player') -> None:
+    def update_bets(self, player: "Player") -> None:
         """Add an Odds bet to the given base_types in the amount determined by the odds_multiplier.
 
         Parameters
@@ -102,7 +111,7 @@ class OddsMultiplierStrategy(Strategy):
             amount = bet.amount * multiplier
             OddsAmountStrategy(self.base_type, {point: amount}).update_bets(player)
 
-    def completed(self, player: 'Player') -> bool:
+    def completed(self, player: "Player") -> bool:
         """Return True if there are no bets of base_type on the table.
 
         Parameters
@@ -126,20 +135,26 @@ class OddsMultiplierStrategy(Strategy):
         return odds_multiplier
 
     def __repr__(self) -> str:
-        return f'{self.__class__.__name__}(base_type={self.base_type}, ' \
-               f'odds_multiplier={self.get_odds_multiplier_repr()})'
+        return (
+            f"{self.__class__.__name__}(base_type={self.base_type}, "
+            f"odds_multiplier={self.get_odds_multiplier_repr()})"
+        )
 
 
 class LightSideOddsMultiplier(AggregateStrategy):
     def __init__(self, odds_multiplier: dict[int, int] | int):
-        super().__init__(OddsMultiplierStrategy(PassLine, odds_multiplier),
-                         OddsMultiplierStrategy(Come, odds_multiplier))
+        super().__init__(
+            OddsMultiplierStrategy(PassLine, odds_multiplier),
+            OddsMultiplierStrategy(Come, odds_multiplier),
+        )
 
 
 class DarkSideOddsMultiplier(AggregateStrategy):
     def __init__(self, odds_multiplier: dict[int, int] | int):
-        super().__init__(OddsMultiplierStrategy(DontPass, odds_multiplier),
-                         OddsMultiplierStrategy(DontCome, odds_multiplier))
+        super().__init__(
+            OddsMultiplierStrategy(DontPass, odds_multiplier),
+            OddsMultiplierStrategy(DontCome, odds_multiplier),
+        )
 
 
 class PassLineOddsMultiplier(OddsMultiplierStrategy):
@@ -155,13 +170,13 @@ class PassLineOddsMultiplier(OddsMultiplierStrategy):
             If odds_multiplier is an integer the bet amount is the PassLine bet amount *
             odds_multiplier.  If it's a dictionary it uses the PassLine bet's point to determine
             the multiplier. Defaults to {4: 3, 5: 4, 6: 5, 8: 5, 9: 4, 10: 3} which are 345x odds.
-            """
+        """
         if odds_multiplier is None:
             odds_multiplier = {4: 3, 5: 4, 6: 5, 8: 5, 9: 4, 10: 3}
         super().__init__(PassLine, odds_multiplier)
 
     def __repr__(self) -> str:
-        return f'{self.__class__.__name__}(odds_multiplier={self.get_odds_multiplier_repr()})'
+        return f"{self.__class__.__name__}(odds_multiplier={self.get_odds_multiplier_repr()})"
 
 
 class DontPassOddsMultiplier(OddsMultiplierStrategy):
@@ -183,4 +198,4 @@ class DontPassOddsMultiplier(OddsMultiplierStrategy):
         super().__init__(DontPass, odds_multiplier)
 
     def __repr__(self) -> str:
-        return f'{self.__class__.__name__}(odds_multiplier={self.get_odds_multiplier_repr()})'
+        return f"{self.__class__.__name__}(odds_multiplier={self.get_odds_multiplier_repr()})"

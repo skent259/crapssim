@@ -1,36 +1,37 @@
 import numpy as np
 import pytest
 
-import crapssim.bet.place
-from crapssim.bet import Bet, PassLine, Come, Odds
-from crapssim.bet.one_roll import CAndE
-from crapssim.bet.pass_line import DontCome
+import crapssim.bet
+from crapssim.bet import Bet, CAndE, Come, DontCome, Odds, PassLine
 from crapssim.point import Point
 from crapssim.table import Table
 
-
 # Check EV of bets on a "per-roll" basis
 
-@pytest.mark.parametrize("bet, ev", [
-    (crapssim.bet.place.Place(4, 1), -0.0167),
-    (crapssim.bet.place.Place(5, 1), -0.0111),
-    (crapssim.bet.place.Place(6, 1), -0.0046),
-    (crapssim.bet.place.Place(8, 1), -0.0046),
-    (crapssim.bet.place.Place(9, 1), -0.0111),
-    (crapssim.bet.place.Place(10, 1), -0.0167),
-    (crapssim.bet.one_roll.Field(1), -0.0556),
-    (crapssim.bet.one_roll.Any7(1), -0.1667),
-    (crapssim.bet.one_roll.Two(1), -0.1389),
-    (crapssim.bet.one_roll.Three(1), -0.1111),
-    (crapssim.bet.one_roll.Yo(1), -0.1111),
-    (crapssim.bet.one_roll.Boxcars(1), -0.1389),
-    (crapssim.bet.one_roll.AnyCraps(1), -0.1111),
-    (crapssim.bet.one_roll.CAndE(1), -0.1111),
-    (crapssim.bet.hard_way.HardWay(4, 1), -0.0278),
-    (crapssim.bet.hard_way.HardWay(6, 1), -0.0278),
-    (crapssim.bet.hard_way.HardWay(8, 1), -0.0278),
-    (crapssim.bet.hard_way.HardWay(10, 1), -0.0278),
-])
+
+@pytest.mark.parametrize(
+    "bet, ev",
+    [
+        (crapssim.bet.Place(4, 1), -0.0167),
+        (crapssim.bet.Place(5, 1), -0.0111),
+        (crapssim.bet.Place(6, 1), -0.0046),
+        (crapssim.bet.Place(8, 1), -0.0046),
+        (crapssim.bet.Place(9, 1), -0.0111),
+        (crapssim.bet.Place(10, 1), -0.0167),
+        (crapssim.bet.Field(1), -0.0556),
+        (crapssim.bet.Any7(1), -0.1667),
+        (crapssim.bet.Two(1), -0.1389),
+        (crapssim.bet.Three(1), -0.1111),
+        (crapssim.bet.Yo(1), -0.1111),
+        (crapssim.bet.Boxcars(1), -0.1389),
+        (crapssim.bet.AnyCraps(1), -0.1111),
+        (crapssim.bet.CAndE(1), -0.1111),
+        (crapssim.bet.HardWay(4, 1), -0.0278),
+        (crapssim.bet.HardWay(6, 1), -0.0278),
+        (crapssim.bet.HardWay(8, 1), -0.0278),
+        (crapssim.bet.HardWay(10, 1), -0.0278),
+    ],
+)
 def test_ev_oneroll(bet, ev):
     t = Table()
     t.add_player()
@@ -42,10 +43,60 @@ def test_ev_oneroll(bet, ev):
             t.dice.fixed_roll([d1, d2])
             result = bet.get_result(t)
 
-            outcomes.append(result.amount - bet.amount if result.won
-                            else -1 if result.lost else 0)
+            outcomes.append(
+                result.amount - bet.amount if result.won else -1 if result.lost else 0
+            )
 
     assert round(np.mean(outcomes), 4) == ev
+
+
+@pytest.mark.parametrize(
+    "bet, bet_name",
+    [
+        (crapssim.bet.PassLine(1), "PassLine(amount=1.0)"),
+        (crapssim.bet.Come(1), "Come(amount=1.0, point=Point(number=None))"),
+        (crapssim.bet.DontPass(1), "DontPass(amount=1.0)"),
+        (crapssim.bet.DontCome(1), "DontCome(amount=1.0, point=Point(number=None))"),
+        (
+            crapssim.bet.Odds(crapssim.bet.PassLine, 6, 1),
+            "Odds(base_type=crapssim.bet.PassLine, number=6, amount=1.0)",
+        ),
+        (
+            crapssim.bet.Odds(crapssim.bet.Come, 8, 1),
+            "Odds(base_type=crapssim.bet.Come, number=8, amount=1.0)",
+        ),
+        (
+            crapssim.bet.Odds(crapssim.bet.DontPass, 9, 1),
+            "Odds(base_type=crapssim.bet.DontPass, number=9, amount=1.0)",
+        ),
+        (
+            crapssim.bet.Odds(crapssim.bet.DontCome, 10, 1),
+            "Odds(base_type=crapssim.bet.DontCome, number=10, amount=1.0)",
+        ),
+        (crapssim.bet.Place(4, 1), "Place(4, amount=1.0)"),
+        (crapssim.bet.Place(5, 1), "Place(5, amount=1.0)"),
+        (crapssim.bet.Place(6, 1), "Place(6, amount=1.0)"),
+        (crapssim.bet.Place(8, 1), "Place(8, amount=1.0)"),
+        (crapssim.bet.Place(9, 1), "Place(9, amount=1.0)"),
+        (crapssim.bet.Place(10, 1), "Place(10, amount=1.0)"),
+        (crapssim.bet.Field(1), "Field(amount=1.0)"),
+        (crapssim.bet.Any7(1), "Any7(amount=1.0)"),
+        (crapssim.bet.Two(1), "Two(amount=1.0)"),
+        (crapssim.bet.Three(1), "Three(amount=1.0)"),
+        (crapssim.bet.Yo(1), "Yo(amount=1.0)"),
+        (crapssim.bet.Boxcars(1), "Boxcars(amount=1.0)"),
+        (crapssim.bet.AnyCraps(1), "AnyCraps(amount=1.0)"),
+        (crapssim.bet.CAndE(1), "CAndE(amount=1.0)"),
+        (crapssim.bet.HardWay(4, 1), "HardWay(4, amount=1.0)"),
+        (crapssim.bet.HardWay(6, 1), "HardWay(6, amount=1.0)"),
+        (crapssim.bet.HardWay(8, 1), "HardWay(8, amount=1.0)"),
+        (crapssim.bet.HardWay(10, 1), "HardWay(10, amount=1.0)"),
+        (crapssim.bet.Fire(1), "Fire(amount=1.0)"),
+    ],
+)
+def test_repr_names(bet, bet_name):
+    # Check above visually make sense
+    assert repr(bet) == bet_name
 
 
 def test_come_equality():
@@ -150,13 +201,13 @@ def test_come_is_irremovable_with_point():
     assert bet.is_removable(table.players[0]) is False
 
 
-def test_pass_line_odds_allowed():
+def test_pass_line_odds_is_allowed():
     table = Table()
     table.add_player()
     table.players[0].bets = [PassLine(5)]
     table.point.number = 6
     bet = Odds(PassLine, 6, 25)
-    assert bet.allowed(table.players[0])
+    assert bet.is_allowed(table.players[0])
 
 
 def test_pass_line_odds_too_high():
@@ -165,22 +216,22 @@ def test_pass_line_odds_too_high():
     table.players[0].bets = [PassLine(5)]
     table.point.number = 4
     bet = Odds(PassLine, 4, 25)
-    assert bet.allowed(table.players[0]) is False
+    assert bet.is_allowed(table.players[0]) is False
 
 
-def test_come_odds_allowed():
+def test_come_odds_is_allowed():
     table = Table()
     table.add_player()
     come_bet = Come(5, 6)
     table.players[0].bets = [come_bet]
     bet = Odds(Come, 6, 25)
-    assert bet.allowed(table.players[0])
+    assert bet.is_allowed(table.players[0])
 
 
-def test_come_odds_not_allowed():
+def test_come_odds_not_is_allowed():
     table = Table()
     table.add_player()
     come_bet = Come(5, 6)
     table.players[0].bets = [come_bet]
     bet = Odds(Come, 6, 9000)
-    assert bet.allowed(table.players[0]) is False
+    assert bet.is_allowed(table.players[0]) is False
