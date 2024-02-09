@@ -120,8 +120,9 @@ class Table:
         self.point: Point = Point()
         self.dice: Dice = Dice()
         self.settings: dict[str, typing.Any] = {
+            "ATS_payouts": {"all": 150, "tall": 30, "small": 30},
             "field_payouts": {2: 2, 3: 1, 4: 1, 9: 1, 10: 1, 11: 1, 12: 2},
-            "fire_points": {4: 24, 5: 249, 6: 999},
+            "fire_payouts": {4: 24, 5: 249, 6: 999},
             "max_odds": {4: 3, 5: 4, 6: 5, 8: 5, 9: 4, 10: 3},
             "max_dont_odds": {4: 6, 5: 6, 6: 6, 8: 6, 9: 6, 10: 6},
         }

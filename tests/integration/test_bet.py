@@ -738,7 +738,7 @@ def test_get_fire_default_table_payout_ratio(points_made, correct_ratio):
 )
 def test_get_fire_non_default_table_payout_ratio(points_made, correct_ratio):
     table = Table()
-    table.settings["fire_points"] = {3: 6, 4: 9, 5: 69, 6: 420}
+    table.settings["fire_payouts"] = {3: 6, 4: 9, 5: 69, 6: 420}
     bet = Fire(1)
     bet.points_made = points_made
     bet.ended = True

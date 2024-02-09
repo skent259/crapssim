@@ -177,6 +177,10 @@ class SimpleBet(WinningLosingNumbersBet, ABC):
     can be known at instantiation and don't depend on the table.
     """
 
+    winning_numbers: list[int] = []
+    losing_numbers: list[int] = []
+    payout_ratio: int = 1
+
     def get_winning_numbers(self, table: "Table") -> list[int]:
         return self.winning_numbers
 
@@ -531,11 +535,11 @@ class Fire(Bet):
         self.ended: bool = False
 
     def get_result(self, table: "Table") -> BetResult:
-        if self.ended and len(self.points_made) in table.settings["fire_points"]:
-            payout_ratio = table.settings["fire_points"][len(self.points_made)]
+        if self.ended and len(self.points_made) in table.settings["fire_payouts"]:
+            payout_ratio = table.settings["fire_payouts"][len(self.points_made)]
             result_amount = payout_ratio * self.amount + self.amount
             remove = True
-        elif self.ended and len(self.points_made) not in table.settings["fire_points"]:
+        elif self.ended and len(self.points_made) not in table.settings["fire_payouts"]:
             result_amount = -1 * self.amount
             remove = True
         else:
@@ -556,3 +560,50 @@ class Fire(Bet):
 
     def is_allowed(self, player: "Player") -> bool:
         return player.table.new_shooter
+
+
+class ATSClass(Bet):
+    """Class representing ATS (All, Tall, Small) bets, not a usable bet by itself."""
+
+    numbers: list[int] = []
+    type: str = "ATSClass"
+
+    def __init__(self, amount: float):
+        super().__init__(amount)
+        self.rolled_numbers: set[int] = set()
+
+    def get_result(self, table: "Table") -> BetResult:
+
+        if table.dice.total in self.numbers:
+            self.rolled_numbers.add(table.dice.total)
+
+        if self.numbers == self.rolled_numbers:
+            payout_for_ratio = table.settings["ATS_payouts"][self.type]
+            result_amount = payout_for_ratio * self.amount
+            should_remove = True
+        elif table.dice.total == 7:
+            result_amount = -1 * self.amount
+            should_remove = True
+        else:
+            result_amount = 0
+            should_remove = False
+
+        return BetResult(result_amount, should_remove)
+
+    def is_allowed(self, player: "Player") -> bool:
+        return player.table.new_shooter
+
+
+class All(ATSClass):
+    type: str = "all"
+    numbers: list[int] = [2, 3, 4, 5, 6, 8, 9, 10, 11, 12]
+
+
+class Tall(ATSClass):
+    type: str = "tall"
+    numbers: list[int] = [8, 9, 10, 11, 12]
+
+
+class Small(ATSClass):
+    type: str = "small"
+    numbers: list[int] = [2, 3, 4, 5, 6]
