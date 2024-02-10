@@ -99,6 +99,19 @@ class AggregateStrategy(Strategy):
         return f'{" + ".join(repr_strategies)}'
 
 
+class NullStrategy(Strategy):
+    """Strategy that bets nothing."""
+
+    def update_bets(self, player: "Player") -> None:
+        pass
+
+    def completed(self, player: "Player") -> bool:
+        return False
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}()"
+
+
 class BetIfTrue(Strategy):
     """Strategy that places a bet if a given key taking Player as a parameter is True."""
 

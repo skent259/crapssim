@@ -1,7 +1,10 @@
+from itertools import combinations
+
 import pytest
 
 from crapssim import Dice, Table
 from crapssim.bet import (
+    All,
     Any7,
     AnyCraps,
     Boxcars,
@@ -15,550 +18,76 @@ from crapssim.bet import (
     Odds,
     PassLine,
     Place,
+    Small,
+    Tall,
     Three,
     Two,
     Yo,
 )
 from crapssim.point import Point
+from crapssim.strategy.core import NullStrategy
 from crapssim.table import TableUpdate
 
+ALL_BETS = [
+    PassLine(5),
+    Come(5),
+    Odds(PassLine, 4, 5),
+    Odds(PassLine, 5, 5),
+    Odds(PassLine, 6, 5),
+    Odds(PassLine, 8, 5),
+    Odds(PassLine, 9, 5),
+    Odds(PassLine, 10, 5),
+    Odds(Come, 4, 5),
+    Odds(Come, 5, 5),
+    Odds(Come, 6, 5),
+    Odds(Come, 8, 5),
+    Odds(Come, 9, 5),
+    Odds(Come, 10, 5),
+    Place(4, 5),
+    Place(5, 5),
+    Place(6, 5),
+    Place(8, 5),
+    Place(9, 5),
+    Place(10, 5),
+    Field(5),
+    DontPass(5),
+    DontCome(5),
+    Odds(DontPass, 4, 5),
+    Odds(DontPass, 5, 5),
+    Odds(DontPass, 6, 5),
+    Odds(DontPass, 8, 5),
+    Odds(DontPass, 9, 5),
+    Odds(DontPass, 10, 5),
+    Odds(DontCome, 4, 5),
+    Odds(DontCome, 5, 5),
+    Odds(DontCome, 6, 5),
+    Odds(DontCome, 8, 5),
+    Odds(DontCome, 9, 5),
+    Odds(DontCome, 10, 5),
+    Any7(5),
+    Two(5),
+    Three(5),
+    Yo(5),
+    Boxcars(5),
+    AnyCraps(5),
+    CAndE(5),
+    HardWay(4, 5),
+    HardWay(6, 5),
+    HardWay(8, 5),
+    HardWay(10, 5),
+    Fire(5),
+    All(5),
+    Small(5),
+    Tall(5),
+]
 
-@pytest.mark.parametrize(
-    "bet_one, bet_two",
-    [
-        (PassLine(5), PassLine(5)),
-        (Come(5), Come(5)),
-        (Odds(PassLine, 4, 5), Odds(PassLine, 4, 5)),
-        (Odds(PassLine, 5, 5), Odds(PassLine, 5, 5)),
-        (Odds(PassLine, 6, 5), Odds(PassLine, 6, 5)),
-        (Odds(PassLine, 8, 5), Odds(PassLine, 8, 5)),
-        (Odds(PassLine, 9, 5), Odds(PassLine, 9, 5)),
-        (Odds(PassLine, 10, 5), Odds(PassLine, 10, 5)),
-        (Place(4, 5), Place(4, 5)),
-        (Place(5, 5), Place(5, 5)),
-        (Place(6, 5), Place(6, 5)),
-        (Place(8, 5), Place(8, 5)),
-        (Place(9, 5), Place(9, 5)),
-        (Place(10, 5), Place(10, 5)),
-        (Field(5), Field(5)),
-        (DontPass(5), DontPass(5)),
-        (DontCome(5), DontCome(5)),
-        (Any7(5), Any7(5)),
-        (Two(5), Two(5)),
-        (Three(5), Three(5)),
-        (Yo(5), Yo(5)),
-        (Boxcars(5), Boxcars(5)),
-        (AnyCraps(5), AnyCraps(5)),
-        (CAndE(5), CAndE(5)),
-        (HardWay(4, 5), HardWay(4, 5)),
-        (HardWay(6, 5), HardWay(6, 5)),
-        (HardWay(8, 5), HardWay(8, 5)),
-        (HardWay(10, 5), HardWay(10, 5)),
-        (Fire(5), Fire(5)),
-    ],
-)
-def test_bet_equality(bet_one, bet_two):
+
+@pytest.mark.parametrize("bet_one, bet_two", [(x, x) for x in ALL_BETS])
+def test_bet_equality2(bet_one, bet_two):
     assert bet_one == bet_two
 
 
-@pytest.mark.parametrize(
-    "bet_one, bet_two",
-    [
-        (PassLine(5), Come(5)),
-        (PassLine(5), Odds(PassLine, 4, 5)),
-        (PassLine(5), Odds(PassLine, 5, 5)),
-        (PassLine(5), Odds(PassLine, 6, 5)),
-        (PassLine(5), Odds(PassLine, 8, 5)),
-        (PassLine(5), Odds(PassLine, 9, 5)),
-        (PassLine(5), Odds(PassLine, 10, 5)),
-        (PassLine(5), Place(4, 5)),
-        (PassLine(5), Place(5, 5)),
-        (PassLine(5), Place(6, 5)),
-        (PassLine(5), Place(8, 5)),
-        (PassLine(5), Place(9, 5)),
-        (PassLine(5), Place(10, 5)),
-        (PassLine(5), Field(5)),
-        (PassLine(5), DontPass(5)),
-        (PassLine(5), DontCome(5)),
-        (PassLine(5), Any7(5)),
-        (PassLine(5), Two(5)),
-        (PassLine(5), Three(5)),
-        (PassLine(5), Yo(5)),
-        (PassLine(5), Boxcars(5)),
-        (PassLine(5), AnyCraps(5)),
-        (PassLine(5), CAndE(5)),
-        (PassLine(5), HardWay(4, 5)),
-        (PassLine(5), HardWay(6, 5)),
-        (PassLine(5), HardWay(8, 5)),
-        (PassLine(5), HardWay(10, 5)),
-        (PassLine(5), Fire(5)),
-        (Come(5), Odds(PassLine, 4, 5)),
-        (Come(5), Odds(PassLine, 5, 5)),
-        (Come(5), Odds(PassLine, 6, 5)),
-        (Come(5), Odds(PassLine, 8, 5)),
-        (Come(5), Odds(PassLine, 9, 5)),
-        (Come(5), Odds(PassLine, 10, 5)),
-        (Come(5), Place(4, 5)),
-        (Come(5), Place(5, 5)),
-        (Come(5), Place(6, 5)),
-        (Come(5), Place(8, 5)),
-        (Come(5), Place(9, 5)),
-        (Come(5), Place(10, 5)),
-        (Come(5), Field(5)),
-        (Come(5), DontPass(5)),
-        (Come(5), DontCome(5)),
-        (Come(5), Any7(5)),
-        (Come(5), Two(5)),
-        (Come(5), Three(5)),
-        (Come(5), Yo(5)),
-        (Come(5), Boxcars(5)),
-        (Come(5), AnyCraps(5)),
-        (Come(5), CAndE(5)),
-        (Come(5), HardWay(4, 5)),
-        (Come(5), HardWay(6, 5)),
-        (Come(5), HardWay(8, 5)),
-        (Come(5), HardWay(10, 5)),
-        (Come(5), Fire(5)),
-        (Odds(PassLine, 4, 5), Odds(PassLine, 5, 5)),
-        (Odds(PassLine, 4, 5), Odds(PassLine, 6, 5)),
-        (Odds(PassLine, 4, 5), Odds(PassLine, 8, 5)),
-        (Odds(PassLine, 4, 5), Odds(PassLine, 9, 5)),
-        (Odds(PassLine, 4, 5), Odds(PassLine, 10, 5)),
-        (Odds(PassLine, 4, 5), Place(4, 5)),
-        (Odds(PassLine, 4, 5), Place(5, 5)),
-        (Odds(PassLine, 4, 5), Place(6, 5)),
-        (Odds(PassLine, 4, 5), Place(8, 5)),
-        (Odds(PassLine, 4, 5), Place(9, 5)),
-        (Odds(PassLine, 4, 5), Place(10, 5)),
-        (Odds(PassLine, 4, 5), Field(5)),
-        (Odds(PassLine, 4, 5), DontPass(5)),
-        (Odds(PassLine, 4, 5), DontCome(5)),
-        (Odds(PassLine, 4, 5), Any7(5)),
-        (Odds(PassLine, 4, 5), Two(5)),
-        (Odds(PassLine, 4, 5), Three(5)),
-        (Odds(PassLine, 4, 5), Yo(5)),
-        (Odds(PassLine, 4, 5), Boxcars(5)),
-        (Odds(PassLine, 4, 5), AnyCraps(5)),
-        (Odds(PassLine, 4, 5), CAndE(5)),
-        (Odds(PassLine, 4, 5), HardWay(4, 5)),
-        (Odds(PassLine, 4, 5), HardWay(6, 5)),
-        (Odds(PassLine, 4, 5), HardWay(8, 5)),
-        (Odds(PassLine, 4, 5), HardWay(10, 5)),
-        (Odds(PassLine, 4, 5), Fire(5)),
-        (Odds(PassLine, 5, 5), Odds(PassLine, 6, 5)),
-        (Odds(PassLine, 5, 5), Odds(PassLine, 8, 5)),
-        (Odds(PassLine, 5, 5), Odds(PassLine, 9, 5)),
-        (Odds(PassLine, 5, 5), Odds(PassLine, 10, 5)),
-        (Odds(PassLine, 5, 5), Place(4, 5)),
-        (Odds(PassLine, 5, 5), Place(5, 5)),
-        (Odds(PassLine, 5, 5), Place(6, 5)),
-        (Odds(PassLine, 5, 5), Place(8, 5)),
-        (Odds(PassLine, 5, 5), Place(9, 5)),
-        (Odds(PassLine, 5, 5), Place(10, 5)),
-        (Odds(PassLine, 5, 5), Field(5)),
-        (Odds(PassLine, 5, 5), DontPass(5)),
-        (Odds(PassLine, 5, 5), DontCome(5)),
-        (Odds(PassLine, 5, 5), Any7(5)),
-        (Odds(PassLine, 5, 5), Two(5)),
-        (Odds(PassLine, 5, 5), Three(5)),
-        (Odds(PassLine, 5, 5), Yo(5)),
-        (Odds(PassLine, 5, 5), Boxcars(5)),
-        (Odds(PassLine, 5, 5), AnyCraps(5)),
-        (Odds(PassLine, 5, 5), CAndE(5)),
-        (Odds(PassLine, 5, 5), HardWay(4, 5)),
-        (Odds(PassLine, 5, 5), HardWay(6, 5)),
-        (Odds(PassLine, 5, 5), HardWay(8, 5)),
-        (Odds(PassLine, 5, 5), HardWay(10, 5)),
-        (Odds(PassLine, 5, 5), Fire(5)),
-        (Odds(PassLine, 6, 5), Odds(PassLine, 8, 5)),
-        (Odds(PassLine, 6, 5), Odds(PassLine, 9, 5)),
-        (Odds(PassLine, 6, 5), Odds(PassLine, 10, 5)),
-        (Odds(PassLine, 6, 5), Place(4, 5)),
-        (Odds(PassLine, 6, 5), Place(5, 5)),
-        (Odds(PassLine, 6, 5), Place(6, 5)),
-        (Odds(PassLine, 6, 5), Place(8, 5)),
-        (Odds(PassLine, 6, 5), Place(9, 5)),
-        (Odds(PassLine, 6, 5), Place(10, 5)),
-        (Odds(PassLine, 6, 5), Field(5)),
-        (Odds(PassLine, 6, 5), DontPass(5)),
-        (Odds(PassLine, 6, 5), DontCome(5)),
-        (Odds(PassLine, 6, 5), Any7(5)),
-        (Odds(PassLine, 6, 5), Two(5)),
-        (Odds(PassLine, 6, 5), Three(5)),
-        (Odds(PassLine, 6, 5), Yo(5)),
-        (Odds(PassLine, 6, 5), Boxcars(5)),
-        (Odds(PassLine, 6, 5), AnyCraps(5)),
-        (Odds(PassLine, 6, 5), CAndE(5)),
-        (Odds(PassLine, 6, 5), HardWay(4, 5)),
-        (Odds(PassLine, 6, 5), HardWay(6, 5)),
-        (Odds(PassLine, 6, 5), HardWay(8, 5)),
-        (Odds(PassLine, 6, 5), HardWay(10, 5)),
-        (Odds(PassLine, 6, 5), Fire(5)),
-        (Odds(PassLine, 8, 5), Odds(PassLine, 9, 5)),
-        (Odds(PassLine, 8, 5), Odds(PassLine, 10, 5)),
-        (Odds(PassLine, 8, 5), Place(4, 5)),
-        (Odds(PassLine, 8, 5), Place(5, 5)),
-        (Odds(PassLine, 8, 5), Place(6, 5)),
-        (Odds(PassLine, 8, 5), Place(8, 5)),
-        (Odds(PassLine, 8, 5), Place(9, 5)),
-        (Odds(PassLine, 8, 5), Place(10, 5)),
-        (Odds(PassLine, 8, 5), Field(5)),
-        (Odds(PassLine, 8, 5), DontPass(5)),
-        (Odds(PassLine, 8, 5), DontCome(5)),
-        (Odds(PassLine, 8, 5), Any7(5)),
-        (Odds(PassLine, 8, 5), Two(5)),
-        (Odds(PassLine, 8, 5), Three(5)),
-        (Odds(PassLine, 8, 5), Yo(5)),
-        (Odds(PassLine, 8, 5), Boxcars(5)),
-        (Odds(PassLine, 8, 5), AnyCraps(5)),
-        (Odds(PassLine, 8, 5), CAndE(5)),
-        (Odds(PassLine, 8, 5), HardWay(4, 5)),
-        (Odds(PassLine, 8, 5), HardWay(6, 5)),
-        (Odds(PassLine, 8, 5), HardWay(8, 5)),
-        (Odds(PassLine, 8, 5), HardWay(10, 5)),
-        (Odds(PassLine, 8, 5), Fire(5)),
-        (Odds(PassLine, 9, 5), Odds(PassLine, 10, 5)),
-        (Odds(PassLine, 9, 5), Place(4, 5)),
-        (Odds(PassLine, 9, 5), Place(5, 5)),
-        (Odds(PassLine, 9, 5), Place(6, 5)),
-        (Odds(PassLine, 9, 5), Place(8, 5)),
-        (Odds(PassLine, 9, 5), Place(9, 5)),
-        (Odds(PassLine, 9, 5), Place(10, 5)),
-        (Odds(PassLine, 9, 5), Field(5)),
-        (Odds(PassLine, 9, 5), DontPass(5)),
-        (Odds(PassLine, 9, 5), DontCome(5)),
-        (Odds(PassLine, 9, 5), Any7(5)),
-        (Odds(PassLine, 9, 5), Two(5)),
-        (Odds(PassLine, 9, 5), Three(5)),
-        (Odds(PassLine, 9, 5), Yo(5)),
-        (Odds(PassLine, 9, 5), Boxcars(5)),
-        (Odds(PassLine, 9, 5), AnyCraps(5)),
-        (Odds(PassLine, 9, 5), CAndE(5)),
-        (Odds(PassLine, 9, 5), HardWay(4, 5)),
-        (Odds(PassLine, 9, 5), HardWay(6, 5)),
-        (Odds(PassLine, 9, 5), HardWay(8, 5)),
-        (Odds(PassLine, 9, 5), HardWay(10, 5)),
-        (Odds(PassLine, 9, 5), Fire(5)),
-        (Odds(PassLine, 10, 5), Place(4, 5)),
-        (Odds(PassLine, 10, 5), Place(5, 5)),
-        (Odds(PassLine, 10, 5), Place(6, 5)),
-        (Odds(PassLine, 10, 5), Place(8, 5)),
-        (Odds(PassLine, 10, 5), Place(9, 5)),
-        (Odds(PassLine, 10, 5), Place(10, 5)),
-        (Odds(PassLine, 10, 5), Field(5)),
-        (Odds(PassLine, 10, 5), DontPass(5)),
-        (Odds(PassLine, 10, 5), DontCome(5)),
-        (Odds(PassLine, 10, 5), Any7(5)),
-        (Odds(PassLine, 10, 5), Two(5)),
-        (Odds(PassLine, 10, 5), Three(5)),
-        (Odds(PassLine, 10, 5), Yo(5)),
-        (Odds(PassLine, 10, 5), Boxcars(5)),
-        (Odds(PassLine, 10, 5), AnyCraps(5)),
-        (Odds(PassLine, 10, 5), CAndE(5)),
-        (Odds(PassLine, 10, 5), HardWay(4, 5)),
-        (Odds(PassLine, 10, 5), HardWay(6, 5)),
-        (Odds(PassLine, 10, 5), HardWay(8, 5)),
-        (Odds(PassLine, 10, 5), HardWay(10, 5)),
-        (Odds(PassLine, 10, 5), Fire(5)),
-        (Place(4, 5), Place(5, 5)),
-        (Place(4, 5), Place(6, 5)),
-        (Place(4, 5), Place(8, 5)),
-        (Place(4, 5), Place(9, 5)),
-        (Place(4, 5), Place(10, 5)),
-        (Place(4, 5), Field(5)),
-        (Place(4, 5), DontPass(5)),
-        (Place(4, 5), DontCome(5)),
-        (Place(4, 5), Any7(5)),
-        (Place(4, 5), Two(5)),
-        (Place(4, 5), Three(5)),
-        (Place(4, 5), Yo(5)),
-        (Place(4, 5), Boxcars(5)),
-        (Place(4, 5), AnyCraps(5)),
-        (Place(4, 5), CAndE(5)),
-        (Place(4, 5), HardWay(4, 5)),
-        (Place(4, 5), HardWay(6, 5)),
-        (Place(4, 5), HardWay(8, 5)),
-        (Place(4, 5), HardWay(10, 5)),
-        (Place(4, 5), Fire(5)),
-        (Place(5, 5), Place(6, 5)),
-        (Place(5, 5), Place(8, 5)),
-        (Place(5, 5), Place(9, 5)),
-        (Place(5, 5), Place(10, 5)),
-        (Place(5, 5), Field(5)),
-        (Place(5, 5), DontPass(5)),
-        (Place(5, 5), DontCome(5)),
-        (Place(5, 5), Any7(5)),
-        (Place(5, 5), Two(5)),
-        (Place(5, 5), Three(5)),
-        (Place(5, 5), Yo(5)),
-        (Place(5, 5), Boxcars(5)),
-        (Place(5, 5), AnyCraps(5)),
-        (Place(5, 5), CAndE(5)),
-        (Place(5, 5), HardWay(4, 5)),
-        (Place(5, 5), HardWay(6, 5)),
-        (Place(5, 5), HardWay(8, 5)),
-        (Place(5, 5), HardWay(10, 5)),
-        (Place(5, 5), Fire(5)),
-        (Place(6, 5), Place(8, 5)),
-        (Place(6, 5), Place(9, 5)),
-        (Place(6, 5), Place(10, 5)),
-        (Place(6, 5), Field(5)),
-        (Place(6, 5), DontPass(5)),
-        (Place(6, 5), DontCome(5)),
-        (Place(6, 5), Any7(5)),
-        (Place(6, 5), Two(5)),
-        (Place(6, 5), Three(5)),
-        (Place(6, 5), Yo(5)),
-        (Place(6, 5), Boxcars(5)),
-        (Place(6, 5), AnyCraps(5)),
-        (Place(6, 5), CAndE(5)),
-        (Place(6, 5), HardWay(4, 5)),
-        (Place(6, 5), HardWay(6, 5)),
-        (Place(6, 5), HardWay(8, 5)),
-        (Place(6, 5), HardWay(10, 5)),
-        (Place(6, 5), Fire(5)),
-        (Place(8, 5), Place(9, 5)),
-        (Place(8, 5), Place(10, 5)),
-        (Place(8, 5), Field(5)),
-        (Place(8, 5), DontPass(5)),
-        (Place(8, 5), DontCome(5)),
-        (Place(8, 5), Any7(5)),
-        (Place(8, 5), Two(5)),
-        (Place(8, 5), Three(5)),
-        (Place(8, 5), Yo(5)),
-        (Place(8, 5), Boxcars(5)),
-        (Place(8, 5), AnyCraps(5)),
-        (Place(8, 5), CAndE(5)),
-        (Place(8, 5), HardWay(4, 5)),
-        (Place(8, 5), HardWay(6, 5)),
-        (Place(8, 5), HardWay(8, 5)),
-        (Place(8, 5), HardWay(10, 5)),
-        (Place(8, 5), Fire(5)),
-        (Place(9, 5), Place(10, 5)),
-        (Place(9, 5), Field(5)),
-        (Place(9, 5), DontPass(5)),
-        (Place(9, 5), DontCome(5)),
-        (Place(9, 5), Any7(5)),
-        (Place(9, 5), Two(5)),
-        (Place(9, 5), Three(5)),
-        (Place(9, 5), Yo(5)),
-        (Place(9, 5), Boxcars(5)),
-        (Place(9, 5), AnyCraps(5)),
-        (Place(9, 5), CAndE(5)),
-        (Place(9, 5), HardWay(4, 5)),
-        (Place(9, 5), HardWay(6, 5)),
-        (Place(9, 5), HardWay(8, 5)),
-        (Place(9, 5), HardWay(10, 5)),
-        (Place(9, 5), Fire(5)),
-        (Place(10, 5), Field(5)),
-        (Place(10, 5), DontPass(5)),
-        (Place(10, 5), DontCome(5)),
-        (Place(10, 5), Any7(5)),
-        (Place(10, 5), Two(5)),
-        (Place(10, 5), Three(5)),
-        (Place(10, 5), Yo(5)),
-        (Place(10, 5), Boxcars(5)),
-        (Place(10, 5), AnyCraps(5)),
-        (Place(10, 5), CAndE(5)),
-        (Place(10, 5), HardWay(4, 5)),
-        (Place(10, 5), HardWay(6, 5)),
-        (Place(10, 5), HardWay(8, 5)),
-        (Place(10, 5), HardWay(10, 5)),
-        (Place(10, 5), Fire(5)),
-        (Field(5), DontPass(5)),
-        (Field(5), DontCome(5)),
-        (Field(5), Any7(5)),
-        (Field(5), Two(5)),
-        (Field(5), Three(5)),
-        (Field(5), Yo(5)),
-        (Field(5), Boxcars(5)),
-        (Field(5), AnyCraps(5)),
-        (Field(5), CAndE(5)),
-        (Field(5), HardWay(4, 5)),
-        (Field(5), HardWay(6, 5)),
-        (Field(5), HardWay(8, 5)),
-        (Field(5), HardWay(10, 5)),
-        (Field(5), Fire(5)),
-        (DontPass(5), DontCome(5)),
-        (DontPass(5), Any7(5)),
-        (DontPass(5), Two(5)),
-        (DontPass(5), Three(5)),
-        (DontPass(5), Yo(5)),
-        (DontPass(5), Boxcars(5)),
-        (DontPass(5), AnyCraps(5)),
-        (DontPass(5), CAndE(5)),
-        (DontPass(5), HardWay(4, 5)),
-        (DontPass(5), HardWay(6, 5)),
-        (DontPass(5), HardWay(8, 5)),
-        (DontPass(5), HardWay(10, 5)),
-        (DontPass(5), Fire(5)),
-        (DontCome(5), Any7(5)),
-        (DontCome(5), Two(5)),
-        (DontCome(5), Three(5)),
-        (DontCome(5), Yo(5)),
-        (DontCome(5), Boxcars(5)),
-        (DontCome(5), AnyCraps(5)),
-        (DontCome(5), CAndE(5)),
-        (DontCome(5), HardWay(4, 5)),
-        (DontCome(5), HardWay(6, 5)),
-        (DontCome(5), HardWay(8, 5)),
-        (DontCome(5), HardWay(10, 5)),
-        (DontCome(5), Fire(5)),
-        (Odds(DontPass, 4, 5), Odds(DontPass, 5, 5)),
-        (Odds(DontPass, 4, 5), Odds(DontPass, 6, 5)),
-        (Odds(DontPass, 4, 5), Odds(DontPass, 8, 5)),
-        (Odds(DontPass, 4, 5), Odds(DontPass, 9, 5)),
-        (Odds(DontPass, 4, 5), Odds(DontPass, 10, 5)),
-        (Odds(DontPass, 4, 5), Any7(5)),
-        (Odds(DontPass, 4, 5), Two(5)),
-        (Odds(DontPass, 4, 5), Three(5)),
-        (Odds(DontPass, 4, 5), Yo(5)),
-        (Odds(DontPass, 4, 5), Boxcars(5)),
-        (Odds(DontPass, 4, 5), AnyCraps(5)),
-        (Odds(DontPass, 4, 5), CAndE(5)),
-        (Odds(DontPass, 4, 5), HardWay(4, 5)),
-        (Odds(DontPass, 4, 5), HardWay(6, 5)),
-        (Odds(DontPass, 4, 5), HardWay(8, 5)),
-        (Odds(DontPass, 4, 5), HardWay(10, 5)),
-        (Odds(DontPass, 4, 5), Fire(5)),
-        (Odds(DontPass, 5, 5), Odds(DontPass, 6, 5)),
-        (Odds(DontPass, 5, 5), Odds(DontPass, 8, 5)),
-        (Odds(DontPass, 5, 5), Odds(DontPass, 9, 5)),
-        (Odds(DontPass, 5, 5), Odds(DontPass, 10, 5)),
-        (Odds(DontPass, 5, 5), Any7(5)),
-        (Odds(DontPass, 5, 5), Two(5)),
-        (Odds(DontPass, 5, 5), Three(5)),
-        (Odds(DontPass, 5, 5), Yo(5)),
-        (Odds(DontPass, 5, 5), Boxcars(5)),
-        (Odds(DontPass, 5, 5), AnyCraps(5)),
-        (Odds(DontPass, 5, 5), CAndE(5)),
-        (Odds(DontPass, 5, 5), HardWay(4, 5)),
-        (Odds(DontPass, 5, 5), HardWay(6, 5)),
-        (Odds(DontPass, 5, 5), HardWay(8, 5)),
-        (Odds(DontPass, 5, 5), HardWay(10, 5)),
-        (Odds(DontPass, 5, 5), Fire(5)),
-        (Odds(DontPass, 6, 5), Odds(DontPass, 8, 5)),
-        (Odds(DontPass, 6, 5), Odds(DontPass, 9, 5)),
-        (Odds(DontPass, 6, 5), Odds(DontPass, 10, 5)),
-        (Odds(DontPass, 6, 5), Any7(5)),
-        (Odds(DontPass, 6, 5), Two(5)),
-        (Odds(DontPass, 6, 5), Three(5)),
-        (Odds(DontPass, 6, 5), Yo(5)),
-        (Odds(DontPass, 6, 5), Boxcars(5)),
-        (Odds(DontPass, 6, 5), AnyCraps(5)),
-        (Odds(DontPass, 6, 5), CAndE(5)),
-        (Odds(DontPass, 6, 5), HardWay(4, 5)),
-        (Odds(DontPass, 6, 5), HardWay(6, 5)),
-        (Odds(DontPass, 6, 5), HardWay(8, 5)),
-        (Odds(DontPass, 6, 5), HardWay(10, 5)),
-        (Odds(DontPass, 6, 5), Fire(5)),
-        (Odds(DontPass, 8, 5), Odds(DontPass, 9, 5)),
-        (Odds(DontPass, 8, 5), Odds(DontPass, 10, 5)),
-        (Odds(DontPass, 8, 5), Any7(5)),
-        (Odds(DontPass, 8, 5), Two(5)),
-        (Odds(DontPass, 8, 5), Three(5)),
-        (Odds(DontPass, 8, 5), Yo(5)),
-        (Odds(DontPass, 8, 5), Boxcars(5)),
-        (Odds(DontPass, 8, 5), AnyCraps(5)),
-        (Odds(DontPass, 8, 5), CAndE(5)),
-        (Odds(DontPass, 8, 5), HardWay(4, 5)),
-        (Odds(DontPass, 8, 5), HardWay(6, 5)),
-        (Odds(DontPass, 8, 5), HardWay(8, 5)),
-        (Odds(DontPass, 8, 5), HardWay(10, 5)),
-        (Odds(DontPass, 8, 5), Fire(5)),
-        (Odds(DontPass, 9, 5), Odds(DontPass, 10, 5)),
-        (Odds(DontPass, 9, 5), Any7(5)),
-        (Odds(DontPass, 9, 5), Two(5)),
-        (Odds(DontPass, 9, 5), Three(5)),
-        (Odds(DontPass, 9, 5), Yo(5)),
-        (Odds(DontPass, 9, 5), Boxcars(5)),
-        (Odds(DontPass, 9, 5), AnyCraps(5)),
-        (Odds(DontPass, 9, 5), CAndE(5)),
-        (Odds(DontPass, 9, 5), HardWay(4, 5)),
-        (Odds(DontPass, 9, 5), HardWay(6, 5)),
-        (Odds(DontPass, 9, 5), HardWay(8, 5)),
-        (Odds(DontPass, 9, 5), HardWay(10, 5)),
-        (Odds(DontPass, 9, 5), Fire(5)),
-        (Odds(DontPass, 10, 5), Any7(5)),
-        (Odds(DontPass, 10, 5), Two(5)),
-        (Odds(DontPass, 10, 5), Three(5)),
-        (Odds(DontPass, 10, 5), Yo(5)),
-        (Odds(DontPass, 10, 5), Boxcars(5)),
-        (Odds(DontPass, 10, 5), AnyCraps(5)),
-        (Odds(DontPass, 10, 5), CAndE(5)),
-        (Odds(DontPass, 10, 5), HardWay(4, 5)),
-        (Odds(DontPass, 10, 5), HardWay(6, 5)),
-        (Odds(DontPass, 10, 5), HardWay(8, 5)),
-        (Odds(DontPass, 10, 5), HardWay(10, 5)),
-        (Odds(DontPass, 10, 5), Fire(5)),
-        (Any7(5), Two(5)),
-        (Any7(5), Three(5)),
-        (Any7(5), Yo(5)),
-        (Any7(5), Boxcars(5)),
-        (Any7(5), AnyCraps(5)),
-        (Any7(5), CAndE(5)),
-        (Any7(5), HardWay(4, 5)),
-        (Any7(5), HardWay(6, 5)),
-        (Any7(5), HardWay(8, 5)),
-        (Any7(5), HardWay(10, 5)),
-        (Any7(5), Fire(5)),
-        (Two(5), Three(5)),
-        (Two(5), Yo(5)),
-        (Two(5), Boxcars(5)),
-        (Two(5), AnyCraps(5)),
-        (Two(5), CAndE(5)),
-        (Two(5), HardWay(4, 5)),
-        (Two(5), HardWay(6, 5)),
-        (Two(5), HardWay(8, 5)),
-        (Two(5), HardWay(10, 5)),
-        (Two(5), Fire(5)),
-        (Three(5), Yo(5)),
-        (Three(5), Boxcars(5)),
-        (Three(5), AnyCraps(5)),
-        (Three(5), CAndE(5)),
-        (Three(5), HardWay(4, 5)),
-        (Three(5), HardWay(6, 5)),
-        (Three(5), HardWay(8, 5)),
-        (Three(5), HardWay(10, 5)),
-        (Three(5), Fire(5)),
-        (Yo(5), Boxcars(5)),
-        (Yo(5), AnyCraps(5)),
-        (Yo(5), CAndE(5)),
-        (Yo(5), HardWay(4, 5)),
-        (Yo(5), HardWay(6, 5)),
-        (Yo(5), HardWay(8, 5)),
-        (Yo(5), HardWay(10, 5)),
-        (Yo(5), Fire(5)),
-        (Boxcars(5), AnyCraps(5)),
-        (Boxcars(5), CAndE(5)),
-        (Boxcars(5), HardWay(4, 5)),
-        (Boxcars(5), HardWay(6, 5)),
-        (Boxcars(5), HardWay(8, 5)),
-        (Boxcars(5), HardWay(10, 5)),
-        (Boxcars(5), Fire(5)),
-        (AnyCraps(5), CAndE(5)),
-        (AnyCraps(5), HardWay(4, 5)),
-        (AnyCraps(5), HardWay(6, 5)),
-        (AnyCraps(5), HardWay(8, 5)),
-        (AnyCraps(5), HardWay(10, 5)),
-        (AnyCraps(5), Fire(5)),
-        (CAndE(5), HardWay(4, 5)),
-        (CAndE(5), HardWay(6, 5)),
-        (CAndE(5), HardWay(8, 5)),
-        (CAndE(5), HardWay(10, 5)),
-        (CAndE(5), Fire(5)),
-        (HardWay(4, 5), HardWay(6, 5)),
-        (HardWay(4, 5), HardWay(8, 5)),
-        (HardWay(4, 5), HardWay(10, 5)),
-        (HardWay(4, 5), Fire(5)),
-        (HardWay(6, 5), HardWay(8, 5)),
-        (HardWay(6, 5), HardWay(10, 5)),
-        (HardWay(6, 5), Fire(5)),
-        (HardWay(8, 5), HardWay(10, 5)),
-        (HardWay(8, 5), Fire(5)),
-        (HardWay(10, 5), Fire(5)),
-    ],
-)
+@pytest.mark.parametrize("bet_one, bet_two", [x for x in combinations(ALL_BETS, r=2)])
 def test_bet_type_inequality(bet_one, bet_two):
     assert bet_one != bet_two
 
@@ -601,6 +130,9 @@ def test_bet_type_inequality(bet_one, bet_two):
         (HardWay(8, 15), HardWay(8, 5)),
         (HardWay(10, 20), HardWay(10, 5)),
         (Fire(20), Fire(30)),
+        (All(2), All(7)),
+        (Small(5), Small(10)),
+        (Tall(5), Tall(30)),
     ],
 )
 def test_bet_amount_inequality(bet_one, bet_two):
@@ -694,6 +226,28 @@ def test_is_removable_table_point_on(bet):
 
 
 @pytest.mark.parametrize(
+    "bet, new_shooter, is_removable",
+    [
+        (Fire(5), True, True),
+        (Fire(5), False, False),
+        (All(5), True, True),
+        (All(5), False, False),
+        (Tall(5), True, True),
+        (Tall(5), False, False),
+        (Small(5), True, True),
+        (Small(5), False, False),
+    ],
+)
+def test_bet_is_removable_new_shooter(bet, new_shooter, is_removable):
+    table = Table()
+    table.add_player()
+
+    table.new_shooter = new_shooter
+
+    assert bet.is_removable(player=table.players[0]) == is_removable
+
+
+@pytest.mark.parametrize(
     "dice1, dice2, correct_ratio",
     [(1, 1, 2), (1, 2, 1), (2, 2, 1), (5, 4, 1), (5, 5, 1), (6, 5, 1), (6, 6, 2)],
 )
@@ -738,7 +292,7 @@ def test_get_fire_default_table_payout_ratio(points_made, correct_ratio):
 )
 def test_get_fire_non_default_table_payout_ratio(points_made, correct_ratio):
     table = Table()
-    table.settings["fire_points"] = {3: 6, 4: 9, 5: 69, 6: 420}
+    table.settings["fire_payouts"] = {3: 6, 4: 9, 5: 69, 6: 420}
     bet = Fire(1)
     bet.points_made = points_made
     bet.ended = True
@@ -903,6 +457,12 @@ def test_bet_is_allowed_point(bet, point_number, is_allowed):
         (Field(5), False, True),
         (Fire(5), True, True),
         (Fire(5), False, False),
+        (All(5), True, True),
+        (All(5), False, False),
+        (Tall(5), True, True),
+        (Tall(5), False, False),
+        (Small(5), True, True),
+        (Small(5), False, False),
     ],
 )
 def test_bet_is_allowed_new_shooter(bet, new_shooter, is_allowed):
@@ -973,3 +533,209 @@ def test_bets_always_is_allowed_point_on(bet):
     table.point.number = 10
     table.add_player()
     assert bet.is_allowed(table.players[0])
+
+
+# fmt: off
+@pytest.mark.parametrize('rolls, correct_bankroll_change, correct_value_change, correct_exists', [
+    (
+        [(2, 2)], 
+        -1, 0, True
+    ),
+    (
+        [(10, 1), (10, 2), (7, 2), (5, 5), (2, 6), (1, 1), 
+         (1, 2), (2, 2), (2, 3), (3, 3)], 
+        150, 150, False
+    ),
+    (
+        [(10, 1), (10, 2), (7, 2), (5, 5), (2, 6), (1, 1), 
+         (1, 2), (2, 2), (2, 3)], 
+        -1, 0, True
+    ),
+    (
+        [(1, 1), (1, 2), (2, 2), (2, 3), (3, 4)], 
+        -1, -1, False
+    )
+])
+# fmt: on
+def test_all_on_table(
+    rolls: list[tuple[int]],
+    correct_bankroll_change: float,
+    correct_value_change: float,
+    correct_exists: bool,
+):
+
+    table = Table()
+    start_bankroll = 100
+    table.add_player(bankroll=start_bankroll, strategy=NullStrategy())
+    player = table.players[0]
+    player.add_bet(All(1))
+
+    table.fixed_run(rolls, verbose=True)
+
+    bankroll_change = player.bankroll - start_bankroll
+    value_change = player.bankroll + player.total_bet_amount - start_bankroll
+    exists = player.has_bets(All)
+
+    assert (bankroll_change, value_change, exists) == (
+        correct_bankroll_change,
+        correct_value_change,
+        correct_exists,
+    )
+
+
+# fmt: off
+@pytest.mark.parametrize('rolls, correct_bankroll_change, correct_value_change, correct_exists', [
+    (
+        [(2, 2)], 
+        -1, 0, True
+    ),
+    (
+        [(1, 1), (1, 2), (2, 2), (2, 3), (3, 3)], 
+        -1, 0, True
+    ),
+    (
+        [(10, 1), (10, 2), (7, 2), (5, 5), (2, 6)], 
+        30, 30, False
+    ),
+    (
+        [(10, 1), (10, 2), (7, 2), (5, 5), (3, 4)], 
+        -1, -1, False
+    ),
+    (
+        [(10, 1), (10, 2), (7, 2), (5, 5)], 
+        -1, 0, True
+    ),
+])
+# fmt: on
+def test_tall_on_table(
+    rolls: list[tuple[int]],
+    correct_bankroll_change: float,
+    correct_value_change: float,
+    correct_exists: bool,
+):
+
+    table = Table()
+    start_bankroll = 100
+    table.add_player(bankroll=start_bankroll, strategy=NullStrategy())
+    player = table.players[0]
+    player.add_bet(Tall(1))
+
+    table.fixed_run(rolls, verbose=True)
+
+    bankroll_change = player.bankroll - start_bankroll
+    value_change = player.bankroll + player.total_bet_amount - start_bankroll
+    exists = player.has_bets(Tall)
+
+    assert (bankroll_change, value_change, exists) == (
+        correct_bankroll_change,
+        correct_value_change,
+        correct_exists,
+    )
+
+
+# fmt: off
+@pytest.mark.parametrize('rolls, correct_bankroll_change, correct_value_change, correct_exists', [
+    (
+        [(2, 2)], 
+        -1, 0, True
+    ),
+    (
+        [(1, 1), (1, 2), (2, 2), (2, 3), (3, 3)], 
+        30, 30, False
+    ),
+    (
+        [(10, 1), (10, 2), (7, 2), (5, 5), (2, 6)], 
+        -1, 0, True
+    ),
+    (
+        [(1, 1), (1, 2), (2, 2), (2, 3), (3, 4)], 
+        -1, -1, False
+    ),
+    (
+        [(1, 1), (1, 2), (2, 2), (2, 3)], 
+        -1, 0, True
+    ),
+])
+# fmt: on
+def test_small_on_table(
+    rolls: list[tuple[int]],
+    correct_bankroll_change: float,
+    correct_value_change: float,
+    correct_exists: bool,
+):
+
+    table = Table()
+    start_bankroll = 100
+    table.add_player(bankroll=start_bankroll, strategy=NullStrategy())
+    player = table.players[0]
+    player.add_bet(Small(1))
+
+    table.fixed_run(rolls, verbose=True)
+
+    bankroll_change = player.bankroll - start_bankroll
+    value_change = player.bankroll + player.total_bet_amount - start_bankroll
+    exists = player.has_bets(Small)
+
+    assert (bankroll_change, value_change, exists) == (
+        correct_bankroll_change,
+        correct_value_change,
+        correct_exists,
+    )
+
+
+@pytest.mark.parametrize(
+    "ATS_payouts, bet, rolled_numbers, correct_ratio",
+    [
+        (
+            {"all": 150, "tall": 30, "small": 30},
+            All(1),
+            [2, 3, 4, 5, 6, 8, 9, 10, 11, 12],
+            150,
+        ),
+        (
+            {"all": 150, "tall": 30, "small": 30},
+            All(5),
+            [2, 3, 4, 5, 6, 8, 9, 10, 11, 12],
+            150,
+        ),
+        (
+            {"all": 150, "tall": 30, "small": 30},
+            Tall(1),
+            [8, 9, 10, 11, 12],
+            30,
+        ),
+        (
+            {"all": 150, "tall": 30, "small": 30},
+            Small(5),
+            [2, 3, 4, 5, 6],
+            30,
+        ),
+        (
+            {"all": 174, "tall": 34, "small": 34},
+            All(1),
+            [2, 3, 4, 5, 6, 8, 9, 10, 11, 12],
+            174,
+        ),
+        (
+            {"all": 174, "tall": 34, "small": 34},
+            Tall(5),
+            [8, 9, 10, 11, 12],
+            34,
+        ),
+        (
+            {"all": 174, "tall": 34, "small": 34},
+            Small(1),
+            [2, 3, 4, 5, 6],
+            34,
+        ),
+    ],
+)
+def test_all_tall_small_table_payout_ratio(
+    ATS_payouts, bet, rolled_numbers, correct_ratio
+):
+    table = Table()
+    table.settings["ATS_payouts"] = ATS_payouts
+    bet.rolled_numbers = set(rolled_numbers)
+
+    ratio = (bet.get_result(table).amount - bet.amount) / bet.amount
+    assert ratio == correct_ratio

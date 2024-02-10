@@ -36,13 +36,13 @@ class BetResult:
             return 0
 
 
-class MetaBetABC(ABCMeta):
+class _MetaBetABC(ABCMeta):
     # Trick to get a bet like `PassLine` to have it's repr be `crapssim.bet.PassLine`
     def __repr__(cls):
         return f"crapssim.bet.{cls.__name__}"
 
 
-class Bet(ABC, metaclass=MetaBetABC):
+class Bet(ABC, metaclass=_MetaBetABC):
     """
     A generic bet for the craps table
 
@@ -139,9 +139,9 @@ class Bet(ABC, metaclass=MetaBetABC):
         return self.__sub__(other)
 
 
-class WinningLosingNumbersBet(Bet, ABC):
+class _WinningLosingNumbersBet(Bet, ABC):
     """
-    A WinningLosingNumbersBet has winning numbers, losing numbers, and payout ratios
+    A _WinningLosingNumbersBet has winning numbers, losing numbers, and payout ratios
     (possibly depending on the table) from which the result can be calculated.
     """
 
@@ -171,11 +171,15 @@ class WinningLosingNumbersBet(Bet, ABC):
         pass
 
 
-class SimpleBet(WinningLosingNumbersBet, ABC):
+class _SimpleBet(_WinningLosingNumbersBet, ABC):
     """
-    A SimpleBet has fixed winning and losing numbers and payout ratio that
+    A _SimpleBet has fixed winning and losing numbers and payout ratio that
     can be known at instantiation and don't depend on the table.
     """
+
+    winning_numbers: list[int] = []
+    losing_numbers: list[int] = []
+    payout_ratio: int = 1
 
     def get_winning_numbers(self, table: "Table") -> list[int]:
         return self.winning_numbers
@@ -190,7 +194,7 @@ class SimpleBet(WinningLosingNumbersBet, ABC):
 # Passline and related bets ---------------------------------------------------
 
 
-class PassLine(WinningLosingNumbersBet):
+class PassLine(_WinningLosingNumbersBet):
     def get_winning_numbers(self, table: "Table") -> list[int]:
         if table.point.number is None:
             return [7, 11]
@@ -211,7 +215,7 @@ class PassLine(WinningLosingNumbersBet):
         return player.table.point.status == "Off"
 
 
-class Come(WinningLosingNumbersBet):
+class Come(_WinningLosingNumbersBet):
     def __init__(self, amount: typing.SupportsFloat, point: Point | int | None = None):
         super().__init__(amount)
 
@@ -253,7 +257,7 @@ class Come(WinningLosingNumbersBet):
         return f"{self.__class__.__name__}(amount={self.amount}, point={self.point})"
 
 
-class DontPass(WinningLosingNumbersBet):
+class DontPass(_WinningLosingNumbersBet):
     def get_winning_numbers(self, table: "Table") -> list[int]:
         if table.point.number is None:
             return [2, 3]
@@ -271,7 +275,7 @@ class DontPass(WinningLosingNumbersBet):
         return player.table.point.status == "Off"
 
 
-class DontCome(WinningLosingNumbersBet):
+class DontCome(_WinningLosingNumbersBet):
     def __init__(self, amount: typing.SupportsFloat, point: int | None = None) -> None:
         super().__init__(amount)
 
@@ -313,7 +317,7 @@ class DontCome(WinningLosingNumbersBet):
 # Odds bets -------------------------------------------------------------------
 
 
-class Odds(WinningLosingNumbersBet):
+class Odds(_WinningLosingNumbersBet):
     def __init__(
         self,
         base_type: typing.Type[PassLine | DontPass | Come | DontCome],
@@ -391,7 +395,7 @@ class Odds(WinningLosingNumbersBet):
 # Place bets ------------------------------------------------------------------
 
 
-class Place(SimpleBet):
+class Place(_SimpleBet):
     payout_ratios = {4: 9 / 5, 5: 7 / 5, 6: 7 / 6, 8: 7 / 6, 9: 7 / 5, 10: 9 / 5}
     losing_numbers: list[int] = [7]
 
@@ -409,10 +413,10 @@ class Place(SimpleBet):
         return f"Place({self.winning_numbers[0]}, amount={self.amount})"
 
 
-# WinningLosingNumbersBets with variable payouts -----------------------------------------------------------------
+# _WinningLosingNumbersBets with variable payouts -----------------------------------------------------------------
 
 
-class Field(WinningLosingNumbersBet):
+class Field(_WinningLosingNumbersBet):
     winning_numbers = [2, 3, 4, 9, 10, 11, 12]
     losing_numbers = [5, 6, 7, 8]
 
@@ -428,7 +432,7 @@ class Field(WinningLosingNumbersBet):
         return 0.0
 
 
-class CAndE(WinningLosingNumbersBet):
+class CAndE(_WinningLosingNumbersBet):
     winning_numbers: list[int] = [2, 3, 11, 12]
     losing_numbers: list[int] = list(ALL_DICE_NUMBERS - {2, 3, 11, 12})
 
@@ -450,37 +454,37 @@ class CAndE(WinningLosingNumbersBet):
 # Simple bets in the middle of the table --------------------------------------
 
 
-class Any7(SimpleBet):
+class Any7(_SimpleBet):
     winning_numbers: list[int] = [7]
     losing_numbers: list[int] = list(ALL_DICE_NUMBERS - {7})
     payout_ratio: int = 4
 
 
-class Two(SimpleBet):
+class Two(_SimpleBet):
     winning_numbers: list[int] = [2]
     losing_numbers: list[int] = list(ALL_DICE_NUMBERS - {2})
     payout_ratio: int = 30
 
 
-class Three(SimpleBet):
+class Three(_SimpleBet):
     winning_numbers: list[int] = [3]
     losing_numbers: list[int] = list(ALL_DICE_NUMBERS - {3})
     payout_ratio: int = 15
 
 
-class Yo(SimpleBet):
+class Yo(_SimpleBet):
     winning_numbers: list[int] = [11]
     losing_numbers: list[int] = list(ALL_DICE_NUMBERS - {11})
     payout_ratio: int = 15
 
 
-class Boxcars(SimpleBet):
+class Boxcars(_SimpleBet):
     winning_numbers: list[int] = [12]
     losing_numbers: list[int] = list(ALL_DICE_NUMBERS - {12})
     payout_ratio: int = 30
 
 
-class AnyCraps(SimpleBet):
+class AnyCraps(_SimpleBet):
     winning_numbers: list[int] = [2, 3, 12]
     losing_numbers: list[int] = list(ALL_DICE_NUMBERS - {2, 3, 12})
     payout_ratio: int = 7
@@ -531,11 +535,11 @@ class Fire(Bet):
         self.ended: bool = False
 
     def get_result(self, table: "Table") -> BetResult:
-        if self.ended and len(self.points_made) in table.settings["fire_points"]:
-            payout_ratio = table.settings["fire_points"][len(self.points_made)]
+        if self.ended and len(self.points_made) in table.settings["fire_payouts"]:
+            payout_ratio = table.settings["fire_payouts"][len(self.points_made)]
             result_amount = payout_ratio * self.amount + self.amount
             remove = True
-        elif self.ended and len(self.points_made) not in table.settings["fire_points"]:
+        elif self.ended and len(self.points_made) not in table.settings["fire_payouts"]:
             result_amount = -1 * self.amount
             remove = True
         else:
@@ -554,5 +558,58 @@ class Fire(Bet):
         elif dice_total == 7:
             self.ended = True
 
+    def is_removable(self, player: "Player") -> bool:
+        return player.table.new_shooter
+
     def is_allowed(self, player: "Player") -> bool:
         return player.table.new_shooter
+
+
+class _ATSBet(Bet):
+    """Class representing ATS (All, Tall, Small) bets, not a usable bet by itself."""
+
+    numbers: list[int] = []
+    type: str = "_ATSBet"
+
+    def __init__(self, amount: float):
+        super().__init__(amount)
+        self.rolled_numbers: set[int] = set()
+
+    def get_result(self, table: "Table") -> BetResult:
+
+        if table.dice.total in self.numbers:
+            self.rolled_numbers.add(table.dice.total)
+
+        if self.numbers == list(self.rolled_numbers):
+            payout_ratio = table.settings["ATS_payouts"][self.type]
+            result_amount = payout_ratio * self.amount + self.amount
+            should_remove = True
+        elif table.dice.total == 7:
+            result_amount = -1 * self.amount
+            should_remove = True
+        else:
+            result_amount = 0
+            should_remove = False
+
+        return BetResult(result_amount, should_remove)
+
+    def is_removable(self, player: "Player") -> bool:
+        return player.table.new_shooter
+
+    def is_allowed(self, player: "Player") -> bool:
+        return player.table.new_shooter
+
+
+class All(_ATSBet):
+    type: str = "all"
+    numbers: list[int] = [2, 3, 4, 5, 6, 8, 9, 10, 11, 12]
+
+
+class Tall(_ATSBet):
+    type: str = "tall"
+    numbers: list[int] = [8, 9, 10, 11, 12]
+
+
+class Small(_ATSBet):
+    type: str = "small"
+    numbers: list[int] = [2, 3, 4, 5, 6]
