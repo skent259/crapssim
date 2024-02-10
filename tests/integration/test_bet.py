@@ -270,13 +270,19 @@ def test_get_field_non_default_table_payout_ratio(dice1, dice2, correct_ratio):
 
 @pytest.mark.parametrize(
     "points_made, correct_ratio",
-    [([4, 5, 6, 9], 24), ([4, 5, 6, 9, 10], 249), ([4, 5, 6, 8, 9, 10], 999)],
+    [
+        ({4, 5, 6, 9}, 24),
+        ({4, 5, 6, 9, 10}, 249),
+        ({4, 5, 6, 8, 9, 10}, 999),
+    ],
 )
 def test_get_fire_default_table_payout_ratio(points_made, correct_ratio):
     table = Table()
     bet = Fire(1)
+    table.point.number = 8
+    table.dice.total = 7
     bet.points_made = points_made
-    bet.ended = True
+
     ratio = (bet.get_result(table).amount - bet.amount) / bet.amount
     assert ratio == correct_ratio
 
@@ -284,140 +290,101 @@ def test_get_fire_default_table_payout_ratio(points_made, correct_ratio):
 @pytest.mark.parametrize(
     "points_made, correct_ratio",
     [
-        ([4, 5, 6], 6),
-        ([4, 5, 6, 9], 9),
-        ([4, 5, 6, 9, 10], 69),
-        ([4, 5, 6, 8, 9, 10], 420),
+        ({4, 5, 6}, 6),
+        ({4, 5, 6, 9}, 9),
+        ({4, 5, 6, 9, 10}, 69),
+        ({4, 5, 6, 8, 9, 10}, 420),
     ],
 )
 def test_get_fire_non_default_table_payout_ratio(points_made, correct_ratio):
     table = Table()
     table.settings["fire_payouts"] = {3: 6, 4: 9, 5: 69, 6: 420}
     bet = Fire(1)
+    table.point.number = 8
+    table.dice.total = 7
     bet.points_made = points_made
-    bet.ended = True
+
     ratio = (bet.get_result(table).amount - bet.amount) / bet.amount
     assert ratio == correct_ratio
 
 
+# fmt: off
 @pytest.mark.parametrize(
-    "rolls, correct_status, correct_win_amt, correct_remove",
+    'rolls, correct_bankroll_change, correct_value_change, correct_exists', 
     [
-        ([(6, 1)], None, 0.0, False),
-        ([(2, 2), (3, 1), (4, 3), (6, 6)], None, 0.0, False),
-        ([(2, 2), (4, 3)], "lose", 0.0, True),
         (
-            [(2, 2), (2, 2), (3, 3), (3, 3), (4, 3), (4, 4), (4, 4), (5, 5), (5, 5)],
-            None,
-            0.0,
-            False,
+            [(6, 1)], 
+            -1, 0, True
         ),
         (
-            [
-                (2, 2),
-                (2, 2),
-                (3, 3),
-                (3, 3),
-                (4, 3),
-                (4, 4),
-                (4, 4),
-                (5, 5),
-                (5, 5),
-                (5, 5),
-                (5, 5),
-            ],
-            None,
-            0.0,
-            False,
+            [(2, 2), (3, 1), (4, 3), (6, 6)], 
+            -1, 0, True
         ),
         (
-            [
-                (2, 2),
-                (2, 2),
-                (3, 3),
-                (3, 3),
-                (4, 3),
-                (4, 4),
-                (4, 4),
-                (5, 5),
-                (5, 5),
-                (5, 5),
-                (3, 4),
-            ],
-            "win",
-            24,
-            True,
+            [(2, 2), (4, 3)], 
+            -1, -1, False
         ),
         (
-            [
-                (2, 2),
-                (2, 2),
-                (3, 3),
-                (3, 3),
-                (4, 3),
-                (4, 4),
-                (4, 4),
-                (5, 5),
-                (5, 5),
-                (2, 3),
-                (2, 3),
-            ],
-            None,
-            0.0,
-            False,
+            [(2, 2), (2, 2), (3, 3), (3, 3), (4, 3), (4, 4), (4, 4), (5, 5), 
+             (5, 5)],
+            -1, 0, True,
         ),
         (
-            [
-                (2, 2),
-                (2, 2),
-                (3, 3),
-                (3, 3),
-                (4, 3),
-                (4, 4),
-                (4, 4),
-                (5, 5),
-                (5, 5),
-                (2, 3),
-                (2, 3),
-                (4, 5),
-                (4, 5),
-            ],
-            None,
-            0.0,
-            False,
+            [(2, 2), (2, 2), (3, 3), (3, 3), (4, 3), (4, 4), (4, 4), (5, 5), 
+             (5, 5), (5, 5), (5, 5)],
+            -1, 0, True,
         ),
-    ],
+        (
+            [(2, 2), (2, 2), (3, 3), (3, 3), (4, 3), (4, 4), (4, 4), (5, 5), 
+             (5, 5), (5, 5), (3, 4)],
+            24, 24, False
+        ),
+        (
+            [(2, 2), (2, 2), (3, 3), (3, 3), (4, 3), (4, 4), (4, 4), (5, 5), 
+             (5, 5), (2, 3), (2, 3)],
+            -1, 0, True,
+        ),
+        (
+            [(2, 2), (2, 2), (3, 3), (3, 3), (4, 3), (4, 4), (4, 4), (5, 5), 
+             (5, 5), (2, 3), (2, 3), (5, 4)],
+            -1, 0, True
+        ),
+        (
+            [(2, 2), (2, 2), (3, 3), (3, 3), (4, 3), (4, 4), (4, 4), (5, 5), 
+             (5, 5), (2, 3), (2, 3), (4, 4), (3, 4)],
+            249, 249, False
+        ),
+        (
+            [(2, 2), (2, 2), (2, 3), (3, 2), (3, 3), (3, 3), (4, 4), (4, 4), 
+             (4, 5), (5, 4), (5, 5), (5, 5)],
+            999, 999, False
+        ),
+    ]
 )
-def test_fire(rolls, correct_status, correct_win_amt, correct_remove):
+# fmt: on
+def test_fire_on_table(
+    rolls: list[tuple[int]],
+    correct_bankroll_change: float,
+    correct_value_change: float,
+    correct_exists: bool,
+):
+
     table = Table()
-    table.add_player()
-    table.players[0].add_bet(Fire(1))
-    bet = table.players[0].bets[0]
+    start_bankroll = 100
+    table.add_player(bankroll=start_bankroll, strategy=NullStrategy())
+    player = table.players[0]
+    player.add_bet(Fire(1))
 
-    # table.fixed_run(rolls)
-    for roll in rolls:
-        TableUpdate().run(table, roll)
+    table.fixed_run(rolls, verbose=True)
 
-    result = bet.get_result(table)
-    print(result.amount)
-    if result.won:
-        status = "win"
-    elif result.lost:
-        status = "lose"
-    else:
-        status = None
+    bankroll_change = player.bankroll - start_bankroll
+    value_change = player.bankroll + player.total_bet_amount - start_bankroll
+    exists = player.has_bets(Fire)
 
-    if result.won:
-        win_amount = result.amount - bet.amount
-    else:
-        win_amount = 0
-
-    remove = result.remove
-
-    assert (status, win_amount, remove) == (
-        correct_status,
-        correct_win_amt,
-        correct_remove,
+    assert (bankroll_change, value_change, exists) == (
+        correct_bankroll_change,
+        correct_value_change,
+        correct_exists,
     )
 
 

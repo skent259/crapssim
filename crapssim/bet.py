@@ -531,32 +531,31 @@ class HardWay(Bet):
 class Fire(Bet):
     def __init__(self, amount: float):
         super().__init__(amount)
-        self.points_made: list[int] = []
+        self.points_made: set[int] = set()
         self.ended: bool = False
 
     def get_result(self, table: "Table") -> BetResult:
-        if self.ended and len(self.points_made) in table.settings["fire_payouts"]:
-            payout_ratio = table.settings["fire_payouts"][len(self.points_made)]
+
+        if table.point.status == "Off":
+            return BetResult(amount=0, remove=False)
+
+        if table.dice.total == table.point.number:
+            self.points_made.add(table.point.number)
+
+        # Fire pays out on 7 when enough points made
+        # Fire pays out automatically when all 6 points are made
+        n_points_made = len(self.points_made)
+        ended = table.dice.total == 7 or len(self.points_made) == 6
+
+        if ended and n_points_made in table.settings["fire_payouts"]:
+            payout_ratio = table.settings["fire_payouts"][n_points_made]
             result_amount = payout_ratio * self.amount + self.amount
-            remove = True
-        elif self.ended and len(self.points_made) not in table.settings["fire_payouts"]:
+        elif ended and n_points_made not in table.settings["fire_payouts"]:
             result_amount = -1 * self.amount
-            remove = True
         else:
             result_amount = 0
-            remove = False
-        return BetResult(result_amount, remove)
 
-    def update_point(self, player: "Player"):
-        if player.table.point.status == "Off":
-            return
-
-        point_number = player.table.point.number
-        dice_total = player.table.dice.total
-        if point_number == dice_total and point_number not in self.points_made:
-            self.points_made.append(point_number)
-        elif dice_total == 7:
-            self.ended = True
+        return BetResult(result_amount, remove=ended)
 
     def is_removable(self, player: "Player") -> bool:
         return player.table.new_shooter
