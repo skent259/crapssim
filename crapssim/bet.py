@@ -558,6 +558,9 @@ class Fire(Bet):
         elif dice_total == 7:
             self.ended = True
 
+    def is_removable(self, player: "Player") -> bool:
+        return player.table.new_shooter
+
     def is_allowed(self, player: "Player") -> bool:
         return player.table.new_shooter
 
@@ -577,9 +580,9 @@ class _ATSBet(Bet):
         if table.dice.total in self.numbers:
             self.rolled_numbers.add(table.dice.total)
 
-        if self.numbers == self.rolled_numbers:
-            payout_for_ratio = table.settings["ATS_payouts"][self.type]
-            result_amount = payout_for_ratio * self.amount
+        if self.numbers == list(self.rolled_numbers):
+            payout_ratio = table.settings["ATS_payouts"][self.type]
+            result_amount = payout_ratio * self.amount + self.amount
             should_remove = True
         elif table.dice.total == 7:
             result_amount = -1 * self.amount
@@ -589,6 +592,9 @@ class _ATSBet(Bet):
             should_remove = False
 
         return BetResult(result_amount, should_remove)
+
+    def is_removable(self, player: "Player") -> bool:
+        return player.table.new_shooter
 
     def is_allowed(self, player: "Player") -> bool:
         return player.table.new_shooter

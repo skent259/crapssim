@@ -345,6 +345,9 @@ class Player:
     ):
         return [x for x in self.bets if isinstance(x, bet_type)]
 
+    def has_bets(self, bet_type: typing.Type[Bet] | tuple[typing.Type[Bet], ...]):
+        return len(self.get_bets_by_type(bet_type)) > 0
+
     def remove_bet(self, bet: Bet) -> None:
         if bet in self.bets and bet.is_removable(self):
             self.bankroll += bet.amount

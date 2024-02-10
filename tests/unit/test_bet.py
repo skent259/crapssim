@@ -92,6 +92,9 @@ def test_ev_oneroll(bet, ev):
         (crapssim.bet.HardWay(8, 1), "HardWay(8, amount=1.0)"),
         (crapssim.bet.HardWay(10, 1), "HardWay(10, amount=1.0)"),
         (crapssim.bet.Fire(1), "Fire(amount=1.0)"),
+        (crapssim.bet.All(1), "All(amount=1.0)"),
+        (crapssim.bet.Tall(1), "Tall(amount=1.0)"),
+        (crapssim.bet.Small(1), "Small(amount=1.0)"),
     ],
 )
 def test_repr_names(bet, bet_name):
