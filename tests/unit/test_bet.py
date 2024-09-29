@@ -182,17 +182,15 @@ def test_get_cande_dice_12_payout_ratio():
 def test_passline_is_irremovable_table_point_off():
     bet = PassLine(5)
     table = Table()
-    table.add_player()
     table.point.number = 6
-    assert bet.is_removable(table.players[0]) is False
+    assert bet.is_removable(table) is False
 
 
 def test_come_is_removable_without_point():
     bet = Come(5)
     table = Table()
-    table.add_player()
     table.point.number = 6
-    assert bet.is_removable(table.players[0]) is True
+    assert bet.is_removable(table) is True
 
 
 def test_come_is_irremovable_with_point():

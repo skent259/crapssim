@@ -80,7 +80,7 @@ class Bet(ABC, metaclass=_MetaBetABC):
     def update_point(self, player: "Player"):
         pass
 
-    def is_removable(self, player: "Player") -> bool:
+    def is_removable(self, table: Table) -> bool:
         return True
 
     def is_allowed(self, player: "Player") -> bool:
@@ -221,8 +221,8 @@ class PassLine(_WinningLosingNumbersBet):
     def get_payout_ratio(self, table: Table) -> float:
         return 1.0
 
-    def is_removable(self, player: "Player") -> bool:
-        return player.table.point.status == "Off"
+    def is_removable(self, table: Table) -> bool:
+        return table.point.status == "Off"
 
     def is_allowed(self, player: "Player") -> bool:
         return player.table.point.status == "Off"
@@ -256,7 +256,7 @@ class Come(_WinningLosingNumbersBet):
             player.bets.remove(self)
             player.bets.append(Come(self.amount, player.table.dice.total))
 
-    def is_removable(self, player: "Player") -> bool:
+    def is_removable(self, table: Table) -> bool:
         return self.point.status == "Off"
 
     def is_allowed(self, player: "Player") -> bool:
@@ -570,8 +570,8 @@ class Fire(Bet):
 
         return BetResult(result_amount, remove=ended)
 
-    def is_removable(self, player: "Player") -> bool:
-        return player.table.new_shooter
+    def is_removable(self, table: Table) -> bool:
+        return table.new_shooter
 
     def is_allowed(self, player: "Player") -> bool:
         return player.table.new_shooter
@@ -605,8 +605,8 @@ class _ATSBet(Bet):
 
         return BetResult(result_amount, should_remove)
 
-    def is_removable(self, player: "Player") -> bool:
-        return player.table.new_shooter
+    def is_removable(self, table: Table) -> bool:
+        return table.new_shooter
 
     def is_allowed(self, player: "Player") -> bool:
         return player.table.new_shooter

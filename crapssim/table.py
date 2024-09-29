@@ -349,7 +349,7 @@ class Player:
         return len(self.get_bets_by_type(bet_type)) > 0
 
     def remove_bet(self, bet: Bet) -> None:
-        if bet in self.bets and bet.is_removable(self):
+        if bet in self.bets and bet.is_removable(self.table):
             self.bankroll += bet.amount
             self.bets.remove(bet)
 
