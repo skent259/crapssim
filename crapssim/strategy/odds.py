@@ -88,7 +88,7 @@ class OddsMultiplierStrategy(Strategy):
         if isinstance(bet, (PassLine, DontPass)):
             return table.point.number
         elif isinstance(bet, (Come, DontCome)):
-            return bet.point.number
+            return bet.number
         else:
             raise NotImplementedError
 

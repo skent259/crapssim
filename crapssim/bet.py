@@ -77,7 +77,7 @@ class Bet(ABC, metaclass=_MetaBetABC):
     def get_result(self, table: Table) -> BetResult:
         pass
 
-    def update_point(self, player: "Player"):
+    def update_number(self, player: "Player"):
         pass
 
     def is_removable(self, table: Table) -> bool:
@@ -229,45 +229,44 @@ class PassLine(_WinningLosingNumbersBet):
 
 
 class Come(_WinningLosingNumbersBet):
-    def __init__(self, amount: typing.SupportsFloat, point: Point | int | None = None):
+    def __init__(self, amount: typing.SupportsFloat, number: int | None = None):
         super().__init__(amount)
-
-        if point is None or isinstance(point, int):
-            point = Point(point)
-
-        self.point = point
+        possible_numbers = (4, 5, 6, 7, 8, 9, 10)
+        if number in possible_numbers:
+            self.number = number
+        else:
+            self.number = None
 
     def get_winning_numbers(self, table: Table) -> list[int]:
-        if self.point == Point(None):
+        if self.number is None:
             return [7, 11]
-        return [self.point.number]
+        return [self.number]
 
     def get_losing_numbers(self, table: Table) -> list[int]:
-        if self.point == Point(None):
+        if self.number is None:
             return [2, 3, 12]
         return [7]
 
     def get_payout_ratio(self, table: Table) -> float:
         return 1.0
 
-    def update_point(self, player: "Player"):
-        possible_points = (4, 5, 6, 7, 8, 9, 10)
-        if self.point.status == "Off" and player.table.dice.total in possible_points:
-            player.bets.remove(self)
-            player.bets.append(Come(self.amount, player.table.dice.total))
+    def update_number(self, table: Table):
+        possible_numbers = (4, 5, 6, 7, 8, 9, 10)
+        if self.number is None and table.dice.total in possible_numbers:
+            self.number = table.dice.total
 
     def is_removable(self, table: Table) -> bool:
-        return self.point.status == "Off"
+        return self.number is None
 
     def is_allowed(self, player: "Player") -> bool:
         return player.table.point.status == "On"
 
     @property
     def _placed_key(self) -> typing.Hashable:
-        return type(self), self.point
+        return type(self), self.number
 
     def __repr__(self) -> str:
-        return f"{self.__class__.__name__}(amount={self.amount}, point={self.point})"
+        return f"{self.__class__.__name__}(amount={self.amount}, number={self.number})"
 
 
 class DontPass(_WinningLosingNumbersBet):
@@ -289,42 +288,41 @@ class DontPass(_WinningLosingNumbersBet):
 
 
 class DontCome(_WinningLosingNumbersBet):
-    def __init__(self, amount: typing.SupportsFloat, point: int | None = None) -> None:
+    def __init__(self, amount: typing.SupportsFloat, number: int | None = None):
         super().__init__(amount)
-
-        if point is None or isinstance(point, int):
-            point = Point(point)
-
-        self.point = point
+        possible_numbers = (4, 5, 6, 7, 8, 9, 10)
+        if number in possible_numbers:
+            self.number = number
+        else:
+            self.number = None
 
     def get_winning_numbers(self, table: Table) -> list[int]:
-        if self.point is None:
+        if self.number is None:
             return [2, 3]
         return [7]
 
     def get_losing_numbers(self, table: Table) -> list[int]:
-        if self.point is None:
+        if self.number is None:
             return [7, 11]
-        return [self.point.number]
+        return [self.number]
 
     def get_payout_ratio(self, table: Table) -> float:
         return 1.0
 
-    def update_point(self, player: "Player"):
-        possible_points = (4, 5, 6, 7, 8, 9, 10)
-        if self.point.status == "Off" and player.table.dice.total in possible_points:
-            player.bets.remove(self)
-            player.bets.append(DontCome(self.amount, player.table.dice.total))
+    def update_number(self, table: Table):
+        possible_numbers = (4, 5, 6, 7, 8, 9, 10)
+        if self.number is None and table.dice.total in possible_numbers:
+            self.number = table.dice.total
 
     def is_allowed(self, player: "Player") -> bool:
         return player.table.point.status == "On"
 
     @property
     def _placed_key(self) -> typing.Hashable:
-        return type(self), self.point
+        return type(self), self.number
 
     def __repr__(self) -> str:
-        return f"{self.__class__.__name__}(amount={self.amount}, point={self.point})"
+        return f"{self.__class__.__name__}(amount={self.amount}, number={self.number})"
 
 
 # Odds bets -------------------------------------------------------------------

@@ -24,7 +24,7 @@ class TableUpdate:
         self.roll(table, dice_outcome, verbose)
         self.after_roll(table)
         self.update_bets(table, verbose)
-        self.update_points(table, verbose)
+        self.update_numbers(table, verbose)
 
     @staticmethod
     def before_roll(table: "Table"):
@@ -72,9 +72,10 @@ class TableUpdate:
             table.new_shooter = False
 
     @staticmethod
-    def update_points(table: "Table", verbose: bool):
+    def update_numbers(table: "Table", verbose: bool):
+        "For Come and DontCome bets that 'move' to their number"
         for player, bet in table.yield_player_bets():
-            bet.update_point(player)
+            bet.update_number(table)
         table.point.update(table.dice)
 
         if verbose:

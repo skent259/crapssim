@@ -54,9 +54,9 @@ def test_ev_oneroll(bet, ev):
     "bet, bet_name",
     [
         (crapssim.bet.PassLine(1), "PassLine(amount=1.0)"),
-        (crapssim.bet.Come(1), "Come(amount=1.0, point=Point(number=None))"),
+        (crapssim.bet.Come(1), "Come(amount=1.0, number=None)"),
         (crapssim.bet.DontPass(1), "DontPass(amount=1.0)"),
-        (crapssim.bet.DontCome(1), "DontCome(amount=1.0, point=Point(number=None))"),
+        (crapssim.bet.DontCome(1), "DontCome(amount=1.0, number=None)"),
         (
             crapssim.bet.Odds(crapssim.bet.PassLine, 6, 1),
             "Odds(base_type=crapssim.bet.PassLine, number=6, amount=1.0)",
@@ -116,12 +116,10 @@ def test_come_equality():
 
 def test_come_point_inequality():
     come_one = Come(5)
-    come_one.point = 5
-    come_one.new_point = True
+    come_one.number = 5
 
     come_two = Come(5)
-    come_two.point = 6
-    come_two.new_point = True
+    come_two.number = 6
 
     assert come_one != come_two
 
@@ -193,13 +191,13 @@ def test_come_is_removable_without_point():
     assert bet.is_removable(table) is True
 
 
-def test_come_is_irremovable_with_point():
+def test_come_is_irremovable_with_number():
     bet = Come(5)
-    bet.point = Point(10)
+    bet.number = 10
     table = Table()
     table.add_player()
     table.point.number = 6
-    assert bet.is_removable(table.players[0]) is False
+    assert bet.is_removable(table) is False
 
 
 def test_pass_line_odds_is_allowed():
