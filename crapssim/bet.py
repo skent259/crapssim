@@ -19,9 +19,9 @@ class Table(Protocol):
     settings: dict[str, typing.Any]
 
 
-# class Player(Protocol):
-#     table: Table
-#     bets: list[Bet]
+class Player(Protocol):
+    table: Table
+    bets: list[typing.Type["Bet"]]
 
 
 @dataclass(slots=True, frozen=True)
@@ -77,15 +77,16 @@ class Bet(ABC, metaclass=_MetaBetABC):
     def get_result(self, table: Table) -> BetResult:
         pass
 
-    def update_number(self, player: "Player"):
+    def update_number(self, table: Table):
         pass
 
     def is_removable(self, table: Table) -> bool:
         return True
 
-    def is_allowed(self, player: "Player") -> bool:
+    def is_allowed(self, player: Player) -> bool:
         """
         Checks whether the bet is allowed to be placed on the given table.
+        May depend on the player's bets also (e.g. for odds bets).
 
         Parameters
         ----------
@@ -98,10 +99,10 @@ class Bet(ABC, metaclass=_MetaBetABC):
         """
         return True
 
-    def already_placed_bets(self, player: "Player"):
+    def already_placed_bets(self, player: Player):
         return [x for x in player.bets if x._placed_key == self._placed_key]
 
-    def already_placed(self, player: "Player") -> bool:
+    def already_placed(self, player: Player) -> bool:
         return len(self.already_placed_bets(player)) > 0
 
     @property
@@ -224,7 +225,7 @@ class PassLine(_WinningLosingNumbersBet):
     def is_removable(self, table: Table) -> bool:
         return table.point.status == "Off"
 
-    def is_allowed(self, player: "Player") -> bool:
+    def is_allowed(self, player: Player) -> bool:
         return player.table.point.status == "Off"
 
 
@@ -258,7 +259,7 @@ class Come(_WinningLosingNumbersBet):
     def is_removable(self, table: Table) -> bool:
         return self.number is None
 
-    def is_allowed(self, player: "Player") -> bool:
+    def is_allowed(self, player: Player) -> bool:
         return player.table.point.status == "On"
 
     @property
@@ -283,7 +284,7 @@ class DontPass(_WinningLosingNumbersBet):
     def get_payout_ratio(self, table: Table) -> float:
         return 1.0
 
-    def is_allowed(self, player: "Player") -> bool:
+    def is_allowed(self, player: Player) -> bool:
         return player.table.point.status == "Off"
 
 
@@ -314,7 +315,7 @@ class DontCome(_WinningLosingNumbersBet):
         if self.number is None and table.dice.total in possible_numbers:
             self.number = table.dice.total
 
-    def is_allowed(self, player: "Player") -> bool:
+    def is_allowed(self, player: Player) -> bool:
         return player.table.point.status == "On"
 
     @property
@@ -368,11 +369,9 @@ class Odds(_WinningLosingNumbersBet):
         elif self.dark_side:
             return dark_ratios[self.number]
 
-    def is_allowed(self, player: "Player") -> bool:
-        return self.amount <= self.get_max_bet(player)
-
-    def get_max_bet(self, player: "Player") -> float:
-        return self.get_max_odds(player.table) * self.get_base_amount(player)
+    def is_allowed(self, player: Player) -> bool:
+        max_bet = self.get_max_odds(player.table) * self.base_amount(player)
+        return self.amount <= max_bet
 
     def get_max_odds(self, table: Table) -> float:
         if self.light_side:
@@ -382,7 +381,7 @@ class Odds(_WinningLosingNumbersBet):
         else:
             raise NotImplementedError
 
-    def get_base_amount(self, player: "Player"):
+    def base_amount(self, player: Player):
         base_bets = [
             x
             for x in player.bets
@@ -571,7 +570,7 @@ class Fire(Bet):
     def is_removable(self, table: Table) -> bool:
         return table.new_shooter
 
-    def is_allowed(self, player: "Player") -> bool:
+    def is_allowed(self, player: Player) -> bool:
         return player.table.new_shooter
 
 
@@ -606,7 +605,7 @@ class _ATSBet(Bet):
     def is_removable(self, table: Table) -> bool:
         return table.new_shooter
 
-    def is_allowed(self, player: "Player") -> bool:
+    def is_allowed(self, player: Player) -> bool:
         return player.table.new_shooter
 
 
