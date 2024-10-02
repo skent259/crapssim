@@ -36,7 +36,7 @@ def test_many_roll(d1):
 )
 def test_fixed_roll(d1, roll, total):
     d1.fixed_roll(roll)
-    assert d1.result == roll
+    assert d1.result == tuple(roll)
     assert d1.total == total
 
 
@@ -47,5 +47,5 @@ def test_roll_seed_idential(seed):
 
     d1.roll()
     d2.roll()
-    assert (d1.result == d2.result).all()
+    assert d1.result == d2.result
     assert d1.total == d2.total

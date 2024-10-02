@@ -1,6 +1,6 @@
 import typing
 
-from numpy import random
+import numpy as np
 
 
 class Dice:
@@ -11,25 +11,38 @@ class Dice:
     ----------
     n_rolls : int
         Number of rolls for the dice
-    result : array, shape = [2]
+    result : tuple[int, int]
         Most recent outcome of the roll of two dice
     total : int
         Sum of dice outcome
 
     """
 
-    def __init__(self, seed: int | None = None) -> None:
-        self.rng = random.default_rng(seed)
-        self.total: int = 0
-        self.result: typing.Iterable[int] | None = None
+    def __init__(self, seed=None) -> None:
+        self._result: typing.Iterable[int] | None = None
         self.n_rolls: int = 0
+        self.rng = np.random.default_rng(seed)
+
+    @property
+    def total(self) -> int:
+        if self._result is not None:
+            return sum(self.result)
+
+    @property
+    def result(self) -> tuple[int, int]:
+        if self._result is not None:
+            return tuple(self._result)
+
+    @result.setter
+    def result(self, value: typing.Iterable[int]) -> tuple[int, int]:
+        # Allows setting of result, used for some tests, but not recommended
+        # NOTE: no checking is done here, so use with caution
+        self._result = value
 
     def roll(self) -> None:
         self.n_rolls += 1
-        self.result = self.rng.integers(1, 7, size=2)
-        self.total = sum(self.result)
+        self._result = self.rng.integers(1, 7, size=2)
 
     def fixed_roll(self, outcome: typing.Iterable[int]) -> None:
         self.n_rolls += 1
-        self.result = outcome
-        self.total = sum(self.result)
+        self._result = outcome

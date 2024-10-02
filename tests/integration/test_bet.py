@@ -276,7 +276,7 @@ def test_get_fire_default_table_payout_ratio(points_made, correct_ratio):
     table = Table()
     bet = Fire(1)
     table.point.number = 8
-    table.dice.total = 7
+    table.dice.result = [3, 4]  # 7-out
     bet.points_made = points_made
 
     ratio = (bet.get_result(table).amount - bet.amount) / bet.amount
@@ -297,7 +297,7 @@ def test_get_fire_non_default_table_payout_ratio(points_made, correct_ratio):
     table.settings["fire_payouts"] = {3: 6, 4: 9, 5: 69, 6: 420}
     bet = Fire(1)
     table.point.number = 8
-    table.dice.total = 7
+    table.dice.result = [3, 4]  # 7-out
     bet.points_made = points_made
 
     ratio = (bet.get_result(table).amount - bet.amount) / bet.amount
@@ -403,7 +403,11 @@ def test_bet_is_allowed_point(bet, point_number, is_allowed):
     table = Table()
     table.add_player()
     dice = Dice()
-    dice.total = point_number
+    if point_number is None:
+        dice.result = None
+    else:
+        dice.result = [point_number // 2, point_number - point_number // 2]
+    # dice.total = point_number
 
     point = Point()
     point.update(dice)

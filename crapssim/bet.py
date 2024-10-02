@@ -530,7 +530,7 @@ class HardWay(Bet):
 
     @property
     def winning_result(self) -> list[int]:
-        return [int(self.number / 2), int(self.number / 2)]
+        return (int(self.number / 2), int(self.number / 2))
 
     @property
     def _placed_key(self) -> typing.Hashable:

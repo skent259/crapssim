@@ -68,4 +68,4 @@ def test_table_seed_idential(seed):
     table1.run(max_rolls=100)
     table2.run(max_rolls=100)
 
-    assert (table1.dice.result == table2.dice.result).all()
+    assert table1.dice.result == table2.dice.result
