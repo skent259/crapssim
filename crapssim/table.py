@@ -24,7 +24,7 @@ class TableUpdate:
         self.roll(table, dice_outcome, verbose)
         self.after_roll(table)
         self.update_bets(table, verbose)
-        self.update_points(table, verbose)
+        self.update_numbers(table, verbose)
 
     @staticmethod
     def before_roll(table: "Table"):
@@ -72,9 +72,10 @@ class TableUpdate:
             table.new_shooter = False
 
     @staticmethod
-    def update_points(table: "Table", verbose: bool):
+    def update_numbers(table: "Table", verbose: bool):
+        "For Come and DontCome bets that 'move' to their number"
         for player, bet in table.yield_player_bets():
-            bet.update_point(player)
+            bet.update_number(table)
         table.point.update(table.dice)
 
         if verbose:
@@ -85,6 +86,14 @@ class TableUpdate:
     def run_strategies(table: "Table"):
         for player in table.players:
             player.strategy.update_bets(player)
+
+
+class TableSettings(typing.TypedDict):
+    ATS_payouts: dict[str, int]  # {"all": 150, "tall": 30, "small": 30}
+    field_payouts: dict[int, int]  # {2: 2, 3: 1, 4: 1, 9: 1, 10: 1, 11: 1, 12: 2}
+    fire_payouts: dict[int, int]  # {4: 24, 5: 249, 6: 999}
+    max_odds: dict[int, int]  # {4: 3, 5: 4, 6: 5, 8: 5, 9: 4, 10: 3}
+    max_dont_odds: dict[int, int]  # {4: 6, 5: 6, 6: 6, 8: 6, 9: 6, 10: 6}
 
 
 class Table:
@@ -119,7 +128,7 @@ class Table:
         self.players: list[Player] = []
         self.point: Point = Point()
         self.dice: Dice = Dice()
-        self.settings: dict[str, typing.Any] = {
+        self.settings: TableSettings = {
             "ATS_payouts": {"all": 150, "tall": 30, "small": 30},
             "field_payouts": {2: 2, 3: 1, 4: 1, 9: 1, 10: 1, 11: 1, 12: 2},
             "fire_payouts": {4: 24, 5: 249, 6: 999},
@@ -349,7 +358,7 @@ class Player:
         return len(self.get_bets_by_type(bet_type)) > 0
 
     def remove_bet(self, bet: Bet) -> None:
-        if bet in self.bets and bet.is_removable(self):
+        if bet in self.bets and bet.is_removable(self.table):
             self.bankroll += bet.amount
             self.bets.remove(bet)
 

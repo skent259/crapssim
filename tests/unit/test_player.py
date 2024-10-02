@@ -14,7 +14,7 @@ def test_irremovable_bet():
     table = Table()
     table.add_player(500)
     table.fixed_run([(2, 2)])
-    assert bet.is_removable(table.players[0]) is False
+    assert bet.is_removable(table) is False
 
 
 def test_existing_bet():

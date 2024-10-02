@@ -178,8 +178,7 @@ def test_bet_amount_inequality(bet_one, bet_two):
 )
 def test_is_removable_table_point_off(bet):
     table = Table()
-    table.add_player()
-    assert bet.is_removable(table.players[0]) is True
+    assert bet.is_removable(table) is True
 
 
 @pytest.mark.parametrize(
@@ -220,9 +219,8 @@ def test_is_removable_table_point_off(bet):
 )
 def test_is_removable_table_point_on(bet):
     table = Table()
-    table.add_player()
     table.point.number = 6
-    assert bet.is_removable(table.players[0]) is True
+    assert bet.is_removable(table) is True
 
 
 @pytest.mark.parametrize(
@@ -240,11 +238,9 @@ def test_is_removable_table_point_on(bet):
 )
 def test_bet_is_removable_new_shooter(bet, new_shooter, is_removable):
     table = Table()
-    table.add_player()
-
     table.new_shooter = new_shooter
 
-    assert bet.is_removable(player=table.players[0]) == is_removable
+    assert bet.is_removable(table) == is_removable
 
 
 @pytest.mark.parametrize(
