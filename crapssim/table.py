@@ -124,10 +124,11 @@ class Table:
         Returns True if the previous shooters roll just ended and the next shooter hasn't shot.
     """
 
-    def __init__(self) -> None:
+    def __init__(self, seed: int | None = None) -> None:
         self.players: list[Player] = []
         self.point: Point = Point()
-        self.dice: Dice = Dice()
+        self.seed = seed
+        self.dice: Dice = Dice(self.seed)
         self.settings: TableSettings = {
             "ATS_payouts": {"all": 150, "tall": 30, "small": 30},
             "field_payouts": {2: 2, 3: 1, 4: 1, 9: 1, 10: 1, 11: 1, 12: 2},
