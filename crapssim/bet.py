@@ -2,21 +2,26 @@ import copy
 import typing
 from abc import ABC, ABCMeta, abstractmethod
 from dataclasses import dataclass
-from typing import Protocol
+from typing import Protocol, TypedDict
 
 from crapssim.dice import Dice
 from crapssim.point import Point
 
-if typing.TYPE_CHECKING:
-    from crapssim.table import Player
-
 ALL_DICE_NUMBERS = {2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12}
+
+
+class TableSettings(TypedDict):
+    ATS_payouts: dict[str, int]  # {"all": 150, "tall": 30, "small": 30}
+    field_payouts: dict[int, int]  # {2: 2, 3: 1, 4: 1, 9: 1, 10: 1, 11: 1, 12: 2}
+    fire_payouts: dict[int, int]  # {4: 24, 5: 249, 6: 999}
+    max_odds: dict[int, int]  # {4: 3, 5: 4, 6: 5, 8: 5, 9: 4, 10: 3}
+    max_dont_odds: dict[int, int]  # {4: 6, 5: 6, 6: 6, 8: 6, 9: 6, 10: 6}
 
 
 class Table(Protocol):
     dice: Dice
     point: Point
-    settings: dict[str, typing.Any]
+    settings: TableSettings
 
 
 class Player(Protocol):

@@ -88,6 +88,14 @@ class TableUpdate:
             player.strategy.update_bets(player)
 
 
+class TableSettings(typing.TypedDict):
+    ATS_payouts: dict[str, int]  # {"all": 150, "tall": 30, "small": 30}
+    field_payouts: dict[int, int]  # {2: 2, 3: 1, 4: 1, 9: 1, 10: 1, 11: 1, 12: 2}
+    fire_payouts: dict[int, int]  # {4: 24, 5: 249, 6: 999}
+    max_odds: dict[int, int]  # {4: 3, 5: 4, 6: 5, 8: 5, 9: 4, 10: 3}
+    max_dont_odds: dict[int, int]  # {4: 6, 5: 6, 6: 6, 8: 6, 9: 6, 10: 6}
+
+
 class Table:
     """
     Craps Table that contains Dice, Players, the Players' bets, and updates
@@ -120,7 +128,7 @@ class Table:
         self.players: list[Player] = []
         self.point: Point = Point()
         self.dice: Dice = Dice()
-        self.settings: dict[str, typing.Any] = {
+        self.settings: TableSettings = {
             "ATS_payouts": {"all": 150, "tall": 30, "small": 30},
             "field_payouts": {2: 2, 3: 1, 4: 1, 9: 1, 10: 1, 11: 1, 12: 2},
             "fire_payouts": {4: 24, 5: 249, 6: 999},
