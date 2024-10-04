@@ -20,7 +20,7 @@ from crapssim.strategy.core import (
     RemoveIfTrue,
     Strategy,
 )
-from crapssim.strategy.simple_bet import (
+from crapssim.strategy.single_bet import (
     Place5Amount,
     Place6Amount,
     Place8Amount,

@@ -40,7 +40,7 @@ from crapssim.strategy.examples import (
     TwoCome,
 )
 from crapssim.strategy.odds import OddsAmountStrategy, OddsMultiplierStrategy
-from crapssim.strategy.simple_bet import BaseSimpleBet, SimpleStrategyMode
+from crapssim.strategy.single_bet import BaseSimpleBet, SimpleStrategyMode
 
 
 @pytest.fixture
@@ -537,14 +537,14 @@ def test_odds_multiplier_dont_come_bet_placed(player):
     player.add_bet.assert_called_with(Odds(DontCome, 6, 30))
 
 
-def test_base_simple_bet_add_if_non_existent_add(player):
+def test_base_single_bet_add_if_non_existent_add(player):
     strategy = BaseSimpleBet(PassLine(5))
     player.add_bet = MagicMock()
     strategy.update_bets(player)
     player.add_bet.assert_called_with(PassLine(5))
 
 
-def test_base_simple_bet_add_if_non_existent_dont_add(player):
+def test_base_single_bet_add_if_non_existent_dont_add(player):
     strategy = BaseSimpleBet(PassLine(5))
     player.add_bet = MagicMock()
     player.bets = [PassLine(5)]
@@ -552,7 +552,7 @@ def test_base_simple_bet_add_if_non_existent_dont_add(player):
     player.add_bet.assert_not_called()
 
 
-def test_base_simple_bet_is_not_allowed(player):
+def test_base_single_bet_is_not_allowed(player):
     bet = MagicMock(PassLine)
     bet.is_allowed = MagicMock(return_value=False)
     strategy = BaseSimpleBet(bet)
@@ -561,7 +561,7 @@ def test_base_simple_bet_is_not_allowed(player):
     player.add_bet.assert_not_called()
 
 
-def test_base_simple_bet_add_or_increase(player):
+def test_base_single_bet_add_or_increase(player):
     strategy = BaseSimpleBet(PassLine(5), SimpleStrategyMode.ADD_OR_INCREASE)
     player.bets = [PassLine(5)]
     player.add_bet = MagicMock()
@@ -569,7 +569,7 @@ def test_base_simple_bet_add_or_increase(player):
     player.add_bet.assert_called_with(PassLine(5))
 
 
-def test_base_simple_bet_replace(player):
+def test_base_single_bet_replace(player):
     strategy = BaseSimpleBet(PassLine(5), SimpleStrategyMode.REPLACE)
     player.bets = [PassLine(5)]
     player.add_bet = MagicMock()
