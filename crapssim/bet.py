@@ -104,12 +104,6 @@ class Bet(ABC, metaclass=_MetaBetABC):
         """
         return True
 
-    def already_placed_bets(self, player: Player):
-        return [x for x in player.bets if x._placed_key == self._placed_key]
-
-    def already_placed(self, player: Player) -> bool:
-        return len(self.already_placed_bets(player)) > 0
-
     @property
     def _placed_key(self) -> typing.Hashable:
         return type(self)

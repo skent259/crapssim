@@ -340,7 +340,7 @@ class Player:
         return self._table
 
     def add_bet(self, bet: Bet) -> None:
-        existing_bets: list[Bet] = bet.already_placed_bets(self)
+        existing_bets: list[Bet] = self.already_placed_bets(bet)
         new_bet = sum(existing_bets + [bet])
         amount_available_to_bet = self.bankroll + sum(x.amount for x in existing_bets)
 
@@ -350,9 +350,25 @@ class Player:
             self.bankroll -= bet.amount
             self.bets.append(new_bet)
 
+    def already_placed_bets(self, bet: Bet) -> list[Bet]:
+        """
+        Returns the bets a player has matching the placed key
+
+        Notably, bets like Place(4, 1.0) will not match to Place(6, 1.0).
+        """
+        return [x for x in self.bets if x._placed_key == bet._placed_key]
+
+    def already_placed(self, bet: Bet) -> bool:
+        return len(self.already_placed_bets(bet)) > 0
+
     def get_bets_by_type(
         self, bet_type: typing.Type[Bet] | tuple[typing.Type[Bet], ...]
     ):
+        """
+        Returns the bets a player has matching the type
+
+        Notably, bets like Place(4, 1.0) will match to Place(6, 1.0).
+        """
         return [x for x in self.bets if isinstance(x, bet_type)]
 
     def has_bets(self, bet_type: typing.Type[Bet] | tuple[typing.Type[Bet], ...]):

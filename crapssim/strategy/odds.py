@@ -35,7 +35,7 @@ class OddsAmountStrategy(Strategy):
     def update_bets(self, player: "Player") -> None:
         for number, amount in self.odds_amounts.items():
             bet = Odds(self.base_type, number, float(amount))
-            if bet.is_allowed(player) and not bet.already_placed(player):
+            if bet.is_allowed(player) and not player.already_placed(bet):
                 player.add_bet(bet)
 
 
