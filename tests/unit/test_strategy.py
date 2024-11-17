@@ -46,10 +46,10 @@ from crapssim.strategy.single_bet import BaseSingleBet, SimpleStrategyMode
 @pytest.fixture
 def base_strategy():
     class TestStrategy(Strategy):
-        def update_bets(self, player: "Player") -> None:
+        def update_bets(self, player: Player) -> None:
             pass
 
-        def completed(self, player: "Player") -> bool:
+        def completed(self, player: Player) -> bool:
             return False
 
     return TestStrategy()
@@ -73,10 +73,10 @@ def test_strategy_default_not_completed(base_strategy, player):
 
 def test_strategy_add(base_strategy):
     class AddedStrategy(Strategy):
-        def update_bets(self, player: "Player") -> None:
+        def update_bets(self, player: Player) -> None:
             pass
 
-        def completed(self, player: "Player") -> bool:
+        def completed(self, player: Player) -> bool:
             return False
 
     assert base_strategy + AddedStrategy() == AggregateStrategy(
@@ -90,10 +90,10 @@ def test_strategy_equality(base_strategy):
 
 def test_strategy_inequality(base_strategy):
     class TestStrategy2(Strategy):
-        def update_bets(self, player: "Player") -> None:
+        def update_bets(self, player: Player) -> None:
             pass
 
-        def completed(self, player: "Player") -> bool:
+        def completed(self, player: Player) -> bool:
             return False
 
     assert base_strategy != TestStrategy2()
@@ -106,17 +106,17 @@ def test_strategy_repr(base_strategy):
 @pytest.fixture
 def aggregate_strategy() -> AggregateStrategy:
     class TestStrategy1(Strategy):
-        def update_bets(self, player: "Player") -> None:
+        def update_bets(self, player: Player) -> None:
             pass
 
-        def completed(self, player: "Player") -> bool:
+        def completed(self, player: Player) -> bool:
             return False
 
     class TestStrategy2(Strategy):
-        def update_bets(self, player: "Player") -> None:
+        def update_bets(self, player: Player) -> None:
             pass
 
-        def completed(self, player: "Player") -> bool:
+        def completed(self, player: Player) -> bool:
             return False
 
     return TestStrategy1() + TestStrategy2()

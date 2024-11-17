@@ -2,9 +2,7 @@ import typing
 
 from crapssim.bet import Bet, Come, DontCome, DontPass, Odds, PassLine
 from crapssim.strategy import AggregateStrategy, Strategy
-
-if typing.TYPE_CHECKING:
-    from crapssim import Player, Table
+from crapssim.strategy.core import Player, Table
 
 
 class OddsAmountStrategy(Strategy):
@@ -18,7 +16,7 @@ class OddsAmountStrategy(Strategy):
         self.base_type = base_type
         self.odds_amounts = odds_amounts
 
-    def completed(self, player: "Player") -> bool:
+    def completed(self, player: Player) -> bool:
         """Return True if there are no bets of base_type on the table.
 
         Parameters
@@ -32,7 +30,7 @@ class OddsAmountStrategy(Strategy):
         """
         return len([x for x in player.bets if isinstance(x, self.base_type)]) == 0
 
-    def update_bets(self, player: "Player") -> None:
+    def update_bets(self, player: Player) -> None:
         for number, amount in self.odds_amounts.items():
             bet = Odds(self.base_type, number, float(amount))
             if bet.is_allowed(player) and not player.already_placed(bet):
@@ -92,7 +90,7 @@ class OddsMultiplierStrategy(Strategy):
         else:
             raise NotImplementedError
 
-    def update_bets(self, player: "Player") -> None:
+    def update_bets(self, player: Player) -> None:
         """Add an Odds bet to the given base_types in the amount determined by the odds_multiplier.
 
         Parameters
@@ -111,7 +109,7 @@ class OddsMultiplierStrategy(Strategy):
             amount = bet.amount * multiplier
             OddsAmountStrategy(self.base_type, {point: amount}).update_bets(player)
 
-    def completed(self, player: "Player") -> bool:
+    def completed(self, player: Player) -> bool:
         """Return True if there are no bets of base_type on the table.
 
         Parameters

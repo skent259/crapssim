@@ -20,11 +20,8 @@ from crapssim.bet import (
     Yo,
 )
 from crapssim.strategy import BetIfTrue
-from crapssim.strategy.core import Strategy
+from crapssim.strategy.core import Player, Strategy
 from crapssim.strategy.odds import OddsAmountStrategy
-
-if typing.TYPE_CHECKING:
-    from crapssim.table import Player
 
 
 class SimpleStrategyMode(enum.Enum):
@@ -34,15 +31,19 @@ class SimpleStrategyMode(enum.Enum):
 
 
 class BaseSingleBet(Strategy):
-    def __init__(self, bet: Bet, mode=SimpleStrategyMode.ADD_IF_NON_EXISTENT):
+    def __init__(
+        self,
+        bet: Bet,
+        mode: SimpleStrategyMode = SimpleStrategyMode.ADD_IF_NON_EXISTENT,
+    ):
         super().__init__()
         self.bet = bet
         self.mode = mode
 
-    def completed(self, player: "Player") -> bool:
+    def completed(self, player: Player) -> bool:
         return player.bankroll < self.bet.amount and len(player.bets) == 0
 
-    def update_bets(self, player: "Player") -> None:
+    def update_bets(self, player: Player) -> None:
         if not self.bet.is_allowed(player):
             return
 

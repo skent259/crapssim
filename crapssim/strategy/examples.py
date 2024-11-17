@@ -16,6 +16,7 @@ from crapssim.strategy.core import (
     BetPointOn,
     CountStrategy,
     IfBetNotExist,
+    Player,
     RemoveByType,
     RemoveIfTrue,
     Strategy,
@@ -26,9 +27,6 @@ from crapssim.strategy.single_bet import (
     Place8Amount,
     Place9Amount,
 )
-
-if typing.TYPE_CHECKING:
-    from crapssim.table import Player
 
 
 class BetPlace(Strategy):
@@ -60,7 +58,7 @@ class BetPlace(Strategy):
         self.skip_point = skip_point
         self.skip_come = skip_come
 
-    def completed(self, player: "Player") -> bool:
+    def completed(self, player: Player) -> bool:
         """The strategy is completed if the player can no longer make any of the place bets in the
         place_bet_amounts dictionary and there are no Place bets on the table.
 
@@ -79,7 +77,7 @@ class BetPlace(Strategy):
             and len([x for x in player.bets if isinstance(x, Place)]) == 0
         )
 
-    def update_bets(self, player: "Player") -> None:
+    def update_bets(self, player: Player) -> None:
         """Add the place bets on the numbers and amounts defined by place_bet_amounts.
 
         Parameters
@@ -104,7 +102,7 @@ class BetPlace(Strategy):
             IfBetNotExist(Place(number, amount)).update_bets(player)
 
     @staticmethod
-    def remove_point_bet(player: "Player") -> None:
+    def remove_point_bet(player: Player) -> None:
         """If skip_point is true and the player has a place bet for the table point number,
         remove the Place bet.
 
@@ -269,7 +267,7 @@ class Place68Move59(Strategy):
         self.six_eight_amount = six_eight_amount
         self.five_nine_amount = five_nine_amount
 
-    def completed(self, player: "Player") -> bool:
+    def completed(self, player: Player) -> bool:
         """The strategy is completed if the player has no bets on the table, and the players
         bankroll is too low to make any of the other bets.
 
@@ -289,7 +287,7 @@ class Place68Move59(Strategy):
             and player.bankroll < self.five_nine_amount
         )
 
-    def get_pass_line_come_points(self, player: "Player") -> list[int]:
+    def get_pass_line_come_points(self, player: Player) -> list[int]:
         """Get the point number (or the table point number in the case of PassLine) for any PassLine
         or Come bets on the table.
 
@@ -313,7 +311,7 @@ class Place68Move59(Strategy):
                 pass_line_come_points.append(number)
         return pass_line_come_points
 
-    def update_bets(self, player: "Player") -> None:
+    def update_bets(self, player: Player) -> None:
         """Do nothing if the point status is Off, otherwise go through the numbers 6, 8, 5 and 9.
         If the player has both a PassLine or Come bet for that number and a Place bet, remove the
         Place bet, otherwise move on to the next number. If the player doesn't have a PassLine or
@@ -421,7 +419,7 @@ class Place682Come(AggregateStrategy):
         self.five_nine_amount = five_nine_amount
 
     @staticmethod
-    def should_place_pass_line_or_come(player: "Player") -> bool:
+    def should_place_pass_line_or_come(player: Player) -> bool:
         """If the player has less than 2 PassLine or Come bets return True, otherwise return False.
 
         Parameters
@@ -438,7 +436,7 @@ class Place682Come(AggregateStrategy):
         )
         return pass_come_count < 2
 
-    def place_pass_line_come(self, player: "Player"):
+    def place_pass_line_come(self, player: Player):
         """If the point is Off and the player doesn't have a PassLine bet, place a PassLine bet.
         If the point is On and the player doesn't have a Come bet, place a Come bet.
 
@@ -450,7 +448,7 @@ class Place682Come(AggregateStrategy):
         BetPointOff(PassLine(self.pass_come_amount)).update_bets(player)
         BetPointOn(Come(self.pass_come_amount)).update_bets(player)
 
-    def update_bets(self, player: "Player") -> None:
+    def update_bets(self, player: Player) -> None:
         """If the player has less than 2 PassLine and Come bets, make the bet (depending on whether
         the point is on or off.) If the point is on, place the 6 and 8 unless there is a PassLine or
         Come bet with those then move them to the 5 or 9.
@@ -538,7 +536,7 @@ class HammerLock(Strategy):
 
         self.place_win_count: int = 0
 
-    def completed(self, player: "Player") -> bool:
+    def completed(self, player: Player) -> bool:
         """The strategy is completed if the player can no longer make the initial PassLine bet
         because their bankroll is too low, and they have no more bets on the table.
 
@@ -552,7 +550,7 @@ class HammerLock(Strategy):
         """
         return player.bankroll < self.base_amount and len(player.bets) == 0
 
-    def after_roll(self, player: "Player") -> None:
+    def after_roll(self, player: Player) -> None:
         """Update the place_win_count based on how many Place bets are won. If table.point.status is
         On and the dice total is 7 (meaning the shooter sevens out) reset place_win_count to 0.
 
@@ -568,7 +566,7 @@ class HammerLock(Strategy):
         if player.table.point.status == "On" and player.table.dice.total == 7:
             self.place_win_count = 0
 
-    def point_off(self, player: "Player") -> None:
+    def point_off(self, player: Player) -> None:
         """If the point is Off add a PassLine and a DontPass bet if they don't already exist.
 
         Parameters
@@ -582,7 +580,7 @@ class HammerLock(Strategy):
         )
         strategy.update_bets(player)
 
-    def place68(self, player: "Player") -> None:
+    def place68(self, player: Player) -> None:
         """Place the 6 and 8 (regardless of the point) and then lay odds on DontPass bets.
 
         Parameters
@@ -597,7 +595,7 @@ class HammerLock(Strategy):
             skip_point=False,
         ).update_bets(player)
 
-    def place5689(self, player: "Player") -> None:
+    def place5689(self, player: Player) -> None:
         """Place the 5, 6, 8 and 9.
 
         Parameters
@@ -616,7 +614,7 @@ class HammerLock(Strategy):
             skip_point=False,
         ).update_bets(player)
 
-    def update_bets(self, player: "Player") -> None:
+    def update_bets(self, player: Player) -> None:
         """If the point is off bet the PassLine and DontPass line. If the point is on bet the
         Place6 and Place8 until one wins, then bet the Place 5, 6, 8, and 9. LayOdds whenever
         possible.
@@ -652,7 +650,7 @@ class Risk12(Strategy):
         super().__init__()
         self.pre_point_winnings: float = 0.0
 
-    def completed(self, player: "Player") -> bool:
+    def completed(self, player: Player) -> bool:
         """The strategy is completed if the Player can no longer make the initial PassLine bet, and
         the player has no bets on the table.
 
@@ -667,7 +665,7 @@ class Risk12(Strategy):
         """
         return player.bankroll < 5 and len(player.bets) == 0
 
-    def after_roll(self, player: "Player") -> None:
+    def after_roll(self, player: Player) -> None:
         """Determine the pre-point winnings which is used to determine which bets to place when the
         point is on.
 
@@ -683,7 +681,7 @@ class Risk12(Strategy):
             self.pre_point_winnings = 0
 
     @staticmethod
-    def point_off(player: "Player") -> None:
+    def point_off(player: Player) -> None:
         """Place a 5 PassLine and Field bet.
 
         Parameters
@@ -694,7 +692,7 @@ class Risk12(Strategy):
         IfBetNotExist(PassLine(5)).update_bets(player)
         IfBetNotExist(Field(5)).update_bets(player)
 
-    def point_on(self, player: "Player") -> None:
+    def point_on(self, player: Player) -> None:
         """If your winnings were enough to cover the place bets (throwing in another dollar for
         each) make the place bets.
 
@@ -711,7 +709,7 @@ class Risk12(Strategy):
         if self.pre_point_winnings >= 12 - 2:
             BetPlace({6: 6, 8: 6}).update_bets(player)
 
-    def update_bets(self, player: "Player") -> None:
+    def update_bets(self, player: Player) -> None:
         """If the point is off make a Field and PassLine bet. If the point is on
         Place the 6 and 8 if you made enough pre-point to cover the bets.
 
@@ -761,7 +759,7 @@ class FieldWinProgression(Strategy):
         self.progression = progression
         self.current_progression = 0
 
-    def completed(self, player: "Player") -> bool:
+    def completed(self, player: Player) -> bool:
         """If the players bankroll is below the minimum amount in the progression and if they
         have no more bets on the table the strategy is completed.
 
@@ -779,7 +777,7 @@ class FieldWinProgression(Strategy):
             and len(player.bets) == 0
         )
 
-    def after_roll(self, player: "Player") -> None:
+    def after_roll(self, player: Player) -> None:
         """If the field bet wins, increase the progression by 1, if it loses reset the progression
         to 0.
 
@@ -796,7 +794,7 @@ class FieldWinProgression(Strategy):
         else:
             self.current_progression = 0
 
-    def update_bets(self, player: "Player") -> None:
+    def update_bets(self, player: Player) -> None:
         """If a field bet isn't on the table, place one for the current progression amount.
 
         Parameters
@@ -852,7 +850,7 @@ class Place68CPR(Strategy):
         self.six_winnings = 0.0
         self.eight_winnings = 0.0
 
-    def completed(self, player: "Player") -> bool:
+    def completed(self, player: Player) -> bool:
         """Returns True if the players bankroll is below the bet amount and the player no longer
         has bets on the table.
 
@@ -866,7 +864,7 @@ class Place68CPR(Strategy):
         """
         return player.bankroll < self.starting_amount and len(player.bets) == 0
 
-    def after_roll(self, player: "Player") -> None:
+    def after_roll(self, player: Player) -> None:
         """Get the winnings on the Place 6 and 8 bets to determine whether to press or regress.
 
         Parameters
@@ -890,7 +888,7 @@ class Place68CPR(Strategy):
         ]
         self.eight_winnings = sum(place_eight_win_amounts)
 
-    def ensure_bets_exist(self, player: "Player") -> None:
+    def ensure_bets_exist(self, player: Player) -> None:
         """Ensure that there is always a place 6 or place 8 bet if the point is On.
 
         Parameters
@@ -907,7 +905,7 @@ class Place68CPR(Strategy):
             ):
                 player.add_bet(Place(number, self.starting_amount))
 
-    def press(self, player: "Player") -> None:
+    def press(self, player: Player) -> None:
         """Double the bet amount of the place bets.
 
         Parameters
@@ -920,7 +918,7 @@ class Place68CPR(Strategy):
         if self.eight_winnings == self.win_one_amount:
             player.add_bet(Place(8, self.starting_amount))
 
-    def update_bets(self, player: "Player") -> None:
+    def update_bets(self, player: Player) -> None:
         """Ensure that a Place6 and Place8 bet always exist for the player of base amount.
         Press the bet if you win and haven't pressed the bet yet.
 

@@ -4,11 +4,38 @@ to be used as building blocks when creating strategies."""
 
 import typing
 from abc import ABC, abstractmethod
+from typing import Protocol
 
 from crapssim.bet import Bet
+from crapssim.dice import Dice
+from crapssim.point import Point
 
-if typing.TYPE_CHECKING:
-    from crapssim.table import Player
+
+class Table(Protocol):
+    """Table functionality needed for strategy module."""
+
+    dice: Dice
+    point: Point
+
+
+class Player(Protocol):
+    """Player functionality needed for strategy module."""
+
+    table: Table
+    bankroll: float
+    bets: list[Bet]
+
+    def add_bet(self, bet: Bet) -> None: ...
+
+    def already_placed_bets(self, bet: Bet) -> list[Bet]: ...
+
+    def already_placed(self, bet: Bet) -> bool: ...
+
+    def get_bets_by_type(
+        self, bet_type: typing.Type[Bet] | tuple[typing.Type[Bet], ...]
+    ): ...
+
+    def remove_bet(self, bet: Bet) -> None: ...
 
 
 class Strategy(ABC):
@@ -16,7 +43,7 @@ class Strategy(ABC):
     is going to make, remove, or change.
     """
 
-    def after_roll(self, player: "Player") -> None:
+    def after_roll(self, player: Player) -> None:
         """Method that can update the Strategy from the table/player after the dice are rolled but
         before the bets and the table are updated. For example, if you wanted to know whether the
         point changed from on to off you could do self.point_lost = table.point.status = "On" and
@@ -30,12 +57,12 @@ class Strategy(ABC):
         """
 
     @abstractmethod
-    def completed(self, player: "Player") -> bool:
+    def completed(self, player: Player) -> bool:
         """If True, the Strategy is completed and the Player stops playing. If False, the Player
         keeps playing the Strategy."""
 
     @abstractmethod
-    def update_bets(self, player: "Player") -> None:
+    def update_bets(self, player: Player) -> None:
         """Add, remove, or change the bets on the table.
 
         This method is applied after the dice are rolled,
@@ -66,7 +93,7 @@ class AggregateStrategy(Strategy):
         """
         self.strategies = strategies
 
-    def update_bets(self, player: "Player") -> None:
+    def update_bets(self, player: Player) -> None:
         """Go through each of the strategies and run its update_bets method if the strategy has
         not been completed.
 
@@ -79,7 +106,7 @@ class AggregateStrategy(Strategy):
             if not strategy.completed(player):
                 strategy.update_bets(player)
 
-    def completed(self, player: "Player") -> bool:
+    def completed(self, player: Player) -> bool:
         """Returns True if all the strategies in the AggregateStrategy are completed.
 
         Parameters
@@ -102,10 +129,10 @@ class AggregateStrategy(Strategy):
 class NullStrategy(Strategy):
     """Strategy that bets nothing."""
 
-    def update_bets(self, player: "Player") -> None:
+    def update_bets(self, player: Player) -> None:
         pass
 
-    def completed(self, player: "Player") -> bool:
+    def completed(self, player: Player) -> bool:
         return False
 
     def __repr__(self) -> str:
@@ -115,7 +142,7 @@ class NullStrategy(Strategy):
 class BetIfTrue(Strategy):
     """Strategy that places a bet if a given key taking Player as a parameter is True."""
 
-    def __init__(self, bet: Bet, key: typing.Callable[["Player"], bool]):
+    def __init__(self, bet: Bet, key: typing.Callable[[Player], bool]):
         """The strategy will place the given bet if the given key is True.
 
         Parameters
@@ -131,7 +158,7 @@ class BetIfTrue(Strategy):
         self.bet = bet
         self.key = key
 
-    def update_bets(self, player: "Player") -> None:
+    def update_bets(self, player: Player) -> None:
         """If the key is True add the bet to the player and table.
 
         Parameters
@@ -142,7 +169,7 @@ class BetIfTrue(Strategy):
         if self.key(player) and self.bet.is_allowed(player):
             player.add_bet(self.bet)
 
-    def completed(self, player: "Player") -> bool:
+    def completed(self, player: Player) -> bool:
         """The strategy is completed when the player  can't make a bet because their bankroll is too
          low and the player doesn't have any bets left on the table.
 
@@ -173,7 +200,7 @@ class RemoveIfTrue(Strategy):
     """Strategy that removes all bets that are True for a given key. The key takes the Bet and the
     Player as parameters."""
 
-    def __init__(self, key: typing.Callable[["Bet", "Player"], bool]):
+    def __init__(self, key: typing.Callable[["Bet", Player], bool]):
         """The strategy will remove all bets that are true for the given key.
 
         Parameters
@@ -185,7 +212,7 @@ class RemoveIfTrue(Strategy):
         super().__init__()
         self.key = key
 
-    def update_bets(self, player: "Player") -> None:
+    def update_bets(self, player: Player) -> None:
         """For each of the players bets if the key is True remove the bet from the table.
 
         Parameters
@@ -200,7 +227,7 @@ class RemoveIfTrue(Strategy):
         for bet in bets_to_remove:
             player.remove_bet(bet)
 
-    def completed(self, player: "Player") -> bool:
+    def completed(self, player: Player) -> bool:
         """The strategy is completed when the player doesn't have any bets left on the table.
 
         Parameters
@@ -222,11 +249,11 @@ class ReplaceIfTrue(Strategy):
     """Strategy that iterates through the bets on the table and if the given key is true, replaces
     the bet with the given bet."""
 
-    def __init__(self, bet: Bet, key: typing.Callable[[Bet, "Player"], bool]):
+    def __init__(self, bet: Bet, key: typing.Callable[[Bet, Player], bool]):
         self.key = key
         self.bet = bet
 
-    def update_bets(self, player: "Player") -> None:
+    def update_bets(self, player: Player) -> None:
         """Iterate through each bet for the player and if the self.key(bet, player) is True, remove
         the bet and replace it with self.bet.
 
@@ -240,7 +267,7 @@ class ReplaceIfTrue(Strategy):
                 player.remove_bet(bet)
                 player.add_bet(self.bet)
 
-    def completed(self, player: "Player") -> bool:
+    def completed(self, player: Player) -> bool:
         """The strategy is completed when the player  can't make a bet because their bankroll is too
          low and the player doesn't have any bets left on the table.
 
@@ -348,7 +375,7 @@ class CountStrategy(BetIfTrue):
 
         super().__init__(bet, key=self.key)
 
-    def key(self, player: "Player") -> bool:
+    def key(self, player: Player) -> bool:
         """Return True if the player has less than count number of bets for a given type and the
         bet that is intended to be placed isn't already on the table.
 
@@ -366,7 +393,7 @@ class CountStrategy(BetIfTrue):
             player
         )
 
-    def bet_is_not_on_table(self, player: "Player") -> bool:
+    def bet_is_not_on_table(self, player: Player) -> bool:
         """Returns True if the selected bet isn't already on the table.
 
         Parameters
@@ -380,7 +407,7 @@ class CountStrategy(BetIfTrue):
         """
         return self.bet not in player.bets
 
-    def less_than_count_bets_of_type(self, player: "Player") -> bool:
+    def less_than_count_bets_of_type(self, player: Player) -> bool:
         """Returns True if there are less than count the number of bets on the table for the
         player, otherwise returns False.
 
@@ -396,7 +423,7 @@ class CountStrategy(BetIfTrue):
         """
         return self.get_bets_of_type_count(player) < self.count
 
-    def get_bets_of_type_count(self, player: "Player") -> int:
+    def get_bets_of_type_count(self, player: Player) -> int:
         """Returns the number of bets of a given type for the player.
 
         Parameters
