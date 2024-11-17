@@ -21,23 +21,18 @@ from crapssim.strategy.core import (
     RemoveIfTrue,
     Strategy,
 )
-from crapssim.strategy.single_bet import (
-    Place5Amount,
-    Place6Amount,
-    Place8Amount,
-    Place9Amount,
-)
 
 
 class BetPlace(Strategy):
     """Strategy that makes multiple Place bets of given amounts. It can also skip making the bet
     if the point is the same as the given bet number."""
 
+    # TODO: add bet mode to this (default currently is point off)
     def __init__(
         self,
         place_bet_amounts: dict[int, float],
         skip_point: bool = True,
-        skip_come=True,
+        skip_come: bool = False,
     ):
         """Strategy for making multiple place bets.
 
@@ -204,8 +199,8 @@ class PassLinePlace68(AggregateStrategy):
 
 
 class PlaceInside(AggregateStrategy):
-    """Strategy to have Place bets on all the inside (5, 6, 8, 9) numbers. Equivalent to
-    Place5Amount(x) + Place6Amount(x) + Place8Amount(x) + Place9Amount(x)"""
+    """Strategy to have Place bets on all the inside (5, 6, 8, 9) numbers.
+    Equivalent to BetPlace({5: x, 6: 6/5*x, 8: 6/5*x, 9: x})"""
 
     def __init__(self, bet_amount: typing.SupportsFloat | dict[int, float]) -> None:
         """Creates a Strategy to have Place bets on all the inside (5, 6, 8, 9) numbers.
@@ -228,12 +223,7 @@ class PlaceInside(AggregateStrategy):
             }
         else:
             amount_dict = bet_amount
-        super().__init__(
-            Place5Amount(amount_dict[5]),
-            Place6Amount(amount_dict[6]),
-            Place8Amount(amount_dict[8]),
-            Place9Amount(amount_dict[9]),
-        )
+        super().__init__(BetPlace(amount_dict, skip_point=False, skip_come=False))
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(amount={self.bet_amount})"
@@ -491,19 +481,16 @@ class IronCross(AggregateStrategy):
             is used for placing the five.
         """
         self.base_amount = base_amount
-        place_six_eight_amount = (6 / 5) * base_amount * 2
-        place_five_amount = base_amount * 2
+        place_amounts = {
+            5: base_amount * 2,
+            6: (6 / 5) * base_amount * 2,
+            8: (6 / 5) * base_amount * 2,
+        }
 
         super().__init__(
             BetPassLine(base_amount),
             PassLineOddsMultiplier(2),
-            BetPlace(
-                {
-                    5: place_five_amount,
-                    6: place_six_eight_amount,
-                    8: place_six_eight_amount,
-                }
-            ),
+            BetPlace(place_amounts, skip_point=True),
             BetPointOn(Field(base_amount)),
         )
 

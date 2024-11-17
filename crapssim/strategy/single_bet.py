@@ -130,60 +130,6 @@ class DontComeOddsAmount(OddsAmountStrategy):
         super().__init__(DontCome, {x: bet_amount for x in numbers})
 
 
-class Place4Amount(BaseSingleBet):
-    def __init__(
-        self,
-        bet_amount: typing.SupportsFloat,
-        mode=SimpleStrategyMode.ADD_IF_NON_EXISTENT,
-    ):
-        super().__init__(Place(4, bet_amount), mode=mode)
-
-
-class Place5Amount(BaseSingleBet):
-    def __init__(
-        self,
-        bet_amount: typing.SupportsFloat,
-        mode=SimpleStrategyMode.ADD_IF_NON_EXISTENT,
-    ):
-        super().__init__(Place(5, bet_amount), mode=mode)
-
-
-class Place6Amount(BaseSingleBet):
-    def __init__(
-        self,
-        bet_amount: typing.SupportsFloat,
-        mode=SimpleStrategyMode.ADD_IF_NON_EXISTENT,
-    ):
-        super().__init__(Place(6, bet_amount), mode=mode)
-
-
-class Place8Amount(BaseSingleBet):
-    def __init__(
-        self,
-        bet_amount: typing.SupportsFloat,
-        mode=SimpleStrategyMode.ADD_IF_NON_EXISTENT,
-    ):
-        super().__init__(Place(8, bet_amount), mode=mode)
-
-
-class Place9Amount(BaseSingleBet):
-    def __init__(
-        self,
-        bet_amount: typing.SupportsFloat,
-        mode=SimpleStrategyMode.ADD_IF_NON_EXISTENT,
-    ):
-        super().__init__(Place(9, bet_amount), mode=mode)
-
-
-class Place10Amount(BaseSingleBet):
-    def __init__(
-        self,
-        bet_amount: typing.SupportsFloat,
-        mode=SimpleStrategyMode.ADD_IF_NON_EXISTENT,
-    ):
-        super().__init__(Place(10, bet_amount), mode=mode)
-
-
 class Hard4Amount(BaseSingleBet):
     def __init__(
         self,
