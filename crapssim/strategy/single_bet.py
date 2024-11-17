@@ -130,58 +130,16 @@ class DontComeOddsAmount(OddsAmountStrategy):
         super().__init__(DontCome, {x: bet_amount for x in numbers})
 
 
-class Hard4Amount(BaseSingleBet):
+class BetHardWay(BaseSingleBet):
     def __init__(
         self,
+        number: tuple[int],
         bet_amount: typing.SupportsFloat,
         mode=SimpleStrategyMode.ADD_IF_NON_EXISTENT,
     ):
-        super().__init__(HardWay(4, bet_amount), mode=mode)
-
-
-class Hard5Amount(BaseSingleBet):
-    def __init__(
-        self,
-        bet_amount: typing.SupportsFloat,
-        mode=SimpleStrategyMode.ADD_IF_NON_EXISTENT,
-    ):
-        super().__init__(HardWay(5, bet_amount), mode=mode)
-
-
-class Hard6Amount(BaseSingleBet):
-    def __init__(
-        self,
-        bet_amount: typing.SupportsFloat,
-        mode=SimpleStrategyMode.ADD_IF_NON_EXISTENT,
-    ):
-        super().__init__(HardWay(6, bet_amount), mode=mode)
-
-
-class Hard8Amount(BaseSingleBet):
-    def __init__(
-        self,
-        bet_amount: typing.SupportsFloat,
-        mode=SimpleStrategyMode.ADD_IF_NON_EXISTENT,
-    ):
-        super().__init__(HardWay(8, bet_amount), mode=mode)
-
-
-class Hard9Amount(BaseSingleBet):
-    def __init__(
-        self,
-        bet_amount: typing.SupportsFloat,
-        mode=SimpleStrategyMode.ADD_IF_NON_EXISTENT,
-    ):
-        super().__init__(HardWay(9, bet_amount), mode=mode)
-
-
-class Hard10Amount(BaseSingleBet):
-    def __init__(
-        self,
-        bet_amount: typing.SupportsFloat,
-        mode=SimpleStrategyMode.ADD_IF_NON_EXISTENT,
-    ):
-        super().__init__(HardWay(10, bet_amount), mode=mode)
+        if number not in [4, 6, 8, 10]:
+            raise NotImplementedError
+        super().__init__(HardWay(number, bet_amount), mode=mode)
 
 
 class FieldAmount(BaseSingleBet):
@@ -193,7 +151,7 @@ class FieldAmount(BaseSingleBet):
         super().__init__(Field(bet_amount), mode=mode)
 
 
-class Any7Amount(BaseSingleBet):
+class BetAny7(BaseSingleBet):
     def __init__(
         self,
         bet_amount: typing.SupportsFloat,
@@ -202,7 +160,7 @@ class Any7Amount(BaseSingleBet):
         super().__init__(Any7(bet_amount), mode=mode)
 
 
-class TwoAmount(BaseSingleBet):
+class BetTwo(BaseSingleBet):
     def __init__(
         self,
         bet_amount: typing.SupportsFloat,
@@ -211,7 +169,7 @@ class TwoAmount(BaseSingleBet):
         super().__init__(Two(bet_amount), mode=mode)
 
 
-class ThreeAmount(BaseSingleBet):
+class BetThree(BaseSingleBet):
     def __init__(
         self,
         bet_amount: typing.SupportsFloat,
@@ -220,7 +178,7 @@ class ThreeAmount(BaseSingleBet):
         super().__init__(Three(bet_amount), mode=mode)
 
 
-class YoAmount(BaseSingleBet):
+class BetYo(BaseSingleBet):
     def __init__(
         self,
         bet_amount: typing.SupportsFloat,
@@ -229,7 +187,7 @@ class YoAmount(BaseSingleBet):
         super().__init__(Yo(bet_amount), mode=mode)
 
 
-class BoxcarsAmount(BaseSingleBet):
+class BetBoxcars(BaseSingleBet):
     def __init__(
         self,
         bet_amount: typing.SupportsFloat,
@@ -238,6 +196,6 @@ class BoxcarsAmount(BaseSingleBet):
         super().__init__(Boxcars(bet_amount), mode=mode)
 
 
-class FireAmount(BaseSingleBet):
+class BetFire(BaseSingleBet):
     def __init__(self, bet_amount: float, mode=SimpleStrategyMode.ADD_IF_NON_EXISTENT):
         super().__init__(Fire(bet_amount), mode=mode)
