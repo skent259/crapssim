@@ -4,11 +4,6 @@ in order to do the intended """
 import typing
 
 from crapssim.bet import Come, DontCome, DontPass, Field, PassLine, Place
-from crapssim.strategy import (
-    DontPassOddsMultiplier,
-    OddsMultiplierStrategy,
-    PassLineOddsMultiplier,
-)
 from crapssim.strategy.core import (
     AggregateStrategy,
     BetIfTrue,
@@ -21,101 +16,12 @@ from crapssim.strategy.core import (
     RemoveIfTrue,
     Strategy,
 )
-
-
-class BetPlace(Strategy):
-    """Strategy that makes multiple Place bets of given amounts. It can also skip making the bet
-    if the point is the same as the given bet number."""
-
-    # TODO: add bet mode to this (default currently is point off)
-    def __init__(
-        self,
-        place_bet_amounts: dict[int, float],
-        skip_point: bool = True,
-        skip_come: bool = False,
-    ):
-        """Strategy for making multiple place bets.
-
-        Parameters
-        ----------
-        place_bet_amounts
-            Dictionary of the point to make the Place bet on and the amount of the
-            place bet to make.
-        skip_point
-            If True don't make the bet on the given Place if that's the number the tables Point
-            is on.
-        skip_come
-            If True don't make the bet on the given Place if there is a Come bet with that Point
-            already on that number.
-        """
-        super().__init__()
-        self.place_bet_amounts = place_bet_amounts
-        self.skip_point = skip_point
-        self.skip_come = skip_come
-
-    def completed(self, player: Player) -> bool:
-        """The strategy is completed if the player can no longer make any of the place bets in the
-        place_bet_amounts dictionary and there are no Place bets on the table.
-
-        Parameters
-        ----------
-        player
-            The player to check the bankroll for
-
-        Returns
-        -------
-        True if there are no Place bets on the table and the player can't make any more Place bets
-        because their bankroll is too low.
-        """
-        return (
-            player.bankroll < min(x for x in self.place_bet_amounts.values())
-            and len([x for x in player.bets if isinstance(x, Place)]) == 0
-        )
-
-    def update_bets(self, player: Player) -> None:
-        """Add the place bets on the numbers and amounts defined by place_bet_amounts.
-
-        Parameters
-        ----------
-        player
-            The player to add the place bets to.
-        """
-        if self.skip_point:
-            self.remove_point_bet(player)
-
-        for number, amount in self.place_bet_amounts.items():
-            if self.skip_point and number == player.table.point.number:
-                continue
-            if player.table.point.status == "Off":
-                continue
-            if self.skip_come:
-                come_numbers = [
-                    x.point.number for x in player.bets if isinstance(x, Come)
-                ]
-                if number in come_numbers:
-                    continue
-            IfBetNotExist(Place(number, amount)).update_bets(player)
-
-    @staticmethod
-    def remove_point_bet(player: Player) -> None:
-        """If skip_point is true and the player has a place bet for the table point number,
-        remove the Place bet.
-
-        Parameters
-        ----------
-        player
-            The player to check and see if they have the given bet.
-        """
-        point = player.table.point.number
-        RemoveIfTrue(
-            lambda b, p: isinstance(b, Place) and b.number == point
-        ).update_bets(player)
-
-    def __repr__(self) -> str:
-        return (
-            f"{self.__class__.__name__}(place_bet_amounts={self.place_bet_amounts},"
-            f" skip_point={self.skip_point}, skip_come={self.skip_come})"
-        )
+from crapssim.strategy.odds import (
+    DontPassOddsMultiplier,
+    OddsMultiplierStrategy,
+    PassLineOddsMultiplier,
+)
+from crapssim.strategy.single_bet import BetDontPass, BetPassLine, BetPlace
 
 
 class TwoCome(CountStrategy):
@@ -953,44 +859,3 @@ class Place68DontCome2Odds(AggregateStrategy):
             f"{self.__class__.__name__}(six_eight_amount={self.six_eight_amount}, "
             f"dont_come_amount={self.dont_come_amount})"
         )
-
-
-class BetPassLine(BetPointOff):
-    """Strategy that adds a PassLine bet if the point is Off and the player doesn't have a PassLine
-    bet already on the table. Equivalent to BetPointOff(PassLine(amount))."""
-
-    def __init__(self, bet_amount: typing.SupportsFloat):
-        """Adds a PassLine bet for the given amount if the point is Off and the player doesn't
-        have a PassLine bet for that amount already on the table.
-
-        Parameters
-        ----------
-        bet_amount
-            The amount of the PassLine bet.
-        """
-        self.bet_amount: float = float(bet_amount)
-        super().__init__(PassLine(bet_amount))
-
-    def __repr__(self) -> str:
-        return f"{self.__class__.__name__}(amount={self.bet_amount})"
-
-
-class BetDontPass(BetPointOff):
-    """Strategy that adds a DontPass bet if the point is off and the player doesn't have a DontPass
-    bet of the given amount already on the table.
-    Equivalent to BetPointOff(DontPass(amount))."""
-
-    def __init__(self, bet_amount: float):
-        """If the point is off and the player doesn't have a DontPass(amount) bet on the table
-        place a DontPass(amount) bet.
-
-        Parameters
-        ----------
-        bet_amount
-            The amount of the DontPass bet to place.
-        """
-        self.bet_amount = bet_amount
-        super().__init__(DontPass(bet_amount))
-
-    def __repr__(self) -> str:
-        return f"{self.__class__.__name__}(amount={self.bet_amount})"
