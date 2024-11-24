@@ -40,7 +40,7 @@ from crapssim.strategy.examples import (
     TwoCome,
 )
 from crapssim.strategy.odds import OddsAmount, OddsMultiplier
-from crapssim.strategy.single_bet import SimpleStrategyMode, _BaseSingleBet
+from crapssim.strategy.single_bet import StrategyMode, _BaseSingleBet
 
 
 @pytest.fixture
@@ -552,7 +552,7 @@ def test_base_single_bet_is_not_allowed(player):
 
 
 def test_base_single_bet_add_or_increase(player):
-    strategy = _BaseSingleBet(PassLine(5), SimpleStrategyMode.ADD_OR_INCREASE)
+    strategy = _BaseSingleBet(PassLine(5), StrategyMode.ADD_OR_INCREASE)
     player.bets = [PassLine(5)]
     player.add_bet = MagicMock()
     strategy.update_bets(player)
@@ -560,7 +560,7 @@ def test_base_single_bet_add_or_increase(player):
 
 
 def test_base_single_bet_replace(player):
-    strategy = _BaseSingleBet(PassLine(5), SimpleStrategyMode.REPLACE)
+    strategy = _BaseSingleBet(PassLine(5), StrategyMode.REPLACE)
     player.bets = [PassLine(5)]
     player.add_bet = MagicMock()
     player.remove_bet = MagicMock()
