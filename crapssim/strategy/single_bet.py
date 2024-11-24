@@ -22,6 +22,7 @@ from crapssim.bet import (
 )
 from crapssim.strategy.tools import (
     BetIfTrue,
+    BetNewShooter,
     BetPointOff,
     BetPointOn,
     IfBetNotExist,
@@ -35,6 +36,7 @@ class StrategyMode(enum.Enum):
     ADD_IF_NON_EXISTENT = enum.auto()
     ADD_IF_POINT_OFF = enum.auto()
     ADD_IF_POINT_ON = enum.auto()
+    ADD_IF_NEW_SHOOTER = enum.auto()
     ADD_OR_INCREASE = enum.auto()
     REPLACE = enum.auto()
 
@@ -62,6 +64,8 @@ class _BaseSingleBet(Strategy):
             BetPointOn(self.bet).update_bets(player)
         elif self.mode == StrategyMode.ADD_IF_POINT_OFF:
             BetPointOff(self.bet).update_bets(player)
+        elif self.mode == StrategyMode.ADD_IF_NEW_SHOOTER:
+            BetNewShooter(self.bet).update_bets(player)
         elif self.mode == StrategyMode.ADD_OR_INCREASE:
             player.add_bet(self.bet)
         elif self.mode == StrategyMode.REPLACE:

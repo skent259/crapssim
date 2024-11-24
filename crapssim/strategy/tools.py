@@ -17,6 +17,7 @@ class Table(Protocol):
 
     dice: Dice
     point: Point
+    new_shooter: bool
 
 
 class Player(Protocol):
@@ -343,6 +344,25 @@ class BetPointOn(BetIfTrue):
         super().__init__(
             bet, lambda p: p.table.point.status == "On" and bet not in p.bets
         )
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}(bet={self.bet})"
+
+
+class BetNewShooter(BetIfTrue):
+    """Strategy that adds a bet if there is a new shooter at the table, and the Player doesn't have a bet on the
+    table. Equivalent to BetIfTrue(bet, lambda p: p.table.new_shooter and bet not in p.bets)
+    """
+
+    def __init__(self, bet: Bet):
+        """Add a bet if the point is On.
+
+        Parameters
+        ----------
+        bet
+            The bet to add if the point is On.
+        """
+        super().__init__(bet, lambda p: p.table.new_shooter and bet not in p.bets)
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(bet={self.bet})"

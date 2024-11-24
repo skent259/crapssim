@@ -16,6 +16,7 @@ from crapssim.strategy.single_bet import BetDontPass, BetPassLine, BetPlace
 from crapssim.strategy.tools import (
     AggregateStrategy,
     BetIfTrue,
+    BetNewShooter,
     BetPointOff,
     BetPointOn,
     CountStrategy,
