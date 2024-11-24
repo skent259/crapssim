@@ -44,7 +44,7 @@ class Pass2Come(AggregateStrategy):
         bet_amount
             The amount of the PassLine and Come bets.
         """
-        self.bet_amount = bet_amount
+        self.bet_amount: float = float(bet_amount)
         super().__init__(
             BetPassLine(bet_amount), CountStrategy(Come, 2, Come(bet_amount))
         )
@@ -79,9 +79,9 @@ class PassLinePlace68(AggregateStrategy):
         skip_point
             If True, don't place the six or eight if that is the number of the point.
         """
-        self.pass_line_amount = pass_line_amount
-        self.six_amount = six_amount
-        self.eight_amount = eight_amount
+        self.pass_line_amount = float(pass_line_amount)
+        self.six_amount = float(six_amount)
+        self.eight_amount = float(eight_amount)
         self.skip_point = skip_point
 
         pass_line_strategy = BetPassLine(pass_line_amount)
@@ -112,17 +112,19 @@ class PlaceInside(AggregateStrategy):
             or a number that supports float. If its a number that supports float, the six and eight
             amounts will be the number * (6 / 5) to make the payout a whole number.
         """
-        self.bet_amount = bet_amount
         if isinstance(bet_amount, typing.SupportsFloat):
-            six_eight_amount = float(bet_amount) * (6 / 5)
+            self.bet_amount = float(bet_amount)
+            six_eight_amount = bet_amount * (6 / 5)
             amount_dict = {
-                5: bet_amount,
+                5: self.bet_amount,
                 6: six_eight_amount,
                 8: six_eight_amount,
-                9: bet_amount,
+                9: self.bet_amount,
             }
         else:
-            amount_dict = bet_amount
+            amount_dict = {k: float(v) for k, v in bet_amount.items()}
+            self.bet_amount = amount_dict
+
         super().__init__(BetPlace(amount_dict, skip_point=False, skip_come=False))
 
     def __repr__(self) -> str:
@@ -153,9 +155,9 @@ class Place68Move59(Strategy):
             The amount of the Place5 and Place9 bets.
         """
         super().__init__()
-        self.pass_come_amount = pass_come_amount
-        self.six_eight_amount = six_eight_amount
-        self.five_nine_amount = five_nine_amount
+        self.pass_come_amount = float(pass_come_amount)
+        self.six_eight_amount = float(six_eight_amount)
+        self.five_nine_amount = float(five_nine_amount)
 
     def completed(self, player: Player) -> bool:
         """The strategy is completed if the player has no bets on the table, and the players
@@ -234,6 +236,13 @@ class Place68Move59(Strategy):
             if len([x for x in player.bets if isinstance(x, Place)]) < 2:
                 IfBetNotExist(bet).update_bets(player)
 
+    def __repr__(self) -> str:
+        return (
+            f"{self.__class__.__name__}(pass_come_amount={self.pass_come_amount}, "
+            f"six_eight_amount={self.six_eight_amount}, "
+            f"five_nine_amount={self.five_nine_amount})"
+        )
+
 
 class PassLinePlace68Move59(AggregateStrategy):
     """Strategy that makes a PassLine bet, makes Place bets on the six and eight, and then moves
@@ -261,9 +270,9 @@ class PassLinePlace68Move59(AggregateStrategy):
         five_nine_amount
             The amount of the Place5 and Place9 bets.
         """
-        self.pass_line_amount = pass_line_amount
-        self.six_eight_amount = six_eight_amount
-        self.five_nine_amount = five_nine_amount
+        self.pass_line_amount = float(pass_line_amount)
+        self.six_eight_amount = float(six_eight_amount)
+        self.five_nine_amount = float(five_nine_amount)
         super().__init__(
             BetPassLine(pass_line_amount),
             Place68Move59(pass_line_amount, six_eight_amount, five_nine_amount),
@@ -303,9 +312,9 @@ class Place682Come(AggregateStrategy):
             The amount of the Place5 and Place9 bets.
         """
         super().__init__(*strategies)
-        self.pass_come_amount = pass_come_amount
-        self.six_eight_amount = six_eight_amount
-        self.five_nine_amount = five_nine_amount
+        self.pass_come_amount = float(pass_come_amount)
+        self.six_eight_amount = float(six_eight_amount)
+        self.five_nine_amount = float(five_nine_amount)
 
     def update_bets(self, player: Player) -> None:
         """If the player has less than 2 PassLine and Come bets, make the bet (depending on whether
@@ -354,7 +363,7 @@ class IronCross(AggregateStrategy):
             base_amount * (6/5) * 2 is used for placing the six and eight, and base amount * 2
             is used for placing the five.
         """
-        self.base_amount = base_amount
+        self.base_amount = float(base_amount)
         place_amounts = {
             5: base_amount * 2,
             6: (6 / 5) * base_amount * 2,
@@ -389,7 +398,7 @@ class HammerLock(Strategy):
             the base amount for PassLine and DontPass Bets, and Place5 and Place9 bets. Place6 and
             Place8 starts at (6/5) * 2 * this amount and if it wins moves to (6 / 5) * this amount.
         """
-        self.base_amount = base_amount
+        self.base_amount = float(base_amount)
         self.start_six_eight_amount = (6 / 5) * base_amount * 2
         self.end_six_eight_amount = (6 / 5) * base_amount
         self.five_nine_amount = base_amount
@@ -574,33 +583,33 @@ class Knockout(AggregateStrategy):
     PassLineOddsMultiplier({4: 3, 5: 4, 6: 5, 8: 5, 9: 4, 10: 3})
     """
 
-    def __init__(self, bet_amount: typing.SupportsFloat) -> None:
-        self.bet_amount = bet_amount
+    def __init__(self, base_amount: typing.SupportsFloat) -> None:
+        self.base_amount = float(base_amount)
         super().__init__(
-            BetPassLine(bet_amount),
-            BetPointOff(DontPass(bet_amount)),
+            BetPassLine(base_amount),
+            BetPointOff(DontPass(base_amount)),
             PassLineOddsMultiplier({4: 3, 5: 4, 6: 5, 8: 5, 9: 4, 10: 3}),
         )
 
     def __repr__(self) -> str:
-        return f"{self.__class__.__name__}(amount={self.bet_amount})"
+        return f"{self.__class__.__name__}(base_amount={self.base_amount})"
 
 
 class DiceDoctor(WinProgression):
     """Field progression strategy with progressive increases and decreases. Equivalent to:
     FieldWinProgression([10, 20, 15, 30, 25, 50, 35, 70, 50, 100, 75, 150])"""
 
-    def __init__(self, bet_amount: float = 10) -> None:
+    def __init__(self, base_amount: float = 10) -> None:
         """Field bet with a progression if you win of [10, 20, 15, 30, 25, 50, 35, 70, 50, 100, 75,
         150]
         """
-        self.bet_amount = bet_amount
+        self.base_amount = float(base_amount)
         progression = [10, 20, 15, 30, 25, 50, 35, 70, 50, 100, 75, 150]
         multipliers = [x / 10 for x in progression]
-        super().__init__(Field(self.bet_amount), multipliers=multipliers)
+        super().__init__(Field(self.base_amount), multipliers=multipliers)
 
     def __repr__(self) -> str:
-        return f"{self.__class__.__name__}()"
+        return f"{self.__class__.__name__}(base_amount={self.base_amount})"
 
 
 class Place68PR(Strategy):
@@ -609,21 +618,21 @@ class Place68PR(Strategy):
     it is reduced to the original bet amount.
     """
 
-    def __init__(self, bet_amount: float = 6) -> None:
+    def __init__(self, base_amount: float = 6) -> None:
         """If point is on place the 6 & 8 of the amount. If you win press the bet to double. If you win
         again reduce the bet back to starting amount.
 
         Parameters
         ----------
-        bet_amount
+        base_amount
             The starting amount of bet to place.
         """
-        self.bet_amount = bet_amount
-        self.starting_amount = bet_amount
+        self.base_amount = float(base_amount)
+        self.starting_amount = float(base_amount)
         self.press_amount = 2 * self.starting_amount
 
-        self.win_one_amount = bet_amount * (7 / 6)
-        self.win_two_amount = bet_amount * 2 * (7 / 6)
+        self.win_one_amount = base_amount * (7 / 6)
+        self.win_two_amount = base_amount * 2 * (7 / 6)
 
         self.six_winnings = 0.0
         self.eight_winnings = 0.0
@@ -709,7 +718,7 @@ class Place68PR(Strategy):
         self.press(player)
 
     def __repr__(self) -> str:
-        return f"{self.__class__.__name__}(amount={self.bet_amount})"
+        return f"{self.__class__.__name__}(base_amount={self.base_amount})"
 
 
 class Place68DontCome2Odds(AggregateStrategy):
@@ -728,8 +737,8 @@ class Place68DontCome2Odds(AggregateStrategy):
         dont_come_amount
             The amount of the DontCome bet.
         """
-        self.six_eight_amount = six_eight_amount
-        self.dont_come_amount = dont_come_amount
+        self.six_eight_amount = float(six_eight_amount)
+        self.dont_come_amount = float(dont_come_amount)
         super().__init__(
             BetPlace({6: six_eight_amount, 8: six_eight_amount}, skip_point=False),
             BetIfTrue(

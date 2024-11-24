@@ -2,6 +2,9 @@ from unittest.mock import MagicMock, call
 
 import pytest
 
+import crapssim.strategy
+import crapssim.strategy.examples
+import crapssim.strategy.single_bet
 from crapssim import Player, Table
 from crapssim.bet import (
     Bet,
@@ -1063,7 +1066,7 @@ def test_dice_doctor_bet_amounts(player, progression, amount):
 @pytest.mark.parametrize(
     "attribute, amount",
     [
-        ("bet_amount", 6),
+        ("base_amount", 6),
         ("starting_amount", 6),
         ("win_one_amount", 7),
         ("win_two_amount", 14),
@@ -1172,3 +1175,107 @@ def test_place_68_cpr_update_bets_initial_bets_placed_no_update(player):
     player.bets = [Place(6, 6), Place(8, 6)]
     strategy.update_bets(player)
     player.add_bet.assert_not_called()
+
+
+@pytest.mark.parametrize(
+    "strategy, strategy_name",
+    [
+        # Single bet strategies
+        (
+            crapssim.strategy.BetPlace({6: 6, 8: 6}),
+            "BetPlace(place_bet_amounts={6: 6, 8: 6}, mode=StrategyMode.ADD_IF_POINT_ON, skip_point=True, skip_come=False)",
+        ),
+        (
+            crapssim.strategy.BetPassLine(1),
+            "BetPassLine(bet_amount=1.0, mode=StrategyMode.ADD_IF_POINT_OFF)",
+        ),
+        (
+            crapssim.strategy.BetDontPass(1),
+            "BetDontPass(bet_amount=1.0, mode=StrategyMode.ADD_IF_POINT_OFF)",
+        ),
+        (
+            crapssim.strategy.single_bet.BetCome(1),
+            "BetCome(bet_amount=1.0, mode=StrategyMode.ADD_IF_POINT_ON)",
+        ),
+        (
+            crapssim.strategy.single_bet.BetDontCome(1),
+            "BetDontCome(bet_amount=1.0, mode=StrategyMode.ADD_IF_POINT_ON)",
+        ),
+        (
+            crapssim.strategy.single_bet.BetHardWay(4, 1),
+            "BetHardWay(4, bet_amount=1.0, mode=StrategyMode.ADD_IF_NON_EXISTENT)",
+        ),
+        (
+            crapssim.strategy.single_bet.BetHardWay(6, 1),
+            "BetHardWay(6, bet_amount=1.0, mode=StrategyMode.ADD_IF_NON_EXISTENT)",
+        ),
+        (
+            crapssim.strategy.single_bet.BetHardWay(8, 1),
+            "BetHardWay(8, bet_amount=1.0, mode=StrategyMode.ADD_IF_NON_EXISTENT)",
+        ),
+        (
+            crapssim.strategy.single_bet.BetHardWay(10, 1),
+            "BetHardWay(10, bet_amount=1.0, mode=StrategyMode.ADD_IF_NON_EXISTENT)",
+        ),
+        (
+            crapssim.strategy.single_bet.BetField(1),
+            "BetField(bet_amount=1.0, mode=StrategyMode.ADD_IF_NON_EXISTENT)",
+        ),
+        (
+            crapssim.strategy.single_bet.BetAny7(1),
+            "BetAny7(bet_amount=1.0, mode=StrategyMode.ADD_IF_NON_EXISTENT)",
+        ),
+        (
+            crapssim.strategy.single_bet.BetTwo(1),
+            "BetTwo(bet_amount=1.0, mode=StrategyMode.ADD_IF_NON_EXISTENT)",
+        ),
+        (
+            crapssim.strategy.single_bet.BetThree(1),
+            "BetThree(bet_amount=1.0, mode=StrategyMode.ADD_IF_NON_EXISTENT)",
+        ),
+        (
+            crapssim.strategy.single_bet.BetYo(1),
+            "BetYo(bet_amount=1.0, mode=StrategyMode.ADD_IF_NON_EXISTENT)",
+        ),
+        (
+            crapssim.strategy.single_bet.BetBoxcars(1),
+            "BetBoxcars(bet_amount=1.0, mode=StrategyMode.ADD_IF_NON_EXISTENT)",
+        ),
+        (
+            crapssim.strategy.single_bet.BetFire(1),
+            "BetFire(bet_amount=1.0, mode=StrategyMode.ADD_IF_NON_EXISTENT)",
+        ),
+        # Example strategies
+        (crapssim.strategy.examples.Pass2Come(1), "Pass2Come(amount=1.0)"),
+        (
+            crapssim.strategy.examples.PassLinePlace68(5, 6, 6),
+            "PassLinePlace68(pass_line_amount=5.0, six_amount=6.0, eight_amount=6.0, skip_point=True)",
+        ),
+        (crapssim.strategy.examples.PlaceInside(5), "PlaceInside(amount=5.0)"),
+        (
+            crapssim.strategy.examples.Place68Move59(5, 6, 5),
+            "Place68Move59(pass_come_amount=5.0, six_eight_amount=6.0, five_nine_amount=5.0)",
+        ),
+        (
+            crapssim.strategy.examples.PassLinePlace68Move59(5, 6, 5),
+            "PassLinePlace68Move59(pass_line_amount=5.0, six_eight_amount=6.0, five_nine_amount=5.0)",
+        ),
+        (
+            crapssim.strategy.examples.Place682Come(5, 6, 5),
+            "Place682Come(pass_come_amount=5.0, six_eight_amount=6.0, five_nine_amount=5.0)",
+        ),
+        (crapssim.strategy.examples.IronCross(10), "IronCross(base_amount=10.0)"),
+        (crapssim.strategy.examples.HammerLock(5), "HammerLock(base_amount=5.0)"),
+        (crapssim.strategy.examples.Risk12(), "Risk12()"),
+        (crapssim.strategy.examples.Knockout(5), "Knockout(base_amount=5.0)"),
+        (crapssim.strategy.examples.DiceDoctor(5), "DiceDoctor(base_amount=5.0)"),
+        (crapssim.strategy.examples.Place68PR(6), "Place68PR(base_amount=6.0)"),
+        (
+            crapssim.strategy.examples.Place68DontCome2Odds(6, 5),
+            "Place68DontCome2Odds(six_eight_amount=6.0, dont_come_amount=5.0)",
+        ),
+    ],
+)
+def test_repr_names(strategy, strategy_name):
+    # Check above visually make sense
+    assert repr(strategy) == strategy_name

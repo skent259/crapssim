@@ -74,6 +74,12 @@ class _BaseSingleBet(Strategy):
                 player.remove_bet(bet)
             player.add_bet(self.bet)
 
+    def __repr__(self) -> str:
+        return (
+            f"{self.__class__.__name__}(bet_amount={self.bet.amount},"
+            f" mode={self.mode})"
+        )
+
 
 class BetPlace(Strategy):
     """Strategy that makes multiple Place bets of given amounts. It can also skip making the bet
@@ -165,8 +171,8 @@ class BetPlace(Strategy):
     def __repr__(self) -> str:
         return (
             f"{self.__class__.__name__}(place_bet_amounts={self.place_bet_amounts},"
-            f" mode={self.mode}",
-            f" skip_point={self.skip_point}, skip_come={self.skip_come})",
+            f" mode={self.mode},"
+            f" skip_point={self.skip_point}, skip_come={self.skip_come})"
         )
 
 
@@ -215,7 +221,14 @@ class BetHardWay(_BaseSingleBet):
     ):
         if number not in [4, 6, 8, 10]:
             raise NotImplementedError
+        self.number = number
         super().__init__(HardWay(number, bet_amount), mode=mode)
+
+    def __repr__(self) -> str:
+        return (
+            f"{self.__class__.__name__}({self.number}, bet_amount={self.bet.amount},"
+            f" mode={self.mode})"
+        )
 
 
 class BetField(_BaseSingleBet):

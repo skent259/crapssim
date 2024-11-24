@@ -260,9 +260,9 @@ from crapssim.table import TableUpdate
                 Place(number=6, amount=6.0),
             ],
         ),
-        (Knockout(bet_amount=5), [], [DontPass(amount=5.0), PassLine(amount=5.0)]),
+        (Knockout(base_amount=5), [], [DontPass(amount=5.0), PassLine(amount=5.0)]),
         (
-            Knockout(bet_amount=5),
+            Knockout(base_amount=5),
             [(4, 2)],
             [
                 DontPass(amount=5.0),
@@ -306,29 +306,29 @@ from crapssim.table import TableUpdate
                 DontCome(amount=5.0, number=4),
             ],
         ),
-        (Place68PR(bet_amount=6), [], []),
+        (Place68PR(base_amount=6), [], []),
         (
-            Place68PR(bet_amount=6),
+            Place68PR(base_amount=6),
             [(4, 4)],
             [Place(number=8, amount=6.0), Place(number=6, amount=6.0)],
         ),
         (
-            Place68PR(bet_amount=6),
+            Place68PR(base_amount=6),
             [(2, 2), (4, 4)],
             [Place(number=8, amount=12.0), Place(number=6, amount=6.0)],
         ),
         (
-            Place68PR(bet_amount=6),
+            Place68PR(base_amount=6),
             [(2, 2), (4, 4), (4, 4)],
             [Place(number=8, amount=6.0), Place(number=6, amount=6.0)],
         ),
         (
-            Place68PR(bet_amount=6),
+            Place68PR(base_amount=6),
             [(2, 2), (4, 4), (4, 4), (4, 4)],
             [Place(number=8, amount=12.0), Place(number=6, amount=6.0)],
         ),
         (
-            Place68PR(bet_amount=6),
+            Place68PR(base_amount=6),
             [(2, 2), (3, 3), (3, 3), (3, 3)],
             [Place(number=8, amount=6.0), Place(number=6, amount=12.0)],
         ),
