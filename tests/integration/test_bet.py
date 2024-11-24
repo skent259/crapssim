@@ -25,7 +25,7 @@ from crapssim.bet import (
     Yo,
 )
 from crapssim.point import Point
-from crapssim.strategy.core import NullStrategy
+from crapssim.strategy.tools import NullStrategy
 from crapssim.table import TableUpdate
 
 ALL_BETS = [

@@ -1,8 +1,7 @@
 import typing
 
 from crapssim.bet import Bet, Come, DontCome, DontPass, Odds, PassLine
-from crapssim.strategy import Strategy
-from crapssim.strategy.core import Player, Table
+from crapssim.strategy.tools import Player, Strategy, Table
 
 
 class OddsAmount(Strategy):

@@ -10,7 +10,6 @@ from crapssim.strategy import (
     DontPassOddsMultiplier,
     PassLineOddsMultiplier,
 )
-from crapssim.strategy.core import WinProgression
 from crapssim.strategy.examples import (
     DiceDoctor,
     HammerLock,
@@ -24,6 +23,7 @@ from crapssim.strategy.examples import (
     Place682Come,
     Risk12,
 )
+from crapssim.strategy.tools import WinProgression
 from crapssim.table import TableUpdate
 
 

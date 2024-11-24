@@ -26,7 +26,6 @@ from crapssim.strategy import (
     RemoveIfTrue,
     Strategy,
 )
-from crapssim.strategy.core import RemoveByType, ReplaceIfTrue
 from crapssim.strategy.examples import (
     DiceDoctor,
     HammerLock,
@@ -41,6 +40,7 @@ from crapssim.strategy.examples import (
 )
 from crapssim.strategy.odds import OddsAmount, OddsMultiplier
 from crapssim.strategy.single_bet import StrategyMode, _BaseSingleBet
+from crapssim.strategy.tools import RemoveByType, ReplaceIfTrue
 
 
 @pytest.fixture

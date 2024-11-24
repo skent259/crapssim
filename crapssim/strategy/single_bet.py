@@ -20,8 +20,8 @@ from crapssim.bet import (
     Two,
     Yo,
 )
-from crapssim.strategy import BetIfTrue
-from crapssim.strategy.core import (
+from crapssim.strategy.tools import (
+    BetIfTrue,
     BetPointOff,
     BetPointOn,
     IfBetNotExist,

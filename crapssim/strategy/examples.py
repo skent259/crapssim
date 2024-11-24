@@ -4,19 +4,6 @@ in order to do the intended """
 import typing
 
 from crapssim.bet import Come, DontCome, DontPass, Field, PassLine, Place
-from crapssim.strategy.core import (
-    AggregateStrategy,
-    BetIfTrue,
-    BetPointOff,
-    BetPointOn,
-    CountStrategy,
-    IfBetNotExist,
-    Player,
-    RemoveByType,
-    RemoveIfTrue,
-    Strategy,
-    WinProgression,
-)
 from crapssim.strategy.odds import (
     DontPassOddsMultiplier,
     OddsMultiplier,
@@ -29,6 +16,19 @@ from crapssim.strategy.single_bet import (
     BetPassLine,
     BetPlace,
     StrategyMode,
+)
+from crapssim.strategy.tools import (
+    AggregateStrategy,
+    BetIfTrue,
+    BetPointOff,
+    BetPointOn,
+    CountStrategy,
+    IfBetNotExist,
+    Player,
+    RemoveByType,
+    RemoveIfTrue,
+    Strategy,
+    WinProgression,
 )
 
 
