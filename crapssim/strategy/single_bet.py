@@ -39,14 +39,46 @@ class StrategyMode(enum.Enum):
     REPLACE = enum.auto()
 
 
+class _BaseSingleBet(Strategy):
+    def __init__(
+        self,
+        bet: Bet,
+        mode: StrategyMode = StrategyMode.ADD_IF_NON_EXISTENT,
+    ):
+        super().__init__()
+        self.bet = bet
+        self.mode = mode
+
+    def completed(self, player: Player) -> bool:
+        return player.bankroll < self.bet.amount and len(player.bets) == 0
+
+    def update_bets(self, player: Player) -> None:
+        if not self.bet.is_allowed(player):
+            return
+
+        if self.mode == StrategyMode.ADD_IF_NON_EXISTENT:
+            BetIfTrue(self.bet, lambda p: self.bet not in p.bets).update_bets(player)
+        elif self.mode == StrategyMode.ADD_IF_POINT_ON:
+            BetPointOn(self.bet).update_bets(player)
+        elif self.mode == StrategyMode.ADD_IF_POINT_OFF:
+            BetPointOff(self.bet).update_bets(player)
+        elif self.mode == StrategyMode.ADD_OR_INCREASE:
+            player.add_bet(self.bet)
+        elif self.mode == StrategyMode.REPLACE:
+            existing_bets = player.already_placed_bets(self.bet)
+            for bet in existing_bets:
+                player.remove_bet(bet)
+            player.add_bet(self.bet)
+
+
 class BetPlace(Strategy):
     """Strategy that makes multiple Place bets of given amounts. It can also skip making the bet
     if the point is the same as the given bet number."""
 
-    # TODO: add bet mode to this (default currently is point off)
     def __init__(
         self,
         place_bet_amounts: dict[int, float],
+        mode: StrategyMode = StrategyMode.ADD_IF_POINT_ON,
         skip_point: bool = True,
         skip_come: bool = False,
     ):
@@ -66,6 +98,7 @@ class BetPlace(Strategy):
         """
         super().__init__()
         self.place_bet_amounts = place_bet_amounts
+        self.mode = mode
         self.skip_point = skip_point
         self.skip_come = skip_come
 
@@ -102,15 +135,13 @@ class BetPlace(Strategy):
         for number, amount in self.place_bet_amounts.items():
             if self.skip_point and number == player.table.point.number:
                 continue
-            if player.table.point.status == "Off":
-                continue
             if self.skip_come:
                 come_numbers = [
                     x.point.number for x in player.bets if isinstance(x, Come)
                 ]
                 if number in come_numbers:
                     continue
-            IfBetNotExist(Place(number, amount)).update_bets(player)
+            _BaseSingleBet(Place(number, amount), mode=self.mode).update_bets(player)
 
     @staticmethod
     def remove_point_bet(player: Player) -> None:
@@ -130,40 +161,9 @@ class BetPlace(Strategy):
     def __repr__(self) -> str:
         return (
             f"{self.__class__.__name__}(place_bet_amounts={self.place_bet_amounts},"
-            f" skip_point={self.skip_point}, skip_come={self.skip_come})"
+            f" mode={self.mode}",
+            f" skip_point={self.skip_point}, skip_come={self.skip_come})",
         )
-
-
-class _BaseSingleBet(Strategy):
-    def __init__(
-        self,
-        bet: Bet,
-        mode: StrategyMode = StrategyMode.ADD_IF_NON_EXISTENT,
-    ):
-        super().__init__()
-        self.bet = bet
-        self.mode = mode
-
-    def completed(self, player: Player) -> bool:
-        return player.bankroll < self.bet.amount and len(player.bets) == 0
-
-    def update_bets(self, player: Player) -> None:
-        if not self.bet.is_allowed(player):
-            return
-
-        if self.mode == StrategyMode.ADD_IF_NON_EXISTENT:
-            BetIfTrue(self.bet, lambda p: self.bet not in p.bets).update_bets(player)
-        elif self.mode == StrategyMode.ADD_IF_POINT_ON:
-            BetPointOn(self.bet).update_bets(player)
-        elif self.mode == StrategyMode.ADD_IF_POINT_OFF:
-            BetPointOff(self.bet).update_bets(player)
-        elif self.mode == StrategyMode.ADD_OR_INCREASE:
-            player.add_bet(self.bet)
-        elif self.mode == StrategyMode.REPLACE:
-            existing_bets = player.already_placed_bets(self.bet)
-            for bet in existing_bets:
-                player.remove_bet(bet)
-            player.add_bet(self.bet)
 
 
 class BetPassLine(_BaseSingleBet):
