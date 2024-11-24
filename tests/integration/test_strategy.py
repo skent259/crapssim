@@ -10,6 +10,7 @@ from crapssim.strategy import (
     DontPassOddsMultiplier,
     PassLineOddsMultiplier,
 )
+from crapssim.strategy.core import WinProgression
 from crapssim.strategy.examples import (
     DiceDoctor,
     HammerLock,
@@ -270,7 +271,21 @@ from crapssim.table import TableUpdate
             ],
         ),
         (DiceDoctor(), [], [Field(amount=10.0)]),
+        (DiceDoctor(), [(1, 1)], [Field(amount=20.0)]),
+        (DiceDoctor(), [(1, 1), (5, 6)], [Field(amount=15.0)]),
         (DiceDoctor(), [(1, 1), (5, 6), (5, 5)], [Field(amount=30.0)]),
+        (WinProgression(Place(6, 12), [1, 2, 3]), [], [Place(6, amount=12.0)]),
+        (WinProgression(Place(6, 12), [1, 2, 3]), [(3, 3)], [Place(6, amount=24.0)]),
+        (
+            WinProgression(Place(6, 12), [1, 2, 3]),
+            [(3, 3), (2, 4)],
+            [Place(6, amount=36.0)],
+        ),
+        (
+            WinProgression(Place(6, 12), [1, 2, 3]),
+            [(3, 3), (2, 4), (3, 3)],
+            [Place(6, amount=36.0)],
+        ),
         (Place68DontCome2Odds(six_eight_amount=6, dont_come_amount=5), [], []),
         (
             Place68DontCome2Odds(six_eight_amount=6, dont_come_amount=5),

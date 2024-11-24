@@ -15,6 +15,7 @@ from crapssim.strategy.core import (
     RemoveByType,
     RemoveIfTrue,
     Strategy,
+    WinProgression,
 )
 from crapssim.strategy.odds import (
     DontPassOddsMultiplier,
@@ -472,22 +473,22 @@ class HammerLock(Strategy):
 
     def place68(self, player: Player) -> None:
         """Update bets to Place the 6 and 8 (regardless of the point) and then lay odds on DontPass bets."""
-        place_bet_amounts = {
+        place_amounts = {
             6: self.start_six_eight_amount,
             8: self.start_six_eight_amount,
         }
-        BetPlace(place_bet_amounts, skip_point=False).update_bets(player)
+        BetPlace(place_amounts, skip_point=False).update_bets(player)
 
     def place5689(self, player: Player) -> None:
         """Update bets to Place the 5, 6, 8 and 9."""
         RemoveByType(Place).update_bets(player)
-        place_bet_amounts = {
+        place_amounts = {
             5: self.five_nine_amount,
             6: self.end_six_eight_amount,
             8: self.end_six_eight_amount,
             9: self.five_nine_amount,
         }
-        BetPlace(place_bet_amounts, skip_point=False).update_bets(player)
+        BetPlace(place_amounts, skip_point=False).update_bets(player)
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(base_amount={self.base_amount})"
@@ -599,83 +600,18 @@ class Knockout(AggregateStrategy):
         return f"{self.__class__.__name__}(amount={self.bet_amount})"
 
 
-class FieldWinProgression(Strategy):
-    """Strategy that every time a Field bet is won, moves to the next amount in the progression and
-    places a Field bet for that amount."""
-
-    def __init__(self, progression: list[typing.SupportsFloat]) -> None:
-        """Creates the given the progression.
-
-        Parameters
-        ----------
-        progression
-            A list of bet amounts to make on the Field. As you win, progresses farther up list.
-        """
-        self.progression = progression
-        self.current_progression = 0
-
-    def completed(self, player: Player) -> bool:
-        """If the players bankroll is below the minimum amount in the progression and if they
-        have no more bets on the table the strategy is completed.
-
-        Parameters
-        ----------
-        player
-            The player to check the bankroll and bets for.
-
-        Returns
-        -------
-        True if the
-        """
-        return (
-            player.bankroll < min(float(x) for x in self.progression)
-            and len(player.bets) == 0
-        )
-
-    def after_roll(self, player: Player) -> None:
-        """If the field bet wins, increase the progression by 1, if it loses reset the progression
-        to 0.
-
-        Parameters
-        ----------
-        player
-            The player to check the winning bets for.
-        """
-
-        win = all(x.get_result(player.table).won for x in player.bets)
-
-        if win:
-            self.current_progression += 1
-        else:
-            self.current_progression = 0
-
-    def update_bets(self, player: Player) -> None:
-        """If a field bet isn't on the table, place one for the current progression amount.
-
-        Parameters
-        ----------
-        player
-            The player to place the bet for.
-        """
-        if self.current_progression >= len(self.progression):
-            bet_amount = self.progression[-1]
-        else:
-            bet_amount = self.progression[self.current_progression]
-        IfBetNotExist(Field(bet_amount)).update_bets(player)
-
-    def __repr__(self) -> str:
-        return f"{self.__class__.__name__}(progression={self.progression})"
-
-
-class DiceDoctor(FieldWinProgression):
+class DiceDoctor(WinProgression):
     """Field progression strategy with progressive increases and decreases. Equivalent to:
     FieldWinProgression([10, 20, 15, 30, 25, 50, 35, 70, 50, 100, 75, 150])"""
 
-    def __init__(self) -> None:
+    def __init__(self, bet_amount: float = 10) -> None:
         """Field bet with a progression if you win of [10, 20, 15, 30, 25, 50, 35, 70, 50, 100, 75,
         150]
         """
-        super().__init__([10, 20, 15, 30, 25, 50, 35, 70, 50, 100, 75, 150])
+        self.bet_amount = bet_amount
+        progression = [10, 20, 15, 30, 25, 50, 35, 70, 50, 100, 75, 150]
+        multipliers = [x / 10 for x in progression]
+        super().__init__(Field(self.bet_amount), multipliers=multipliers)
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}()"

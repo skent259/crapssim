@@ -2,6 +2,7 @@
 strategies with the intended usage. Each of the strategies included in this package are intended
 to be used as building blocks when creating strategies."""
 
+import copy
 import typing
 from abc import ABC, abstractmethod
 from typing import Protocol
@@ -406,3 +407,77 @@ class RemoveByType(RemoveIfTrue):
 
     def __init__(self, bet_type: typing.Type[Bet] | tuple[typing.Type[Bet], ...]):
         super().__init__(lambda b, p: isinstance(b, bet_type))
+
+
+class WinProgression(Strategy):
+    """Strategy that every time a bet is won, moves to the next amount in the progression and
+    places a Field bet for that amount."""
+
+    def __init__(self, first_bet: Bet, multipliers: list[typing.SupportsFloat]) -> None:
+        """Creates the given the progression.
+
+        Parameters
+        ----------
+        first_bet
+            The initial bet, including the starting amount
+        progression
+            A list of multipliers on the bet amounts to make. As you win, progresses farther up list.
+        """
+        self.bet = first_bet
+        self.multipliers = multipliers
+        self.current_progression = 0
+
+    def completed(self, player: Player) -> bool:
+        """If the players bankroll is below the minimum amount in the progression and if they
+        have no more bets on the table the strategy is completed.
+
+        Parameters
+        ----------
+        player
+            The player to check the bankroll and bets for.
+
+        Returns
+        -------
+        True if the
+        """
+        return (
+            player.bankroll < min(float(x) for x in self.multipliers)
+            and len(player.bets) == 0
+        )
+
+    def after_roll(self, player: Player) -> None:
+        """If the field bet wins, increase the progression by 1, if it loses reset the progression
+        to 0.
+
+        Parameters
+        ----------
+        player
+            The player to check the winning bets for.
+        """
+
+        win = all(x.get_result(player.table).won for x in player.bets)
+
+        if win:
+            self.current_progression += 1
+        else:
+            self.current_progression = 0
+
+    def update_bets(self, player: Player) -> None:
+        """If a bet isn't on the table, place one for the current progression amount.
+
+        Parameters
+        ----------
+        player
+            The player to place the bet for.
+        """
+        new_bet = copy.copy(self.bet)
+        if self.current_progression >= len(self.multipliers):
+            new_bet.amount = self.bet.amount * self.multipliers[-1]
+        else:
+            new_bet.amount = (
+                self.bet.amount * self.multipliers[self.current_progression]
+            )
+        IfBetNotExist(new_bet).update_bets(player)
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}(first_bet={self.bet}, multipliers={self.multipliers})"
