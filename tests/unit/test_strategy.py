@@ -39,7 +39,7 @@ from crapssim.strategy.examples import (
     Risk12,
     TwoCome,
 )
-from crapssim.strategy.odds import OddsAmountStrategy, OddsMultiplierStrategy
+from crapssim.strategy.odds import OddsAmount, OddsMultiplier
 from crapssim.strategy.single_bet import SimpleStrategyMode, _BaseSingleBet
 
 
@@ -459,7 +459,7 @@ def test_remove_by_type_remove_bet_not_called(player):
 
 
 def test_odds_amount_strategy_add_bet_called_pass_line(player):
-    strategy = OddsAmountStrategy(PassLine, {4: 5, 5: 5})
+    strategy = OddsAmount(PassLine, {4: 5, 5: 5})
     player.bets = [PassLine(5)]
     player.add_bet = MagicMock()
     player.table.point.number = 4
@@ -468,7 +468,7 @@ def test_odds_amount_strategy_add_bet_called_pass_line(player):
 
 
 def test_odds_amount_strategy_add_bet_not_called_pass_line(player):
-    strategy = OddsAmountStrategy(PassLine, {4: 5, 5: 5})
+    strategy = OddsAmount(PassLine, {4: 5, 5: 5})
     player.bets = [PassLine(5)]
     player.add_bet = MagicMock()
     player.table.point.number = 6
@@ -477,7 +477,7 @@ def test_odds_amount_strategy_add_bet_not_called_pass_line(player):
 
 
 def test_odds_amount_strategy_add_bet_called_come(player):
-    strategy = OddsAmountStrategy(Come, {4: 5, 5: 5})
+    strategy = OddsAmount(Come, {4: 5, 5: 5})
     player.bets = [Come(5, 4)]
     player.add_bet = MagicMock()
     strategy.update_bets(player)
@@ -485,7 +485,7 @@ def test_odds_amount_strategy_add_bet_called_come(player):
 
 
 def test_odds_amount_strategy_add_bet_not_called_come_wrong_numbers(player):
-    strategy = OddsAmountStrategy(Come, {4: 5, 5: 5})
+    strategy = OddsAmount(Come, {4: 5, 5: 5})
     player.bets = [Come(5, 8)]
     player.add_bet = MagicMock()
     strategy.update_bets(player)
@@ -493,7 +493,7 @@ def test_odds_amount_strategy_add_bet_not_called_come_wrong_numbers(player):
 
 
 def test_odds_amount_strategy_add_bet_not_called_come_bet_wrong_type(player):
-    strategy = OddsAmountStrategy(Come, {4: 5, 5: 5})
+    strategy = OddsAmount(Come, {4: 5, 5: 5})
     player.bets = [PassLine(5)]
     player.add_bet = MagicMock()
     player.table.point.number = 4
@@ -502,7 +502,7 @@ def test_odds_amount_strategy_add_bet_not_called_come_bet_wrong_type(player):
 
 
 def test_odds_amount_strategy_add_bet_not_called_amount_too_high(player):
-    strategy = OddsAmountStrategy(Come, {4: 9999, 5: 5})
+    strategy = OddsAmount(Come, {4: 9999, 5: 5})
     player.bets = [Come(5, 4)]
     player.add_bet = MagicMock()
     strategy.update_bets(player)
@@ -510,7 +510,7 @@ def test_odds_amount_strategy_add_bet_not_called_amount_too_high(player):
 
 
 def test_odds_amount_strategy_add_bet_not_called_already_placed(player):
-    strategy = OddsAmountStrategy(Come, {4: 5, 5: 5})
+    strategy = OddsAmount(Come, {4: 5, 5: 5})
     player.bets = [Come(5, 4), Odds(Come, 4, 5)]
     player.add_bet = MagicMock()
     strategy.update_bets(player)
@@ -520,17 +520,17 @@ def test_odds_amount_strategy_add_bet_not_called_already_placed(player):
 def test_odds_multiplier_pass_line_point_number():
     table = Table()
     table.point.number = 4
-    assert OddsMultiplierStrategy.get_point_number(PassLine(5), table) == 4
+    assert OddsMultiplier.get_point_number(PassLine(5), table) == 4
 
 
 def test_odds_multiplier_come_point_number():
     table = Table()
     table.point.number = 4
-    assert OddsMultiplierStrategy.get_point_number(Come(5, 9), table) == 9
+    assert OddsMultiplier.get_point_number(Come(5, 9), table) == 9
 
 
 def test_odds_multiplier_dont_come_bet_placed(player):
-    strategy = OddsMultiplierStrategy(DontCome, {6: 6})
+    strategy = OddsMultiplier(DontCome, {6: 6})
     player.bets = [DontCome(5, 6)]
     player.add_bet = MagicMock()
     strategy.update_bets(player)

@@ -15,8 +15,13 @@ from crapssim.strategy.core import (
     Strategy,
 )
 from crapssim.strategy.odds import (
+    ComeOddsMultiplier,
+    DontComeOddsMultiplier,
     DontPassOddsMultiplier,
-    OddsMultiplierStrategy,
+    OddsAmount,
+    OddsMultiplier,
     PassLineOddsMultiplier,
 )
 from crapssim.strategy.single_bet import BetDontPass, BetPassLine, BetPlace
+
+from . import examples, odds

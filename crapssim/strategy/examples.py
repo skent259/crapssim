@@ -18,7 +18,7 @@ from crapssim.strategy.core import (
 )
 from crapssim.strategy.odds import (
     DontPassOddsMultiplier,
-    OddsMultiplierStrategy,
+    OddsMultiplier,
     PassLineOddsMultiplier,
 )
 from crapssim.strategy.single_bet import BetDontPass, BetPassLine, BetPlace
@@ -851,7 +851,7 @@ class Place68DontCome2Odds(AggregateStrategy):
                 DontCome(dont_come_amount),
                 lambda p: len(p.get_bets_by_type((DontCome,))) == 0,
             ),
-            OddsMultiplierStrategy(DontCome, 2),
+            OddsMultiplier(DontCome, 2),
         )
 
     def __repr__(self) -> str:

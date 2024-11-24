@@ -29,7 +29,6 @@ from crapssim.strategy.core import (
     RemoveIfTrue,
     Strategy,
 )
-from crapssim.strategy.odds import OddsAmountStrategy
 
 
 class SimpleStrategyMode(enum.Enum):
@@ -185,58 +184,22 @@ class BetDontPass(_BaseSingleBet):
         super().__init__(DontPass(bet_amount), mode=mode)
 
 
-class PassLineOddsAmount(OddsAmountStrategy):
+class BetCome(_BaseSingleBet):
     def __init__(
         self,
         bet_amount: typing.SupportsFloat,
-        numbers: tuple[int] = (4, 5, 6, 8, 9, 10),
-    ):
-        super().__init__(PassLine, {x: bet_amount for x in numbers})
-
-
-class DontPassOddsAmount(OddsAmountStrategy):
-    def __init__(
-        self,
-        bet_amount: typing.SupportsFloat,
-        numbers: tuple[int] = (4, 5, 6, 8, 9, 10),
-    ):
-        super().__init__(DontPass, {x: bet_amount for x in numbers})
-
-
-class ComeAmount(_BaseSingleBet):
-    def __init__(
-        self,
-        bet_amount: typing.SupportsFloat,
-        mode=SimpleStrategyMode.ADD_IF_NON_EXISTENT,
+        mode=SimpleStrategyMode.ADD_IF_POINT_ON,
     ):
         super().__init__(DontCome(bet_amount), mode=mode)
 
 
-class ComeOddsAmount(OddsAmountStrategy):
+class BetDontCome(_BaseSingleBet):
     def __init__(
         self,
         bet_amount: typing.SupportsFloat,
-        numbers: tuple[int] = (4, 5, 6, 8, 9, 10),
-    ):
-        super().__init__(DontPass, {x: bet_amount for x in numbers})
-
-
-class DontComeAmount(_BaseSingleBet):
-    def __init__(
-        self,
-        bet_amount: typing.SupportsFloat,
-        mode=SimpleStrategyMode.ADD_IF_NON_EXISTENT,
+        mode=SimpleStrategyMode.ADD_IF_POINT_ON,
     ):
         super().__init__(DontCome(bet_amount), mode=mode)
-
-
-class DontComeOddsAmount(OddsAmountStrategy):
-    def __init__(
-        self,
-        bet_amount: typing.SupportsFloat,
-        numbers: tuple[int] = (4, 5, 6, 8, 9, 10),
-    ):
-        super().__init__(DontCome, {x: bet_amount for x in numbers})
 
 
 class BetHardWay(_BaseSingleBet):
