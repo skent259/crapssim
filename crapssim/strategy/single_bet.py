@@ -190,7 +190,7 @@ class BetCome(_BaseSingleBet):
         bet_amount: typing.SupportsFloat,
         mode=SimpleStrategyMode.ADD_IF_POINT_ON,
     ):
-        super().__init__(DontCome(bet_amount), mode=mode)
+        super().__init__(Come(bet_amount), mode=mode)
 
 
 class BetDontCome(_BaseSingleBet):
@@ -214,7 +214,7 @@ class BetHardWay(_BaseSingleBet):
         super().__init__(HardWay(number, bet_amount), mode=mode)
 
 
-class FieldAmount(_BaseSingleBet):
+class BetField(_BaseSingleBet):
     def __init__(
         self,
         bet_amount: typing.SupportsFloat,

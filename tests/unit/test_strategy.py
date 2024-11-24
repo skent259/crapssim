@@ -378,39 +378,29 @@ def test_bet_point_on_dont_add_bet(player):
     player.add_bet.assert_not_called()
 
 
-def test_count_strategy_get_bets_of_type_count(player):
-    bet1, bet2, bet3 = PassLine(1), Come(1), HardWay(4, 1)
-    player.bets = [bet1, bet2, bet3]
+def test_count_strategy_when_more(player):
+    player.bets = [PassLine(1), Come(1), HardWay(4, 1)]
     strategy = CountStrategy((HardWay,), 0, PassLine(5))
-    assert strategy.get_bets_of_type_count(player) == 1
+    assert not strategy.key(player)
 
 
-def test_count_strategy_less_than_count_bets_of_type(player):
+def test_count_strategy_when_more_two_bets(player):
+    player.bets = [PassLine(1), Come(1), HardWay(4, 1), HardWay(6, 1)]
+    strategy = CountStrategy((PassLine, Come), 2, PassLine(5))
+    assert not strategy.key(player)
+
+
+def test_count_strategy_when_more_three_bets(player):
+    player.bets = [PassLine(1), Come(1), HardWay(4, 1), HardWay(6, 1), HardWay(8, 1)]
+    strategy = CountStrategy((PassLine, Come), 2, PassLine(5))
+    assert not strategy.key(player)
+
+
+def test_count_strategy_when_less(player):
     bet1, bet2, bet3 = PassLine(1), Come(1), HardWay(4, 1)
     player.bets = [bet1, bet2, bet3]
     strategy = CountStrategy((HardWay,), 2, PassLine(5))
-    assert strategy.less_than_count_bets_of_type(player)
-
-
-def test_count_strategy_greater_than_count_bets_of_type(player):
-    bet1, bet2, bet3 = PassLine(1), Come(1), HardWay(4, 1)
-    player.bets = [bet1, bet2, bet3]
-    strategy = CountStrategy((PassLine, Come), 2, PassLine(5))
-    assert not strategy.less_than_count_bets_of_type(player)
-
-
-def test_bet_is_not_on_table(player):
-    bet1, bet2 = PassLine(5), Come(1)
-    player.bets = [bet1, bet2]
-    strategy = CountStrategy((PassLine, Come), 2, PassLine(1))
-    assert strategy.bet_is_not_on_table(player)
-
-
-def test_bet_is_on_table(player):
-    bet1, bet2 = PassLine(1), Come(1)
-    player.bets = [bet1]
-    strategy = CountStrategy((PassLine, Come), 2, PassLine(1))
-    assert not strategy.bet_is_not_on_table(player)
+    assert strategy.key(player)
 
 
 def test_count_strategy_repr():
@@ -837,15 +827,6 @@ def test_place_68_2_come_come_bet_not_repeated(player):
     player.add_bet.ass()
 
 
-def test_place_68_2_come_should_place_pass_line_come(player):
-    assert Place682Come.should_place_pass_line_or_come(player)
-
-
-def test_place_68_2_come_shouldnt_place_pass_line_come(player):
-    player.bets = [PassLine(5), Come(5, 6), Place(5, 5), Place(9, 5)]
-    assert not Place682Come.should_place_pass_line_or_come(player)
-
-
 def test_place_68_2_come_pass_line_added(player):
     strategy = Place682Come()
     player.add_bet = MagicMock()
@@ -865,8 +846,18 @@ def test_place_68_2_come_come_added_point_on(player):
     strategy = Place682Come()
     player.add_bet = MagicMock()
     player.table.point.number = 6
-    strategy.place_pass_line_come(player)
-    player.add_bet.assert_called_once_with(Come(5))
+    strategy.update_bets(player)
+    # strategy.place_pass_line_come(player)
+    bets_made = [
+        Come(5),
+        Place(6, amount=6.0),
+        Place(8, amount=6.0),
+        Place(5, amount=5.0),
+        Place(9, amount=5.0),
+    ]
+    player.add_bet.assert_has_calls([call(x) for x in bets_made])
+
+    # player.add_bet.assert_called_once_with(Come(5))
 
 
 def test_place_68_2_come_add_come_and_place(player):
@@ -935,7 +926,7 @@ def test_hammerlock_lose_place_win_count_0(player):
 def test_hammerlock_point_off_bets(player):
     strategy = HammerLock(5)
     player.add_bet = MagicMock()
-    strategy.point_off(player)
+    strategy.pass_and_dontpass(player)
     player.add_bet.assert_has_calls([call(PassLine(5)), call(DontPass(5))])
 
 

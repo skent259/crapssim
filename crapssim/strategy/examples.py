@@ -21,7 +21,14 @@ from crapssim.strategy.odds import (
     OddsMultiplier,
     PassLineOddsMultiplier,
 )
-from crapssim.strategy.single_bet import BetDontPass, BetPassLine, BetPlace
+from crapssim.strategy.single_bet import (
+    BetCome,
+    BetDontPass,
+    BetField,
+    BetPassLine,
+    BetPlace,
+    SimpleStrategyMode,
+)
 
 
 class TwoCome(CountStrategy):
@@ -137,7 +144,7 @@ class PlaceInside(AggregateStrategy):
 
 class Place68Move59(Strategy):
     """Strategy that makes place bets on the six and eight, and then if a PassLine or Come bet with
-    that point comes up, moves to the place bet to 5 or 9."""
+    that point comes up, moves the place bet to 5 or 9."""
 
     def __init__(
         self,
@@ -256,7 +263,7 @@ class PassLinePlace68Move59(AggregateStrategy):
         """Place a PassLine bet, Place the six and eight, and move them to 5 9 if the point for the
         PassLine bet is a 6 or 8.
 
-        Equivalent of BetPassLine(...) + Place68Move59(...)
+        Equivalent to BetPassLine(...) + Place68Move59(...)
 
         Parameters
         ----------
@@ -270,11 +277,10 @@ class PassLinePlace68Move59(AggregateStrategy):
         self.pass_line_amount = pass_line_amount
         self.six_eight_amount = six_eight_amount
         self.five_nine_amount = five_nine_amount
-        pass_line_strategy = BetPassLine(pass_line_amount)
-        place_bet_and_move_strategy = Place68Move59(
-            pass_line_amount, six_eight_amount, five_nine_amount
+        super().__init__(
+            BetPassLine(pass_line_amount),
+            Place68Move59(pass_line_amount, six_eight_amount, five_nine_amount),
         )
-        super().__init__(pass_line_strategy, place_bet_and_move_strategy)
 
     def __repr__(self) -> str:
         return (
@@ -314,36 +320,6 @@ class Place682Come(AggregateStrategy):
         self.six_eight_amount = six_eight_amount
         self.five_nine_amount = five_nine_amount
 
-    @staticmethod
-    def should_place_pass_line_or_come(player: Player) -> bool:
-        """If the player has less than 2 PassLine or Come bets return True, otherwise return False.
-
-        Parameters
-        ----------
-        player
-            The player to check the bets for.
-
-        Returns
-        -------
-        True if the player has less than 2 Come and PassLine bets, otherwise False.
-        """
-        pass_come_count = len(
-            [x for x in player.bets if isinstance(x, (PassLine, Come))]
-        )
-        return pass_come_count < 2
-
-    def place_pass_line_come(self, player: Player):
-        """If the point is Off and the player doesn't have a PassLine bet, place a PassLine bet.
-        If the point is On and the player doesn't have a Come bet, place a Come bet.
-
-        Parameters
-        ----------
-        player
-            The player to make the bets for.
-        """
-        BetPointOff(PassLine(self.pass_come_amount)).update_bets(player)
-        BetPointOn(Come(self.pass_come_amount)).update_bets(player)
-
     def update_bets(self, player: Player) -> None:
         """If the player has less than 2 PassLine and Come bets, make the bet (depending on whether
         the point is on or off.) If the point is on, place the 6 and 8 unless there is a PassLine or
@@ -354,8 +330,13 @@ class Place682Come(AggregateStrategy):
         player
             The player to check on and make the bets for.
         """
-        if self.should_place_pass_line_or_come(player):
-            self.place_pass_line_come(player)
+
+        pass_come_count = len(
+            [x for x in player.bets if isinstance(x, (PassLine, Come))]
+        )
+        if pass_come_count < 2:
+            BetPassLine(self.pass_come_amount).update_bets(player)  # if point off
+            BetCome(self.pass_come_amount).update_bets(player)  # if point on
 
         Place68Move59(
             self.pass_come_amount, self.six_eight_amount, self.five_nine_amount
@@ -459,54 +440,6 @@ class HammerLock(Strategy):
         if player.table.point.status == "On" and player.table.dice.total == 7:
             self.place_win_count = 0
 
-    def point_off(self, player: Player) -> None:
-        """If the point is Off add a PassLine and a DontPass bet if they don't already exist.
-
-        Parameters
-        ----------
-        player
-            The player to place the bets for.
-        """
-        RemoveByType(Place).update_bets(player)
-        strategy = IfBetNotExist(PassLine(self.base_amount)) + IfBetNotExist(
-            DontPass(self.base_amount)
-        )
-        strategy.update_bets(player)
-
-    def place68(self, player: Player) -> None:
-        """Place the 6 and 8 (regardless of the point) and then lay odds on DontPass bets.
-
-        Parameters
-        ----------
-        player
-            The player to place the bets for.
-        """
-        PassLinePlace68(
-            self.base_amount,
-            self.start_six_eight_amount,
-            self.start_six_eight_amount,
-            skip_point=False,
-        ).update_bets(player)
-
-    def place5689(self, player: Player) -> None:
-        """Place the 5, 6, 8 and 9.
-
-        Parameters
-        ----------
-        player
-            The player to place the bets for.
-        """
-        RemoveByType(Place).update_bets(player)
-        BetPlace(
-            {
-                5: self.five_nine_amount,
-                6: self.end_six_eight_amount,
-                8: self.end_six_eight_amount,
-                9: self.five_nine_amount,
-            },
-            skip_point=False,
-        ).update_bets(player)
-
     def update_bets(self, player: Player) -> None:
         """If the point is off bet the PassLine and DontPass line. If the point is on bet the
         Place6 and Place8 until one wins, then bet the Place 5, 6, 8, and 9. LayOdds whenever
@@ -518,7 +451,7 @@ class HammerLock(Strategy):
             Player to place the bets for.
         """
         if player.table.point.status == "Off":
-            self.point_off(player)
+            self.pass_and_dontpass(player)
         elif self.place_win_count == 0:
             self.place68(player)
         elif self.place_win_count == 1:
@@ -526,6 +459,35 @@ class HammerLock(Strategy):
         elif self.place_win_count == 2:
             RemoveByType(Place).update_bets(player)
         DontPassOddsMultiplier(self.odds_multiplier).update_bets(player)
+
+    def pass_and_dontpass(self, player: Player) -> None:
+        """Update bets when point is Off: add a PassLine and a DontPass bet if they don't already exist."""
+        RemoveByType(Place).update_bets(player)
+        BetPassLine(
+            self.base_amount, SimpleStrategyMode.ADD_IF_NON_EXISTENT
+        ).update_bets(player)
+        BetDontPass(
+            self.base_amount, SimpleStrategyMode.ADD_IF_NON_EXISTENT
+        ).update_bets(player)
+
+    def place68(self, player: Player) -> None:
+        """Update bets to Place the 6 and 8 (regardless of the point) and then lay odds on DontPass bets."""
+        place_bet_amounts = {
+            6: self.start_six_eight_amount,
+            8: self.start_six_eight_amount,
+        }
+        BetPlace(place_bet_amounts, skip_point=False).update_bets(player)
+
+    def place5689(self, player: Player) -> None:
+        """Update bets to Place the 5, 6, 8 and 9."""
+        RemoveByType(Place).update_bets(player)
+        place_bet_amounts = {
+            5: self.five_nine_amount,
+            6: self.end_six_eight_amount,
+            8: self.end_six_eight_amount,
+            9: self.five_nine_amount,
+        }
+        BetPlace(place_bet_amounts, skip_point=False).update_bets(player)
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(base_amount={self.base_amount})"

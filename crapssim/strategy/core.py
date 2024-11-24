@@ -389,53 +389,10 @@ class CountStrategy(BetIfTrue):
         Returns True if the player has less than count number of bets for a given type and the
         bet that is intended to be placed isn't already on the table, otherwise returns False.
         """
-        return self.less_than_count_bets_of_type(player) and self.bet_is_not_on_table(
-            player
-        )
+        count_of_bets_with_type = len(player.get_bets_by_type(bet_type=self.bet_type))
+        identical_bet_is_not_on_table = self.bet not in player.bets
 
-    def bet_is_not_on_table(self, player: Player) -> bool:
-        """Returns True if the selected bet isn't already on the table.
-
-        Parameters
-        ----------
-        player
-            The player whose bets to check against.
-
-        Returns
-        -------
-        True if the selected bet isn't already on the table, otherwise returns False.
-        """
-        return self.bet not in player.bets
-
-    def less_than_count_bets_of_type(self, player: Player) -> bool:
-        """Returns True if there are less than count the number of bets on the table for the
-        player, otherwise returns False.
-
-        Parameters
-        ----------
-        player
-            The player to count the bets for.
-
-        Returns
-        -------
-        Returns True if there are less than the count of number of bets on the table, otherwise
-        returns False.
-        """
-        return self.get_bets_of_type_count(player) < self.count
-
-    def get_bets_of_type_count(self, player: Player) -> int:
-        """Returns the number of bets of a given type for the player.
-
-        Parameters
-        ----------
-        player
-            The player to count the bets for.
-
-        Returns
-        -------
-        The number of bets of a given type for the player
-        """
-        return len(player.get_bets_by_type(bet_type=self.bet_type))
+        return count_of_bets_with_type < self.count and identical_bet_is_not_on_table
 
     def __repr__(self) -> str:
         return (

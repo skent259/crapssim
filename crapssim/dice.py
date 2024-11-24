@@ -37,6 +37,7 @@ class Dice:
     def result(self, value: typing.Iterable[int]) -> tuple[int, int]:
         # Allows setting of result, used for some tests, but not recommended
         # NOTE: no checking is done here, so use with caution
+        # NOTE: this does not increment the number of rolls
         self._result = value
 
     def roll(self) -> None:
