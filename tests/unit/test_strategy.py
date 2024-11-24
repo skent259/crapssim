@@ -32,8 +32,8 @@ from crapssim.strategy.examples import (
     HammerLock,
     Pass2Come,
     PassLinePlace68,
-    Place68CPR,
     Place68Move59,
+    Place68PR,
     Place682Come,
     PlaceInside,
     Risk12,
@@ -1078,12 +1078,12 @@ def test_dice_doctor_bet_amounts(player, progression, amount):
     ],
 )
 def test_place_68_cpr_amounts(attribute, amount):
-    strategy = Place68CPR()
+    strategy = Place68PR()
     assert getattr(strategy, attribute) == amount
 
 
 def test_place_68_cpr_after_roll_6_winnings_increase(player):
-    strategy = Place68CPR(6)
+    strategy = Place68PR(6)
     bet6 = Place(6, 6)
     bet8 = Place(8, 6)
     bet6.get_result = MagicMock(return_value=BetResult(13, True))
@@ -1095,7 +1095,7 @@ def test_place_68_cpr_after_roll_6_winnings_increase(player):
 
 
 def test_place_68_cpr_after_roll_winnings_dont_change(player):
-    strategy = Place68CPR(6)
+    strategy = Place68PR(6)
     bet6 = Place(6, 6)
     bet8 = Place(8, 6)
     bet6.get_result = MagicMock(return_value=BetResult(0, False))
@@ -1107,7 +1107,7 @@ def test_place_68_cpr_after_roll_winnings_dont_change(player):
 
 
 def test_place_68_cpr_ensure_bets_exist_adds_place_6_place_8(player):
-    strategy = Place68CPR(6)
+    strategy = Place68PR(6)
     player.add_bet = MagicMock()
     player.table.point.number = 6
     strategy.ensure_bets_exist(player)
@@ -1115,7 +1115,7 @@ def test_place_68_cpr_ensure_bets_exist_adds_place_6_place_8(player):
 
 
 def test_place_68_cpr_ensure_bets_exist_doesnt_double_bets(player):
-    strategy = Place68CPR(6)
+    strategy = Place68PR(6)
     player.add_bet = MagicMock()
     player.bets = [Place(6, 6), Place(8, 6)]
     player.table.point.number = 6
@@ -1124,7 +1124,7 @@ def test_place_68_cpr_ensure_bets_exist_doesnt_double_bets(player):
 
 
 def test_place_68_cpr_ensure_bets_exist_doesnt_add_to_existing_bets_with_press(player):
-    strategy = Place68CPR(6)
+    strategy = Place68PR(6)
     player.add_bet = MagicMock()
     player.bets = [Place(6, 12), Place(8, 12)]
     player.table.point.number = 6
@@ -1133,7 +1133,7 @@ def test_place_68_cpr_ensure_bets_exist_doesnt_add_to_existing_bets_with_press(p
 
 
 def test_place_68_cpr_press_increases_bet(player):
-    strategy = Place68CPR(6)
+    strategy = Place68PR(6)
     player.add_bet = MagicMock()
     bet1 = Place(6, 6)
     bet2 = Place(8, 6)
@@ -1144,7 +1144,7 @@ def test_place_68_cpr_press_increases_bet(player):
 
 
 def test_place_68_cpr_press_no_increases(player):
-    strategy = Place68CPR(6)
+    strategy = Place68PR(6)
     player.add_bet = MagicMock()
     bet1 = Place(6, 6)
     bet2 = Place(8, 6)
@@ -1154,7 +1154,7 @@ def test_place_68_cpr_press_no_increases(player):
 
 
 def test_place_68_cpr_update_bets_initial_bets(player):
-    strategy = Place68CPR(6)
+    strategy = Place68PR(6)
     player.add_bet = MagicMock()
     player.table.point.number = 6
     strategy.update_bets(player)
@@ -1162,7 +1162,7 @@ def test_place_68_cpr_update_bets_initial_bets(player):
 
 
 def test_place_68_cpr_update_bets_initial_bets_placed_push_6_add_bet(player):
-    strategy = Place68CPR(6)
+    strategy = Place68PR(6)
     player.add_bet = MagicMock()
     player.table.point.number = 6
     winning_bet = Place(6, 6)
@@ -1174,7 +1174,7 @@ def test_place_68_cpr_update_bets_initial_bets_placed_push_6_add_bet(player):
 
 
 def test_place_68_cpr_update_bets_initial_bets_placed_no_update(player):
-    strategy = Place68CPR(6)
+    strategy = Place68PR(6)
     player.add_bet = MagicMock()
     player.table.point.number = 6
     player.bets = [Place(6, 6), Place(8, 6)]

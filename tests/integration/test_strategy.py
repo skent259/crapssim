@@ -19,8 +19,8 @@ from crapssim.strategy.examples import (
     Pass2Come,
     PassLinePlace68,
     PassLinePlace68Move59,
-    Place68CPR,
     Place68DontCome2Odds,
+    Place68PR,
     Place682Come,
     Risk12,
 )
@@ -306,26 +306,31 @@ from crapssim.table import TableUpdate
                 DontCome(amount=5.0, number=4),
             ],
         ),
-        (Place68CPR(bet_amount=6), [], []),
+        (Place68PR(bet_amount=6), [], []),
         (
-            Place68CPR(bet_amount=6),
+            Place68PR(bet_amount=6),
             [(4, 4)],
             [Place(number=8, amount=6.0), Place(number=6, amount=6.0)],
         ),
         (
-            Place68CPR(bet_amount=6),
+            Place68PR(bet_amount=6),
             [(2, 2), (4, 4)],
             [Place(number=8, amount=12.0), Place(number=6, amount=6.0)],
         ),
         (
-            Place68CPR(bet_amount=6),
+            Place68PR(bet_amount=6),
             [(2, 2), (4, 4), (4, 4)],
             [Place(number=8, amount=6.0), Place(number=6, amount=6.0)],
         ),
         (
-            Place68CPR(bet_amount=6),
+            Place68PR(bet_amount=6),
             [(2, 2), (4, 4), (4, 4), (4, 4)],
             [Place(number=8, amount=12.0), Place(number=6, amount=6.0)],
+        ),
+        (
+            Place68PR(bet_amount=6),
+            [(2, 2), (3, 3), (3, 3), (3, 3)],
+            [Place(number=8, amount=6.0), Place(number=6, amount=12.0)],
         ),
     ],
 )

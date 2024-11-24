@@ -617,14 +617,15 @@ class DiceDoctor(WinProgression):
         return f"{self.__class__.__name__}()"
 
 
-class Place68CPR(Strategy):
-    """Strategy that places the 6 and 8. If either of those bets win, the bet is pressed to 2 *
-    the bet amount. If the bet is won again, it is reduced to the original bet amount.
+class Place68PR(Strategy):
+    """Place 6 and 8 with a "Press and Regress" approach. Strategy that places the 6 and 8.
+    If either of those bets win, the bet is pressed to 2 * the bet amount. If the bet is won again,
+    it is reduced to the original bet amount.
     """
 
     def __init__(self, bet_amount: float = 6) -> None:
-        """If point is on place the 6 & 8 of the amount. If you win press the bet 2 . If you win
-        again reduce the bet.
+        """If point is on place the 6 & 8 of the amount. If you win press the bet to double. If you win
+        again reduce the bet back to starting amount.
 
         Parameters
         ----------
