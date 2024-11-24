@@ -32,25 +32,9 @@ from crapssim.strategy.tools import (
 )
 
 
-class TwoCome(CountStrategy):
-    """Strategy that adds a Come bet of a certain amount if that bet doesn't exist on the table.
-    Equivalent to CountStrategy((Come, ), 2, bet)."""
-
-    def __init__(self, bet_amount: float):
-        """If there are less than two Come bets placed, place a Come bet.
-
-        Parameters
-        ----------
-        bet_amount
-            Amount of the come bet.
-        """
-        bet = Come(bet_amount)
-        super().__init__((Come,), 2, bet)
-
-
 class Pass2Come(AggregateStrategy):
     """Places a PassLine bet and two Come bets. Equivalent to BetPassLine(amount) +
-    TwoCome(amount)"""
+    CountStrategy(Come, 2, Come(amount))"""
 
     def __init__(self, bet_amount: float):
         """Place a PassLine bet and two Come bets of the given amount.
@@ -61,7 +45,9 @@ class Pass2Come(AggregateStrategy):
             The amount of the PassLine and Come bets.
         """
         self.bet_amount = bet_amount
-        super().__init__(BetPassLine(bet_amount), TwoCome(bet_amount))
+        super().__init__(
+            BetPassLine(bet_amount), CountStrategy(Come, 2, Come(bet_amount))
+        )
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(amount={self.bet_amount})"

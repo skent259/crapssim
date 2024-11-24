@@ -36,7 +36,6 @@ from crapssim.strategy.examples import (
     Place682Come,
     PlaceInside,
     Risk12,
-    TwoCome,
 )
 from crapssim.strategy.odds import OddsAmount, OddsMultiplier
 from crapssim.strategy.single_bet import StrategyMode, _BaseSingleBet
@@ -607,32 +606,6 @@ def test_bet_place_add_bet_not_skip_point(player):
     player.table.point.number = 5
     strategy.update_bets(player)
     player.add_bet.assert_called_once_with(Place(5, 5))
-
-
-def test_two_come_no_existing_come_bets(player):
-    strategy = TwoCome(5)
-    player.add_bet = MagicMock()
-    player.table.point.number = 5
-    strategy.update_bets(player)
-    player.add_bet.assert_called_once_with(Come(5))
-
-
-def test_two_come_one_existing_come_bets(player):
-    strategy = TwoCome(5)
-    player.add_bet = MagicMock()
-    player.bets = [Come(5, 6)]
-    player.table.point.number = 5
-    strategy.update_bets(player)
-    player.add_bet.assert_called_once_with(Come(5))
-
-
-def test_two_come_two_existing_come_bets(player):
-    strategy = TwoCome(5)
-    player.add_bet = MagicMock()
-    player.bets = [Come(5, 6), Come(5, 10)]
-    player.table.point.number = 5
-    strategy.update_bets(player)
-    player.add_bet.assert_not_called()
 
 
 def test_pass_2_come_point_off_passline(player):
