@@ -2,6 +2,9 @@ from unittest.mock import MagicMock, call
 
 import pytest
 
+import crapssim.strategy
+import crapssim.strategy.examples
+import crapssim.strategy.single_bet
 from crapssim import Player, Table
 from crapssim.bet import (
     Bet,
@@ -18,6 +21,7 @@ from crapssim.bet import (
 from crapssim.strategy import (
     AggregateStrategy,
     BetIfTrue,
+    BetNewShooter,
     BetPlace,
     BetPointOff,
     BetPointOn,
@@ -26,30 +30,29 @@ from crapssim.strategy import (
     RemoveIfTrue,
     Strategy,
 )
-from crapssim.strategy.core import RemoveByType, ReplaceIfTrue
 from crapssim.strategy.examples import (
     DiceDoctor,
     HammerLock,
     Pass2Come,
     PassLinePlace68,
-    Place68CPR,
     Place68Move59,
+    Place68PR,
     Place682Come,
     PlaceInside,
     Risk12,
-    TwoCome,
 )
-from crapssim.strategy.odds import OddsAmountStrategy, OddsMultiplierStrategy
-from crapssim.strategy.simple_bet import BaseSimpleBet, SimpleStrategyMode
+from crapssim.strategy.odds import OddsAmount, OddsMultiplier
+from crapssim.strategy.single_bet import StrategyMode, _BaseSingleBet
+from crapssim.strategy.tools import RemoveByType, ReplaceIfTrue
 
 
 @pytest.fixture
 def base_strategy():
     class TestStrategy(Strategy):
-        def update_bets(self, player: "Player") -> None:
+        def update_bets(self, player: Player) -> None:
             pass
 
-        def completed(self, player: "Player") -> bool:
+        def completed(self, player: Player) -> bool:
             return False
 
     return TestStrategy()
@@ -73,10 +76,10 @@ def test_strategy_default_not_completed(base_strategy, player):
 
 def test_strategy_add(base_strategy):
     class AddedStrategy(Strategy):
-        def update_bets(self, player: "Player") -> None:
+        def update_bets(self, player: Player) -> None:
             pass
 
-        def completed(self, player: "Player") -> bool:
+        def completed(self, player: Player) -> bool:
             return False
 
     assert base_strategy + AddedStrategy() == AggregateStrategy(
@@ -90,10 +93,10 @@ def test_strategy_equality(base_strategy):
 
 def test_strategy_inequality(base_strategy):
     class TestStrategy2(Strategy):
-        def update_bets(self, player: "Player") -> None:
+        def update_bets(self, player: Player) -> None:
             pass
 
-        def completed(self, player: "Player") -> bool:
+        def completed(self, player: Player) -> bool:
             return False
 
     assert base_strategy != TestStrategy2()
@@ -106,17 +109,17 @@ def test_strategy_repr(base_strategy):
 @pytest.fixture
 def aggregate_strategy() -> AggregateStrategy:
     class TestStrategy1(Strategy):
-        def update_bets(self, player: "Player") -> None:
+        def update_bets(self, player: Player) -> None:
             pass
 
-        def completed(self, player: "Player") -> bool:
+        def completed(self, player: Player) -> bool:
             return False
 
     class TestStrategy2(Strategy):
-        def update_bets(self, player: "Player") -> None:
+        def update_bets(self, player: Player) -> None:
             pass
 
-        def completed(self, player: "Player") -> bool:
+        def completed(self, player: Player) -> bool:
             return False
 
     return TestStrategy1() + TestStrategy2()
@@ -378,39 +381,47 @@ def test_bet_point_on_dont_add_bet(player):
     player.add_bet.assert_not_called()
 
 
-def test_count_strategy_get_bets_of_type_count(player):
-    bet1, bet2, bet3 = PassLine(1), Come(1), HardWay(4, 1)
-    player.bets = [bet1, bet2, bet3]
+def test_bet_new_shooter_add_bet(player):
+    player.table.new_shooter = True
+    player.add_bet = MagicMock()
+    bet = MagicMock()
+    strategy = BetNewShooter(bet)
+    strategy.update_bets(player)
+    player.add_bet.assert_called_with(bet)
+
+
+def test_bet_new_shooter_dont_add_bet(player):
+    player.table.new_shooter = False
+    player.add_bet = MagicMock()
+    bet = MagicMock()
+    strategy = BetNewShooter(bet)
+    strategy.update_bets(player)
+    player.add_bet.assert_not_called()
+
+
+def test_count_strategy_when_more(player):
+    player.bets = [PassLine(1), Come(1), HardWay(4, 1)]
     strategy = CountStrategy((HardWay,), 0, PassLine(5))
-    assert strategy.get_bets_of_type_count(player) == 1
+    assert not strategy.key(player)
 
 
-def test_count_strategy_less_than_count_bets_of_type(player):
+def test_count_strategy_when_more_two_bets(player):
+    player.bets = [PassLine(1), Come(1), HardWay(4, 1), HardWay(6, 1)]
+    strategy = CountStrategy((PassLine, Come), 2, PassLine(5))
+    assert not strategy.key(player)
+
+
+def test_count_strategy_when_more_three_bets(player):
+    player.bets = [PassLine(1), Come(1), HardWay(4, 1), HardWay(6, 1), HardWay(8, 1)]
+    strategy = CountStrategy((PassLine, Come), 2, PassLine(5))
+    assert not strategy.key(player)
+
+
+def test_count_strategy_when_less(player):
     bet1, bet2, bet3 = PassLine(1), Come(1), HardWay(4, 1)
     player.bets = [bet1, bet2, bet3]
     strategy = CountStrategy((HardWay,), 2, PassLine(5))
-    assert strategy.less_than_count_bets_of_type(player)
-
-
-def test_count_strategy_greater_than_count_bets_of_type(player):
-    bet1, bet2, bet3 = PassLine(1), Come(1), HardWay(4, 1)
-    player.bets = [bet1, bet2, bet3]
-    strategy = CountStrategy((PassLine, Come), 2, PassLine(5))
-    assert not strategy.less_than_count_bets_of_type(player)
-
-
-def test_bet_is_not_on_table(player):
-    bet1, bet2 = PassLine(5), Come(1)
-    player.bets = [bet1, bet2]
-    strategy = CountStrategy((PassLine, Come), 2, PassLine(1))
-    assert strategy.bet_is_not_on_table(player)
-
-
-def test_bet_is_on_table(player):
-    bet1, bet2 = PassLine(1), Come(1)
-    player.bets = [bet1]
-    strategy = CountStrategy((PassLine, Come), 2, PassLine(1))
-    assert not strategy.bet_is_not_on_table(player)
+    assert strategy.key(player)
 
 
 def test_count_strategy_repr():
@@ -459,7 +470,7 @@ def test_remove_by_type_remove_bet_not_called(player):
 
 
 def test_odds_amount_strategy_add_bet_called_pass_line(player):
-    strategy = OddsAmountStrategy(PassLine, {4: 5, 5: 5})
+    strategy = OddsAmount(PassLine, {4: 5, 5: 5})
     player.bets = [PassLine(5)]
     player.add_bet = MagicMock()
     player.table.point.number = 4
@@ -468,7 +479,7 @@ def test_odds_amount_strategy_add_bet_called_pass_line(player):
 
 
 def test_odds_amount_strategy_add_bet_not_called_pass_line(player):
-    strategy = OddsAmountStrategy(PassLine, {4: 5, 5: 5})
+    strategy = OddsAmount(PassLine, {4: 5, 5: 5})
     player.bets = [PassLine(5)]
     player.add_bet = MagicMock()
     player.table.point.number = 6
@@ -477,7 +488,7 @@ def test_odds_amount_strategy_add_bet_not_called_pass_line(player):
 
 
 def test_odds_amount_strategy_add_bet_called_come(player):
-    strategy = OddsAmountStrategy(Come, {4: 5, 5: 5})
+    strategy = OddsAmount(Come, {4: 5, 5: 5})
     player.bets = [Come(5, 4)]
     player.add_bet = MagicMock()
     strategy.update_bets(player)
@@ -485,7 +496,7 @@ def test_odds_amount_strategy_add_bet_called_come(player):
 
 
 def test_odds_amount_strategy_add_bet_not_called_come_wrong_numbers(player):
-    strategy = OddsAmountStrategy(Come, {4: 5, 5: 5})
+    strategy = OddsAmount(Come, {4: 5, 5: 5})
     player.bets = [Come(5, 8)]
     player.add_bet = MagicMock()
     strategy.update_bets(player)
@@ -493,7 +504,7 @@ def test_odds_amount_strategy_add_bet_not_called_come_wrong_numbers(player):
 
 
 def test_odds_amount_strategy_add_bet_not_called_come_bet_wrong_type(player):
-    strategy = OddsAmountStrategy(Come, {4: 5, 5: 5})
+    strategy = OddsAmount(Come, {4: 5, 5: 5})
     player.bets = [PassLine(5)]
     player.add_bet = MagicMock()
     player.table.point.number = 4
@@ -502,7 +513,7 @@ def test_odds_amount_strategy_add_bet_not_called_come_bet_wrong_type(player):
 
 
 def test_odds_amount_strategy_add_bet_not_called_amount_too_high(player):
-    strategy = OddsAmountStrategy(Come, {4: 9999, 5: 5})
+    strategy = OddsAmount(Come, {4: 9999, 5: 5})
     player.bets = [Come(5, 4)]
     player.add_bet = MagicMock()
     strategy.update_bets(player)
@@ -510,7 +521,7 @@ def test_odds_amount_strategy_add_bet_not_called_amount_too_high(player):
 
 
 def test_odds_amount_strategy_add_bet_not_called_already_placed(player):
-    strategy = OddsAmountStrategy(Come, {4: 5, 5: 5})
+    strategy = OddsAmount(Come, {4: 5, 5: 5})
     player.bets = [Come(5, 4), Odds(Come, 4, 5)]
     player.add_bet = MagicMock()
     strategy.update_bets(player)
@@ -520,57 +531,57 @@ def test_odds_amount_strategy_add_bet_not_called_already_placed(player):
 def test_odds_multiplier_pass_line_point_number():
     table = Table()
     table.point.number = 4
-    assert OddsMultiplierStrategy.get_point_number(PassLine(5), table) == 4
+    assert OddsMultiplier.get_point_number(PassLine(5), table) == 4
 
 
 def test_odds_multiplier_come_point_number():
     table = Table()
     table.point.number = 4
-    assert OddsMultiplierStrategy.get_point_number(Come(5, 9), table) == 9
+    assert OddsMultiplier.get_point_number(Come(5, 9), table) == 9
 
 
 def test_odds_multiplier_dont_come_bet_placed(player):
-    strategy = OddsMultiplierStrategy(DontCome, {6: 6})
+    strategy = OddsMultiplier(DontCome, {6: 6})
     player.bets = [DontCome(5, 6)]
     player.add_bet = MagicMock()
     strategy.update_bets(player)
     player.add_bet.assert_called_with(Odds(DontCome, 6, 30))
 
 
-def test_base_simple_bet_add_if_non_existent_add(player):
-    strategy = BaseSimpleBet(PassLine(5))
+def test_base_single_bet_add_if_non_existent_add(player):
+    strategy = _BaseSingleBet(PassLine(5))
     player.add_bet = MagicMock()
     strategy.update_bets(player)
     player.add_bet.assert_called_with(PassLine(5))
 
 
-def test_base_simple_bet_add_if_non_existent_dont_add(player):
-    strategy = BaseSimpleBet(PassLine(5))
+def test_base_single_bet_add_if_non_existent_dont_add(player):
+    strategy = _BaseSingleBet(PassLine(5))
     player.add_bet = MagicMock()
     player.bets = [PassLine(5)]
     strategy.update_bets(player)
     player.add_bet.assert_not_called()
 
 
-def test_base_simple_bet_is_not_allowed(player):
+def test_base_single_bet_is_not_allowed(player):
     bet = MagicMock(PassLine)
     bet.is_allowed = MagicMock(return_value=False)
-    strategy = BaseSimpleBet(bet)
+    strategy = _BaseSingleBet(bet)
     strategy.update_bets(player)
     player.add_bet = MagicMock()
     player.add_bet.assert_not_called()
 
 
-def test_base_simple_bet_add_or_increase(player):
-    strategy = BaseSimpleBet(PassLine(5), SimpleStrategyMode.ADD_OR_INCREASE)
+def test_base_single_bet_add_or_increase(player):
+    strategy = _BaseSingleBet(PassLine(5), StrategyMode.ADD_OR_INCREASE)
     player.bets = [PassLine(5)]
     player.add_bet = MagicMock()
     strategy.update_bets(player)
     player.add_bet.assert_called_with(PassLine(5))
 
 
-def test_base_simple_bet_replace(player):
-    strategy = BaseSimpleBet(PassLine(5), SimpleStrategyMode.REPLACE)
+def test_base_single_bet_replace(player):
+    strategy = _BaseSingleBet(PassLine(5), StrategyMode.REPLACE)
     player.bets = [PassLine(5)]
     player.add_bet = MagicMock()
     player.remove_bet = MagicMock()
@@ -617,32 +628,6 @@ def test_bet_place_add_bet_not_skip_point(player):
     player.table.point.number = 5
     strategy.update_bets(player)
     player.add_bet.assert_called_once_with(Place(5, 5))
-
-
-def test_two_come_no_existing_come_bets(player):
-    strategy = TwoCome(5)
-    player.add_bet = MagicMock()
-    player.table.point.number = 5
-    strategy.update_bets(player)
-    player.add_bet.assert_called_once_with(Come(5))
-
-
-def test_two_come_one_existing_come_bets(player):
-    strategy = TwoCome(5)
-    player.add_bet = MagicMock()
-    player.bets = [Come(5, 6)]
-    player.table.point.number = 5
-    strategy.update_bets(player)
-    player.add_bet.assert_called_once_with(Come(5))
-
-
-def test_two_come_two_existing_come_bets(player):
-    strategy = TwoCome(5)
-    player.add_bet = MagicMock()
-    player.bets = [Come(5, 6), Come(5, 10)]
-    player.table.point.number = 5
-    strategy.update_bets(player)
-    player.add_bet.assert_not_called()
 
 
 def test_pass_2_come_point_off_passline(player):
@@ -837,15 +822,6 @@ def test_place_68_2_come_come_bet_not_repeated(player):
     player.add_bet.ass()
 
 
-def test_place_68_2_come_should_place_pass_line_come(player):
-    assert Place682Come.should_place_pass_line_or_come(player)
-
-
-def test_place_68_2_come_shouldnt_place_pass_line_come(player):
-    player.bets = [PassLine(5), Come(5, 6), Place(5, 5), Place(9, 5)]
-    assert not Place682Come.should_place_pass_line_or_come(player)
-
-
 def test_place_68_2_come_pass_line_added(player):
     strategy = Place682Come()
     player.add_bet = MagicMock()
@@ -865,8 +841,18 @@ def test_place_68_2_come_come_added_point_on(player):
     strategy = Place682Come()
     player.add_bet = MagicMock()
     player.table.point.number = 6
-    strategy.place_pass_line_come(player)
-    player.add_bet.assert_called_once_with(Come(5))
+    strategy.update_bets(player)
+    # strategy.place_pass_line_come(player)
+    bets_made = [
+        Come(5),
+        Place(6, amount=6.0),
+        Place(8, amount=6.0),
+        Place(5, amount=5.0),
+        Place(9, amount=5.0),
+    ]
+    player.add_bet.assert_has_calls([call(x) for x in bets_made])
+
+    # player.add_bet.assert_called_once_with(Come(5))
 
 
 def test_place_68_2_come_add_come_and_place(player):
@@ -935,7 +921,7 @@ def test_hammerlock_lose_place_win_count_0(player):
 def test_hammerlock_point_off_bets(player):
     strategy = HammerLock(5)
     player.add_bet = MagicMock()
-    strategy.point_off(player)
+    strategy.pass_and_dontpass(player)
     player.add_bet.assert_has_calls([call(PassLine(5)), call(DontPass(5))])
 
 
@@ -1080,19 +1066,19 @@ def test_dice_doctor_bet_amounts(player, progression, amount):
 @pytest.mark.parametrize(
     "attribute, amount",
     [
-        ("bet_amount", 6),
+        ("base_amount", 6),
         ("starting_amount", 6),
         ("win_one_amount", 7),
         ("win_two_amount", 14),
     ],
 )
 def test_place_68_cpr_amounts(attribute, amount):
-    strategy = Place68CPR()
+    strategy = Place68PR()
     assert getattr(strategy, attribute) == amount
 
 
 def test_place_68_cpr_after_roll_6_winnings_increase(player):
-    strategy = Place68CPR(6)
+    strategy = Place68PR(6)
     bet6 = Place(6, 6)
     bet8 = Place(8, 6)
     bet6.get_result = MagicMock(return_value=BetResult(13, True))
@@ -1104,7 +1090,7 @@ def test_place_68_cpr_after_roll_6_winnings_increase(player):
 
 
 def test_place_68_cpr_after_roll_winnings_dont_change(player):
-    strategy = Place68CPR(6)
+    strategy = Place68PR(6)
     bet6 = Place(6, 6)
     bet8 = Place(8, 6)
     bet6.get_result = MagicMock(return_value=BetResult(0, False))
@@ -1116,7 +1102,7 @@ def test_place_68_cpr_after_roll_winnings_dont_change(player):
 
 
 def test_place_68_cpr_ensure_bets_exist_adds_place_6_place_8(player):
-    strategy = Place68CPR(6)
+    strategy = Place68PR(6)
     player.add_bet = MagicMock()
     player.table.point.number = 6
     strategy.ensure_bets_exist(player)
@@ -1124,7 +1110,7 @@ def test_place_68_cpr_ensure_bets_exist_adds_place_6_place_8(player):
 
 
 def test_place_68_cpr_ensure_bets_exist_doesnt_double_bets(player):
-    strategy = Place68CPR(6)
+    strategy = Place68PR(6)
     player.add_bet = MagicMock()
     player.bets = [Place(6, 6), Place(8, 6)]
     player.table.point.number = 6
@@ -1133,7 +1119,7 @@ def test_place_68_cpr_ensure_bets_exist_doesnt_double_bets(player):
 
 
 def test_place_68_cpr_ensure_bets_exist_doesnt_add_to_existing_bets_with_press(player):
-    strategy = Place68CPR(6)
+    strategy = Place68PR(6)
     player.add_bet = MagicMock()
     player.bets = [Place(6, 12), Place(8, 12)]
     player.table.point.number = 6
@@ -1142,7 +1128,7 @@ def test_place_68_cpr_ensure_bets_exist_doesnt_add_to_existing_bets_with_press(p
 
 
 def test_place_68_cpr_press_increases_bet(player):
-    strategy = Place68CPR(6)
+    strategy = Place68PR(6)
     player.add_bet = MagicMock()
     bet1 = Place(6, 6)
     bet2 = Place(8, 6)
@@ -1153,7 +1139,7 @@ def test_place_68_cpr_press_increases_bet(player):
 
 
 def test_place_68_cpr_press_no_increases(player):
-    strategy = Place68CPR(6)
+    strategy = Place68PR(6)
     player.add_bet = MagicMock()
     bet1 = Place(6, 6)
     bet2 = Place(8, 6)
@@ -1163,7 +1149,7 @@ def test_place_68_cpr_press_no_increases(player):
 
 
 def test_place_68_cpr_update_bets_initial_bets(player):
-    strategy = Place68CPR(6)
+    strategy = Place68PR(6)
     player.add_bet = MagicMock()
     player.table.point.number = 6
     strategy.update_bets(player)
@@ -1171,7 +1157,7 @@ def test_place_68_cpr_update_bets_initial_bets(player):
 
 
 def test_place_68_cpr_update_bets_initial_bets_placed_push_6_add_bet(player):
-    strategy = Place68CPR(6)
+    strategy = Place68PR(6)
     player.add_bet = MagicMock()
     player.table.point.number = 6
     winning_bet = Place(6, 6)
@@ -1183,9 +1169,113 @@ def test_place_68_cpr_update_bets_initial_bets_placed_push_6_add_bet(player):
 
 
 def test_place_68_cpr_update_bets_initial_bets_placed_no_update(player):
-    strategy = Place68CPR(6)
+    strategy = Place68PR(6)
     player.add_bet = MagicMock()
     player.table.point.number = 6
     player.bets = [Place(6, 6), Place(8, 6)]
     strategy.update_bets(player)
     player.add_bet.assert_not_called()
+
+
+@pytest.mark.parametrize(
+    "strategy, strategy_name",
+    [
+        # Single bet strategies
+        (
+            crapssim.strategy.BetPlace({6: 6, 8: 6}),
+            "BetPlace(place_bet_amounts={6: 6, 8: 6}, mode=StrategyMode.ADD_IF_POINT_ON, skip_point=True, skip_come=False)",
+        ),
+        (
+            crapssim.strategy.BetPassLine(1),
+            "BetPassLine(bet_amount=1.0, mode=StrategyMode.ADD_IF_POINT_OFF)",
+        ),
+        (
+            crapssim.strategy.BetDontPass(1),
+            "BetDontPass(bet_amount=1.0, mode=StrategyMode.ADD_IF_POINT_OFF)",
+        ),
+        (
+            crapssim.strategy.single_bet.BetCome(1),
+            "BetCome(bet_amount=1.0, mode=StrategyMode.ADD_IF_POINT_ON)",
+        ),
+        (
+            crapssim.strategy.single_bet.BetDontCome(1),
+            "BetDontCome(bet_amount=1.0, mode=StrategyMode.ADD_IF_POINT_ON)",
+        ),
+        (
+            crapssim.strategy.single_bet.BetHardWay(4, 1),
+            "BetHardWay(4, bet_amount=1.0, mode=StrategyMode.ADD_IF_NON_EXISTENT)",
+        ),
+        (
+            crapssim.strategy.single_bet.BetHardWay(6, 1),
+            "BetHardWay(6, bet_amount=1.0, mode=StrategyMode.ADD_IF_NON_EXISTENT)",
+        ),
+        (
+            crapssim.strategy.single_bet.BetHardWay(8, 1),
+            "BetHardWay(8, bet_amount=1.0, mode=StrategyMode.ADD_IF_NON_EXISTENT)",
+        ),
+        (
+            crapssim.strategy.single_bet.BetHardWay(10, 1),
+            "BetHardWay(10, bet_amount=1.0, mode=StrategyMode.ADD_IF_NON_EXISTENT)",
+        ),
+        (
+            crapssim.strategy.single_bet.BetField(1),
+            "BetField(bet_amount=1.0, mode=StrategyMode.ADD_IF_NON_EXISTENT)",
+        ),
+        (
+            crapssim.strategy.single_bet.BetAny7(1),
+            "BetAny7(bet_amount=1.0, mode=StrategyMode.ADD_IF_NON_EXISTENT)",
+        ),
+        (
+            crapssim.strategy.single_bet.BetTwo(1),
+            "BetTwo(bet_amount=1.0, mode=StrategyMode.ADD_IF_NON_EXISTENT)",
+        ),
+        (
+            crapssim.strategy.single_bet.BetThree(1),
+            "BetThree(bet_amount=1.0, mode=StrategyMode.ADD_IF_NON_EXISTENT)",
+        ),
+        (
+            crapssim.strategy.single_bet.BetYo(1),
+            "BetYo(bet_amount=1.0, mode=StrategyMode.ADD_IF_NON_EXISTENT)",
+        ),
+        (
+            crapssim.strategy.single_bet.BetBoxcars(1),
+            "BetBoxcars(bet_amount=1.0, mode=StrategyMode.ADD_IF_NON_EXISTENT)",
+        ),
+        (
+            crapssim.strategy.single_bet.BetFire(1),
+            "BetFire(bet_amount=1.0, mode=StrategyMode.ADD_IF_NON_EXISTENT)",
+        ),
+        # Example strategies
+        (crapssim.strategy.examples.Pass2Come(1), "Pass2Come(amount=1.0)"),
+        (
+            crapssim.strategy.examples.PassLinePlace68(5, 6, 6),
+            "PassLinePlace68(pass_line_amount=5.0, six_amount=6.0, eight_amount=6.0, skip_point=True)",
+        ),
+        (crapssim.strategy.examples.PlaceInside(5), "PlaceInside(amount=5.0)"),
+        (
+            crapssim.strategy.examples.Place68Move59(5, 6, 5),
+            "Place68Move59(pass_come_amount=5.0, six_eight_amount=6.0, five_nine_amount=5.0)",
+        ),
+        (
+            crapssim.strategy.examples.PassLinePlace68Move59(5, 6, 5),
+            "PassLinePlace68Move59(pass_line_amount=5.0, six_eight_amount=6.0, five_nine_amount=5.0)",
+        ),
+        (
+            crapssim.strategy.examples.Place682Come(5, 6, 5),
+            "Place682Come(pass_come_amount=5.0, six_eight_amount=6.0, five_nine_amount=5.0)",
+        ),
+        (crapssim.strategy.examples.IronCross(10), "IronCross(base_amount=10.0)"),
+        (crapssim.strategy.examples.HammerLock(5), "HammerLock(base_amount=5.0)"),
+        (crapssim.strategy.examples.Risk12(), "Risk12()"),
+        (crapssim.strategy.examples.Knockout(5), "Knockout(base_amount=5.0)"),
+        (crapssim.strategy.examples.DiceDoctor(5), "DiceDoctor(base_amount=5.0)"),
+        (crapssim.strategy.examples.Place68PR(6), "Place68PR(base_amount=6.0)"),
+        (
+            crapssim.strategy.examples.Place68DontCome2Odds(6, 5),
+            "Place68DontCome2Odds(six_eight_amount=6.0, dont_come_amount=5.0)",
+        ),
+    ],
+)
+def test_repr_names(strategy, strategy_name):
+    # Check above visually make sense
+    assert repr(strategy) == strategy_name

@@ -18,11 +18,12 @@ from crapssim.strategy.examples import (
     Pass2Come,
     PassLinePlace68,
     PassLinePlace68Move59,
-    Place68CPR,
     Place68DontCome2Odds,
+    Place68PR,
     Place682Come,
     Risk12,
 )
+from crapssim.strategy.tools import WinProgression
 from crapssim.table import TableUpdate
 
 
@@ -259,9 +260,9 @@ from crapssim.table import TableUpdate
                 Place(number=6, amount=6.0),
             ],
         ),
-        (Knockout(bet_amount=5), [], [DontPass(amount=5.0), PassLine(amount=5.0)]),
+        (Knockout(base_amount=5), [], [DontPass(amount=5.0), PassLine(amount=5.0)]),
         (
-            Knockout(bet_amount=5),
+            Knockout(base_amount=5),
             [(4, 2)],
             [
                 DontPass(amount=5.0),
@@ -270,7 +271,21 @@ from crapssim.table import TableUpdate
             ],
         ),
         (DiceDoctor(), [], [Field(amount=10.0)]),
+        (DiceDoctor(), [(1, 1)], [Field(amount=20.0)]),
+        (DiceDoctor(), [(1, 1), (5, 6)], [Field(amount=15.0)]),
         (DiceDoctor(), [(1, 1), (5, 6), (5, 5)], [Field(amount=30.0)]),
+        (WinProgression(Place(6, 12), [1, 2, 3]), [], [Place(6, amount=12.0)]),
+        (WinProgression(Place(6, 12), [1, 2, 3]), [(3, 3)], [Place(6, amount=24.0)]),
+        (
+            WinProgression(Place(6, 12), [1, 2, 3]),
+            [(3, 3), (2, 4)],
+            [Place(6, amount=36.0)],
+        ),
+        (
+            WinProgression(Place(6, 12), [1, 2, 3]),
+            [(3, 3), (2, 4), (3, 3)],
+            [Place(6, amount=36.0)],
+        ),
         (Place68DontCome2Odds(six_eight_amount=6, dont_come_amount=5), [], []),
         (
             Place68DontCome2Odds(six_eight_amount=6, dont_come_amount=5),
@@ -291,26 +306,31 @@ from crapssim.table import TableUpdate
                 DontCome(amount=5.0, number=4),
             ],
         ),
-        (Place68CPR(bet_amount=6), [], []),
+        (Place68PR(base_amount=6), [], []),
         (
-            Place68CPR(bet_amount=6),
+            Place68PR(base_amount=6),
             [(4, 4)],
             [Place(number=8, amount=6.0), Place(number=6, amount=6.0)],
         ),
         (
-            Place68CPR(bet_amount=6),
+            Place68PR(base_amount=6),
             [(2, 2), (4, 4)],
             [Place(number=8, amount=12.0), Place(number=6, amount=6.0)],
         ),
         (
-            Place68CPR(bet_amount=6),
+            Place68PR(base_amount=6),
             [(2, 2), (4, 4), (4, 4)],
             [Place(number=8, amount=6.0), Place(number=6, amount=6.0)],
         ),
         (
-            Place68CPR(bet_amount=6),
+            Place68PR(base_amount=6),
             [(2, 2), (4, 4), (4, 4), (4, 4)],
             [Place(number=8, amount=12.0), Place(number=6, amount=6.0)],
+        ),
+        (
+            Place68PR(base_amount=6),
+            [(2, 2), (3, 3), (3, 3), (3, 3)],
+            [Place(number=8, amount=6.0), Place(number=6, amount=12.0)],
         ),
     ],
 )

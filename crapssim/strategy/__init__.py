@@ -4,9 +4,25 @@ player should make, remove, or change. Strategies are applied for the player to 
 after the previous bets and table have been updated.
 """
 
-from crapssim.strategy.core import Strategy, AggregateStrategy, BetIfTrue, RemoveIfTrue, \
-    IfBetNotExist, BetPointOff, BetPointOn, CountStrategy
-from crapssim.strategy.odds import OddsMultiplierStrategy, PassLineOddsMultiplier, \
-    DontPassOddsMultiplier
-from crapssim.strategy.examples import BetPassLine, BetDontPass, \
-    BetPlace
+from crapssim.strategy.odds import (
+    ComeOddsMultiplier,
+    DontComeOddsMultiplier,
+    DontPassOddsMultiplier,
+    OddsAmount,
+    OddsMultiplier,
+    PassLineOddsMultiplier,
+)
+from crapssim.strategy.single_bet import BetDontPass, BetPassLine, BetPlace
+from crapssim.strategy.tools import (
+    AggregateStrategy,
+    BetIfTrue,
+    BetNewShooter,
+    BetPointOff,
+    BetPointOn,
+    CountStrategy,
+    IfBetNotExist,
+    RemoveIfTrue,
+    Strategy,
+)
+
+from . import examples, odds
