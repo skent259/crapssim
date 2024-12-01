@@ -43,13 +43,16 @@ username in the first line) into a terminal at the desired directory.
     python -m pip install -e .
     pip install pytest
 
+Latest installation
+-------------------
+
 If you only want to use the latest `development sources`_  and do not care 
 about having a cloned repository, e.g. if a bug you care about has been 
 fixed but an official release has not come out yet, then use this command:
 
 .. code-block:: console
 
-    pip install git+https://github.com/skent259/crapssim.git@dev
+    pip install git+https://github.com/skent259/crapssim.git@main
 
 .. _fork the repository: https://docs.github.com/en/get-started/quickstart/fork-a-repo
 .. _editable mode: https://realpython.com/what-is-pip/#installing-packages-in-editable-mode-to-ease-development

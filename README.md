@@ -2,10 +2,13 @@
 ![PyPI](https://img.shields.io/pypi/v/crapssim)
 ![GitHub Repo stars](https://img.shields.io/github/stars/skent259/crapssim?style=social)
 
-A python package to run all of the necessary elements of a Craps table.  The package follows some natural logic: 
+When playing craps in a casino, there are unlimited combinations of ways that that players can place their bets. But, with this freedom comes complexity, and players deserve to know how a strategy could perform in each session. The 'crapssim' package is designed answer these tough questions: What's a fun strategy involving multiple numbers where the house edge doesn't increase too much? What's the best amount of passline or don't pass odds for my bankroll? Does hedging my bet improve my net winnings? 
 
-- a `CrapsTable` has `Player`(s) and `Dice` on it
-- the `Player`(s) have `Bet`(s) on the `CrapsTable` as prescribed by their strategies.  
+Crapssim is a python package which runs all of the necessary elements of a Craps table.  The package follows some natural logic: 
+
+- a `Table` has `Player`(s) and `Dice` on it
+- the `Player`(s) have `Bet`(s) on the `Table` 
+- each `Player`'s `Strategy` can automatically set up `Bet`(s)
 
 With these building blocks, crapssim supports 
 
@@ -17,15 +20,46 @@ These powerful options can lead to some unique analysis of the game of craps, su
 
 ![best-budget-strategies](https://user-images.githubusercontent.com/41379385/109597132-404bc280-7add-11eb-848c-1981d57d100a.png)
 
-## Results
 
-I will post results from this simulator on my site: http://pages.stat.wisc.edu/~kent/blog.  
+## It's easy to get started
 
-Current blog posts include:
-- [One Surprising Feature of Dark Side Betting](https://pages.stat.wisc.edu/~kent/blog/2021.10.24/dark-side-surprises.html)
-- [5 Systems to Try at the Craps Table](http://pages.stat.wisc.edu/~kent/blog/2021.02.22/five_craps_systems.html)
-- [Craps: Best Strategies on a Budget](http://pages.stat.wisc.edu/~kent/blog/2019.07.31_Craps_Budget/craps_best-strategies-on-a-budget.html)
-- [All Bets Are Off: Re-learning the Pass Line Bet in Craps](http://pages.stat.wisc.edu/~kent/blog/2019.02.28_Craps_Passline/passline-and-odds.html)
+To see how a single session might play out for you using a pass line bet with double odds, over 20 rolls, one might run:
+
+```python
+import crapssim as craps
+from crapssim.strategy import BetPassLine, PassLineOddsMultiplier
+
+table = craps.Table()
+your_strat = BetPassLine(5) + PassLineOddsMultiplier(2)
+
+table.add_player(strategy=your_strat)
+table.run(max_rolls=20, verbose=True)
+```
+
+To evaluate a couple of strategies across many table sessions, you can run:
+
+```python
+import crapssim as craps
+
+n_sim = 20
+bankroll = 300
+strategies = {
+    "place68": craps.strategy.examples.PassLinePlace68(5),
+    "ironcross": craps.strategy.examples.IronCross(5),
+}
+
+for i in range(n_sim):
+    table = craps.Table()
+    for s in strategies:
+        table.add_player(bankroll, strategy=strategies[s], name=s)
+
+    table.run(max_rolls=float("inf"), max_shooter=10, verbose=False)
+
+    for p in table.players:
+        print(f"{i}, {p.name}, {p.bankroll}, {bankroll}, {table.dice.n_rolls}")
+```
+
+For more advanced strategies, you can either write your own custom `Strategy` class or add strategy components together.  Some building blocks and examples can be found in the [strategy](./crapssim/strategy/) module. We plan to have a more detailed tutorial and more strategy examples available soon.
 
 ## Installation
 
@@ -37,50 +71,16 @@ code in your terminal:
 pip install crapssim
 ```
 
-## Getting Started
+Development installation instructions are [also available](./doc/installation.rst).
 
-There's a few good resources for getting started:
+## Results
 
-1. Try the interactive [google collab notebook](https://github.com/skent259/crapssim/blob/master/crapssim_sandbox.ipynb) to test a single strategy and see how the interface works 
-2. Check out Corey Brown's scripts to define strategies and compare them: https://github.com/coreyabrown/CoreyCrapsSim 
-3. Looks at the minimal working examples below
+Some results from this simulator have been posted to http://pages.stat.wisc.edu/~kent/blog:
+- [One Surprising Feature of Dark Side Betting](https://pages.stat.wisc.edu/~kent/blog/2021.10.24/dark-side-surprises.html)
+- [5 Systems to Try at the Craps Table](http://pages.stat.wisc.edu/~kent/blog/2021.02.22/five_craps_systems.html)
+- [Craps: Best Strategies on a Budget](http://pages.stat.wisc.edu/~kent/blog/2019.07.31_Craps_Budget/craps_best-strategies-on-a-budget.html)
+- [All Bets Are Off: Re-learning the Pass Line Bet in Craps](http://pages.stat.wisc.edu/~kent/blog/2019.02.28_Craps_Passline/passline-and-odds.html)
 
-
-To see how a single session might play out for you using a pass line bet with double odds, over 20 rolls, one might run:
-
-```python
-import crapssim as craps
-
-table = craps.Table()
-your_strat = craps.strategy.passline_odds2
-
-table.add_player(bankroll=100, strategy=your_strat)
-table.run(max_rolls=20)
-```
-
-To evaluate a couple of strategies across many table sessions, you can run:
-
-```python
-import crapssim as craps
-
-n_sim = 20
-bankroll = 300
-strategies = {
-    "place68": craps.strategy.place68,
-    "ironcross": craps.strategy.ironcross
-}
-
-for i in range(n_sim):
-    table = craps.Table()
-    for s in strategies:
-        table.add_player(bankroll=100, strategy=s)
-
-    table.run(max_rolls=float("inf"), max_shooter=10, verbose=False)
-    for p in table.players:
-        print(f"{i}, {p.strategy}, {p.bankroll}, {bankroll}, {table.dice.n_rolls}")
-```
-
-For more advanced strategies, you need to write a custom function that can perform the strategy.  Some building blocks and examples can be found in [strategy.py](./crapssim/strategy.py)
 
 ## Contributing 
 
@@ -89,7 +89,7 @@ If you discover something interesting using this simulator, please let me know s
 Those looking to contribute to this project are welcome to do so.  Currently, the top priority is to improve
 
 - Supported bets (see [bet.py](./crapssim/bet.py))
-- Supported strategies (see [strategy.py](./crapssim/strategy.py))
+- Supported strategies (see [strategy](./crapssim/strategy))
 - Documentation
 
 

@@ -1,32 +1,30 @@
-import crapssim as craps
-import crapssim.strategy.examples
-import crapssim.strategy.odds
-import crapssim.strategy.single_bet
-
-
 def test_first_chunk():
+    import crapssim as craps
+    from crapssim.strategy import BetPassLine, PassLineOddsMultiplier
+
     table = craps.Table()
-    your_strat = crapssim.strategy.single_bet.BetPassLine(
-        5
-    ) + crapssim.strategy.odds.PassLineOddsMultiplier(2)
+    your_strat = BetPassLine(5) + PassLineOddsMultiplier(2)
 
     table.add_player(strategy=your_strat)
-    table.run(max_rolls=20, verbose=False)
+    table.run(max_rolls=20, verbose=True)
 
 
 def test_second_chunk():
-    n_sim = 10
+    import crapssim as craps
+
+    n_sim = 20
     bankroll = 300
     strategies = {
-        "place68": crapssim.strategy.examples.PassLinePlace68(5),
-        # "ironcross": craps.strategy.ironcross
+        "place68": craps.strategy.examples.PassLinePlace68(5),
+        "ironcross": craps.strategy.examples.IronCross(5),
     }
 
     for i in range(n_sim):
         table = craps.Table()
         for s in strategies:
-            table.add_player(strategy=strategies[s], name=s)
+            table.add_player(bankroll, strategy=strategies[s], name=s)
 
         table.run(max_rolls=float("inf"), max_shooter=10, verbose=False)
+
         for p in table.players:
-            print(f"{i}, {p.strategy}, {p.bankroll}, {bankroll}, {table.dice.n_rolls}")
+            print(f"{i}, {p.name}, {p.bankroll}, {bankroll}, {table.dice.n_rolls}")
