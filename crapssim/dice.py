@@ -1,47 +1,49 @@
-from numpy import random as r
+import typing
+
+import numpy as np
 
 
-class Dice(object):
+class Dice:
     """
     Simulate the rolling of a dice
 
-    Parameters
-    ----------
-    NONE
-
     Attributes
     ----------
-    n_rolls_ : int
+    n_rolls : int
         Number of rolls for the dice
-    result_ : array, shape = [2]
+    result : tuple[int, int]
         Most recent outcome of the roll of two dice
-    total_ : int
+    total : int
         Sum of dice outcome
 
     """
 
-    def __init__(self):
-        self.n_rolls = 0
+    def __init__(self, seed=None) -> None:
+        self._result: typing.Iterable[int] | None = None
+        self.n_rolls: int = 0
+        self.rng = np.random.default_rng(seed)
 
-    def roll(self):
+    @property
+    def total(self) -> int:
+        if self._result is not None:
+            return sum(self.result)
+
+    @property
+    def result(self) -> tuple[int, int]:
+        if self._result is not None:
+            return tuple(self._result)
+
+    @result.setter
+    def result(self, value: typing.Iterable[int]) -> tuple[int, int]:
+        # Allows setting of result, used for some tests, but not recommended
+        # NOTE: no checking is done here, so use with caution
+        # NOTE: this does not increment the number of rolls
+        self._result = value
+
+    def roll(self) -> None:
         self.n_rolls += 1
-        self.result = r.randint(1, 7, size=2)
-        self.total = sum(self.result)
+        self._result = self.rng.integers(1, 7, size=2)
 
-    def fixed_roll(self, outcome):
+    def fixed_roll(self, outcome: typing.Iterable[int]) -> None:
         self.n_rolls += 1
-        self.result = outcome
-        self.total = sum(self.result)
-
-
-if __name__ == "__main__":
-
-    d1 = Dice()
-
-    d1.roll()
-    d1.roll()
-    d1.roll()
-
-    print("Number of rolls: {}".format(d1.n_rolls))
-    print("Last Roll: {}".format(d1.result))
-    print("Last Roll Total: {}".format(d1.total))
+        self._result = outcome
