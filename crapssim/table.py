@@ -17,18 +17,31 @@ class TableUpdate:
         verbose: bool = False,
     ):
         """Run through the roll logic of the table."""
-        self.set_new_shooter(table)
         self.run_strategies(table)
         self.before_roll(table)
         self.update_table_stats(table)
         self.roll(table, dice_outcome, verbose)
         self.after_roll(table)
         self.update_bets(table, verbose)
+        self.set_new_shooter(table)
         self.update_numbers(table, verbose)
+
+    @staticmethod
+    def run_strategies(table: "Table"):
+        for player in table.players:
+            player.strategy.update_bets(player)
 
     @staticmethod
     def before_roll(table: "Table"):
         table.last_roll = table.dice.total
+
+    @staticmethod
+    def update_table_stats(table: "Table"):
+        table.pass_rolls += 1
+        if table.point == "On" and (
+            table.dice.total == 7 or table.dice.total == table.point.number
+        ):
+            table.pass_rolls = 0
 
     @staticmethod
     def roll(
@@ -56,16 +69,8 @@ class TableUpdate:
             player.update_bet(verbose=verbose)
 
     @staticmethod
-    def update_table_stats(table: "Table"):
-        table.pass_rolls += 1
-        if table.point == "On" and (
-            table.dice.total == 7 or table.dice.total == table.point.number
-        ):
-            table.pass_rolls = 0
-
-    @staticmethod
     def set_new_shooter(table: "Table"):
-        if table.n_shooters == 0 or (table.point == "On" and table.dice.total == 7):
+        if table.point == "On" and table.dice.total == 7:
             table.new_shooter = True
             table.n_shooters += 1
         else:
@@ -81,11 +86,6 @@ class TableUpdate:
         if verbose:
             print(f"Point is {table.point.status} ({table.point.number})")
             print(f"Total Player Cash is ${table.total_player_cash}")
-
-    @staticmethod
-    def run_strategies(table: "Table"):
-        for player in table.players:
-            player.strategy.update_bets(player)
 
 
 class TableSettings(typing.TypedDict):
@@ -138,7 +138,7 @@ class Table:
         }
         self.pass_rolls: int = 0
         self.last_roll: int | None = None
-        self.n_shooters: int = 0
+        self.n_shooters: int = 1
         self.new_shooter: bool = True
 
     def yield_player_bets(self) -> typing.Generator[tuple["Player", "Bet"], None, None]:
@@ -214,6 +214,8 @@ class Table:
         while continue_rolling:
             TableUpdate().run(self, verbose=verbose)
             continue_rolling = self.should_keep_rolling(max_rolls, max_shooter, runout)
+            if not continue_rolling:
+                self.n_shooters -= 1  # count was added but this shooter never rolled
 
     def fixed_run(
         self, dice_outcomes: typing.Iterable[typing.Iterable], verbose: bool = False
@@ -386,7 +388,7 @@ class Player:
 
     def update_bet(self, verbose: bool = False) -> None:
         for bet in self.bets[:]:
-            result = bet.get_result(self.table)
+            result: BetResult = bet.get_result(self.table)
             self.bankroll += result.bankroll_change
 
             if verbose:

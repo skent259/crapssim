@@ -69,3 +69,20 @@ def test_table_seed_idential(seed):
     table2.run(max_rolls=100)
 
     assert table1.dice.result == table2.dice.result
+
+
+@pytest.mark.parametrize(
+    ["rolls", "n_shooters"],
+    [
+        ([], 1),
+        ([(3, 4)], 1),
+        ([(3, 3), (3, 4)], 2),
+        ([(3, 3), (3, 4), (4, 4), (2, 6)], 2),
+        ([(3, 3), (3, 4), (4, 4), (2, 6), (1, 1)], 2),
+        ([(3, 3), (3, 4), (4, 4), (2, 6), (1, 1), (2, 2), (1, 6)], 3),
+    ],
+)
+def test_table_n_shooters(rolls, n_shooters):
+    table = Table()
+    table.fixed_run(rolls)
+    assert table.n_shooters == n_shooters
