@@ -22,13 +22,6 @@ These powerful options can lead to some unique analysis of the game of craps, su
 
 ## It's easy to get started
 
-There's a few good resources for getting started:
-
-1. Try the interactive [google collab notebook](https://github.com/skent259/crapssim/blob/master/crapssim_sandbox.ipynb) to test a single strategy and see how the interface works 
-2. Check out Corey Brown's scripts to define strategies and compare them: https://github.com/coreyabrown/CoreyCrapsSim 
-3. Looks at the minimal working examples below
-
-
 To see how a single session might play out for you using a pass line bet with double odds, over 20 rolls, one might run:
 
 ```python
