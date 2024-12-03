@@ -14,6 +14,7 @@ class TableSettings(TypedDict):
     ATS_payouts: dict[str, int]  # {"all": 150, "tall": 30, "small": 30}
     field_payouts: dict[int, int]  # {2: 2, 3: 1, 4: 1, 9: 1, 10: 1, 11: 1, 12: 2}
     fire_payouts: dict[int, int]  # {4: 24, 5: 249, 6: 999}
+    hop_payouts: dict[str, int]  # {"easy": 15, "hard": 30}
     max_odds: dict[int, int]  # {4: 3, 5: 4, 6: 5, 8: 5, 9: 4, 10: 3}
     max_dont_odds: dict[int, int]  # {4: 6, 5: 6, 6: 6, 8: 6, 9: 6, 10: 6}
 
@@ -523,7 +524,7 @@ class HardWay(Bet):
         return BetResult(result_amount, should_remove)
 
     @property
-    def winning_result(self) -> list[int]:
+    def winning_result(self) -> tuple[int, int]:
         return (int(self.number / 2), int(self.number / 2))
 
     @property
@@ -532,6 +533,45 @@ class HardWay(Bet):
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}({self.number}, amount={self.amount})"
+
+
+# Hop bets -------------------------------------------------------------------
+
+
+class Hop(Bet):
+    def __init__(self, result: tuple[int, int], amount: typing.SupportsFloat) -> None:
+        super().__init__(amount)
+        self.result: tuple[int, int] = tuple(sorted(result))
+
+    def get_result(self, table: Table) -> BetResult:
+        if table.dice.result in self.winning_results:
+            result_amount = self.payout_ratio * self.amount + self.amount
+            should_remove = True
+        else:
+            result_amount = -1 * self.amount
+            should_remove = True
+        return BetResult(result_amount, should_remove)
+
+    @property
+    def winning_results(self) -> list[tuple[int, int]]:
+        if self.result[0] == self.result[1]:
+            return [self.result]
+        else:
+            return [self.result, self.result[::-1]]
+
+    @property
+    def payout_ratio(self, table: Table) -> int:
+        if self.result[0] == self.result[1]:
+            return table.settings["hop_payouts"]["hard"]
+        else:
+            return table.settings["hop_payouts"]["easy"]
+
+    @property
+    def _placed_key(self) -> typing.Hashable:
+        return type(self), self.result
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}({self.result}, amount={self.amount})"
 
 
 # Fire bet -------------------------------------------------------------------
@@ -571,6 +611,9 @@ class Fire(Bet):
 
     def is_allowed(self, player: Player) -> bool:
         return player.table.new_shooter
+
+
+# All-tall-small bets -------------------------------------------------------
 
 
 class _ATSBet(Bet):
