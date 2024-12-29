@@ -2,8 +2,8 @@
 
 The current top priorities for the package are to improve 
 - Documentation
-- Supported strategies (see [strategy](./crapssim/strategy))
-- Supported bets (see [bet.py](./crapssim/bet.py), [#38](https://github.com/skent259/crapssim/issues/38))  
+- Supported strategies (see [strategy](https://github.com/sphinx-doc/sphinx/issues/4961))
+- Supported bets (see [bet.py](https://github.com/skent259/crapssim/blob/main/crapssim/bet.py), [#38](https://github.com/skent259/crapssim/issues/38))  
 
 ### Do you want to help the documentation?
 
