@@ -58,7 +58,7 @@ for i in range(n_sim):
         print(f"{i}, {p.name}, {p.bankroll}, {bankroll}, {table.dice.n_rolls}")
 ```
 
-For more advanced strategies, you can either write your own custom `Strategy` class or add strategy components together.  Some building blocks and examples can be found in the [strategy](./crapssim/strategy/) module. We plan to have a more detailed tutorial and more strategy examples available soon.
+For more advanced strategies, you can either write your own custom `Strategy` class or add strategy components together.  Some building blocks and examples can be found in the [strategy](https://github.com/skent259/crapssim/tree/main/crapssim/strategy) module. We plan to have a more detailed tutorial and more strategy examples available soon.
 
 ## Installation
 
@@ -70,7 +70,7 @@ code in your terminal:
 pip install crapssim
 ```
 
-Development installation instructions are [also available](./doc/installation.rst).
+Development installation instructions are [also available](./docs/installation.md).
 
 ## Results
 
@@ -87,8 +87,8 @@ If you discover something interesting using this simulator, please let me know s
 
 Those looking to contribute to this project are welcome to do so.  Currently, the top priority is to improve
 
-- Supported bets (see [bet.py](./crapssim/bet.py))
-- Supported strategies (see [strategy](./crapssim/strategy))
+- Supported bets (see [bet.py](https://github.com/skent259/crapssim/blob/main/crapssim/bet.py))
+- Supported strategies (see [strategy](https://github.com/skent259/crapssim/tree/main/crapssim/strategy))
 - Documentation
 
 
