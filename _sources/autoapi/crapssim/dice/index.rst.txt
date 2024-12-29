@@ -1,0 +1,71 @@
+crapssim.dice
+=============
+
+.. py:module:: crapssim.dice
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   crapssim.dice.Dice
+
+
+Module Contents
+---------------
+
+.. py:class:: Dice(seed=None)
+
+   Simulate the rolling of a dice
+
+   .. attribute:: n_rolls
+
+      Number of rolls for the dice
+
+      :type: int
+
+   .. attribute:: result
+
+      Most recent outcome of the roll of two dice
+
+      :type: tuple[int, int]
+
+   .. attribute:: total
+
+      Sum of dice outcome
+
+      :type: int
+
+
+   .. py:attribute:: _result
+      :type:  Iterable[int] | None
+      :value: None
+
+
+
+   .. py:attribute:: n_rolls
+      :type:  int
+      :value: 0
+
+
+
+   .. py:attribute:: rng
+
+
+   .. py:property:: total
+      :type: int
+
+
+
+   .. py:property:: result
+      :type: tuple[int, int]
+
+
+
+   .. py:method:: roll() -> None
+
+
+   .. py:method:: fixed_roll(outcome: Iterable[int]) -> None
+
+
