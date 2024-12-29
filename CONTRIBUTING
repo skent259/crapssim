@@ -1,0 +1,31 @@
+## How to contribute to crapssim
+
+The current top priorities for the package are to improve 
+- Documentation
+- Supported strategies (see [strategy](https://github.com/sphinx-doc/sphinx/issues/4961))
+- Supported bets (see [bet.py](https://github.com/skent259/crapssim/blob/main/crapssim/bet.py), [#38](https://github.com/skent259/crapssim/issues/38))  
+
+### Do you want to help the documentation?
+
+There's many ways to improve the documentation for current and future users (including us!):
+
+- Write a short tutorial with some example usage of the package
+- Add more descriptions or type hints to internal package functions
+
+### Do you want to help supported strategies?
+
+Craps has so many possible strategies, and it's hard to implement them all. The ultimate goal of the package is to make building strategies easy for end users, but we also want to have commonly used and well known versions available as in the package as examples. 
+
+If you saw a strategy online or in a book, and have implemented with "crapssim", then it most likely makes a great addition to the package. Please mention in [a new discussion](https://github.com/skent259/crapssim/discussions/new), file [an issue](https://github.com/skent259/crapssim/issues/new), or open [a pull request](https://github.com/skent259/crapssim/pulls) and we can work together to make sure it fits well.
+
+### Do you want to help expand supported bets?
+
+Bets to implement are currently being tracked in [#38](https://github.com/skent259/crapssim/issues/38). 
+
+This will require detailed knowledge of the package's `bet` module and also of the craps game. Please build out in a forked branch, file a [new pull request](https://github.com/skent259/crapssim/pulls) with your new bet and we can work through the details to make sure it aligns with other bets and standards.
+
+### Did you find a bug?
+
+* Please double check the bug has not already been reported in the [Github issues](https://github.com/skent259/crapssim/issues)
+* If your issue has not already been reported, [open a new issue](https://github.com/skent259/crapssim/issues/new) with as much detail to reproduce your problem as possible. The more details you provide, the easier it will be to isolate and fix the problem!
+ 
