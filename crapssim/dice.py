@@ -42,7 +42,7 @@ class Dice:
 
     def roll(self) -> None:
         self.n_rolls += 1
-        self._result = self.rng.integers(1, 7, size=2)
+        self._result = self.rng.integers(1, 7, size=2).tolist()
 
     def fixed_roll(self, outcome: typing.Iterable[int]) -> None:
         self.n_rolls += 1
