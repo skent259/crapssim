@@ -17,7 +17,8 @@ class TableUpdate:
         verbose: bool = False,
     ):
         """Run through the roll logic of the table."""
-        self.run_strategies(table)
+        self.run_strategies(table, verbose)
+        self.print_player_summary(table, verbose)
         self.before_roll(table)
         self.update_table_stats(table)
         self.roll(table, dice_outcome, verbose)
@@ -27,9 +28,18 @@ class TableUpdate:
         self.update_numbers(table, verbose)
 
     @staticmethod
-    def run_strategies(table: "Table"):
+    def run_strategies(table: "Table", verbose=False):
         for player in table.players:
             player.strategy.update_bets(player)
+
+    @staticmethod
+    def print_player_summary(table: "Table", verbose=False):
+        for player in table.players:
+            if verbose:
+                print(
+                    f"{player.name}: Bankroll={player.bankroll}, "
+                    f"Bet amount={player.total_bet_amount}, Bets={player.bets}"
+                )
 
     @staticmethod
     def before_roll(table: "Table"):
@@ -85,7 +95,6 @@ class TableUpdate:
 
         if verbose:
             print(f"Point is {table.point.status} ({table.point.number})")
-            print(f"Total Player Cash is ${table.total_player_cash}")
 
 
 class TableSettings(typing.TypedDict):
@@ -180,11 +189,17 @@ class Table:
         verbose
             If True prints a welcome message and the initial players.
         """
-        if verbose:
+        if verbose and self.dice.n_rolls == 0:
             print("Welcome to the Craps Table!")
         self.ensure_one_player()
-        if verbose:
-            print(f"Initial players: {[p.name for p in self.players]}")
+        if verbose and self.dice.n_rolls == 0:
+            for player in self.players:
+                print(
+                    f"{player.name}: Strategy={player.strategy}, "
+                    f"Bankroll={player.bankroll}"
+                )
+            print("")
+            print("")
 
     def run(
         self,
@@ -216,6 +231,7 @@ class Table:
             continue_rolling = self.should_keep_rolling(max_rolls, max_shooter, runout)
             if not continue_rolling:
                 self.n_shooters -= 1  # count was added but this shooter never rolled
+                TableUpdate().print_player_summary(self, verbose=verbose)
 
     def fixed_run(
         self, dice_outcomes: typing.Iterable[typing.Iterable], verbose: bool = False
@@ -292,7 +308,7 @@ class Table:
         -------
         The total sum of all players total_bet_amounts and bankroll.
         """
-        return sum([p.total_bet_amount + p.bankroll for p in self.players])
+        return sum([p.total_player_cash for p in self.players])
 
 
 class Player:
@@ -336,6 +352,10 @@ class Player:
     @property
     def total_bet_amount(self) -> float:
         return sum(x.amount for x in self.bets)
+
+    @property
+    def total_player_cash(self) -> float:
+        return self.bankroll + self.total_bet_amount
 
     @property
     def table(self) -> Table:
