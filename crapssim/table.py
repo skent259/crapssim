@@ -1,3 +1,4 @@
+import copy
 import typing
 
 from crapssim.dice import Dice
@@ -344,7 +345,7 @@ class Player:
         name: str = "Player",
     ):
         self.bankroll: float = float(bankroll)
-        self.strategy: Strategy = bet_strategy
+        self.strategy: Strategy = copy.deepcopy(bet_strategy)
         self.name: str = name
         self.bets: list[Bet] = []
         self._table: Table = table

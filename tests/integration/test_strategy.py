@@ -1,7 +1,7 @@
 import pytest
 
 from crapssim import Table
-from crapssim.bet import Come, DontCome, DontPass, Field, Odds, PassLine, Place
+from crapssim.bet import Come, DontCome, DontPass, Field, Fire, Odds, PassLine, Place
 from crapssim.strategy import (
     BetDontPass,
     BetIfTrue,
@@ -23,7 +23,8 @@ from crapssim.strategy.examples import (
     Place682Come,
     Risk12,
 )
-from crapssim.strategy.tools import WinProgression
+from crapssim.strategy.single_bet import BetFire
+from crapssim.strategy.tools import BetIfTrue, BetNewShooter, WinProgression
 from crapssim.table import TableUpdate
 
 
@@ -345,3 +346,48 @@ def test_strategies_compare_bets(
     bets = table.players[0].bets
 
     assert set(bets) == set(correct_bets)
+
+
+def test_strategies_in_simulation_persistent_features():
+
+    n_sim = 100
+    bankroll = 100
+    strategies = {"Fire 1": BetNewShooter(Fire(1)), "Fire 2": BetFire(1)}
+
+    # Simulation 1, five fire points hit
+    outcomes = [
+        (2, 2),
+        (2, 2),
+        (2, 3),
+        (2, 3),
+        (3, 3),
+        (3, 3),
+        (4, 4),
+        (4, 4),
+        (4, 5),
+        (4, 5),
+        (4, 4),  # set the last point
+        (1, 6),  # seven-out
+    ]
+    table = Table()
+    for s in strategies:
+        table.add_player(bankroll, strategy=strategies[s], name=s)
+    table.fixed_run(outcomes, verbose=False)
+    for p in table.players:
+        print(f"{p.name}, {p.bankroll}, {bankroll}, {table.dice.n_rolls}")
+
+    assert p.bankroll == bankroll + table.settings["fire_payouts"][5]
+
+    # Simulation 2, no fire points hit
+    outcomes = [
+        (2, 2),  # set a point
+        (1, 6),  # seven-out
+    ]
+    table = Table()
+    for s in strategies:
+        table.add_player(bankroll, strategy=strategies[s], name=s)
+    table.fixed_run(outcomes, verbose=False)
+    for p in table.players:
+        print(f"{p.name}, {p.bankroll}, {bankroll}, {table.dice.n_rolls}")
+
+    assert p.bankroll == bankroll - 1
