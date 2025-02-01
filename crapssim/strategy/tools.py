@@ -306,7 +306,7 @@ class AddIfNotBet(AddIfTrue):
         return f"{self.__class__.__name__}(bet={self.bet})"
 
 
-class AddPointOff(AddIfTrue):
+class AddIfPointOff(AddIfTrue):
     """Strategy that adds a bet if the table point is Off, and the Player doesn't have a bet on the
     table. Equivalent to AddIfTrue(bet, lambda p: p.table.point.status == "Off"
                                         and bet not in p.bets)"""
@@ -328,7 +328,7 @@ class AddPointOff(AddIfTrue):
         return f"{self.__class__.__name__}(bet={self.bet})"
 
 
-class AddPointOn(AddIfTrue):
+class AddIfPointOn(AddIfTrue):
     """Strategy that adds a bet if the table point is On, and the Player doesn't have a bet on the
     table. Equivalent to AddIfTrue(bet, lambda p: p.table.point.status == "On"
                                         and bet not in p.bets)"""

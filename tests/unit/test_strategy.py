@@ -21,9 +21,9 @@ from crapssim.bet import (
 from crapssim.strategy import (
     AddIfNewShooter,
     AddIfNotBet,
+    AddIfPointOff,
+    AddIfPointOn,
     AddIfTrue,
-    AddPointOff,
-    AddPointOn,
     AggregateStrategy,
     BetPlace,
     CountStrategy,
@@ -349,7 +349,7 @@ def test_bet_point_off_add_bet(player):
     player.table.point.number = None
     player.add_bet = MagicMock()
     bet = MagicMock()
-    strategy = AddPointOff(bet)
+    strategy = AddIfPointOff(bet)
     strategy.update_bets(player)
     player.add_bet.assert_called_with(bet)
 
@@ -358,7 +358,7 @@ def test_bet_point_off_dont_add_bet(player):
     player.table.point.number = 6
     player.add_bet = MagicMock()
     bet = MagicMock()
-    strategy = AddPointOff(bet)
+    strategy = AddIfPointOff(bet)
     strategy.update_bets(player)
     player.add_bet.assert_not_called()
 
@@ -367,7 +367,7 @@ def test_bet_point_on_add_bet(player):
     player.table.point.number = 9
     player.add_bet = MagicMock()
     bet = MagicMock()
-    strategy = AddPointOn(bet)
+    strategy = AddIfPointOn(bet)
     strategy.update_bets(player)
     player.add_bet.assert_called_with(bet)
 
@@ -376,7 +376,7 @@ def test_bet_point_on_dont_add_bet(player):
     player.table.point.number = None
     player.add_bet = MagicMock()
     bet = MagicMock()
-    strategy = AddPointOn(bet)
+    strategy = AddIfPointOn(bet)
     strategy.update_bets(player)
     player.add_bet.assert_not_called()
 
