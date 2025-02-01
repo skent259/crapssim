@@ -349,7 +349,7 @@ class AddPointOn(AddIfTrue):
         return f"{self.__class__.__name__}(bet={self.bet})"
 
 
-class BetNewShooter(AddIfTrue):
+class AddIfNewShooter(AddIfTrue):
     """Strategy that adds a bet if there is a new shooter at the table, and the Player doesn't have a bet on the
     table. Equivalent to AddIfTrue(bet, lambda p: p.table.new_shooter and bet not in p.bets)
     """
