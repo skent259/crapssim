@@ -19,8 +19,8 @@ from crapssim.bet import (
     Place,
 )
 from crapssim.strategy import (
+    AddIfTrue,
     AggregateStrategy,
-    BetIfTrue,
     BetNewShooter,
     BetPlace,
     BetPointOff,
@@ -186,7 +186,7 @@ def example_bet():
 @pytest.fixture
 def bet_if_true(example_bet):
     key = MagicMock(return_value=True)
-    return BetIfTrue(example_bet, key)
+    return AddIfTrue(example_bet, key)
 
 
 def test_bet_if_true_key_is_called(bet_if_true, player):
@@ -209,7 +209,7 @@ def test_player_add_bet_is_not_called_if_key_is_true(bet_if_true, player):
 
 def test_bet_if_true_repr(bet_if_true):
     assert (
-        repr(bet_if_true) == f"BetIfTrue(bet={bet_if_true.bet}, key={bet_if_true.key})"
+        repr(bet_if_true) == f"AddIfTrue(bet={bet_if_true.bet}, key={bet_if_true.key})"
     )
 
 

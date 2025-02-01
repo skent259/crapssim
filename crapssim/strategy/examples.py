@@ -18,8 +18,8 @@ from crapssim.strategy.single_bet import (
     StrategyMode,
 )
 from crapssim.strategy.tools import (
+    AddIfTrue,
     AggregateStrategy,
-    BetIfTrue,
     BetPointOff,
     BetPointOn,
     CountStrategy,
@@ -741,7 +741,7 @@ class Place68DontCome2Odds(AggregateStrategy):
         self.dont_come_amount = float(dont_come_amount)
         super().__init__(
             BetPlace({6: six_eight_amount, 8: six_eight_amount}, skip_point=False),
-            BetIfTrue(
+            AddIfTrue(
                 DontCome(dont_come_amount),
                 lambda p: len(p.get_bets_by_type((DontCome,))) == 0,
             ),
