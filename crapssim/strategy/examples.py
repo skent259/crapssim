@@ -20,8 +20,8 @@ from crapssim.strategy.single_bet import (
 from crapssim.strategy.tools import (
     AddIfTrue,
     AddPointOff,
+    AddPointOn,
     AggregateStrategy,
-    BetPointOn,
     CountStrategy,
     IfBetNotExist,
     Player,
@@ -349,7 +349,7 @@ class Place682Come(AggregateStrategy):
 class IronCross(AggregateStrategy):
     """Strategy that bets the PassLine, bets the PassLine Odds, and bets Place on the 5, 6, and 8.
     If the point is on and there is no bet on the field, place a bet on the field. Equivalent to:
-    BetPassLine(...) + PassLineOddsMultiplier(2), + BetPlace({...}) + BetPointOn(Field(...))
+    BetPassLine(...) + PassLineOddsMultiplier(2), + BetPlace({...}) + AddPointOn(Field(...))
     """
 
     def __init__(self, base_amount: float):
@@ -374,7 +374,7 @@ class IronCross(AggregateStrategy):
             BetPassLine(base_amount),
             PassLineOddsMultiplier(2),
             BetPlace(place_amounts, skip_point=True),
-            BetPointOn(Field(base_amount)),
+            AddPointOn(Field(base_amount)),
         )
 
     def __repr__(self) -> str:
