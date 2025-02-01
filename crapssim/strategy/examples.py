@@ -19,8 +19,8 @@ from crapssim.strategy.single_bet import (
 )
 from crapssim.strategy.tools import (
     AddIfTrue,
+    AddPointOff,
     AggregateStrategy,
-    BetPointOff,
     BetPointOn,
     CountStrategy,
     IfBetNotExist,
@@ -579,7 +579,7 @@ class Knockout(AggregateStrategy):
     """PassLine and Don't bet prior to point, 345x PassLine Odds after point.
 
     Equivalent to:
-    BetPassLine(amount) + BetPointOff(DontPass(amount)) +
+    BetPassLine(amount) + AddPointOff(DontPass(amount)) +
     PassLineOddsMultiplier({4: 3, 5: 4, 6: 5, 8: 5, 9: 4, 10: 3})
     """
 
@@ -587,7 +587,7 @@ class Knockout(AggregateStrategy):
         self.base_amount = float(base_amount)
         super().__init__(
             BetPassLine(base_amount),
-            BetPointOff(DontPass(base_amount)),
+            AddPointOff(DontPass(base_amount)),
             PassLineOddsMultiplier({4: 3, 5: 4, 6: 5, 8: 5, 9: 4, 10: 3}),
         )
 
