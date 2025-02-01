@@ -19,9 +19,9 @@ from crapssim.strategy.single_bet import (
 )
 from crapssim.strategy.tools import (
     AddIfNotBet,
+    AddIfPointOff,
+    AddIfPointOn,
     AddIfTrue,
-    AddPointOff,
-    AddPointOn,
     AggregateStrategy,
     CountStrategy,
     Player,
@@ -349,7 +349,7 @@ class Place682Come(AggregateStrategy):
 class IronCross(AggregateStrategy):
     """Strategy that bets the PassLine, bets the PassLine Odds, and bets Place on the 5, 6, and 8.
     If the point is on and there is no bet on the field, place a bet on the field. Equivalent to:
-    BetPassLine(...) + PassLineOddsMultiplier(2), + BetPlace({...}) + AddPointOn(Field(...))
+    BetPassLine(...) + PassLineOddsMultiplier(2), + BetPlace({...}) + AddIfPointOn(Field(...))
     """
 
     def __init__(self, base_amount: float):
@@ -374,7 +374,7 @@ class IronCross(AggregateStrategy):
             BetPassLine(base_amount),
             PassLineOddsMultiplier(2),
             BetPlace(place_amounts, skip_point=True),
-            AddPointOn(Field(base_amount)),
+            AddIfPointOn(Field(base_amount)),
         )
 
     def __repr__(self) -> str:
@@ -579,7 +579,7 @@ class Knockout(AggregateStrategy):
     """PassLine and Don't bet prior to point, 345x PassLine Odds after point.
 
     Equivalent to:
-    BetPassLine(amount) + AddPointOff(DontPass(amount)) +
+    BetPassLine(amount) + AddIfPointOff(DontPass(amount)) +
     PassLineOddsMultiplier({4: 3, 5: 4, 6: 5, 8: 5, 9: 4, 10: 3})
     """
 
@@ -587,7 +587,7 @@ class Knockout(AggregateStrategy):
         self.base_amount = float(base_amount)
         super().__init__(
             BetPassLine(base_amount),
-            AddPointOff(DontPass(base_amount)),
+            AddIfPointOff(DontPass(base_amount)),
             PassLineOddsMultiplier({4: 3, 5: 4, 6: 5, 8: 5, 9: 4, 10: 3}),
         )
 
