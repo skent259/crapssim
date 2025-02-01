@@ -141,7 +141,7 @@ class NullStrategy(Strategy):
         return f"{self.__class__.__name__}()"
 
 
-class BetIfTrue(Strategy):
+class AddIfTrue(Strategy):
     """Strategy that places a bet if a given key taking Player as a parameter is True."""
 
     def __init__(self, bet: Bet, key: typing.Callable[[Player], bool]):
@@ -288,9 +288,9 @@ class ReplaceIfTrue(Strategy):
         )
 
 
-class IfBetNotExist(BetIfTrue):
+class IfBetNotExist(AddIfTrue):
     """Strategy that adds a bet if it isn't on the table for that player. Equivalent of
-    BetIfTrue(bet, lambda p: bet not in p.bets)"""
+    AddIfTrue(bet, lambda p: bet not in p.bets)"""
 
     def __init__(self, bet: Bet):
         """The strategy adds the given bet object to the table if it is not already on the table.
@@ -306,9 +306,9 @@ class IfBetNotExist(BetIfTrue):
         return f"{self.__class__.__name__}(bet={self.bet})"
 
 
-class BetPointOff(BetIfTrue):
+class BetPointOff(AddIfTrue):
     """Strategy that adds a bet if the table point is Off, and the Player doesn't have a bet on the
-    table. Equivalent to BetIfTrue(bet, lambda p: p.table.point.status == "Off"
+    table. Equivalent to AddIfTrue(bet, lambda p: p.table.point.status == "Off"
                                         and bet not in p.bets)"""
 
     def __init__(self, bet: Bet):
@@ -328,9 +328,9 @@ class BetPointOff(BetIfTrue):
         return f"{self.__class__.__name__}(bet={self.bet})"
 
 
-class BetPointOn(BetIfTrue):
+class BetPointOn(AddIfTrue):
     """Strategy that adds a bet if the table point is On, and the Player doesn't have a bet on the
-    table. Equivalent to BetIfTrue(bet, lambda p: p.table.point.status == "On"
+    table. Equivalent to AddIfTrue(bet, lambda p: p.table.point.status == "On"
                                         and bet not in p.bets)"""
 
     def __init__(self, bet: Bet):
@@ -349,9 +349,9 @@ class BetPointOn(BetIfTrue):
         return f"{self.__class__.__name__}(bet={self.bet})"
 
 
-class BetNewShooter(BetIfTrue):
+class BetNewShooter(AddIfTrue):
     """Strategy that adds a bet if there is a new shooter at the table, and the Player doesn't have a bet on the
-    table. Equivalent to BetIfTrue(bet, lambda p: p.table.new_shooter and bet not in p.bets)
+    table. Equivalent to AddIfTrue(bet, lambda p: p.table.new_shooter and bet not in p.bets)
     """
 
     def __init__(self, bet: Bet):
@@ -368,7 +368,7 @@ class BetNewShooter(BetIfTrue):
         return f"{self.__class__.__name__}(bet={self.bet})"
 
 
-class CountStrategy(BetIfTrue):
+class CountStrategy(AddIfTrue):
     """Strategy that checks how many bets exist of a certain type. If the number of bets of that
     type is less than the given count, it places the bet (if the bet isn't already on the table.)
     """

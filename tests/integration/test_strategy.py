@@ -3,8 +3,8 @@ import pytest
 from crapssim import Table
 from crapssim.bet import Come, DontCome, DontPass, Field, Fire, Odds, PassLine, Place
 from crapssim.strategy import (
+    AddIfTrue,
     BetDontPass,
-    BetIfTrue,
     BetPassLine,
     BetPlace,
     DontPassOddsMultiplier,
@@ -24,7 +24,7 @@ from crapssim.strategy.examples import (
     Risk12,
 )
 from crapssim.strategy.single_bet import BetFire
-from crapssim.strategy.tools import BetIfTrue, BetNewShooter, WinProgression
+from crapssim.strategy.tools import AddIfTrue, BetNewShooter, WinProgression
 from crapssim.table import TableUpdate
 
 
@@ -236,7 +236,7 @@ from crapssim.table import TableUpdate
             ],
         ),
         (
-            BetIfTrue(
+            AddIfTrue(
                 bet=PassLine(amount=5.0), key=lambda p: p.table.point.status == "Off"
             ),
             [],
