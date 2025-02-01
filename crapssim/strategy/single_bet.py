@@ -22,8 +22,8 @@ from crapssim.bet import (
 )
 from crapssim.strategy.tools import (
     AddIfTrue,
+    AddPointOff,
     BetNewShooter,
-    BetPointOff,
     BetPointOn,
     IfBetNotExist,
     Player,
@@ -63,7 +63,7 @@ class _BaseSingleBet(Strategy):
         elif self.mode == StrategyMode.ADD_IF_POINT_ON:
             BetPointOn(self.bet).update_bets(player)
         elif self.mode == StrategyMode.ADD_IF_POINT_OFF:
-            BetPointOff(self.bet).update_bets(player)
+            AddPointOff(self.bet).update_bets(player)
         elif self.mode == StrategyMode.ADD_IF_NEW_SHOOTER:
             BetNewShooter(self.bet).update_bets(player)
         elif self.mode == StrategyMode.ADD_OR_INCREASE:
