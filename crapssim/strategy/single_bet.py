@@ -33,7 +33,7 @@ from crapssim.strategy.tools import (
 
 
 class StrategyMode(enum.Enum):
-    ADD_IF_NON_EXISTENT = enum.auto()
+    ADD_IF_NOT_BET = enum.auto()
     ADD_IF_POINT_OFF = enum.auto()
     ADD_IF_POINT_ON = enum.auto()
     ADD_IF_NEW_SHOOTER = enum.auto()
@@ -45,7 +45,7 @@ class _BaseSingleBet(Strategy):
     def __init__(
         self,
         bet: Bet,
-        mode: StrategyMode = StrategyMode.ADD_IF_NON_EXISTENT,
+        mode: StrategyMode = StrategyMode.ADD_IF_NOT_BET,
     ):
         super().__init__()
         self.bet = bet
@@ -58,8 +58,8 @@ class _BaseSingleBet(Strategy):
         if not self.bet.is_allowed(player):
             return
 
-        if self.mode == StrategyMode.ADD_IF_NON_EXISTENT:
-            AddIfTrue(self.bet, lambda p: self.bet not in p.bets).update_bets(player)
+        if self.mode == StrategyMode.ADD_IF_NOT_BET:
+            AddIfNotBet(self.bet).update_bets(player)
         elif self.mode == StrategyMode.ADD_IF_POINT_ON:
             AddIfPointOn(self.bet).update_bets(player)
         elif self.mode == StrategyMode.ADD_IF_POINT_OFF:
@@ -217,7 +217,7 @@ class BetHardWay(_BaseSingleBet):
         self,
         number: tuple[int],
         bet_amount: typing.SupportsFloat,
-        mode=StrategyMode.ADD_IF_NON_EXISTENT,
+        mode=StrategyMode.ADD_IF_NOT_BET,
     ):
         if number not in [4, 6, 8, 10]:
             raise NotImplementedError
@@ -235,7 +235,7 @@ class BetField(_BaseSingleBet):
     def __init__(
         self,
         bet_amount: typing.SupportsFloat,
-        mode=StrategyMode.ADD_IF_NON_EXISTENT,
+        mode=StrategyMode.ADD_IF_NOT_BET,
     ):
         super().__init__(Field(bet_amount), mode=mode)
 
@@ -244,7 +244,7 @@ class BetAny7(_BaseSingleBet):
     def __init__(
         self,
         bet_amount: typing.SupportsFloat,
-        mode=StrategyMode.ADD_IF_NON_EXISTENT,
+        mode=StrategyMode.ADD_IF_NOT_BET,
     ):
         super().__init__(Any7(bet_amount), mode=mode)
 
@@ -253,7 +253,7 @@ class BetTwo(_BaseSingleBet):
     def __init__(
         self,
         bet_amount: typing.SupportsFloat,
-        mode=StrategyMode.ADD_IF_NON_EXISTENT,
+        mode=StrategyMode.ADD_IF_NOT_BET,
     ):
         super().__init__(Two(bet_amount), mode=mode)
 
@@ -262,7 +262,7 @@ class BetThree(_BaseSingleBet):
     def __init__(
         self,
         bet_amount: typing.SupportsFloat,
-        mode=StrategyMode.ADD_IF_NON_EXISTENT,
+        mode=StrategyMode.ADD_IF_NOT_BET,
     ):
         super().__init__(Three(bet_amount), mode=mode)
 
@@ -271,7 +271,7 @@ class BetYo(_BaseSingleBet):
     def __init__(
         self,
         bet_amount: typing.SupportsFloat,
-        mode=StrategyMode.ADD_IF_NON_EXISTENT,
+        mode=StrategyMode.ADD_IF_NOT_BET,
     ):
         super().__init__(Yo(bet_amount), mode=mode)
 
@@ -280,11 +280,11 @@ class BetBoxcars(_BaseSingleBet):
     def __init__(
         self,
         bet_amount: typing.SupportsFloat,
-        mode=StrategyMode.ADD_IF_NON_EXISTENT,
+        mode=StrategyMode.ADD_IF_NOT_BET,
     ):
         super().__init__(Boxcars(bet_amount), mode=mode)
 
 
 class BetFire(_BaseSingleBet):
-    def __init__(self, bet_amount: float, mode=StrategyMode.ADD_IF_NON_EXISTENT):
+    def __init__(self, bet_amount: float, mode=StrategyMode.ADD_IF_NOT_BET):
         super().__init__(Fire(bet_amount), mode=mode)

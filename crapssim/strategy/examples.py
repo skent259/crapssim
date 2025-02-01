@@ -459,12 +459,8 @@ class HammerLock(Strategy):
     def pass_and_dontpass(self, player: Player) -> None:
         """Update bets when point is Off: add a PassLine and a DontPass bet if they don't already exist."""
         RemoveByType(Place).update_bets(player)
-        BetPassLine(self.base_amount, StrategyMode.ADD_IF_NON_EXISTENT).update_bets(
-            player
-        )
-        BetDontPass(self.base_amount, StrategyMode.ADD_IF_NON_EXISTENT).update_bets(
-            player
-        )
+        BetPassLine(self.base_amount, StrategyMode.ADD_IF_NOT_BET).update_bets(player)
+        BetDontPass(self.base_amount, StrategyMode.ADD_IF_NOT_BET).update_bets(player)
 
     def place68(self, player: Player) -> None:
         """Update bets to Place the 6 and 8 (regardless of the point) and then lay odds on DontPass bets."""

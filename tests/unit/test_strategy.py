@@ -1203,47 +1203,47 @@ def test_place_68_cpr_update_bets_initial_bets_placed_no_update(player):
         ),
         (
             crapssim.strategy.single_bet.BetHardWay(4, 1),
-            "BetHardWay(4, bet_amount=1.0, mode=StrategyMode.ADD_IF_NON_EXISTENT)",
+            "BetHardWay(4, bet_amount=1.0, mode=StrategyMode.ADD_IF_NOT_BET)",
         ),
         (
             crapssim.strategy.single_bet.BetHardWay(6, 1),
-            "BetHardWay(6, bet_amount=1.0, mode=StrategyMode.ADD_IF_NON_EXISTENT)",
+            "BetHardWay(6, bet_amount=1.0, mode=StrategyMode.ADD_IF_NOT_BET)",
         ),
         (
             crapssim.strategy.single_bet.BetHardWay(8, 1),
-            "BetHardWay(8, bet_amount=1.0, mode=StrategyMode.ADD_IF_NON_EXISTENT)",
+            "BetHardWay(8, bet_amount=1.0, mode=StrategyMode.ADD_IF_NOT_BET)",
         ),
         (
             crapssim.strategy.single_bet.BetHardWay(10, 1),
-            "BetHardWay(10, bet_amount=1.0, mode=StrategyMode.ADD_IF_NON_EXISTENT)",
+            "BetHardWay(10, bet_amount=1.0, mode=StrategyMode.ADD_IF_NOT_BET)",
         ),
         (
             crapssim.strategy.single_bet.BetField(1),
-            "BetField(bet_amount=1.0, mode=StrategyMode.ADD_IF_NON_EXISTENT)",
+            "BetField(bet_amount=1.0, mode=StrategyMode.ADD_IF_NOT_BET)",
         ),
         (
             crapssim.strategy.single_bet.BetAny7(1),
-            "BetAny7(bet_amount=1.0, mode=StrategyMode.ADD_IF_NON_EXISTENT)",
+            "BetAny7(bet_amount=1.0, mode=StrategyMode.ADD_IF_NOT_BET)",
         ),
         (
             crapssim.strategy.single_bet.BetTwo(1),
-            "BetTwo(bet_amount=1.0, mode=StrategyMode.ADD_IF_NON_EXISTENT)",
+            "BetTwo(bet_amount=1.0, mode=StrategyMode.ADD_IF_NOT_BET)",
         ),
         (
             crapssim.strategy.single_bet.BetThree(1),
-            "BetThree(bet_amount=1.0, mode=StrategyMode.ADD_IF_NON_EXISTENT)",
+            "BetThree(bet_amount=1.0, mode=StrategyMode.ADD_IF_NOT_BET)",
         ),
         (
             crapssim.strategy.single_bet.BetYo(1),
-            "BetYo(bet_amount=1.0, mode=StrategyMode.ADD_IF_NON_EXISTENT)",
+            "BetYo(bet_amount=1.0, mode=StrategyMode.ADD_IF_NOT_BET)",
         ),
         (
             crapssim.strategy.single_bet.BetBoxcars(1),
-            "BetBoxcars(bet_amount=1.0, mode=StrategyMode.ADD_IF_NON_EXISTENT)",
+            "BetBoxcars(bet_amount=1.0, mode=StrategyMode.ADD_IF_NOT_BET)",
         ),
         (
             crapssim.strategy.single_bet.BetFire(1),
-            "BetFire(bet_amount=1.0, mode=StrategyMode.ADD_IF_NON_EXISTENT)",
+            "BetFire(bet_amount=1.0, mode=StrategyMode.ADD_IF_NOT_BET)",
         ),
         # Example strategies
         (crapssim.strategy.examples.Pass2Come(1), "Pass2Come(amount=1.0)"),
