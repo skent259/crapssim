@@ -288,7 +288,7 @@ class ReplaceIfTrue(Strategy):
         )
 
 
-class IfBetNotExist(AddIfTrue):
+class AddIfNotBet(AddIfTrue):
     """Strategy that adds a bet if it isn't on the table for that player. Equivalent of
     AddIfTrue(bet, lambda p: bet not in p.bets)"""
 
@@ -497,7 +497,7 @@ class WinProgression(Strategy):
             new_bet.amount = (
                 self.bet.amount * self.multipliers[self.current_progression]
             )
-        IfBetNotExist(new_bet).update_bets(player)
+        AddIfNotBet(new_bet).update_bets(player)
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(first_bet={self.bet}, multipliers={self.multipliers})"

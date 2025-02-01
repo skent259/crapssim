@@ -18,12 +18,12 @@ from crapssim.strategy.single_bet import (
     StrategyMode,
 )
 from crapssim.strategy.tools import (
+    AddIfNotBet,
     AddIfTrue,
     AddPointOff,
     AddPointOn,
     AggregateStrategy,
     CountStrategy,
-    IfBetNotExist,
     Player,
     RemoveByType,
     RemoveIfTrue,
@@ -234,7 +234,7 @@ class Place68Move59(Strategy):
                 continue
 
             if len([x for x in player.bets if isinstance(x, Place)]) < 2:
-                IfBetNotExist(bet).update_bets(player)
+                AddIfNotBet(bet).update_bets(player)
 
     def __repr__(self) -> str:
         return (
@@ -540,8 +540,8 @@ class Risk12(Strategy):
         player
             The player to check the bets for.
         """
-        IfBetNotExist(PassLine(5)).update_bets(player)
-        IfBetNotExist(Field(5)).update_bets(player)
+        AddIfNotBet(PassLine(5)).update_bets(player)
+        AddIfNotBet(Field(5)).update_bets(player)
 
     def point_on(self, player: Player) -> None:
         """If your winnings were enough to cover the place bets (throwing in another dollar for
@@ -554,9 +554,9 @@ class Risk12(Strategy):
         """
         if self.pre_point_winnings >= 6 - 1:
             if player.table.point.number != 6:
-                IfBetNotExist(Place(6, 6)).update_bets(player)
+                AddIfNotBet(Place(6, 6)).update_bets(player)
             else:
-                IfBetNotExist(Place(8, 6)).update_bets(player)
+                AddIfNotBet(Place(8, 6)).update_bets(player)
         if self.pre_point_winnings >= 12 - 2:
             BetPlace({6: 6, 8: 6}).update_bets(player)
 

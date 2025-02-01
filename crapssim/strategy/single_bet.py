@@ -22,10 +22,10 @@ from crapssim.bet import (
 )
 from crapssim.strategy.tools import (
     AddIfNewShooter,
+    AddIfNotBet,
     AddIfTrue,
     AddPointOff,
     AddPointOn,
-    IfBetNotExist,
     Player,
     RemoveIfTrue,
     Strategy,

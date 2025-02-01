@@ -20,13 +20,13 @@ from crapssim.bet import (
 )
 from crapssim.strategy import (
     AddIfNewShooter,
+    AddIfNotBet,
     AddIfTrue,
     AddPointOff,
     AddPointOn,
     AggregateStrategy,
     BetPlace,
     CountStrategy,
-    IfBetNotExist,
     RemoveIfTrue,
     Strategy,
 )
@@ -324,7 +324,7 @@ def test_if_bet_not_exists_bet_doesnt_exist_add_bet(player):
     bet2 = MagicMock()
     player.bets = [bet1]
     player.add_bet = MagicMock()
-    strategy = IfBetNotExist(bet2)
+    strategy = AddIfNotBet(bet2)
     strategy.update_bets(player)
     player.add_bet.assert_called_once_with(bet2)
 
@@ -334,15 +334,15 @@ def test_if_bet_exists_dont_add_bet(player):
     bet2 = MagicMock()
     player.bets = [bet1, bet2]
     player.add_bet = MagicMock()
-    strategy = IfBetNotExist(bet2)
+    strategy = AddIfNotBet(bet2)
     strategy.update_bets(player)
     player.add_bet.assert_not_called()
 
 
 def test_if_bet_not_exist_repr(player):
     bet = MagicMock()
-    strategy = IfBetNotExist(bet)
-    assert repr(strategy) == f"IfBetNotExist(bet={bet})"
+    strategy = AddIfNotBet(bet)
+    assert repr(strategy) == f"AddIfNotBet(bet={bet})"
 
 
 def test_bet_point_off_add_bet(player):
