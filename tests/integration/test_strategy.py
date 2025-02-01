@@ -24,7 +24,7 @@ from crapssim.strategy.examples import (
     Risk12,
 )
 from crapssim.strategy.single_bet import BetFire
-from crapssim.strategy.tools import AddIfTrue, BetNewShooter, WinProgression
+from crapssim.strategy.tools import AddIfNewShooter, AddIfTrue, WinProgression
 from crapssim.table import TableUpdate
 
 
@@ -352,7 +352,7 @@ def test_strategies_in_simulation_persistent_features():
 
     n_sim = 100
     bankroll = 100
-    strategies = {"Fire 1": BetNewShooter(Fire(1)), "Fire 2": BetFire(1)}
+    strategies = {"Fire 1": AddIfNewShooter(Fire(1)), "Fire 2": BetFire(1)}
 
     # Simulation 1, five fire points hit
     outcomes = [

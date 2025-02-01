@@ -14,11 +14,11 @@ from crapssim.strategy.odds import (
 )
 from crapssim.strategy.single_bet import BetDontPass, BetPassLine, BetPlace
 from crapssim.strategy.tools import (
+    AddIfNewShooter,
     AddIfTrue,
     AddPointOff,
     AddPointOn,
     AggregateStrategy,
-    BetNewShooter,
     CountStrategy,
     IfBetNotExist,
     RemoveIfTrue,
