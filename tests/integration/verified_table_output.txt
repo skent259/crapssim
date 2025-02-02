@@ -1,6 +1,6 @@
 Welcome to the Craps Table!
 Player 0: Strategy=BetPassLine(bet_amount=5.0, mode=StrategyMode.ADD_IF_POINT_OFF) + PassLineOddsMultiplier(odds_multiplier=2), Bankroll=100.0
-Player 1: Strategy=BetPlace(place_bet_amounts={5: 10, 6: 12, 8: 12, 4: 10}, mode=StrategyMode.ADD_IF_POINT_ON, skip_point=True, skip_come=False), Bankroll=1000.0
+Player 1: Strategy=BetPlace(place_bet_amounts={5: 10, 6: 12, 8: 12, 4: 10}, mode=StrategyMode.BET_IF_POINT_ON, skip_point=True, skip_come=False), Bankroll=1000.0
 
 
 Player 0: Bankroll=95.0, Bet amount=5.0, Bets=[PassLine(amount=5.0)]
@@ -91,40 +91,39 @@ Player 0 won $5.0 on PassLine(amount=5.0)!
 Player 0 won $12.0 on Odds(base_type=crapssim.bet.PassLine, number=8, amount=10.0)!
 Point is Off (None)
 Player 0: Bankroll=87.0, Bet amount=5.0, Bets=[PassLine(amount=5.0)]
-Player 1: Bankroll=940.0, Bet amount=32.0, Bets=[Place(5, amount=10.0), Place(6, amount=12.0), Place(4, amount=10.0)]
+Player 1: Bankroll=972.0, Bet amount=0, Bets=[]
 
 Dice out!
 Shooter rolled 3 (1, 2)
 Player 0 lost $5.0 on PassLine(amount=5.0).
 Point is Off (None)
 Player 0: Bankroll=82.0, Bet amount=5.0, Bets=[PassLine(amount=5.0)]
-Player 1: Bankroll=940.0, Bet amount=32.0, Bets=[Place(5, amount=10.0), Place(6, amount=12.0), Place(4, amount=10.0)]
+Player 1: Bankroll=972.0, Bet amount=0, Bets=[]
 
 Dice out!
 Shooter rolled 5 (3, 2)
-Player 1 won $14.0 on Place(5, amount=10.0)!
 Point is On (5)
 Player 0: Bankroll=72.0, Bet amount=15.0, Bets=[PassLine(amount=5.0), Odds(base_type=crapssim.bet.PassLine, number=5, amount=10.0)]
-Player 1: Bankroll=952.0, Bet amount=34.0, Bets=[Place(6, amount=12.0), Place(4, amount=10.0), Place(8, amount=12.0)]
+Player 1: Bankroll=938.0, Bet amount=34.0, Bets=[Place(6, amount=12.0), Place(8, amount=12.0), Place(4, amount=10.0)]
 
 Dice out!
 Shooter rolled 11 (6, 5)
 Point is On (5)
 Player 0: Bankroll=72.0, Bet amount=15.0, Bets=[PassLine(amount=5.0), Odds(base_type=crapssim.bet.PassLine, number=5, amount=10.0)]
-Player 1: Bankroll=952.0, Bet amount=34.0, Bets=[Place(6, amount=12.0), Place(4, amount=10.0), Place(8, amount=12.0)]
+Player 1: Bankroll=938.0, Bet amount=34.0, Bets=[Place(6, amount=12.0), Place(8, amount=12.0), Place(4, amount=10.0)]
 
 Dice out!
 Shooter rolled 8 (5, 3)
 Player 1 won $14.0 on Place(8, amount=12.0)!
 Point is On (5)
 Player 0: Bankroll=72.0, Bet amount=15.0, Bets=[PassLine(amount=5.0), Odds(base_type=crapssim.bet.PassLine, number=5, amount=10.0)]
-Player 1: Bankroll=966.0, Bet amount=34.0, Bets=[Place(6, amount=12.0), Place(4, amount=10.0), Place(8, amount=12.0)]
+Player 1: Bankroll=952.0, Bet amount=34.0, Bets=[Place(6, amount=12.0), Place(4, amount=10.0), Place(8, amount=12.0)]
 
 Dice out!
 Shooter rolled 3 (1, 2)
 Point is On (5)
 Player 0: Bankroll=72.0, Bet amount=15.0, Bets=[PassLine(amount=5.0), Odds(base_type=crapssim.bet.PassLine, number=5, amount=10.0)]
-Player 1: Bankroll=966.0, Bet amount=34.0, Bets=[Place(6, amount=12.0), Place(4, amount=10.0), Place(8, amount=12.0)]
+Player 1: Bankroll=952.0, Bet amount=34.0, Bets=[Place(6, amount=12.0), Place(4, amount=10.0), Place(8, amount=12.0)]
 
 Dice out!
 Shooter rolled 7 (3, 4)
@@ -135,18 +134,18 @@ Player 1 lost $10.0 on Place(4, amount=10.0).
 Player 1 lost $12.0 on Place(8, amount=12.0).
 Point is Off (None)
 Player 0: Bankroll=67.0, Bet amount=5.0, Bets=[PassLine(amount=5.0)]
-Player 1: Bankroll=966.0, Bet amount=0, Bets=[]
+Player 1: Bankroll=952.0, Bet amount=0, Bets=[]
 
 Dice out!
 Shooter rolled 7 (3, 4)
 Player 0 won $5.0 on PassLine(amount=5.0)!
 Point is Off (None)
 Player 0: Bankroll=72.0, Bet amount=5.0, Bets=[PassLine(amount=5.0)]
-Player 1: Bankroll=966.0, Bet amount=0, Bets=[]
+Player 1: Bankroll=952.0, Bet amount=0, Bets=[]
 
 Dice out!
 Shooter rolled 7 (3, 4)
 Player 0 won $5.0 on PassLine(amount=5.0)!
 Point is Off (None)
 Player 0: Bankroll=82.0, Bet amount=0, Bets=[]
-Player 1: Bankroll=966.0, Bet amount=0, Bets=[]
+Player 1: Bankroll=952.0, Bet amount=0, Bets=[]

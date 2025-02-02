@@ -18,12 +18,12 @@ from crapssim.strategy.single_bet import (
     StrategyMode,
 )
 from crapssim.strategy.tools import (
+    AddIfNotBet,
+    AddIfPointOff,
+    AddIfPointOn,
+    AddIfTrue,
     AggregateStrategy,
-    BetIfTrue,
-    BetPointOff,
-    BetPointOn,
     CountStrategy,
-    IfBetNotExist,
     Player,
     RemoveByType,
     RemoveIfTrue,
@@ -234,7 +234,7 @@ class Place68Move59(Strategy):
                 continue
 
             if len([x for x in player.bets if isinstance(x, Place)]) < 2:
-                IfBetNotExist(bet).update_bets(player)
+                AddIfNotBet(bet).update_bets(player)
 
     def __repr__(self) -> str:
         return (
@@ -349,7 +349,7 @@ class Place682Come(AggregateStrategy):
 class IronCross(AggregateStrategy):
     """Strategy that bets the PassLine, bets the PassLine Odds, and bets Place on the 5, 6, and 8.
     If the point is on and there is no bet on the field, place a bet on the field. Equivalent to:
-    BetPassLine(...) + PassLineOddsMultiplier(2), + BetPlace({...}) + BetPointOn(Field(...))
+    BetPassLine(...) + PassLineOddsMultiplier(2), + BetPlace({...}) + AddIfPointOn(Field(...))
     """
 
     def __init__(self, base_amount: float):
@@ -374,7 +374,7 @@ class IronCross(AggregateStrategy):
             BetPassLine(base_amount),
             PassLineOddsMultiplier(2),
             BetPlace(place_amounts, skip_point=True),
-            BetPointOn(Field(base_amount)),
+            AddIfPointOn(Field(base_amount)),
         )
 
     def __repr__(self) -> str:
@@ -459,12 +459,8 @@ class HammerLock(Strategy):
     def pass_and_dontpass(self, player: Player) -> None:
         """Update bets when point is Off: add a PassLine and a DontPass bet if they don't already exist."""
         RemoveByType(Place).update_bets(player)
-        BetPassLine(self.base_amount, StrategyMode.ADD_IF_NON_EXISTENT).update_bets(
-            player
-        )
-        BetDontPass(self.base_amount, StrategyMode.ADD_IF_NON_EXISTENT).update_bets(
-            player
-        )
+        BetPassLine(self.base_amount, StrategyMode.ADD_IF_NOT_BET).update_bets(player)
+        BetDontPass(self.base_amount, StrategyMode.ADD_IF_NOT_BET).update_bets(player)
 
     def place68(self, player: Player) -> None:
         """Update bets to Place the 6 and 8 (regardless of the point) and then lay odds on DontPass bets."""
@@ -540,8 +536,8 @@ class Risk12(Strategy):
         player
             The player to check the bets for.
         """
-        IfBetNotExist(PassLine(5)).update_bets(player)
-        IfBetNotExist(Field(5)).update_bets(player)
+        AddIfNotBet(PassLine(5)).update_bets(player)
+        AddIfNotBet(Field(5)).update_bets(player)
 
     def point_on(self, player: Player) -> None:
         """If your winnings were enough to cover the place bets (throwing in another dollar for
@@ -554,9 +550,9 @@ class Risk12(Strategy):
         """
         if self.pre_point_winnings >= 6 - 1:
             if player.table.point.number != 6:
-                IfBetNotExist(Place(6, 6)).update_bets(player)
+                AddIfNotBet(Place(6, 6)).update_bets(player)
             else:
-                IfBetNotExist(Place(8, 6)).update_bets(player)
+                AddIfNotBet(Place(8, 6)).update_bets(player)
         if self.pre_point_winnings >= 12 - 2:
             BetPlace({6: 6, 8: 6}).update_bets(player)
 
@@ -579,7 +575,7 @@ class Knockout(AggregateStrategy):
     """PassLine and Don't bet prior to point, 345x PassLine Odds after point.
 
     Equivalent to:
-    BetPassLine(amount) + BetPointOff(DontPass(amount)) +
+    BetPassLine(amount) + AddIfPointOff(DontPass(amount)) +
     PassLineOddsMultiplier({4: 3, 5: 4, 6: 5, 8: 5, 9: 4, 10: 3})
     """
 
@@ -587,7 +583,7 @@ class Knockout(AggregateStrategy):
         self.base_amount = float(base_amount)
         super().__init__(
             BetPassLine(base_amount),
-            BetPointOff(DontPass(base_amount)),
+            AddIfPointOff(DontPass(base_amount)),
             PassLineOddsMultiplier({4: 3, 5: 4, 6: 5, 8: 5, 9: 4, 10: 3}),
         )
 
@@ -741,7 +737,7 @@ class Place68DontCome2Odds(AggregateStrategy):
         self.dont_come_amount = float(dont_come_amount)
         super().__init__(
             BetPlace({6: six_eight_amount, 8: six_eight_amount}, skip_point=False),
-            BetIfTrue(
+            AddIfTrue(
                 DontCome(dont_come_amount),
                 lambda p: len(p.get_bets_by_type((DontCome,))) == 0,
             ),

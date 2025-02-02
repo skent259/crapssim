@@ -19,14 +19,14 @@ from crapssim.bet import (
     Place,
 )
 from crapssim.strategy import (
+    AddIfNewShooter,
+    AddIfNotBet,
+    AddIfPointOff,
+    AddIfPointOn,
+    AddIfTrue,
     AggregateStrategy,
-    BetIfTrue,
-    BetNewShooter,
     BetPlace,
-    BetPointOff,
-    BetPointOn,
     CountStrategy,
-    IfBetNotExist,
     RemoveIfTrue,
     Strategy,
 )
@@ -43,7 +43,7 @@ from crapssim.strategy.examples import (
 )
 from crapssim.strategy.odds import OddsAmount, OddsMultiplier
 from crapssim.strategy.single_bet import StrategyMode, _BaseSingleBet
-from crapssim.strategy.tools import RemoveByType, ReplaceIfTrue
+from crapssim.strategy.tools import RemoveByType, RemoveIfPointOff, ReplaceIfTrue
 
 
 @pytest.fixture
@@ -186,7 +186,7 @@ def example_bet():
 @pytest.fixture
 def bet_if_true(example_bet):
     key = MagicMock(return_value=True)
-    return BetIfTrue(example_bet, key)
+    return AddIfTrue(example_bet, key)
 
 
 def test_bet_if_true_key_is_called(bet_if_true, player):
@@ -209,7 +209,7 @@ def test_player_add_bet_is_not_called_if_key_is_true(bet_if_true, player):
 
 def test_bet_if_true_repr(bet_if_true):
     assert (
-        repr(bet_if_true) == f"BetIfTrue(bet={bet_if_true.bet}, key={bet_if_true.key})"
+        repr(bet_if_true) == f"AddIfTrue(bet={bet_if_true.bet}, key={bet_if_true.key})"
     )
 
 
@@ -324,7 +324,7 @@ def test_if_bet_not_exists_bet_doesnt_exist_add_bet(player):
     bet2 = MagicMock()
     player.bets = [bet1]
     player.add_bet = MagicMock()
-    strategy = IfBetNotExist(bet2)
+    strategy = AddIfNotBet(bet2)
     strategy.update_bets(player)
     player.add_bet.assert_called_once_with(bet2)
 
@@ -334,22 +334,22 @@ def test_if_bet_exists_dont_add_bet(player):
     bet2 = MagicMock()
     player.bets = [bet1, bet2]
     player.add_bet = MagicMock()
-    strategy = IfBetNotExist(bet2)
+    strategy = AddIfNotBet(bet2)
     strategy.update_bets(player)
     player.add_bet.assert_not_called()
 
 
 def test_if_bet_not_exist_repr(player):
     bet = MagicMock()
-    strategy = IfBetNotExist(bet)
-    assert repr(strategy) == f"IfBetNotExist(bet={bet})"
+    strategy = AddIfNotBet(bet)
+    assert repr(strategy) == f"AddIfNotBet(bet={bet})"
 
 
 def test_bet_point_off_add_bet(player):
     player.table.point.number = None
     player.add_bet = MagicMock()
     bet = MagicMock()
-    strategy = BetPointOff(bet)
+    strategy = AddIfPointOff(bet)
     strategy.update_bets(player)
     player.add_bet.assert_called_with(bet)
 
@@ -358,7 +358,7 @@ def test_bet_point_off_dont_add_bet(player):
     player.table.point.number = 6
     player.add_bet = MagicMock()
     bet = MagicMock()
-    strategy = BetPointOff(bet)
+    strategy = AddIfPointOff(bet)
     strategy.update_bets(player)
     player.add_bet.assert_not_called()
 
@@ -367,7 +367,7 @@ def test_bet_point_on_add_bet(player):
     player.table.point.number = 9
     player.add_bet = MagicMock()
     bet = MagicMock()
-    strategy = BetPointOn(bet)
+    strategy = AddIfPointOn(bet)
     strategy.update_bets(player)
     player.add_bet.assert_called_with(bet)
 
@@ -376,7 +376,7 @@ def test_bet_point_on_dont_add_bet(player):
     player.table.point.number = None
     player.add_bet = MagicMock()
     bet = MagicMock()
-    strategy = BetPointOn(bet)
+    strategy = AddIfPointOn(bet)
     strategy.update_bets(player)
     player.add_bet.assert_not_called()
 
@@ -385,7 +385,7 @@ def test_bet_new_shooter_add_bet(player):
     player.table.new_shooter = True
     player.add_bet = MagicMock()
     bet = MagicMock()
-    strategy = BetNewShooter(bet)
+    strategy = AddIfNewShooter(bet)
     strategy.update_bets(player)
     player.add_bet.assert_called_with(bet)
 
@@ -394,7 +394,7 @@ def test_bet_new_shooter_dont_add_bet(player):
     player.table.new_shooter = False
     player.add_bet = MagicMock()
     bet = MagicMock()
-    strategy = BetNewShooter(bet)
+    strategy = AddIfNewShooter(bet)
     strategy.update_bets(player)
     player.add_bet.assert_not_called()
 
@@ -448,6 +448,30 @@ def test_count_strategy_key_fails_too_many_bets(player):
     strategy = CountStrategy((PassLine, Come), 2, PassLine(1))
     player.bets = [Come(1), Come(1)]
     assert not strategy.key(player)
+
+
+def test_remove_if_point_off_repr(player):
+    bet = MagicMock()
+    strategy = RemoveIfPointOff(bet)
+    assert repr(strategy) == f"RemoveIfPointOff(bet={bet})"
+
+
+def test_remove_if_point_off_remove_bet(player):
+    player.table.point.number = None
+    player.remove_bet = MagicMock()
+    bet = MagicMock()
+    strategy = RemoveIfPointOff(bet)
+    strategy.update_bets(player)
+    player.add_bet.assert_called_with(bet)
+
+
+def test_remove_if_point_off_remove_bet(player):
+    player.table.point.number = 6
+    player.remove_bet = MagicMock()
+    bet = MagicMock()
+    strategy = RemoveIfPointOff(bet)
+    strategy.update_bets(player)
+    player.remove_bet.assert_not_called()
 
 
 def test_remove_by_type_remove_bet_called(player):
@@ -588,6 +612,24 @@ def test_base_single_bet_replace(player):
     strategy.update_bets(player)
     player.remove_bet.assert_called_once_with(PassLine(5))
     player.add_bet.assert_called_once_with(PassLine(5))
+
+
+def test_base_single_bet_bet_point_on_when_point_on(player):
+    strategy = _BaseSingleBet(Place(4, 5), StrategyMode.BET_IF_POINT_ON)
+    player.table.point.number = 6
+    player.add_bet = MagicMock()
+    strategy.update_bets(player)
+    player.add_bet.assert_called_once_with(Place(4, 5))
+
+
+def test_base_single_bet_bet_point_on_when_point_off(player):
+    strategy = _BaseSingleBet(Place(4, 5), StrategyMode.BET_IF_POINT_ON)
+    player.table.point.number = None
+    player.bets = [Place(4, 5)]
+    player.add_bet = MagicMock()
+    player.remove_bet = MagicMock()
+    strategy.update_bets(player)
+    player.remove_bet.assert_called_once_with(Place(4, 5))
 
 
 def test_bet_place_remove_point_bet(player):
@@ -1183,7 +1225,7 @@ def test_place_68_cpr_update_bets_initial_bets_placed_no_update(player):
         # Single bet strategies
         (
             crapssim.strategy.BetPlace({6: 6, 8: 6}),
-            "BetPlace(place_bet_amounts={6: 6, 8: 6}, mode=StrategyMode.ADD_IF_POINT_ON, skip_point=True, skip_come=False)",
+            "BetPlace(place_bet_amounts={6: 6, 8: 6}, mode=StrategyMode.BET_IF_POINT_ON, skip_point=True, skip_come=False)",
         ),
         (
             crapssim.strategy.BetPassLine(1),
@@ -1203,47 +1245,47 @@ def test_place_68_cpr_update_bets_initial_bets_placed_no_update(player):
         ),
         (
             crapssim.strategy.single_bet.BetHardWay(4, 1),
-            "BetHardWay(4, bet_amount=1.0, mode=StrategyMode.ADD_IF_NON_EXISTENT)",
+            "BetHardWay(4, bet_amount=1.0, mode=StrategyMode.ADD_IF_NOT_BET)",
         ),
         (
             crapssim.strategy.single_bet.BetHardWay(6, 1),
-            "BetHardWay(6, bet_amount=1.0, mode=StrategyMode.ADD_IF_NON_EXISTENT)",
+            "BetHardWay(6, bet_amount=1.0, mode=StrategyMode.ADD_IF_NOT_BET)",
         ),
         (
             crapssim.strategy.single_bet.BetHardWay(8, 1),
-            "BetHardWay(8, bet_amount=1.0, mode=StrategyMode.ADD_IF_NON_EXISTENT)",
+            "BetHardWay(8, bet_amount=1.0, mode=StrategyMode.ADD_IF_NOT_BET)",
         ),
         (
             crapssim.strategy.single_bet.BetHardWay(10, 1),
-            "BetHardWay(10, bet_amount=1.0, mode=StrategyMode.ADD_IF_NON_EXISTENT)",
+            "BetHardWay(10, bet_amount=1.0, mode=StrategyMode.ADD_IF_NOT_BET)",
         ),
         (
             crapssim.strategy.single_bet.BetField(1),
-            "BetField(bet_amount=1.0, mode=StrategyMode.ADD_IF_NON_EXISTENT)",
+            "BetField(bet_amount=1.0, mode=StrategyMode.ADD_IF_NOT_BET)",
         ),
         (
             crapssim.strategy.single_bet.BetAny7(1),
-            "BetAny7(bet_amount=1.0, mode=StrategyMode.ADD_IF_NON_EXISTENT)",
+            "BetAny7(bet_amount=1.0, mode=StrategyMode.ADD_IF_NOT_BET)",
         ),
         (
             crapssim.strategy.single_bet.BetTwo(1),
-            "BetTwo(bet_amount=1.0, mode=StrategyMode.ADD_IF_NON_EXISTENT)",
+            "BetTwo(bet_amount=1.0, mode=StrategyMode.ADD_IF_NOT_BET)",
         ),
         (
             crapssim.strategy.single_bet.BetThree(1),
-            "BetThree(bet_amount=1.0, mode=StrategyMode.ADD_IF_NON_EXISTENT)",
+            "BetThree(bet_amount=1.0, mode=StrategyMode.ADD_IF_NOT_BET)",
         ),
         (
             crapssim.strategy.single_bet.BetYo(1),
-            "BetYo(bet_amount=1.0, mode=StrategyMode.ADD_IF_NON_EXISTENT)",
+            "BetYo(bet_amount=1.0, mode=StrategyMode.ADD_IF_NOT_BET)",
         ),
         (
             crapssim.strategy.single_bet.BetBoxcars(1),
-            "BetBoxcars(bet_amount=1.0, mode=StrategyMode.ADD_IF_NON_EXISTENT)",
+            "BetBoxcars(bet_amount=1.0, mode=StrategyMode.ADD_IF_NOT_BET)",
         ),
         (
             crapssim.strategy.single_bet.BetFire(1),
-            "BetFire(bet_amount=1.0, mode=StrategyMode.ADD_IF_NON_EXISTENT)",
+            "BetFire(bet_amount=1.0, mode=StrategyMode.ADD_IF_NOT_BET)",
         ),
         # Example strategies
         (crapssim.strategy.examples.Pass2Come(1), "Pass2Come(amount=1.0)"),

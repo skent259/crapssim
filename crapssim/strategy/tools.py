@@ -7,7 +7,7 @@ import typing
 from abc import ABC, abstractmethod
 from typing import Protocol
 
-from crapssim.bet import Bet
+from crapssim.bet import Bet, HardWay, Place
 from crapssim.dice import Dice
 from crapssim.point import Point
 
@@ -141,7 +141,7 @@ class NullStrategy(Strategy):
         return f"{self.__class__.__name__}()"
 
 
-class BetIfTrue(Strategy):
+class AddIfTrue(Strategy):
     """Strategy that places a bet if a given key taking Player as a parameter is True."""
 
     def __init__(self, bet: Bet, key: typing.Callable[[Player], bool]):
@@ -288,9 +288,9 @@ class ReplaceIfTrue(Strategy):
         )
 
 
-class IfBetNotExist(BetIfTrue):
+class AddIfNotBet(AddIfTrue):
     """Strategy that adds a bet if it isn't on the table for that player. Equivalent of
-    BetIfTrue(bet, lambda p: bet not in p.bets)"""
+    AddIfTrue(bet, lambda p: bet not in p.bets)"""
 
     def __init__(self, bet: Bet):
         """The strategy adds the given bet object to the table if it is not already on the table.
@@ -306,9 +306,9 @@ class IfBetNotExist(BetIfTrue):
         return f"{self.__class__.__name__}(bet={self.bet})"
 
 
-class BetPointOff(BetIfTrue):
+class AddIfPointOff(AddIfTrue):
     """Strategy that adds a bet if the table point is Off, and the Player doesn't have a bet on the
-    table. Equivalent to BetIfTrue(bet, lambda p: p.table.point.status == "Off"
+    table. Equivalent to AddIfTrue(bet, lambda p: p.table.point.status == "Off"
                                         and bet not in p.bets)"""
 
     def __init__(self, bet: Bet):
@@ -328,9 +328,9 @@ class BetPointOff(BetIfTrue):
         return f"{self.__class__.__name__}(bet={self.bet})"
 
 
-class BetPointOn(BetIfTrue):
+class AddIfPointOn(AddIfTrue):
     """Strategy that adds a bet if the table point is On, and the Player doesn't have a bet on the
-    table. Equivalent to BetIfTrue(bet, lambda p: p.table.point.status == "On"
+    table. Equivalent to AddIfTrue(bet, lambda p: p.table.point.status == "On"
                                         and bet not in p.bets)"""
 
     def __init__(self, bet: Bet):
@@ -349,9 +349,9 @@ class BetPointOn(BetIfTrue):
         return f"{self.__class__.__name__}(bet={self.bet})"
 
 
-class BetNewShooter(BetIfTrue):
+class AddIfNewShooter(AddIfTrue):
     """Strategy that adds a bet if there is a new shooter at the table, and the Player doesn't have a bet on the
-    table. Equivalent to BetIfTrue(bet, lambda p: p.table.new_shooter and bet not in p.bets)
+    table. Equivalent to AddIfTrue(bet, lambda p: p.table.new_shooter and bet not in p.bets)
     """
 
     def __init__(self, bet: Bet):
@@ -368,7 +368,7 @@ class BetNewShooter(BetIfTrue):
         return f"{self.__class__.__name__}(bet={self.bet})"
 
 
-class CountStrategy(BetIfTrue):
+class CountStrategy(AddIfTrue):
     """Strategy that checks how many bets exist of a certain type. If the number of bets of that
     type is less than the given count, it places the bet (if the bet isn't already on the table.)
     """
@@ -420,6 +420,37 @@ class CountStrategy(BetIfTrue):
             f"{self.__class__.__name__}(bet_type={self.bet_type}, count={self.count}, "
             f"bet={self.bet})"
         )
+
+
+class RemoveIfPointOff(RemoveIfTrue):
+    """Strategy that removes a bet if the table point is Off
+
+    This will match bets based on type, and number for Place and Hardway bets.
+    It will not consider bet amounts when matching."""
+
+    def __init__(self, bet: Bet):
+        if isinstance(bet, Place):
+            key = (
+                lambda b, p: isinstance(b, Place)
+                and b.number == self.bet.number
+                and p.table.point.status == "Off"
+            )
+        elif isinstance(bet, HardWay):
+            key = (
+                lambda b, p: isinstance(b, HardWay)
+                and b.number == self.bet.number
+                and p.table.point.status == "Off"
+            )
+        else:
+            key = (
+                lambda b, p: isinstance(b, type(self.bet))
+                and p.table.point.status == "Off"
+            )
+        super().__init__(key)
+        self.bet = bet
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}(bet={self.bet})"
 
 
 class RemoveByType(RemoveIfTrue):
@@ -497,7 +528,7 @@ class WinProgression(Strategy):
             new_bet.amount = (
                 self.bet.amount * self.multipliers[self.current_progression]
             )
-        IfBetNotExist(new_bet).update_bets(player)
+        AddIfNotBet(new_bet).update_bets(player)
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(first_bet={self.bet}, multipliers={self.multipliers})"
