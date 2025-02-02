@@ -1225,7 +1225,7 @@ def test_place_68_cpr_update_bets_initial_bets_placed_no_update(player):
         # Single bet strategies
         (
             crapssim.strategy.BetPlace({6: 6, 8: 6}),
-            "BetPlace(place_bet_amounts={6: 6, 8: 6}, mode=StrategyMode.ADD_IF_POINT_ON, skip_point=True, skip_come=False)",
+            "BetPlace(place_bet_amounts={6: 6, 8: 6}, mode=StrategyMode.BET_IF_POINT_ON, skip_point=True, skip_come=False)",
         ),
         (
             crapssim.strategy.BetPassLine(1),
