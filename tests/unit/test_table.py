@@ -86,3 +86,25 @@ def test_table_n_shooters(rolls, n_shooters):
     table = Table()
     table.fixed_run(rolls)
     assert table.n_shooters == n_shooters
+
+
+def test_table_rerunning_with_rolls():
+    table = Table()
+    table.run(max_rolls=10, verbose=False)
+
+    assert table.dice.n_rolls == 10
+
+    table.run(max_rolls=7, verbose=False)
+
+    assert table.dice.n_rolls == 17
+
+
+def test_table_rerunning_with_shooters():
+    table = Table(seed=8)
+    assert table.n_shooters == 1
+
+    table.run(max_rolls=float("inf"), max_shooter=2)
+    assert table.n_shooters == 2
+
+    table.run(max_rolls=float("inf"), max_shooter=5)
+    assert table.n_shooters == 7
