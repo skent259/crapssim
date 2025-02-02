@@ -43,7 +43,7 @@ from crapssim.strategy.examples import (
 )
 from crapssim.strategy.odds import OddsAmount, OddsMultiplier
 from crapssim.strategy.single_bet import StrategyMode, _BaseSingleBet
-from crapssim.strategy.tools import RemoveByType, ReplaceIfTrue
+from crapssim.strategy.tools import RemoveByType, RemoveIfPointOff, ReplaceIfTrue
 
 
 @pytest.fixture
@@ -448,6 +448,30 @@ def test_count_strategy_key_fails_too_many_bets(player):
     strategy = CountStrategy((PassLine, Come), 2, PassLine(1))
     player.bets = [Come(1), Come(1)]
     assert not strategy.key(player)
+
+
+def test_remove_if_point_off_repr(player):
+    bet = MagicMock()
+    strategy = RemoveIfPointOff(bet)
+    assert repr(strategy) == f"RemoveIfPointOff(bet={bet})"
+
+
+def test_remove_if_point_off_remove_bet(player):
+    player.table.point.number = None
+    player.remove_bet = MagicMock()
+    bet = MagicMock()
+    strategy = RemoveIfPointOff(bet)
+    strategy.update_bets(player)
+    player.add_bet.assert_called_with(bet)
+
+
+def test_remove_if_point_off_remove_bet(player):
+    player.table.point.number = 6
+    player.remove_bet = MagicMock()
+    bet = MagicMock()
+    strategy = RemoveIfPointOff(bet)
+    strategy.update_bets(player)
+    player.remove_bet.assert_not_called()
 
 
 def test_remove_by_type_remove_bet_called(player):

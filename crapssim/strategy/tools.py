@@ -7,7 +7,7 @@ import typing
 from abc import ABC, abstractmethod
 from typing import Protocol
 
-from crapssim.bet import Bet
+from crapssim.bet import Bet, HardWay, Place
 from crapssim.dice import Dice
 from crapssim.point import Point
 
@@ -420,6 +420,37 @@ class CountStrategy(AddIfTrue):
             f"{self.__class__.__name__}(bet_type={self.bet_type}, count={self.count}, "
             f"bet={self.bet})"
         )
+
+
+class RemoveIfPointOff(RemoveIfTrue):
+    """Strategy that removes a bet if the table point is Off
+
+    This will match bets based on type, and number for Place and Hardway bets.
+    It will not consider bet amounts when matching."""
+
+    def __init__(self, bet: Bet):
+        if isinstance(bet, Place):
+            key = (
+                lambda b, p: isinstance(b, Place)
+                and b.number == self.bet.number
+                and p.table.point.status == "Off"
+            )
+        elif isinstance(bet, HardWay):
+            key = (
+                lambda b, p: isinstance(b, HardWay)
+                and b.number == self.bet.number
+                and p.table.point.status == "Off"
+            )
+        else:
+            key = (
+                lambda b, p: isinstance(b, type(self.bet))
+                and p.table.point.status == "Off"
+            )
+        super().__init__(key)
+        self.bet = bet
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}(bet={self.bet})"
 
 
 class RemoveByType(RemoveIfTrue):
