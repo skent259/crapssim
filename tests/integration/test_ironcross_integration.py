@@ -65,7 +65,7 @@ from crapssim.table import Table, TableUpdate
             None,
             [Place(5, amount=10.0), Place(8, amount=12.0)],
             (1, 5),
-            [Place(5, amount=10.0), Place(8, amount=12.0), PassLine(amount=5.0)],
+            [PassLine(amount=5.0)],
         ),
         (
             9,
@@ -209,12 +209,7 @@ from crapssim.table import Table, TableUpdate
             None,
             [Place(6, amount=12.0), Place(5, amount=10.0), Place(8, amount=12.0)],
             (5, 4),
-            [
-                Place(6, amount=12.0),
-                Place(5, amount=10.0),
-                Place(8, amount=12.0),
-                PassLine(amount=5.0),
-            ],
+            [PassLine(amount=5.0)],
         ),
         (
             4,
@@ -351,7 +346,7 @@ from crapssim.table import Table, TableUpdate
             None,
             [Place(5, amount=10.0), Place(8, amount=12.0)],
             (5, 1),
-            [Place(5, amount=10.0), Place(8, amount=12.0), PassLine(amount=5.0)],
+            [PassLine(amount=5.0)],
         ),
         (
             None,
@@ -359,7 +354,7 @@ from crapssim.table import Table, TableUpdate
             None,
             [Place(5, amount=10.0), Place(8, amount=12.0)],
             (5, 6),
-            [Place(5, amount=10.0), Place(8, amount=12.0), PassLine(amount=5.0)],
+            [PassLine(amount=5.0)],
         ),
         (
             6,
@@ -400,7 +395,7 @@ from crapssim.table import Table, TableUpdate
             None,
             [Place(5, amount=10.0), Place(8, amount=12.0)],
             (3, 3),
-            [Place(5, amount=10.0), Place(8, amount=12.0), PassLine(amount=5.0)],
+            [PassLine(amount=5.0)],
         ),
         (
             9,
@@ -457,7 +452,7 @@ from crapssim.table import Table, TableUpdate
             None,
             [Place(5, amount=10.0), Place(6, amount=12.0)],
             (3, 5),
-            [Place(5, amount=10.0), Place(6, amount=12.0), PassLine(amount=5.0)],
+            [PassLine(amount=5.0)],
         ),
         (
             6,
@@ -479,7 +474,7 @@ from crapssim.table import Table, TableUpdate
             None,
             [Place(5, amount=10.0), Place(8, amount=12.0)],
             (2, 4),
-            [Place(5, amount=10.0), Place(8, amount=12.0), PassLine(amount=5.0)],
+            [PassLine(amount=5.0)],
         ),
         (
             8,
@@ -554,7 +549,7 @@ from crapssim.table import Table, TableUpdate
             None,
             [Place(5, amount=10.0), Place(6, amount=12.0)],
             (2, 6),
-            [Place(5, amount=10.0), Place(6, amount=12.0), PassLine(amount=5.0)],
+            [PassLine(amount=5.0)],
         ),
         (
             9,
@@ -1722,7 +1717,7 @@ from crapssim.table import Table, TableUpdate
             None,
             [Place(6, amount=12.0), Place(8, amount=12.0)],
             (4, 1),
-            [Place(6, amount=12.0), Place(8, amount=12.0), PassLine(amount=5.0)],
+            [PassLine(amount=5.0)],
         ),
         (
             6,
@@ -1778,7 +1773,7 @@ from crapssim.table import Table, TableUpdate
             None,
             [Place(5, amount=10.0), Place(8, amount=12.0)],
             (2, 4),
-            [Place(5, amount=10.0), Place(8, amount=12.0), PassLine(amount=5.0)],
+            [PassLine(amount=5.0)],
         ),
         (
             6,
@@ -2119,12 +2114,7 @@ from crapssim.table import Table, TableUpdate
             None,
             [Place(5, amount=10.0), Place(6, amount=12.0), Place(8, amount=12.0)],
             (5, 4),
-            [
-                Place(5, amount=10.0),
-                Place(6, amount=12.0),
-                Place(8, amount=12.0),
-                PassLine(amount=5.0),
-            ],
+            [PassLine(amount=5.0)],
         ),
         (
             9,
@@ -2332,7 +2322,7 @@ from crapssim.table import Table, TableUpdate
             None,
             [Place(5, amount=10.0), Place(8, amount=12.0)],
             (2, 4),
-            [Place(5, amount=10.0), Place(8, amount=12.0), PassLine(amount=5.0)],
+            [PassLine(amount=5.0)],
         ),
         (
             6,
@@ -2428,7 +2418,7 @@ from crapssim.table import Table, TableUpdate
             None,
             [Place(8, amount=12.0), Place(5, amount=10.0)],
             (3, 3),
-            [Place(8, amount=12.0), Place(5, amount=10.0), PassLine(amount=5.0)],
+            [PassLine(amount=5.0)],
         ),
         (
             None,
@@ -2436,7 +2426,7 @@ from crapssim.table import Table, TableUpdate
             None,
             [Place(8, amount=12.0), Place(5, amount=10.0)],
             (6, 5),
-            [Place(8, amount=12.0), Place(5, amount=10.0), PassLine(amount=5.0)],
+            [PassLine(amount=5.0)],
         ),
         (
             9,
@@ -2459,12 +2449,7 @@ from crapssim.table import Table, TableUpdate
             None,
             [Place(8, amount=12.0), Place(5, amount=10.0), Place(6, amount=12.0)],
             (4, 5),
-            [
-                Place(8, amount=12.0),
-                Place(5, amount=10.0),
-                Place(6, amount=12.0),
-                PassLine(amount=5.0),
-            ],
+            [PassLine(amount=5.0)],
         ),
         (
             4,
@@ -2560,7 +2545,7 @@ from crapssim.table import Table, TableUpdate
             None,
             [Place(5, amount=10.0), Place(8, amount=12.0)],
             (1, 5),
-            [Place(5, amount=10.0), Place(8, amount=12.0), PassLine(amount=5.0)],
+            [PassLine(amount=5.0)],
         ),
         (
             9,
@@ -2583,12 +2568,7 @@ from crapssim.table import Table, TableUpdate
             None,
             [Place(5, amount=10.0), Place(8, amount=12.0), Place(6, amount=12.0)],
             (3, 6),
-            [
-                Place(5, amount=10.0),
-                Place(8, amount=12.0),
-                Place(6, amount=12.0),
-                PassLine(amount=5.0),
-            ],
+            [PassLine(amount=5.0)],
         ),
         (
             8,
@@ -3042,7 +3022,7 @@ from crapssim.table import Table, TableUpdate
             None,
             [Place(8, amount=12.0), Place(6, amount=12.0)],
             (2, 3),
-            [Place(8, amount=12.0), Place(6, amount=12.0), PassLine(amount=5.0)],
+            [PassLine(amount=5.0)],
         ),
         (
             None,
@@ -3050,7 +3030,7 @@ from crapssim.table import Table, TableUpdate
             None,
             [Place(8, amount=12.0), Place(6, amount=12.0)],
             (6, 5),
-            [Place(8, amount=12.0), Place(6, amount=12.0), PassLine(amount=5.0)],
+            [PassLine(amount=5.0)],
         ),
         (
             9,
@@ -3381,12 +3361,7 @@ from crapssim.table import Table, TableUpdate
             None,
             [Place(5, amount=10.0), Place(8, amount=12.0), Place(6, amount=12.0)],
             (4, 5),
-            [
-                Place(5, amount=10.0),
-                Place(8, amount=12.0),
-                Place(6, amount=12.0),
-                PassLine(amount=5.0),
-            ],
+            [PassLine(amount=5.0)],
         ),
         (
             4,
@@ -3542,7 +3517,7 @@ from crapssim.table import Table, TableUpdate
             None,
             [Place(6, amount=12.0), Place(8, amount=12.0)],
             (4, 1),
-            [Place(6, amount=12.0), Place(8, amount=12.0), PassLine(amount=5.0)],
+            [PassLine(amount=5.0)],
         ),
         (
             None,
@@ -3550,7 +3525,7 @@ from crapssim.table import Table, TableUpdate
             None,
             [Place(6, amount=12.0), Place(8, amount=12.0)],
             (2, 1),
-            [Place(6, amount=12.0), Place(8, amount=12.0), PassLine(amount=5.0)],
+            [PassLine(amount=5.0)],
         ),
         (
             10,
@@ -3666,7 +3641,7 @@ from crapssim.table import Table, TableUpdate
             None,
             [Place(5, amount=10.0), Place(8, amount=12.0)],
             (4, 2),
-            [Place(5, amount=10.0), Place(8, amount=12.0), PassLine(amount=5.0)],
+            [PassLine(amount=5.0)],
         ),
         (
             6,
@@ -3743,12 +3718,7 @@ from crapssim.table import Table, TableUpdate
             None,
             [Place(5, amount=10.0), Place(6, amount=12.0), Place(8, amount=12.0)],
             (4, 5),
-            [
-                Place(5, amount=10.0),
-                Place(6, amount=12.0),
-                Place(8, amount=12.0),
-                PassLine(amount=5.0),
-            ],
+            [PassLine(amount=5.0)],
         ),
         (
             5,
@@ -3846,7 +3816,7 @@ from crapssim.table import Table, TableUpdate
             None,
             [Place(5, amount=10.0), Place(6, amount=12.0)],
             (5, 3),
-            [Place(5, amount=10.0), Place(6, amount=12.0), PassLine(amount=5.0)],
+            [PassLine(amount=5.0)],
         ),
         (
             4,
@@ -4095,12 +4065,7 @@ from crapssim.table import Table, TableUpdate
             None,
             [Place(5, amount=10.0), Place(8, amount=12.0), Place(6, amount=12.0)],
             (1, 3),
-            [
-                Place(5, amount=10.0),
-                Place(8, amount=12.0),
-                Place(6, amount=12.0),
-                PassLine(amount=5.0),
-            ],
+            [PassLine(amount=5.0)],
         ),
         (
             None,
@@ -4108,12 +4073,7 @@ from crapssim.table import Table, TableUpdate
             None,
             [Place(5, amount=10.0), Place(8, amount=12.0), Place(6, amount=12.0)],
             (2, 1),
-            [
-                Place(5, amount=10.0),
-                Place(8, amount=12.0),
-                Place(6, amount=12.0),
-                PassLine(amount=5.0),
-            ],
+            [PassLine(amount=5.0)],
         ),
         (
             6,
@@ -4323,7 +4283,7 @@ from crapssim.table import Table, TableUpdate
             None,
             [Place(5, amount=10.0), Place(8, amount=12.0)],
             (4, 2),
-            [Place(5, amount=10.0), Place(8, amount=12.0), PassLine(amount=5.0)],
+            [PassLine(amount=5.0)],
         ),
         (
             6,
