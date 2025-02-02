@@ -58,7 +58,9 @@ for i in range(n_sim):
         print(f"{i}, {p.name}, {p.bankroll}, {bankroll}, {table.dice.n_rolls}")
 ```
 
-For more advanced strategies, you can either write your own custom `Strategy` class or add strategy components together.  Some building blocks and examples can be found in the [strategy](https://github.com/skent259/crapssim/tree/main/crapssim/strategy) module. We plan to have a more detailed tutorial and more strategy examples available soon.
+For more advanced strategies, you can either write your own custom `Strategy` class or add strategy components together. To see the many possibilities, start with the tutorials on documentation site: 
+
+* [Tutorial 1: Starting off with strategies](https://skent259.github.io/crapssim/tutorial-strategy-01.html). 
 
 ## Installation
 
