@@ -227,11 +227,16 @@ class Table:
         """
 
         self._setup_run(verbose)
+        n_rolls_start = self.dice.n_rolls
+        # logic needs to count starting run as 0 shooters, not easy to set new_shooter in better way
+        n_shooter_start = self.n_shooters if self.n_shooters != 1 else 0
 
         continue_rolling = True
         while continue_rolling:
             TableUpdate().run(self, verbose=verbose)
-            continue_rolling = self.should_keep_rolling(max_rolls, max_shooter, runout)
+            continue_rolling = self.should_keep_rolling(
+                max_rolls + n_rolls_start, max_shooter + n_shooter_start, runout
+            )
             if not continue_rolling:
                 self.n_shooters -= 1  # count was added but this shooter never rolled
                 TableUpdate().print_player_summary(self, verbose=verbose)
