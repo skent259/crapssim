@@ -27,6 +27,7 @@ from crapssim.strategy.tools import (
     AddIfPointOn,
     AddIfTrue,
     Player,
+    RemoveIfPointOff,
     RemoveIfTrue,
     Strategy,
 )
@@ -38,6 +39,7 @@ class StrategyMode(enum.Enum):
     ADD_IF_POINT_ON = enum.auto()
     ADD_IF_NEW_SHOOTER = enum.auto()
     ADD_OR_INCREASE = enum.auto()
+    BET_IF_POINT_ON = enum.auto()
     REPLACE = enum.auto()
 
 
@@ -58,21 +60,26 @@ class _BaseSingleBet(Strategy):
         if not self.bet.is_allowed(player):
             return
 
-        if self.mode == StrategyMode.ADD_IF_NOT_BET:
-            AddIfNotBet(self.bet).update_bets(player)
-        elif self.mode == StrategyMode.ADD_IF_POINT_ON:
-            AddIfPointOn(self.bet).update_bets(player)
-        elif self.mode == StrategyMode.ADD_IF_POINT_OFF:
-            AddIfPointOff(self.bet).update_bets(player)
-        elif self.mode == StrategyMode.ADD_IF_NEW_SHOOTER:
-            AddIfNewShooter(self.bet).update_bets(player)
-        elif self.mode == StrategyMode.ADD_OR_INCREASE:
-            player.add_bet(self.bet)
-        elif self.mode == StrategyMode.REPLACE:
-            existing_bets = player.already_placed_bets(self.bet)
-            for bet in existing_bets:
-                player.remove_bet(bet)
-            player.add_bet(self.bet)
+        match self.mode:
+            case StrategyMode.ADD_IF_NOT_BET:
+                AddIfNotBet(self.bet).update_bets(player)
+            case StrategyMode.ADD_IF_POINT_ON:
+                AddIfPointOn(self.bet).update_bets(player)
+            case StrategyMode.ADD_IF_POINT_OFF:
+                AddIfPointOff(self.bet).update_bets(player)
+            case StrategyMode.ADD_IF_NEW_SHOOTER:
+                AddIfNewShooter(self.bet).update_bets(player)
+            case StrategyMode.ADD_OR_INCREASE:
+                player.add_bet(self.bet)
+            case StrategyMode.BET_IF_POINT_ON:
+                AddIfPointOn(self.bet).update_bets(player)
+                # If only betting when point on, also need to turn off when point off
+                RemoveIfPointOff(self.bet).update_bets(player)
+            case StrategyMode.REPLACE:
+                existing_bets = player.already_placed_bets(self.bet)
+                for bet in existing_bets:
+                    player.remove_bet(bet)
+                player.add_bet(self.bet)
 
     def __repr__(self) -> str:
         return (
@@ -88,7 +95,7 @@ class BetPlace(Strategy):
     def __init__(
         self,
         place_bet_amounts: dict[int, float],
-        mode: StrategyMode = StrategyMode.ADD_IF_POINT_ON,
+        mode: StrategyMode = StrategyMode.BET_IF_POINT_ON,
         skip_point: bool = True,
         skip_come: bool = False,
     ):

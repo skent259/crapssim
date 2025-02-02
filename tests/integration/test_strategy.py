@@ -21,6 +21,7 @@ from crapssim.strategy.examples import (
     Place68DontCome2Odds,
     Place68PR,
     Place682Come,
+    PlaceInside,
     Risk12,
 )
 from crapssim.strategy.single_bet import BetFire
@@ -350,7 +351,6 @@ def test_strategies_compare_bets(
 
 def test_strategies_in_simulation_persistent_features():
 
-    n_sim = 100
     bankroll = 100
     strategies = {"Fire 1": AddIfNewShooter(Fire(1)), "Fire 2": BetFire(1)}
 
@@ -391,3 +391,44 @@ def test_strategies_in_simulation_persistent_features():
         print(f"{p.name}, {p.bankroll}, {bankroll}, {table.dice.n_rolls}")
 
     assert p.bankroll == bankroll - 1
+
+
+def test_placeinside_with_betpointon():
+
+    bankroll = 100
+    strategy = PlaceInside(10)
+
+    # Simulation 1, point hit, then come-out seven, nothing should happen
+    outcomes = [
+        (2, 2),
+        (2, 2),
+        (1, 6),  # come-out seven, should not lose
+    ]
+    table = Table()
+    table.add_player(bankroll, strategy)
+
+    table.fixed_run(outcomes, verbose=False)
+    for p in table.players:
+        print(f"{p.name}, {p.bankroll}, {bankroll}, {table.dice.n_rolls}")
+
+    assert p.total_player_cash == bankroll
+    assert p.bets == []
+
+    # Simulation 2, point hit, then come-out seven, reset point and win one
+    outcomes = [
+        (2, 2),
+        (2, 2),
+        (1, 6),  # come-out seven, should not lose
+        (3, 3),
+        (4, 4),  # 8 wins
+        (1, 2),
+    ]
+    table = Table()
+    table.add_player(bankroll, strategy)
+
+    table.fixed_run(outcomes, verbose=True)
+    for p in table.players:
+        print(f"{p.name}, {p.bankroll}, {bankroll}, {table.dice.n_rolls}")
+
+    assert p.total_player_cash == bankroll + 14
+    assert len(p.bets) == 4

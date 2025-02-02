@@ -614,6 +614,24 @@ def test_base_single_bet_replace(player):
     player.add_bet.assert_called_once_with(PassLine(5))
 
 
+def test_base_single_bet_bet_point_on_when_point_on(player):
+    strategy = _BaseSingleBet(Place(4, 5), StrategyMode.BET_IF_POINT_ON)
+    player.table.point.number = 6
+    player.add_bet = MagicMock()
+    strategy.update_bets(player)
+    player.add_bet.assert_called_once_with(Place(4, 5))
+
+
+def test_base_single_bet_bet_point_on_when_point_off(player):
+    strategy = _BaseSingleBet(Place(4, 5), StrategyMode.BET_IF_POINT_ON)
+    player.table.point.number = None
+    player.bets = [Place(4, 5)]
+    player.add_bet = MagicMock()
+    player.remove_bet = MagicMock()
+    strategy.update_bets(player)
+    player.remove_bet.assert_called_once_with(Place(4, 5))
+
+
 def test_bet_place_remove_point_bet(player):
     strategy = BetPlace({5: 5})
     player.bets = [Place(5, 5)]
