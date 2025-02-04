@@ -14,6 +14,7 @@ from crapssim.bet import (
     Field,
     Fire,
     HardWay,
+    Hop,
     PassLine,
     Place,
     Three,
@@ -234,6 +235,25 @@ class BetHardWay(_BaseSingleBet):
     def __repr__(self) -> str:
         return (
             f"{self.__class__.__name__}({self.number}, bet_amount={self.bet.amount},"
+            f" mode={self.mode})"
+        )
+
+
+class BetHop(_BaseSingleBet):
+    def __init__(
+        self,
+        result: tuple[int, int],
+        bet_amount: typing.SupportsFloat,
+        mode=StrategyMode.ADD_IF_NOT_BET,
+    ):
+        if result[0] not in [1, 2, 3, 4, 5, 6] or result[1] not in [1, 2, 3, 4, 5, 6]:
+            raise NotImplementedError
+        self.result: tuple[int, int] = tuple(sorted(result))
+        super().__init__(Hop(result, bet_amount), mode=mode)
+
+    def __repr__(self) -> str:
+        return (
+            f"{self.__class__.__name__}({self.result}, bet_amount={self.bet.amount},"
             f" mode={self.mode})"
         )
 

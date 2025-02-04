@@ -1260,6 +1260,18 @@ def test_place_68_cpr_update_bets_initial_bets_placed_no_update(player):
             "BetHardWay(10, bet_amount=1.0, mode=StrategyMode.ADD_IF_NOT_BET)",
         ),
         (
+            crapssim.strategy.single_bet.BetHop([4, 5], 1),
+            "BetHop((4, 5), bet_amount=1.0, mode=StrategyMode.ADD_IF_NOT_BET)",
+        ),
+        (
+            crapssim.strategy.single_bet.BetHop([5, 4], 1),
+            "BetHop((4, 5), bet_amount=1.0, mode=StrategyMode.ADD_IF_NOT_BET)",
+        ),
+        (
+            crapssim.strategy.single_bet.BetHop((1, 1), 1),
+            "BetHop((1, 1), bet_amount=1.0, mode=StrategyMode.ADD_IF_NOT_BET)",
+        ),
+        (
             crapssim.strategy.single_bet.BetField(1),
             "BetField(bet_amount=1.0, mode=StrategyMode.ADD_IF_NOT_BET)",
         ),
