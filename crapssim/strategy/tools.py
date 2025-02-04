@@ -7,7 +7,7 @@ import typing
 from abc import ABC, abstractmethod
 from typing import Protocol
 
-from crapssim.bet import Bet, HardWay, Place
+from crapssim.bet import Bet, HardWay, Hop, Place
 from crapssim.dice import Dice
 from crapssim.point import Point
 
@@ -429,23 +429,31 @@ class RemoveIfPointOff(RemoveIfTrue):
     It will not consider bet amounts when matching."""
 
     def __init__(self, bet: Bet):
+        if not any([isinstance(bet, x) for x in [Place, HardWay, Hop]]):
+            key = (
+                lambda b, p: isinstance(b, type(self.bet))
+                and p.table.point.status == "Off"
+            )
+
         if isinstance(bet, Place):
             key = (
                 lambda b, p: isinstance(b, Place)
                 and b.number == self.bet.number
                 and p.table.point.status == "Off"
             )
-        elif isinstance(bet, HardWay):
+        if isinstance(bet, HardWay):
             key = (
                 lambda b, p: isinstance(b, HardWay)
                 and b.number == self.bet.number
                 and p.table.point.status == "Off"
             )
-        else:
+        if isinstance(bet, Hop):
             key = (
-                lambda b, p: isinstance(b, type(self.bet))
+                lambda b, p: isinstance(b, Hop)
+                and b.result == self.bet.result
                 and p.table.point.status == "Off"
             )
+
         super().__init__(key)
         self.bet = bet
 

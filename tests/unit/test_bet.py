@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 
 import crapssim.bet
-from crapssim.bet import Bet, CAndE, Come, DontCome, Odds, PassLine
+from crapssim.bet import Bet, CAndE, Come, DontCome, Hop, Odds, PassLine
 from crapssim.point import Point
 from crapssim.table import Table
 
@@ -30,6 +30,9 @@ from crapssim.table import Table
         (crapssim.bet.HardWay(6, 1), -0.0278),
         (crapssim.bet.HardWay(8, 1), -0.0278),
         (crapssim.bet.HardWay(10, 1), -0.0278),
+        (crapssim.bet.Hop([2, 3], 1), -0.1111),
+        (crapssim.bet.Hop([3, 2], 1), -0.1111),
+        (crapssim.bet.Hop([3, 3], 1), -0.1389),
     ],
 )
 def test_ev_oneroll(bet, ev):
@@ -91,6 +94,9 @@ def test_ev_oneroll(bet, ev):
         (crapssim.bet.HardWay(6, 1), "HardWay(6, amount=1.0)"),
         (crapssim.bet.HardWay(8, 1), "HardWay(8, amount=1.0)"),
         (crapssim.bet.HardWay(10, 1), "HardWay(10, amount=1.0)"),
+        (crapssim.bet.Hop((2, 3), 1), "Hop((2, 3), amount=1.0)"),
+        (crapssim.bet.Hop((3, 2), 1), "Hop((2, 3), amount=1.0)"),
+        (crapssim.bet.Hop((3, 3), 1), "Hop((3, 3), amount=1.0)"),
         (crapssim.bet.Fire(1), "Fire(amount=1.0)"),
         (crapssim.bet.All(1), "All(amount=1.0)"),
         (crapssim.bet.Tall(1), "Tall(amount=1.0)"),
@@ -234,3 +240,21 @@ def test_come_odds_not_is_allowed():
     table.players[0].bets = [come_bet]
     bet = Odds(Come, 6, 9000)
     assert bet.is_allowed(table.players[0]) is False
+
+
+def test_hop_equality():
+    hop_one = Hop((2, 3), 1)
+    hop_two = Hop((2, 3), 1)
+    hop_three = Hop((3, 2), 1)
+
+    assert hop_one == hop_two
+    assert hop_one == hop_three
+
+
+def test_hop_inequality():
+    hop_one = Hop((4, 3), 1)
+    hop_two = Hop((2, 3), 1)
+    hop_three = Hop((4, 4), 1)
+
+    assert hop_one != hop_two
+    assert hop_one != hop_three
