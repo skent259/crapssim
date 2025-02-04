@@ -545,7 +545,7 @@ class Hop(Bet):
 
     def get_result(self, table: Table) -> BetResult:
         if table.dice.result in self.winning_results:
-            result_amount = self.payout_ratio * self.amount + self.amount
+            result_amount = self.payout_ratio(table) * self.amount + self.amount
             should_remove = True
         else:
             result_amount = -1 * self.amount
@@ -553,18 +553,19 @@ class Hop(Bet):
         return BetResult(result_amount, should_remove)
 
     @property
-    def winning_results(self) -> list[tuple[int, int]]:
-        if self.result[0] == self.result[1]:
-            return [self.result]
-        else:
-            return [self.result, self.result[::-1]]
+    def is_easy(self) -> bool:
+        return self.result[0] != self.result[1]
 
     @property
-    def payout_ratio(self, table: Table) -> int:
-        if self.result[0] == self.result[1]:
-            return table.settings["hop_payouts"]["hard"]
+    def winning_results(self) -> list[tuple[int, int]]:
+        if self.is_easy:
+            return [self.result, self.result[::-1]]
         else:
-            return table.settings["hop_payouts"]["easy"]
+            return [self.result]
+
+    def payout_ratio(self, table: Table) -> int:
+        payout_type = "easy" if self.is_easy else "hard"
+        return table.settings["hop_payouts"][payout_type]
 
     @property
     def _placed_key(self) -> typing.Hashable:
