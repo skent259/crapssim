@@ -11,6 +11,23 @@ from crapssim.bet import Bet, HardWay, Hop, Place
 from crapssim.dice import Dice
 from crapssim.point import Point
 
+__all__ = [
+    "Strategy",
+    "AggregateStrategy",
+    "NullStrategy",
+    "AddIfTrue",
+    "RemoveIfTrue",
+    "ReplaceIfTrue",
+    "AddIfNotBet",
+    "AddIfPointOff",
+    "AddIfPointOn",
+    "AddIfNewShooter",
+    "CountStrategy",
+    "RemoveIfPointOff",
+    "RemoveByType",
+    "WinProgression",
+]
+
 
 class Table(Protocol):
     """Table functionality needed for strategy module."""

@@ -7,6 +7,8 @@ from .bet import Bet, BetResult
 from .point import Point
 from .strategy import BetPassLine, Strategy
 
+__all__ = ["TableUpdate", "TableSettings", "Table", "Player"]
+
 
 class TableUpdate:
     """Object for processing a table after the dice has been rolled."""
@@ -99,6 +101,14 @@ class TableUpdate:
 
 
 class TableSettings(typing.TypedDict):
+    """
+    Table settings including payouts and max odds.
+
+    This controls the payouts for the ATS (All, Tall, Small), Field,
+    Fire, and Hop bets. This also controls the maximum allowable odds
+    for the table (both for light-side and dark-side bets).
+    """
+
     ATS_payouts: dict[str, int]  # {"all": 150, "tall": 30, "small": 30}
     field_payouts: dict[int, int]  # {2: 2, 3: 1, 4: 1, 9: 1, 10: 1, 11: 1, 12: 2}
     fire_payouts: dict[int, int]  # {4: 24, 5: 249, 6: 999}

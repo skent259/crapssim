@@ -21,6 +21,7 @@ class Dice:
     def __init__(self, seed=None) -> None:
         self._result: typing.Iterable[int] | None = None
         self.n_rolls: int = 0
+        """Number of rolls for the dice"""
         self.rng = np.random.default_rng(seed)
 
     @property

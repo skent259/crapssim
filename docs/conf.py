@@ -65,4 +65,16 @@ html_theme = "sphinx_rtd_theme"
 html_static_path = ["_static"]
 
 # See https://github.com/sphinx-doc/sphinx/issues/4961
-autodoc_default_options = {"ignore-module-all": True}
+autodoc_default_options = {
+    "ignore-module-all": True,
+    # "exclude-members": "HiddenClass",
+}
+# autoapi_options = [
+#     "members",
+#     # "undoc-members",
+#     # "private-members",
+#     "show-inheritance",
+#     "show-module-summary",
+#     "special-members",
+#     "imported-members",
+# ]
