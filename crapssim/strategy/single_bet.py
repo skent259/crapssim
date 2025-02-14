@@ -5,6 +5,7 @@ import enum
 import typing
 
 from crapssim.bet import (
+    All,
     Any7,
     Bet,
     Boxcars,
@@ -17,6 +18,8 @@ from crapssim.bet import (
     Hop,
     PassLine,
     Place,
+    Small,
+    Tall,
     Three,
     Two,
     Yo,
@@ -315,3 +318,18 @@ class BetBoxcars(_BaseSingleBet):
 class BetFire(_BaseSingleBet):
     def __init__(self, bet_amount: float, mode=StrategyMode.ADD_IF_NOT_BET):
         super().__init__(Fire(bet_amount), mode=mode)
+
+
+class BetAll(_BaseSingleBet):
+    def __init__(self, bet_amount: float, mode=StrategyMode.ADD_IF_NOT_BET):
+        super().__init__(All(bet_amount), mode=mode)
+
+
+class BetTall(_BaseSingleBet):
+    def __init__(self, bet_amount: float, mode=StrategyMode.ADD_IF_NOT_BET):
+        super().__init__(Tall(bet_amount), mode=mode)
+
+
+class BetSmall(_BaseSingleBet):
+    def __init__(self, bet_amount: float, mode=StrategyMode.ADD_IF_NOT_BET):
+        super().__init__(Small(bet_amount), mode=mode)

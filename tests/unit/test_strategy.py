@@ -1299,6 +1299,18 @@ def test_place_68_cpr_update_bets_initial_bets_placed_no_update(player):
             crapssim.strategy.single_bet.BetFire(1),
             "BetFire(bet_amount=1.0, mode=StrategyMode.ADD_IF_NOT_BET)",
         ),
+        (
+            crapssim.strategy.single_bet.BetAll(1),
+            "BetAll(bet_amount=1.0, mode=StrategyMode.ADD_IF_NOT_BET)",
+        ),
+        (
+            crapssim.strategy.single_bet.BetTall(1),
+            "BetTall(bet_amount=1.0, mode=StrategyMode.ADD_IF_NOT_BET)",
+        ),
+        (
+            crapssim.strategy.single_bet.BetSmall(1),
+            "BetSmall(bet_amount=1.0, mode=StrategyMode.ADD_IF_NOT_BET)",
+        ),
         # Example strategies
         (crapssim.strategy.examples.Pass2Come(1), "Pass2Come(amount=1.0)"),
         (

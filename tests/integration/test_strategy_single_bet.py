@@ -2,6 +2,7 @@ import pytest
 
 from crapssim import Table
 from crapssim.bet import (
+    All,
     Any7,
     Bet,
     Boxcars,
@@ -15,16 +16,21 @@ from crapssim.bet import (
     Odds,
     PassLine,
     Place,
+    Small,
+    Tall,
     Three,
     Two,
     Yo,
 )
 from crapssim.strategy.single_bet import (
+    BetAll,
     BetAny7,
     BetBoxcars,
     BetFire,
     BetHardWay,
     BetHop,
+    BetSmall,
+    BetTall,
     BetThree,
     BetTwo,
     BetYo,
@@ -49,6 +55,9 @@ from crapssim.table import TableUpdate
         (BetYo(bet_amount=5), [], [Yo(amount=5.0)]),
         (BetBoxcars(bet_amount=5), [], [Boxcars(amount=5.0)]),
         (BetFire(bet_amount=5), [], [Fire(amount=5.0)]),
+        (BetAll(bet_amount=5), [], [All(amount=5.0)]),
+        (BetTall(bet_amount=5), [], [Tall(amount=5.0)]),
+        (BetSmall(bet_amount=5), [], [Small(amount=5.0)]),
     ],
 )
 def test_strategies_compare_bets(
