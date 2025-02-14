@@ -78,3 +78,6 @@ autodoc_default_options = {
 #     "special-members",
 #     "imported-members",
 # ]
+
+napoleon_include_private_with_doc = False
+napoleon_include_special_with_doc = False
