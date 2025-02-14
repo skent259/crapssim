@@ -1,6 +1,20 @@
 # Changelog
 
-<!--next-version-placeholder-->
+## v0.3.1
+
+### What's Changed
+* **BREAKING**: Rename strategy tools and implement new strategy modes by @skent259 in https://github.com/skent259/crapssim/pull/55
+  * Renamed many strategy tools. In addition, breaking change in functionality of BetPlace, and any strategy that uses BetPlace (including PlaceInside, IronCross, Hammerlock, Risk12, Place68DontCome2Odds). To keep old behavior, you need to update to BetPlace(..., strategy_mode=StrategyMode.ADD_IF_POINT_ON) for the corresponding strategy. This will have place bets working during come-out rolls.
+  * Fixes PlaceInside strategy is slightly off from table conventions #52
+* Add hop bets by @skent259 in https://github.com/skent259/crapssim/pull/56
+* Improve printout for verbose table run in 850889453435aa4b2fe09c1abb4b6c0ec6b291ff, #49 
+* Fix Simple Bets and BetIfTrue not working on Bets with persistent features (on multi sims) https://github.com/skent259/crapssim/issues/48
+* Fix Table does not run properly on second call https://github.com/skent259/crapssim/issues/53
+* Add BetAll, BetTall, BetSmall strategies by @skent259 in https://github.com/skent259/crapssim/pull/57
+* Improve documentation by @skent259 in https://github.com/skent259/crapssim/pull/50
+
+
+**Full Changelog**: https://github.com/skent259/crapssim/compare/v0.3.0...v0.3.1
 
 ## v0.3.0 (2024/12/01)
 
