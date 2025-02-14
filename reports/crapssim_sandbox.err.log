@@ -1,0 +1,71 @@
+Traceback (most recent call last):
+  File "/home/runner/.local/lib/python3.12/site-packages/jupyter_cache/executors/utils.py", line 58, in single_nb_execution
+    executenb(
+  File "/home/runner/.local/lib/python3.12/site-packages/nbclient/client.py", line 1319, in execute
+    return NotebookClient(nb=nb, resources=resources, km=km, **kwargs).execute()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/.local/lib/python3.12/site-packages/jupyter_core/utils/__init__.py", line 165, in wrapped
+    return loop.run_until_complete(inner)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/asyncio/base_events.py", line 687, in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+  File "/home/runner/.local/lib/python3.12/site-packages/nbclient/client.py", line 709, in async_execute
+    await self.async_execute_cell(
+  File "/home/runner/.local/lib/python3.12/site-packages/nbclient/client.py", line 1062, in async_execute_cell
+    await self._check_raise_for_error(cell, cell_index, exec_reply)
+  File "/home/runner/.local/lib/python3.12/site-packages/nbclient/client.py", line 918, in _check_raise_for_error
+    raise CellExecutionError.from_cell_and_msg(cell, exec_reply_content)
+nbclient.exceptions.CellExecutionError: An error occurred while executing the following cell:
+------------------
+!pip install crapssim
+import crapssim as craps
+from crapssim.strategy import *
+from crapssim.strategy.examples import PlaceInside, IronCross, HammerLock, Risk12, Knockout, DiceDoctor
+
+import numpy as np
+import pandas as pd
+from plotnine import *
+------------------
+
+----- stdout -----
+Defaulting to user installation because normal site-packages is not writeable
+----- stdout -----
+Collecting crapssim
+----- stdout -----
+  Downloading crapssim-0.3.0-py3-none-any.whl.metadata (5.3 kB)
+----- stdout -----
+Collecting numpy>=1.18.0 (from crapssim)
+  Downloading numpy-2.2.3-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (62 kB)
+[?25l     [90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m [32m0.0/62.0 kB[0m [31m?[0m eta [36m-:--:--[0m
+----- stdout -----
+[2K     [90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m [32m62.0/62.0 kB[0m [31m3.2 MB/s[0m eta [36m0:00:00[0m
+[?25hDownloading crapssim-0.3.0-py3-none-any.whl (72 kB)
+[?25l   [90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m [32m0.0/72.5 kB[0m [31m?[0m eta [36m-:--:--[0m[2K   [90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m [32m72.5/72.5 kB[0m [31m12.1 MB/s[0m eta [36m0:00:00[0m
+[?25h
+----- stdout -----
+Downloading numpy-2.2.3-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (16.1 MB)
+[?25l   [90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m [32m0.0/16.1 MB[0m [31m?[0m eta [36m-:--:--[0m[2K   [91m━━[0m[91m╸[0m[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m [32m1.0/16.1 MB[0m [31m32.6 MB/s[0m eta [36m0:00:01[0m
+----- stdout -----
+[2K   [91m━━━━━━━━━━━━━━[0m[90m╺[0m[90m━━━━━━━━━━━━━━━━━━━━━━━━━[0m [32m5.7/16.1 MB[0m [31m85.6 MB/s[0m eta [36m0:00:01[0m
+----- stdout -----
+[2K   [91m━━━━━━━━━━━━━━━━━━━━━━━━━[0m[91m╸[0m[90m━━━━━━━━━━━━━━[0m [32m10.3/16.1 MB[0m [31m99.5 MB/s[0m eta [36m0:00:01[0m
+----- stdout -----
+[2K   [91m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m[91m╸[0m [32m16.1/16.1 MB[0m [31m197.8 MB/s[0m eta [36m0:00:01[0m[2K   [90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[0m [32m16.1/16.1 MB[0m [31m119.2 MB/s[0m eta [36m0:00:00[0m
+[?25h
+----- stdout -----
+Installing collected packages: numpy, crapssim
+----- stdout -----
+Successfully installed crapssim-0.3.0 numpy-2.2.3
+------------------
+
+[0;31m---------------------------------------------------------------------------[0m
+[0;31mModuleNotFoundError[0m                       Traceback (most recent call last)
+Cell [0;32mIn[1], line 7[0m
+[1;32m      4[0m [38;5;28;01mfrom[39;00m [38;5;21;01mcrapssim[39;00m[38;5;21;01m.[39;00m[38;5;21;01mstrategy[39;00m[38;5;21;01m.[39;00m[38;5;21;01mexamples[39;00m [38;5;28;01mimport[39;00m PlaceInside, IronCross, HammerLock, Risk12, Knockout, DiceDoctor
+[1;32m      6[0m [38;5;28;01mimport[39;00m [38;5;21;01mnumpy[39;00m [38;5;28;01mas[39;00m [38;5;21;01mnp[39;00m
+[0;32m----> 7[0m [38;5;28;01mimport[39;00m [38;5;21;01mpandas[39;00m [38;5;28;01mas[39;00m [38;5;21;01mpd[39;00m
+[1;32m      8[0m [38;5;28;01mfrom[39;00m [38;5;21;01mplotnine[39;00m [38;5;28;01mimport[39;00m [38;5;241m*[39m
+
+[0;31mModuleNotFoundError[0m: No module named 'pandas'
+

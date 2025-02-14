@@ -1,0 +1,56 @@
+Traceback (most recent call last):
+  File "/home/runner/.local/lib/python3.12/site-packages/jupyter_cache/executors/utils.py", line 58, in single_nb_execution
+    executenb(
+  File "/home/runner/.local/lib/python3.12/site-packages/nbclient/client.py", line 1319, in execute
+    return NotebookClient(nb=nb, resources=resources, km=km, **kwargs).execute()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/.local/lib/python3.12/site-packages/jupyter_core/utils/__init__.py", line 165, in wrapped
+    return loop.run_until_complete(inner)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/asyncio/base_events.py", line 687, in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+  File "/home/runner/.local/lib/python3.12/site-packages/nbclient/client.py", line 709, in async_execute
+    await self.async_execute_cell(
+  File "/home/runner/.local/lib/python3.12/site-packages/nbclient/client.py", line 1062, in async_execute_cell
+    await self._check_raise_for_error(cell, cell_index, exec_reply)
+  File "/home/runner/.local/lib/python3.12/site-packages/nbclient/client.py", line 918, in _check_raise_for_error
+    raise CellExecutionError.from_cell_and_msg(cell, exec_reply_content)
+nbclient.exceptions.CellExecutionError: An error occurred while executing the following cell:
+------------------
+from crapssim.strategy.single_bet import BetPlace, StrategyMode
+
+table = craps.Table(seed=1234)
+
+strategies = [
+    BetPlace({6: 12, 8: 12}, skip_point=False),
+    BetPlace({5: 10, 6: 12, 8: 12, 9: 10}, skip_point=True),
+    BetPlace({4: 10, 5: 10, 6: 12, 8: 24, 9: 20, 10: 20}, mode=StrategyMode.ADD_IF_NOT_BET, skip_point=False)
+]
+
+for i, s in enumerate(strategies):
+    table.add_player(strategy=s, bankroll=200, name = f"Player {i+1}")
+    
+table.run(max_rolls=10, verbose=True)
+
+print("\nFINAL RESULTS")
+for p in table.players:
+    print(f"  {p.name}: Bankroll=${p.bankroll}")
+------------------
+
+
+[0;31m---------------------------------------------------------------------------[0m
+[0;31mAttributeError[0m                            Traceback (most recent call last)
+Cell [0;32mIn[4], line 8[0m
+[1;32m      1[0m [38;5;28;01mfrom[39;00m [38;5;21;01mcrapssim[39;00m[38;5;21;01m.[39;00m[38;5;21;01mstrategy[39;00m[38;5;21;01m.[39;00m[38;5;21;01msingle_bet[39;00m [38;5;28;01mimport[39;00m BetPlace, StrategyMode
+[1;32m      3[0m table [38;5;241m=[39m craps[38;5;241m.[39mTable(seed[38;5;241m=[39m[38;5;241m1234[39m)
+[1;32m      5[0m strategies [38;5;241m=[39m [
+[1;32m      6[0m     BetPlace({[38;5;241m6[39m: [38;5;241m12[39m, [38;5;241m8[39m: [38;5;241m12[39m}, skip_point[38;5;241m=[39m[38;5;28;01mFalse[39;00m),
+[1;32m      7[0m     BetPlace({[38;5;241m5[39m: [38;5;241m10[39m, [38;5;241m6[39m: [38;5;241m12[39m, [38;5;241m8[39m: [38;5;241m12[39m, [38;5;241m9[39m: [38;5;241m10[39m}, skip_point[38;5;241m=[39m[38;5;28;01mTrue[39;00m),
+[0;32m----> 8[0m     BetPlace({[38;5;241m4[39m: [38;5;241m10[39m, [38;5;241m5[39m: [38;5;241m10[39m, [38;5;241m6[39m: [38;5;241m12[39m, [38;5;241m8[39m: [38;5;241m24[39m, [38;5;241m9[39m: [38;5;241m20[39m, [38;5;241m10[39m: [38;5;241m20[39m}, mode[38;5;241m=[39m[43mStrategyMode[49m[38;5;241;43m.[39;49m[43mADD_IF_NOT_BET[49m, skip_point[38;5;241m=[39m[38;5;28;01mFalse[39;00m)
+[1;32m      9[0m ]
+[1;32m     11[0m [38;5;28;01mfor[39;00m i, s [38;5;129;01min[39;00m [38;5;28menumerate[39m(strategies):
+[1;32m     12[0m     table[38;5;241m.[39madd_player(strategy[38;5;241m=[39ms, bankroll[38;5;241m=[39m[38;5;241m200[39m, name [38;5;241m=[39m [38;5;124mf[39m[38;5;124m"[39m[38;5;124mPlayer [39m[38;5;132;01m{[39;00mi[38;5;241m+[39m[38;5;241m1[39m[38;5;132;01m}[39;00m[38;5;124m"[39m)
+
+[0;31mAttributeError[0m: type object 'StrategyMode' has no attribute 'ADD_IF_NOT_BET'
+

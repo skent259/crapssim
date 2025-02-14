@@ -1,0 +1,497 @@
+crapssim.strategy.examples
+==========================
+
+.. py:module:: crapssim.strategy.examples
+
+.. autoapi-nested-parse::
+
+   The strategies included in this module are completed strategies that are runnable by the player
+   in order to do the intended
+
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   crapssim.strategy.examples.Pass2Come
+   crapssim.strategy.examples.PassLinePlace68
+   crapssim.strategy.examples.PlaceInside
+   crapssim.strategy.examples.Place68Move59
+   crapssim.strategy.examples.PassLinePlace68Move59
+   crapssim.strategy.examples.Place682Come
+   crapssim.strategy.examples.IronCross
+   crapssim.strategy.examples.HammerLock
+   crapssim.strategy.examples.Risk12
+   crapssim.strategy.examples.Knockout
+   crapssim.strategy.examples.DiceDoctor
+   crapssim.strategy.examples.Place68PR
+   crapssim.strategy.examples.Place68DontCome2Odds
+
+
+Module Contents
+---------------
+
+.. py:class:: Pass2Come(bet_amount: float)
+
+   Bases: :py:obj:`crapssim.strategy.tools.AggregateStrategy`
+
+
+   Places a PassLine bet and two Come bets. Equivalent to BetPassLine(amount) +
+   CountStrategy(Come, 2, Come(amount))
+
+
+   .. py:attribute:: bet_amount
+      :type:  float
+
+
+   .. py:method:: __repr__() -> str
+
+
+.. py:class:: PassLinePlace68(pass_line_amount: float = 5, six_amount: float = 6, eight_amount: float = 6, skip_point: bool = True)
+
+   Bases: :py:obj:`crapssim.strategy.tools.AggregateStrategy`
+
+
+   Bet the PassLine and Place the 6 and the 8. Equivalent to: BetPassLine(pass_line_amount) +
+   BetPlace({6: six_amount, 8: eight_amount}, skip_point=skip_point)
+
+
+   .. py:attribute:: pass_line_amount
+
+
+   .. py:attribute:: six_amount
+
+
+   .. py:attribute:: eight_amount
+
+
+   .. py:attribute:: skip_point
+      :value: True
+
+
+
+   .. py:method:: __repr__() -> str
+
+
+.. py:class:: PlaceInside(bet_amount: SupportsFloat | dict[int, float])
+
+   Bases: :py:obj:`crapssim.strategy.tools.AggregateStrategy`
+
+
+   Strategy to have Place bets on all the inside (5, 6, 8, 9) numbers.
+   Equivalent to BetPlace({5: x, 6: 6/5*x, 8: 6/5*x, 9: x})
+
+
+   .. py:method:: __repr__() -> str
+
+
+.. py:class:: Place68Move59(pass_come_amount: float = 5, six_eight_amount: float = 6, five_nine_amount: float = 5)
+
+   Bases: :py:obj:`crapssim.strategy.tools.Strategy`
+
+
+   Strategy that makes place bets on the six and eight, and then if a PassLine or Come bet with
+   that point comes up, moves the place bet to 5 or 9.
+
+
+   .. py:attribute:: pass_come_amount
+
+
+   .. py:attribute:: six_eight_amount
+
+
+   .. py:attribute:: five_nine_amount
+
+
+   .. py:method:: completed(player: crapssim.strategy.tools.Player) -> bool
+
+      The strategy is completed if the player has no bets on the table, and the players
+      bankroll is too low to make any of the other bets.
+
+      :param player: The Player whose bankroll and bets to check.
+
+      :rtype: True if the strategy can't continue, otherwise False.
+
+
+
+   .. py:method:: get_pass_line_come_points(player: crapssim.strategy.tools.Player) -> list[int]
+
+      Get the point number (or the table point number in the case of PassLine) for any PassLine
+      or Come bets on the table.
+
+      :param player: The player to check the bets for.
+
+      :rtype: A list of integers of the points for the PassLine and Come bets.
+
+
+
+   .. py:method:: update_bets(player: crapssim.strategy.tools.Player) -> None
+
+      Do nothing if the point status is Off, otherwise go through the numbers 6, 8, 5 and 9.
+      If the player has both a PassLine or Come bet for that number and a Place bet, remove the
+      Place bet, otherwise move on to the next number. If the player doesn't have a PassLine or
+      Come bet for that number, and the place bet for that number isn't already on the table,
+      make a Place bet for that number.
+
+      :param player: The player to check on bets and add bets for.
+
+
+
+   .. py:method:: __repr__() -> str
+
+
+.. py:class:: PassLinePlace68Move59(pass_line_amount: float = 5, six_eight_amount: float = 6, five_nine_amount: float = 5)
+
+   Bases: :py:obj:`crapssim.strategy.tools.AggregateStrategy`
+
+
+   Strategy that makes a PassLine bet, makes Place bets on the six and eight, and then moves
+   them back to the 5 and 9 if the point for the PassLine (also the tables point) is six or
+   eight. Equivalent to BetPassLine(pass_line_amount) + Place68Move59(pass_line_amount,
+   six_eight_amount, five_nine_amount).
+
+
+   .. py:attribute:: pass_line_amount
+
+
+   .. py:attribute:: six_eight_amount
+
+
+   .. py:attribute:: five_nine_amount
+
+
+   .. py:method:: __repr__() -> str
+
+
+.. py:class:: Place682Come(pass_come_amount: float = 5, six_eight_amount: float = 6, five_nine_amount: float = 5, *strategies: crapssim.strategy.tools.Strategy)
+
+   Bases: :py:obj:`crapssim.strategy.tools.AggregateStrategy`
+
+
+   Strategy that bets the PassLine if the point is off and there are less than 4 bets on the
+   table. If the point is On, places the 6 and 8 and if there are less than 2 Come bets on the
+   table and less than 4 bets overall places a Come bet.
+
+
+   .. py:attribute:: pass_come_amount
+
+
+   .. py:attribute:: six_eight_amount
+
+
+   .. py:attribute:: five_nine_amount
+
+
+   .. py:method:: update_bets(player: crapssim.strategy.tools.Player) -> None
+
+      If the player has less than 2 PassLine and Come bets, make the bet (depending on whether
+      the point is on or off.) If the point is on, place the 6 and 8 unless there is a PassLine or
+      Come bet with those then move them to the 5 or 9.
+
+      :param player: The player to check on and make the bets for.
+
+
+
+   .. py:method:: __repr__() -> str
+
+
+.. py:class:: IronCross(base_amount: float)
+
+   Bases: :py:obj:`crapssim.strategy.tools.AggregateStrategy`
+
+
+   Strategy that bets the PassLine, bets the PassLine Odds, and bets Place on the 5, 6, and 8.
+   If the point is on and there is no bet on the field, place a bet on the field. Equivalent to:
+   BetPassLine(...) + PassLineOddsMultiplier(2), + BetPlace({...}) + AddIfPointOn(Field(...))
+
+
+   .. py:attribute:: base_amount
+
+
+   .. py:method:: __repr__() -> str
+
+
+.. py:class:: HammerLock(base_amount: float)
+
+   Bases: :py:obj:`crapssim.strategy.tools.Strategy`
+
+
+   Strategy that makes a PassLine bet and a DontPass bet when the point is off. Once the point
+   is on, adds LayOdds to the DontPass bet, and Places the 6 and 8. If either of those place bets
+   win, shifts the bets outside to the 5, 6, 8, and 9. If one of those wins, all place bets get
+   taken down.
+
+
+   .. py:attribute:: base_amount
+
+
+   .. py:attribute:: start_six_eight_amount
+
+
+   .. py:attribute:: end_six_eight_amount
+
+
+   .. py:attribute:: five_nine_amount
+
+
+   .. py:attribute:: odds_multiplier
+      :value: 6
+
+
+
+   .. py:attribute:: place_win_count
+      :type:  int
+      :value: 0
+
+
+
+   .. py:method:: completed(player: crapssim.strategy.tools.Player) -> bool
+
+      The strategy is completed if the player can no longer make the initial PassLine bet
+      because their bankroll is too low, and they have no more bets on the table.
+
+      :param player:
+
+
+
+   .. py:method:: after_roll(player: crapssim.strategy.tools.Player) -> None
+
+      Update the place_win_count based on how many Place bets are won. If table.point.status is
+      On and the dice total is 7 (meaning the shooter sevens out) reset place_win_count to 0.
+
+      :param player:
+
+
+
+   .. py:method:: update_bets(player: crapssim.strategy.tools.Player) -> None
+
+      If the point is off bet the PassLine and DontPass line. If the point is on bet the
+      Place6 and Place8 until one wins, then bet the Place 5, 6, 8, and 9. LayOdds whenever
+      possible.
+
+      :param player: Player to place the bets for.
+
+
+
+   .. py:method:: pass_and_dontpass(player: crapssim.strategy.tools.Player) -> None
+
+      Update bets when point is Off: add a PassLine and a DontPass bet if they don't already exist.
+
+
+
+   .. py:method:: place68(player: crapssim.strategy.tools.Player) -> None
+
+      Update bets to Place the 6 and 8 (regardless of the point) and then lay odds on DontPass bets.
+
+
+
+   .. py:method:: place5689(player: crapssim.strategy.tools.Player) -> None
+
+      Update bets to Place the 5, 6, 8 and 9.
+
+
+
+   .. py:method:: __repr__() -> str
+
+
+.. py:class:: Risk12
+
+   Bases: :py:obj:`crapssim.strategy.tools.Strategy`
+
+
+   Strategy that makes a PassLine and Field bet before the point is established. Once the point
+   is established, places either the 6 the 8, or both depending on if the player won enough
+   pre-point to cover those bets.
+
+
+   .. py:attribute:: pre_point_winnings
+      :type:  float
+      :value: 0.0
+
+
+
+   .. py:method:: completed(player: crapssim.strategy.tools.Player) -> bool
+
+      The strategy is completed if the Player can no longer make the initial PassLine bet, and
+      the player has no bets on the table.
+
+      :param player: The player to check the bets and bankroll for.
+
+      :rtype: True if the player can no longer continue the strategy, otherwise False.
+
+
+
+   .. py:method:: after_roll(player: crapssim.strategy.tools.Player) -> None
+
+      Determine the pre-point winnings which is used to determine which bets to place when the
+      point is on.
+
+      :param player: The player to check the bets for.
+
+
+
+   .. py:method:: point_off(player: crapssim.strategy.tools.Player) -> None
+      :staticmethod:
+
+
+      Place a 5 PassLine and Field bet.
+
+      :param player: The player to check the bets for.
+
+
+
+   .. py:method:: point_on(player: crapssim.strategy.tools.Player) -> None
+
+      If your winnings were enough to cover the place bets (throwing in another dollar for
+      each) make the place bets.
+
+      :param player: The player to place the bets for.
+
+
+
+   .. py:method:: update_bets(player: crapssim.strategy.tools.Player) -> None
+
+      If the point is off make a Field and PassLine bet. If the point is on
+      Place the 6 and 8 if you made enough pre-point to cover the bets.
+
+      :param player: The player to make the bets for.
+
+
+
+.. py:class:: Knockout(base_amount: SupportsFloat)
+
+   Bases: :py:obj:`crapssim.strategy.tools.AggregateStrategy`
+
+
+   PassLine and Don't bet prior to point, 345x PassLine Odds after point.
+
+   Equivalent to:
+   BetPassLine(amount) + AddIfPointOff(DontPass(amount)) +
+   PassLineOddsMultiplier({4: 3, 5: 4, 6: 5, 8: 5, 9: 4, 10: 3})
+
+
+   .. py:attribute:: base_amount
+
+
+   .. py:method:: __repr__() -> str
+
+
+.. py:class:: DiceDoctor(base_amount: float = 10)
+
+   Bases: :py:obj:`crapssim.strategy.tools.WinProgression`
+
+
+   Field progression strategy with progressive increases and decreases. Equivalent to:
+   FieldWinProgression([10, 20, 15, 30, 25, 50, 35, 70, 50, 100, 75, 150])
+
+
+   .. py:attribute:: base_amount
+
+
+   .. py:method:: __repr__() -> str
+
+
+.. py:class:: Place68PR(base_amount: float = 6)
+
+   Bases: :py:obj:`crapssim.strategy.tools.Strategy`
+
+
+   Place 6 and 8 with a "Press and Regress" approach. Strategy that places the 6 and 8.
+   If either of those bets win, the bet is pressed to 2 * the bet amount. If the bet is won again,
+   it is reduced to the original bet amount.
+
+
+   .. py:attribute:: base_amount
+
+
+   .. py:attribute:: starting_amount
+
+
+   .. py:attribute:: press_amount
+
+
+   .. py:attribute:: win_one_amount
+      :value: 7.0
+
+
+
+   .. py:attribute:: win_two_amount
+      :value: 14.0
+
+
+
+   .. py:attribute:: six_winnings
+      :value: 0.0
+
+
+
+   .. py:attribute:: eight_winnings
+      :value: 0.0
+
+
+
+   .. py:method:: completed(player: crapssim.strategy.tools.Player) -> bool
+
+      Returns True if the players bankroll is below the bet amount and the player no longer
+      has bets on the table.
+
+      :param player:
+
+
+
+   .. py:method:: after_roll(player: crapssim.strategy.tools.Player) -> None
+
+      Get the winnings on the Place 6 and 8 bets to determine whether to press or regress.
+
+      :param player: The player to check the bets for.
+
+
+
+   .. py:method:: ensure_bets_exist(player: crapssim.strategy.tools.Player) -> None
+
+      Ensure that there is always a place 6 or place 8 bet if the point is On.
+
+      :param player: The player to place the bets for.
+
+
+
+   .. py:method:: press(player: crapssim.strategy.tools.Player) -> None
+
+      Double the bet amount of the place bets.
+
+      :param player: The player to make the bets for.
+
+
+
+   .. py:method:: update_bets(player: crapssim.strategy.tools.Player) -> None
+
+      Ensure that a Place6 and Place8 bet always exist for the player of base amount.
+      Press the bet if you win and haven't pressed the bet yet.
+
+      :param player: The player to place the bets for.
+
+
+
+   .. py:method:: __repr__() -> str
+
+
+.. py:class:: Place68DontCome2Odds(six_eight_amount: float = 6, dont_come_amount: float = 5)
+
+   Bases: :py:obj:`crapssim.strategy.tools.AggregateStrategy`
+
+
+   Strategy that adds a DontCome bet when the point is Off, places the 6 and 8 when the point
+   is On and adds 2x Odds to the DontCome bet.
+
+
+   .. py:attribute:: six_eight_amount
+
+
+   .. py:attribute:: dont_come_amount
+
+
+   .. py:method:: __repr__() -> str
+
+
