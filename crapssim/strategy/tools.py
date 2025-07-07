@@ -63,11 +63,16 @@ class Strategy(ABC):
     """
 
     def after_roll(self, player: Player) -> None:
-        """Method that can update the Strategy from the table/player after the dice are rolled but
-        before the bets and the table are updated. For example, if you wanted to know whether the
-        point changed from on to off you could do self.point_lost = table.point.status = "On" and
-        table.dice.roll.total == 7. You couldn't do this in update_bets since the table has already
-        been updated setting the point's status to Off.
+        """
+        Update the Strategy after the dice are rolled but before the bets and the table are updated.
+
+        For example, if you wanted to know whether the
+        point changed from on to off you could do `self.point_lost = table.point.status = "On" and
+        table.dice.roll.total == 7`. You could not do this in :func:`Strategy`'s :func:`update_bets`
+        method, since the table has already been updated setting the point's status to Off. Other examples
+        include counting the number of place bets that had won after the roll, counting total winnings
+        for certain bets, or recording the starting bankroll upon a new shooter (to later have logic
+        based on winnings of that shooter).
 
         Parameters
         ----------
@@ -82,10 +87,12 @@ class Strategy(ABC):
 
     @abstractmethod
     def update_bets(self, player: Player) -> None:
-        """Add, remove, or change the bets on the table.
+        """
+        Add, remove, or change the bets on the table.
 
-        This method is applied after the dice are rolled,
-        the bets are updated, and the table is updated."""
+        This method is applied after the dice are rolled, the bets are updated,
+        and the table is updated. It triggers in :py:meth:`.table.TableUpdate.run_strategies`.
+        """
 
     def __add__(self, other: "Strategy") -> "AggregateStrategy":
         return AggregateStrategy(self, other)
