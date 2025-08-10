@@ -496,7 +496,6 @@ class Risk12(Strategy):
         """
         super().__init__()
         self.base_amount = float(base_amount)
-        self.bankroll_start = None
 
     def completed(self, player: Player) -> bool:
         """The strategy is completed if the Player can no longer make the initial PassLine bet, and
