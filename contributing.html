@@ -1,0 +1,156 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>How to contribute to crapssim &mdash; crapssim 0.3.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
+      <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=4621528c"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Changelog" href="CHANGELOG.html" />
+    <link rel="prev" title="Installation" href="installation.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            crapssim
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Examples and Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="tutorial-strategy-01.html">Strategy Tutorial 1: Starting off</a></li>
+<li class="toctree-l1"><a class="reference internal" href="crapssim_sandbox.html">Sandbox</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Contributing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#do-you-want-to-help-the-documentation">Do you want to help the documentation?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#do-you-want-to-help-supported-strategies">Do you want to help supported strategies?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#do-you-want-to-help-expand-supported-bets">Do you want to help expand supported bets?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#did-you-find-a-bug">Did you find a bug?</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="CHANGELOG.html">Change Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="autoapi/index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">crapssim</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">How to contribute to crapssim</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/contributing.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="how-to-contribute-to-crapssim">
+<h1>How to contribute to crapssim<a class="headerlink" href="#how-to-contribute-to-crapssim" title="Link to this heading"></a></h1>
+<p>The current top priorities for the package are to improve</p>
+<ul class="simple">
+<li><p>Documentation</p></li>
+<li><p>Supported strategies (see <a class="reference external" href="https://github.com/sphinx-doc/sphinx/issues/4961">strategy</a>)</p></li>
+<li><p>Supported bets (see <a class="reference external" href="https://github.com/skent259/crapssim/blob/main/crapssim/bet.py">bet.py</a>, <a class="reference external" href="https://github.com/skent259/crapssim/issues/38">#38</a>)</p></li>
+</ul>
+<section id="do-you-want-to-help-the-documentation">
+<h2>Do you want to help the documentation?<a class="headerlink" href="#do-you-want-to-help-the-documentation" title="Link to this heading"></a></h2>
+<p>There’s many ways to improve the documentation for current and future users (including us!):</p>
+<ul class="simple">
+<li><p>Write a short tutorial with some example usage of the package</p></li>
+<li><p>Add more descriptions or type hints to internal package functions</p></li>
+</ul>
+</section>
+<section id="do-you-want-to-help-supported-strategies">
+<h2>Do you want to help supported strategies?<a class="headerlink" href="#do-you-want-to-help-supported-strategies" title="Link to this heading"></a></h2>
+<p>Craps has so many possible strategies, and it’s hard to implement them all. The ultimate goal of the package is to make building strategies easy for end users, but we also want to have commonly used and well known versions available as in the package as examples.</p>
+<p>If you saw a strategy online or in a book, and have implemented with “crapssim”, then it most likely makes a great addition to the package. Please mention in <a class="reference external" href="https://github.com/skent259/crapssim/discussions/new">a new discussion</a>, file <a class="reference external" href="https://github.com/skent259/crapssim/issues/new">an issue</a>, or open <a class="reference external" href="https://github.com/skent259/crapssim/pulls">a pull request</a> and we can work together to make sure it fits well.</p>
+</section>
+<section id="do-you-want-to-help-expand-supported-bets">
+<h2>Do you want to help expand supported bets?<a class="headerlink" href="#do-you-want-to-help-expand-supported-bets" title="Link to this heading"></a></h2>
+<p>Bets to implement are currently being tracked in <a class="reference external" href="https://github.com/skent259/crapssim/issues/38">#38</a>.</p>
+<p>This will require detailed knowledge of the package’s <code class="docutils literal notranslate"><span class="pre">bet</span></code> module and also of the craps game. Please build out in a forked branch, file a <a class="reference external" href="https://github.com/skent259/crapssim/pulls">new pull request</a> with your new bet and we can work through the details to make sure it aligns with other bets and standards.</p>
+</section>
+<section id="did-you-find-a-bug">
+<h2>Did you find a bug?<a class="headerlink" href="#did-you-find-a-bug" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Please double check the bug has not already been reported in the <a class="reference external" href="https://github.com/skent259/crapssim/issues">Github issues</a></p></li>
+<li><p>If your issue has not already been reported, <a class="reference external" href="https://github.com/skent259/crapssim/issues/new">open a new issue</a> with as much detail to reproduce your problem as possible. The more details you provide, the easier it will be to isolate and fix the problem!</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="installation.html" class="btn btn-neutral float-left" title="Installation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="CHANGELOG.html" class="btn btn-neutral float-right" title="Changelog" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Sean Kent.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

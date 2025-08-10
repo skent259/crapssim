@@ -1,0 +1,1143 @@
+crapssim.bet
+============
+
+.. py:module:: crapssim.bet
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   crapssim.bet.BetResult
+   crapssim.bet.Bet
+   crapssim.bet._WinningLosingNumbersBet
+   crapssim.bet._SimpleBet
+   crapssim.bet.PassLine
+   crapssim.bet.Come
+   crapssim.bet.DontPass
+   crapssim.bet.DontCome
+   crapssim.bet.Odds
+   crapssim.bet.Place
+   crapssim.bet.Field
+   crapssim.bet.CAndE
+   crapssim.bet.Any7
+   crapssim.bet.Two
+   crapssim.bet.Three
+   crapssim.bet.Yo
+   crapssim.bet.Boxcars
+   crapssim.bet.AnyCraps
+   crapssim.bet.HardWay
+   crapssim.bet.Hop
+   crapssim.bet.Fire
+   crapssim.bet.All
+   crapssim.bet.Tall
+   crapssim.bet.Small
+
+
+Module Contents
+---------------
+
+.. py:class:: BetResult
+
+   Represents the outcome of a bet
+
+   This class is used by all Bets for consistency in determining whether the
+   bet won, lost or pushed. It provides properties to analyze the bet outcome
+   and its impact on a bankroll.
+
+
+   .. py:attribute:: amount
+      :type:  float
+
+      The monetary value representing the bet outcome.
+
+
+   .. py:attribute:: remove
+      :type:  bool
+
+      Flag indicating whether this bet result should be removed from table.
+
+
+   .. py:property:: won
+      :type: bool
+
+
+      Returns True if the bet won (positive amount).
+
+
+   .. py:property:: lost
+      :type: bool
+
+
+      Returns True if the bet lost (negative amount).
+
+
+   .. py:property:: pushed
+      :type: bool
+
+
+      Returns True if the bet tied (zero amount).
+
+
+   .. py:property:: bankroll_change
+      :type: float
+
+
+      Calculates the change to the bankroll (amount if bet won, zero otherwise).
+
+
+.. py:class:: Bet(amount: SupportsFloat)
+
+   Bases: :py:obj:`abc.ABC`
+
+
+   A generic bet for the craps table.
+
+   The high-level class that defines most of the core bet methods.
+   All bets will be a subclass of this.
+
+
+   .. py:attribute:: amount
+      :type:  float
+
+      Wagered amount for the bet.
+
+
+   .. py:method:: get_result(table: Table) -> BetResult
+      :abstractmethod:
+
+
+      Core bet logic that determines the result.
+
+      This determines the ultimate amount and whether the
+      bet needs to be removed, which is indicated with a
+      BetResult object.
+
+
+
+   .. py:method:: update_number(table: Table)
+
+      Update the bet's number, if applicable
+
+      This method is required by Come and DontCome bets to
+      update their number after the first roll. Since this
+      method is used by the Table, it defaults to doing nothing
+      for a generic bet.
+
+
+
+   .. py:method:: is_removable(table: Table) -> bool
+
+      Checks whether the bet is removable. May depend on the
+      table conditions (e.g. if point is On).
+
+      :returns: True if the bet is removable, otherwise false.
+
+
+
+   .. py:method:: is_allowed(player: Player) -> bool
+
+      Checks whether the bet is allowed to be placed on the given table.
+      May depend on the player's bets also (e.g. for odds bets).
+
+      :returns: True if the bet is allowed, otherwise false.
+
+
+
+   .. py:property:: _placed_key
+      :type: Hashable
+
+
+
+   .. py:property:: _hash_key
+      :type: Hashable
+
+
+
+   .. py:method:: __eq__(other: object) -> bool
+
+
+   .. py:method:: __hash__() -> int
+
+
+   .. py:method:: __repr__() -> str
+
+
+   .. py:method:: __add__(other: Bet) -> Bet
+
+
+   .. py:method:: __radd__(other)
+
+
+   .. py:method:: __sub__(other: Bet) -> Bet
+
+
+   .. py:method:: __rsub__(other)
+
+
+.. py:class:: _WinningLosingNumbersBet(amount: SupportsFloat)
+
+   Bases: :py:obj:`Bet`, :py:obj:`abc.ABC`
+
+
+   A bet that has winning numbers, losing numbers, and payout ratios
+
+   These values (possibly depending on the table) are used to
+   calculate the result.
+
+
+   .. py:method:: get_result(table: Table) -> BetResult
+
+      Core bet logic that determines the result.
+
+      Wins are based on having dice total in the winning numbers
+      (which may depend on the table), which will pay the payout_ratio
+      times the bet amount plus the original bet amount back. Losses
+      happen when dice total is in the losing numbers, which result
+      in a loss of the original bet amount. Otherwise the bet stays
+      on the table.
+
+
+
+   .. py:method:: get_winning_numbers(table: Table) -> list[int]
+      :abstractmethod:
+
+
+      Returns the winnings numbers, based on table features
+
+
+
+   .. py:method:: get_losing_numbers(table: Table) -> list[int]
+      :abstractmethod:
+
+
+      Returns the losing numbers, based on table features
+
+
+
+   .. py:method:: get_payout_ratio(table: Table) -> float
+      :abstractmethod:
+
+
+      Returns the payout ratio (X to 1), based on table features
+
+
+
+.. py:class:: _SimpleBet(amount: SupportsFloat)
+
+   Bases: :py:obj:`_WinningLosingNumbersBet`, :py:obj:`abc.ABC`
+
+
+   A bet that has fixed winning and losing numbers and payout ratio
+
+   Essentially, the numbers and payout ratio can be known
+   at instantiation and don't depend on the table.
+
+
+   .. py:attribute:: winning_numbers
+      :type:  list[int]
+      :value: []
+
+
+      Winning numbers for the bet
+
+
+   .. py:attribute:: losing_numbers
+      :type:  list[int]
+      :value: []
+
+
+      Losing numbers for the bet
+
+
+   .. py:attribute:: payout_ratio
+      :type:  int
+      :value: 1
+
+
+      Payout ratio for the bet
+
+
+   .. py:method:: get_winning_numbers(table: Table) -> list[int]
+
+      Returns the winning numbers (table not used here)
+
+
+
+   .. py:method:: get_losing_numbers(table: Table) -> list[int]
+
+      Returns the losing numbers (table not used here)
+
+
+
+   .. py:method:: get_payout_ratio(table: Table) -> float
+
+      Returns the payout ratio (table not used here)
+
+
+
+.. py:class:: PassLine(amount: SupportsFloat)
+
+   Bases: :py:obj:`_WinningLosingNumbersBet`
+
+
+   Pass Line bet in craps.
+
+   A bet where the player wins if the first roll is 7 or 11,
+   loses if the first roll is 2, 3, or 12, and establishes a point number
+   for subsequent rolls. Once a point is set, the player wins by rolling
+   the point number again before rolling a 7. Pays 1 to 1.
+
+
+   .. py:method:: get_winning_numbers(table: Table) -> list[int]
+
+      Winnings numbers are 7, 11 before point is set,
+      and the point number after point is set. Uses table
+      to determine the point number and status.
+
+
+
+   .. py:method:: get_losing_numbers(table: Table) -> list[int]
+
+      Losing numbers are 2, 3, 12 before point is set,
+      and 7 after point is set. Uses table to determine the
+      point number and status.
+
+
+
+   .. py:method:: get_payout_ratio(table: Table) -> float
+
+      PassLine always pays out 1:1
+
+
+
+   .. py:method:: is_removable(table: Table) -> bool
+
+      PassLine is removable if the point is off
+
+      :returns: True if the bet is removable, otherwise false.
+
+
+
+   .. py:method:: is_allowed(player: Player) -> bool
+
+      PassLine is allowed if the point if off
+
+      :returns: True if the bet is allowed, otherwise false.
+
+
+
+.. py:class:: Come(amount: SupportsFloat, number: int | None = None)
+
+   Bases: :py:obj:`_WinningLosingNumbersBet`
+
+
+   Come bet in craps.
+
+   Similar to the Pass Line bet, but can be placed after a point is established.
+   The first roll determines the Come bet's point number, but also wins on 7, 11
+   and loses on 2, 3, 12. The bet wins in subsequent rolls if the
+   point number is rolled before a 7, and loses if a 7 is rolled before
+   the point number. Pays 1 to 1.
+
+
+   .. py:method:: get_winning_numbers(table: Table) -> list[int]
+
+      Winnings numbers are 7, 11 before the number is set,
+      and the number after it is set. Number is stored within
+      the bet.
+
+
+
+   .. py:method:: get_losing_numbers(table: Table) -> list[int]
+
+      Losing numbers are 2, 3, 12 before the number is set,
+      and 7 after it is set. Number is stored within
+      the bet.
+
+
+
+   .. py:method:: get_payout_ratio(table: Table) -> float
+
+      Come always pays out 1:1
+
+
+
+   .. py:method:: update_number(table: Table)
+
+      Update the bet's number to the first number rolled if it's in (4, 5, 6, 8, 9, 10).
+
+
+
+   .. py:method:: is_removable(table: Table) -> bool
+
+      Come bet is removable is it's number has not been established yet (first roll).
+
+      :returns: True if the bet is removable, otherwise false.
+
+
+
+   .. py:method:: is_allowed(player: Player) -> bool
+
+      Come bet is only allowed if the table's point is on (accessed via player).
+
+      :returns: True if the bet is allowed, otherwise false.
+
+
+
+   .. py:property:: _placed_key
+      :type: Hashable
+
+
+
+   .. py:method:: __repr__() -> str
+
+
+.. py:class:: DontPass(amount: SupportsFloat)
+
+   Bases: :py:obj:`_WinningLosingNumbersBet`
+
+
+   Don't Pass bet in craps.
+
+   The opposite of the Pass Line bet. The player wins if the first roll is 2 or 3,
+   pushes on 12, and loses if the first roll is 7 or 11. After a point is
+   established, the player wins by rolling a 7 before the point number. Bet pays 1 to 1.
+
+   Note that a push will keep the bet active and not result in any change to bankroll.
+
+
+   .. py:method:: get_winning_numbers(table: Table) -> list[int]
+
+      Winnings numbers are 2 or 3 before point is set,
+      and 7 after point is set. Uses table to determine the point
+      number and status.
+
+
+
+   .. py:method:: get_losing_numbers(table: Table) -> list[int]
+
+      Losing numbers are 7 or 11 before point is set,
+      and table point number after point is set. Uses table to determine the
+      point number and status.
+
+
+
+   .. py:method:: get_payout_ratio(table: Table) -> float
+
+      Don't pass always pays out 1:1
+
+
+
+   .. py:method:: is_allowed(player: Player) -> bool
+
+      Don't Pass is allowed if the point if off.
+
+      :returns: True if the bet is allowed, otherwise false.
+
+
+
+.. py:class:: DontCome(amount: SupportsFloat, number: int | None = None)
+
+   Bases: :py:obj:`_WinningLosingNumbersBet`
+
+
+   Don't Come bet in craps.
+
+   Similar to the Don't Pass bet, but can be placed after a point is
+   established, but also wins on 2, 3, pushes on 12, and loses on 7 or 11.
+   The first roll determines the Don't Come bet's number. The bet wins in
+   subsequent rolls if a 7 is rolled before the point number, and loses if
+   the number is rolled before a 7. Pays 1 to 1.
+
+
+   .. py:method:: get_winning_numbers(table: Table) -> list[int]
+
+      Returns the winnings numbers, based on table features
+
+
+
+   .. py:method:: get_losing_numbers(table: Table) -> list[int]
+
+      Returns the losing numbers, based on table features
+
+
+
+   .. py:method:: get_payout_ratio(table: Table) -> float
+
+      Don't Come always pays out 1:1
+
+
+
+   .. py:method:: update_number(table: Table)
+
+      Update the bet's number, if applicable
+
+      This method is required by Come and DontCome bets to
+      update their number after the first roll. Since this
+      method is used by the Table, it defaults to doing nothing
+      for a generic bet.
+
+
+
+   .. py:method:: is_allowed(player: Player) -> bool
+
+      Don't Come is only allowed if the table's point is on (accessed via player).
+
+      :returns: True if the bet is allowed, otherwise false.
+
+
+
+   .. py:property:: _placed_key
+      :type: Hashable
+
+
+
+   .. py:method:: __repr__() -> str
+
+
+.. py:class:: Odds(base_type: Type[PassLine | DontPass | Come | DontCome], number: int, amount: float)
+
+   Bases: :py:obj:`_WinningLosingNumbersBet`
+
+
+   Odds bet (for PassLine, DontPass, Come, or Dontcome) in craps.
+
+   A supplementary bet placed behind Pass Line, Don't Pass, Come, or Don't Come bets.
+   Offers true odds payouts, meaning the house has no edge. The payout varies
+   depending on the point number and whether it's a "light side" (Pass/Come)
+   or "dark side" (Don't Pass/Don't Come) bet.
+
+
+   .. py:attribute:: base_type
+
+
+   .. py:attribute:: number
+
+
+   .. py:property:: light_side
+      :type: bool
+
+
+
+   .. py:property:: dark_side
+      :type: bool
+
+
+
+   .. py:method:: get_winning_numbers(table: Table) -> list[int]
+
+      Returns the winnings numbers, based on table features
+
+
+
+   .. py:method:: get_losing_numbers(table: Table) -> list[int]
+
+      Returns the losing numbers, based on table features
+
+
+
+   .. py:method:: get_payout_ratio(table: Table) -> float
+
+      Returns the payout ratio (X to 1), based on table features
+
+
+
+   .. py:method:: is_allowed(player: Player) -> bool
+
+      Odds are allowed if they do not exceed the table maximums.
+
+      :returns: True if the bet is allowed, otherwise false.
+
+
+
+   .. py:method:: get_max_odds(table: Table) -> float
+
+
+   .. py:method:: base_amount(player: Player)
+
+
+   .. py:property:: _placed_key
+      :type: Hashable
+
+
+
+   .. py:method:: __repr__()
+
+
+.. py:class:: Place(number: int, amount: SupportsFloat)
+
+   Bases: :py:obj:`_SimpleBet`
+
+
+   Place bet (on 4, 5, 6, 8, 9, or 10) in craps.
+
+   A bet on a specific number (4, 5, 6, 8, 9, or 10) being rolled before a 7.
+   Each number has a different payout ratio reflecting its probability of being rolled.
+   Remains active until the number or a 7 is rolled.
+
+
+   .. py:attribute:: payout_ratios
+
+      9 to 5 on (4, 10), 7 to 5 on (5, 9), and 7 to 6 on (6, 8).
+
+      :type: Stores the place bet payouts
+
+
+   .. py:attribute:: losing_numbers
+      :type:  list[int]
+      :value: [7]
+
+
+      Losing numbers for the bet
+
+
+   .. py:attribute:: number
+
+      The placed number, which determines payout ratio
+
+
+   .. py:attribute:: payout_ratio
+
+      Payout ratio for the bet
+
+
+   .. py:attribute:: winning_numbers
+
+      Winning numbers for the bet
+
+
+   .. py:property:: _placed_key
+      :type: Hashable
+
+
+
+   .. py:method:: __repr__() -> str
+
+
+.. py:class:: Field(amount: SupportsFloat)
+
+   Bases: :py:obj:`_WinningLosingNumbersBet`
+
+
+   Field bet in craps.
+
+   A one-roll bet that wins if the next roll is 2, 3, 4, 9, 10, 11, or 12.
+   Loses if 5, 6, 7, or 8 are rolled. Offers variable payouts for specific numbers
+   as defined in the table settings (:func:`~crapssim.table.TableSettings`,
+   "field_payouts":, which default to 2 to 1 for (2, 12) and 1 to 1 otherwise.
+
+
+   .. py:attribute:: winning_numbers
+      :value: [2, 3, 4, 9, 10, 11, 12]
+
+
+      Field wins on 2, 3, 4, 9, 10, 11, or 12
+
+
+   .. py:attribute:: losing_numbers
+      :value: [5, 6, 7, 8]
+
+
+      Field loses on 5, 6, 7, or 8
+
+
+   .. py:method:: get_winning_numbers(table: Table) -> list[int]
+
+      Returns the winning numbers (table not used here)
+
+
+
+   .. py:method:: get_losing_numbers(table: Table) -> list[int]
+
+      Returns the losing numbers (table not used here)
+
+
+
+   .. py:method:: get_payout_ratio(table: Table) -> float
+
+      Returns the payout ratio (X to 1) based on table settings
+      (:func:`~crapssim.table.TableSettings`, "field_payouts":
+
+
+
+.. py:class:: CAndE(amount: SupportsFloat)
+
+   Bases: :py:obj:`_WinningLosingNumbersBet`
+
+
+   Craps and Eleven (C & E) bet in craps.
+
+   A one-roll bet that wins if the next roll is 2, 3, 11, or 12.
+   Offers different payout ratios for different winning numbers:
+   - 3 to 1 for 2, 3, and 12
+   - 7 to 1 for 11
+   Loses on all other numbers.
+
+
+   .. py:attribute:: winning_numbers
+      :type:  list[int]
+      :value: [2, 3, 11, 12]
+
+
+      Winning numbers are (2, 3, 11, 12).
+
+
+   .. py:attribute:: losing_numbers
+      :type:  list[int]
+
+      Losing numbers are anything besides (2, 3, 11, 12).
+
+
+   .. py:method:: get_winning_numbers(table: Table) -> list[int]
+
+      Returns the winning numbers (table not used here)
+
+
+
+   .. py:method:: get_losing_numbers(table: Table) -> list[int]
+
+      Returns the losing numbers (table not used here)
+
+
+
+   .. py:method:: get_payout_ratio(table: Table) -> float
+
+      C & E pays out 3 to 1 for (2, 3, 12) and 7 to 1 for (11).
+
+
+
+.. py:class:: Any7(amount: SupportsFloat)
+
+   Bases: :py:obj:`_SimpleBet`
+
+
+   Any 7 bet (also known as Big Red) in craps.
+
+   A one-roll bet that wins only if the next roll is 7.
+   Offers a 4 to 1 payout and loses on all other numbers.
+
+
+   .. py:attribute:: winning_numbers
+      :type:  list[int]
+      :value: [7]
+
+
+      Winning numbers for the bet
+
+
+   .. py:attribute:: losing_numbers
+      :type:  list[int]
+
+      Losing number is anything except 7.
+
+
+   .. py:attribute:: payout_ratio
+      :type:  int
+      :value: 4
+
+
+      Payout ratio for the bet
+
+
+.. py:class:: Two(amount: SupportsFloat)
+
+   Bases: :py:obj:`_SimpleBet`
+
+
+   Two (Snake Eyes) bet in craps.
+
+   A one-roll bet that wins only if the next roll is 2.
+   Offers a 30 to 1 payout and loses on all other numbers.
+
+
+   .. py:attribute:: winning_numbers
+      :type:  list[int]
+      :value: [2]
+
+
+      Winning numbers for the bet
+
+
+   .. py:attribute:: losing_numbers
+      :type:  list[int]
+
+      Losing number is anything except 2.
+
+
+   .. py:attribute:: payout_ratio
+      :type:  int
+      :value: 30
+
+
+      Payout ratio for the bet
+
+
+.. py:class:: Three(amount: SupportsFloat)
+
+   Bases: :py:obj:`_SimpleBet`
+
+
+   Three bet in craps.
+
+   A one-roll bet that wins only if the next roll is 3.
+   Offers a 15 to 1 payout and loses on all other numbers.
+
+
+   .. py:attribute:: winning_numbers
+      :type:  list[int]
+      :value: [3]
+
+
+      Winning numbers for the bet
+
+
+   .. py:attribute:: losing_numbers
+      :type:  list[int]
+
+      Losing number is anything except 3.
+
+
+   .. py:attribute:: payout_ratio
+      :type:  int
+      :value: 15
+
+
+      Payout ratio for the bet
+
+
+.. py:class:: Yo(amount: SupportsFloat)
+
+   Bases: :py:obj:`_SimpleBet`
+
+
+   Yo (Eleven) bet in craps.
+
+   A one-roll bet that wins only if the next roll is 11.
+   Offers a 15 to 1 payout and loses on all other numbers.
+
+
+   .. py:attribute:: winning_numbers
+      :type:  list[int]
+      :value: [11]
+
+
+      Winning numbers for the bet
+
+
+   .. py:attribute:: losing_numbers
+      :type:  list[int]
+
+      Losing number is anything except 11.
+
+
+   .. py:attribute:: payout_ratio
+      :type:  int
+      :value: 15
+
+
+      Payout ratio for the bet
+
+
+.. py:class:: Boxcars(amount: SupportsFloat)
+
+   Bases: :py:obj:`_SimpleBet`
+
+
+   Boxcars (Midnight) bet in craps.
+
+   A one-roll bet that wins only if the next roll is 12.
+   Offers a 30 to 1 payout and loses on all other numbers.
+
+
+   .. py:attribute:: winning_numbers
+      :type:  list[int]
+      :value: [12]
+
+
+      Winning numbers for the bet
+
+
+   .. py:attribute:: losing_numbers
+      :type:  list[int]
+
+      Losing number is anything except 12.
+
+
+   .. py:attribute:: payout_ratio
+      :type:  int
+      :value: 30
+
+
+      Payout ratio for the bet
+
+
+.. py:class:: AnyCraps(amount: SupportsFloat)
+
+   Bases: :py:obj:`_SimpleBet`
+
+
+   Any Craps bet in craps.
+
+   A one-roll bet that wins if the next roll is 2, 3, or 12.
+   Offers a 7 to 1 payout and loses on all other numbers.
+
+
+   .. py:attribute:: winning_numbers
+      :type:  list[int]
+      :value: [2, 3, 12]
+
+
+      Winning numbers for the bet
+
+
+   .. py:attribute:: losing_numbers
+      :type:  list[int]
+
+      Losing number is anything except (2, 3, 12).
+
+
+   .. py:attribute:: payout_ratio
+      :type:  int
+      :value: 7
+
+
+      Payout ratio for the bet
+
+
+.. py:class:: HardWay(number: int, amount: SupportsFloat)
+
+   Bases: :py:obj:`Bet`
+
+
+   Hard Way bet (on 4, 6, 8, or 10) in craps.
+
+   A bet on rolling a specific even number (4, 6, 8, or 10)
+   with both dice showing the same value (e.g., two 2s for a hard 4).
+   Wins if the number is rolled in a "hard" way before either a 7 or
+   the number is rolled in a "soft" way.
+
+
+   .. py:attribute:: payout_ratios
+
+      7 to 1 for hard 4 or 10, 9 to 1 for hard 6 or 8.
+
+      :type: Payout ratios vary
+
+
+   .. py:attribute:: number
+      :type:  int
+
+
+   .. py:attribute:: payout_ratio
+      :type:  float
+
+
+   .. py:method:: get_result(table: Table) -> BetResult
+
+      Core bet logic that determines the result.
+
+      This determines the ultimate amount and whether the
+      bet needs to be removed, which is indicated with a
+      BetResult object.
+
+
+
+   .. py:property:: winning_result
+      :type: tuple[int, int]
+
+
+      Returns the dice result that wins, e.g. (2, 2) for Hard 4.
+
+
+   .. py:property:: _placed_key
+      :type: Hashable
+
+
+
+   .. py:method:: __repr__() -> str
+
+
+.. py:class:: Hop(result: tuple[int, int], amount: SupportsFloat)
+
+   Bases: :py:obj:`Bet`
+
+
+   Hop bet in craps.
+
+   A one-roll bet on a specific dice combination.
+   Can be an "easy" hop (different values on each die) or a "hard" hop
+   (same value on both dice).
+
+   Payouts differ based on whether the hop is easy or hard, and are
+   set in the table settings (:func:`~crapssim.table.TableSettings`,
+   "hop_payouts")
+   - Easy hop: standard payout (default 15 to 1)
+   - Hard hop: higher payout (default 30 to 1)
+
+
+   .. py:attribute:: result
+      :type:  tuple[int, int]
+
+
+   .. py:method:: get_result(table: Table) -> BetResult
+
+      Core bet logic that determines the result.
+
+      This determines the ultimate amount and whether the
+      bet needs to be removed, which is indicated with a
+      BetResult object.
+
+
+
+   .. py:property:: is_easy
+      :type: bool
+
+
+
+   .. py:property:: winning_results
+      :type: list[tuple[int, int]]
+
+
+
+   .. py:method:: payout_ratio(table: Table) -> int
+
+
+   .. py:property:: _placed_key
+      :type: Hashable
+
+
+
+   .. py:method:: __repr__() -> str
+
+
+.. py:class:: Fire(amount: float)
+
+   Bases: :py:obj:`Bet`
+
+
+   Fire bet in craps.
+
+   A progressive bet that tracks points made during a shooter's turn.
+   Wins with increasing payouts based on the number of unique point
+   numbers made before a 7 is rolled.
+
+   Payout escalates as more points are made:
+   - Specific payout ratios depend on table settings (:func:`~crapssim.table.TableSettings`,
+   "fire_payouts"), default is 24 to 1 for four points, 249 to 1 for five points, and
+   999 to 1 for all six points.
+   - Automatically ends when all 6 points are made or a 7 is rolled while the point is On.
+
+
+   .. py:attribute:: points_made
+      :type:  set[int]
+
+
+   .. py:attribute:: ended
+      :type:  bool
+      :value: False
+
+
+
+   .. py:method:: get_result(table: Table) -> BetResult
+
+      Core bet logic that determines the result.
+
+      This determines the ultimate amount and whether the
+      bet needs to be removed, which is indicated with a
+      BetResult object.
+
+
+
+   .. py:method:: is_removable(table: Table) -> bool
+
+      Fire bet is removable only if there is a new shooter.
+
+      :returns: True if the bet is removable, otherwise false.
+
+
+
+   .. py:method:: is_allowed(player: Player) -> bool
+
+      Fire bet is allowed if there is a new shooter.
+
+      :returns: True if the bet is allowed, otherwise false.
+
+
+
+.. py:class:: All(amount: float)
+
+   Bases: :py:obj:`_ATSBet`
+
+
+   All bet (part of All/Tall/Small bets) in craps.
+
+   Wins when 2, 3, 4, 5, 6, 8, 9, 10, 11, and 12 all roll
+   before a 7 rolls. Loses immediately if a 7 is rolled (including come-out
+   sevens). Payout ratios are determined by the :func:`~crapssim.table.TableSettings`
+   (["ATS_payouts"]["all"]), which defaults to 150 to 1.
+
+
+   .. py:attribute:: type
+      :type:  str
+      :value: 'all'
+
+
+
+   .. py:attribute:: numbers
+      :type:  list[int]
+      :value: [2, 3, 4, 5, 6, 8, 9, 10, 11, 12]
+
+
+
+.. py:class:: Tall(amount: float)
+
+   Bases: :py:obj:`_ATSBet`
+
+
+   Tall bet (part of All/Tall/Small bets) in craps.
+
+   Wins when 8, 9, 10, 11, and 12 all roll
+   before a 7 rolls. Loses immediately if a 7 is rolled (including come-out
+   sevens). Payout ratios are determined by the :func:`~crapssim.table.TableSettings`
+   (["ATS_payouts"]["tall"]), which defaults to 30 to 1.
+
+
+   .. py:attribute:: type
+      :type:  str
+      :value: 'tall'
+
+
+
+   .. py:attribute:: numbers
+      :type:  list[int]
+      :value: [8, 9, 10, 11, 12]
+
+
+
+.. py:class:: Small(amount: float)
+
+   Bases: :py:obj:`_ATSBet`
+
+
+   Small bet (part of All/Tall/Small bets) in craps.
+
+   Wins when 2, 3, 4, 5, and 6 all roll
+   before a 7 rolls. Loses immediately if a 7 is rolled (including come-out
+   sevens). Payout ratios are determined by the :func:`~crapssim.table.TableSettings`
+   (["ATS_payouts"]["small"]), which defaults to 30.
+
+
+   .. py:attribute:: type
+      :type:  str
+      :value: 'small'
+
+
+
+   .. py:attribute:: numbers
+      :type:  list[int]
+      :value: [2, 3, 4, 5, 6]
+
+
+
