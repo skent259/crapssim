@@ -1008,50 +1008,9 @@ def test_hammerlock_always_add_dont_odds(player, place_win_count):
     player.add_bet.assert_called_with(Odds(DontPass, 4, 30))
 
 
-def test_risk_12_player_won_field_bet(player):
-    strategy = Risk12()
-    player.bets = [Field(5)]
-    player.table.dice.result = (2, 2)
-    strategy.after_roll(player)
-    assert strategy.pre_point_winnings == 10
-
-
-def test_risk_12_player_won_double_field_bet(player):
-    strategy = Risk12()
-    player.bets = [Field(5)]
-    player.table.dice.result = (6, 6)
-    strategy.after_roll(player)
-    assert strategy.pre_point_winnings == 15
-
-
-def test_risk_12_player_won_pass_line_bet(player):
-    strategy = Risk12()
-    player.bets = [PassLine(5)]
-    player.table.dice.result = (1, 6)
-    strategy.after_roll(player)
-    assert strategy.pre_point_winnings == 10
-
-
-def test_risk_12_player_won_pass_line_bet_and_field(player):
-    strategy = Risk12()
-    player.bets = [PassLine(5), Field(5)]
-    player.table.dice.result = (6, 5)
-    strategy.after_roll(player)
-    assert strategy.pre_point_winnings == 20
-
-
-def test_risk_12_reset_prepoint_winnings(player):
-    strategy = Risk12()
-    strategy.pre_point_winnings = 20
-    player.table.point.number = 4
-    player.bets = [PassLine(5)]
-    player.table.dice.result = (2, 5)
-    strategy.after_roll(player)
-    assert strategy.pre_point_winnings == 0
-
-
 def test_risk_12_point_off_add_bets(player):
     strategy = Risk12()
+    strategy.min_bankroll = 100 - 12
     player.add_bet = MagicMock()
     strategy.point_off(player)
     player.add_bet.assert_has_calls([call(PassLine(5)), call(Field(5))])
@@ -1059,7 +1018,8 @@ def test_risk_12_point_off_add_bets(player):
 
 def test_risk_12_point_on_5_pre_point_winnings(player):
     strategy = Risk12()
-    strategy.pre_point_winnings = 5
+    strategy.min_bankroll = 100 - 12
+    player.bankroll += 5  # pre-point winnings
     player.add_bet = MagicMock()
     player.table.point.number = 5
     strategy.point_on(player)
@@ -1068,7 +1028,8 @@ def test_risk_12_point_on_5_pre_point_winnings(player):
 
 def test_risk_12_point_on_10_pre_point_winnings(player):
     strategy = Risk12()
-    strategy.pre_point_winnings = 10
+    strategy.min_bankroll = 100 - 12
+    player.bankroll += 10  # pre-point winnings
     player.add_bet = MagicMock()
     player.table.point.number = 5
     strategy.point_on(player)

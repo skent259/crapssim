@@ -262,6 +262,25 @@ from crapssim.table import TableUpdate
                 Place(number=6, amount=6.0),
             ],
         ),
+        (
+            Risk12(base_amount=5),
+            [(2, 6), (6, 2), (1, 2), (1, 4)],
+            [
+                PassLine(amount=5.0),
+            ],
+        ),
+        (
+            Risk12(base_amount=5),
+            [(2, 5), (2, 3)],
+            [
+                PassLine(amount=5.0),
+            ],
+        ),
+        (
+            Risk12(base_amount=5),
+            [(2, 5), (2, 3), (3, 2)],
+            [PassLine(amount=5.0), Field(amount=5.0)],
+        ),
         (Knockout(base_amount=5), [], [DontPass(amount=5.0), PassLine(amount=5.0)]),
         (
             Knockout(base_amount=5),
