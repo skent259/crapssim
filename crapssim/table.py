@@ -17,10 +17,11 @@ class TableUpdate:
         self,
         table: "Table",
         dice_outcome: typing.Iterable[int] | None = None,
+        run_complete: bool = False,
         verbose: bool = False,
     ):
         """Run through the roll logic of the table."""
-        self.run_strategies(table, verbose)
+        self.run_strategies(table, run_complete, verbose)
         self.print_player_summary(table, verbose)
         self.before_roll(table)
         self.update_table_stats(table)
@@ -31,7 +32,12 @@ class TableUpdate:
         self.update_numbers(table, verbose)
 
     @staticmethod
-    def run_strategies(table: "Table", verbose=False):
+    def run_strategies(table: "Table", run_complete=False, verbose=False):
+        if run_complete:
+            # Stop adding/modifying bets when run end criteria are met
+            # NOTE: this will also stop strategies that pull bets down. Not ideal but workable for now
+            return
+
         for player in table.players:
             player.strategy.update_bets(player)
 
@@ -241,12 +247,15 @@ class Table:
         # logic needs to count starting run as 0 shooters, not easy to set new_shooter in better way
         n_shooter_start = self.n_shooters if self.n_shooters != 1 else 0
 
+        run_complete = False
         continue_rolling = True
         while continue_rolling:
-            TableUpdate().run(self, verbose=verbose)
-            continue_rolling = self.should_keep_rolling(
-                max_rolls + n_rolls_start, max_shooter + n_shooter_start, runout
+            TableUpdate().run(self, run_complete=run_complete, verbose=verbose)
+
+            run_complete = self.is_run_complete(
+                max_rolls + n_rolls_start, max_shooter + n_shooter_start
             )
+            continue_rolling = self.should_keep_rolling(run_complete, runout)
             if not continue_rolling:
                 self.n_shooters -= 1  # count was added but this shooter never rolled
                 TableUpdate().print_player_summary(self, verbose=verbose)
@@ -269,11 +278,13 @@ class Table:
         for dice_outcome in dice_outcomes:
             TableUpdate().run(self, dice_outcome, verbose=verbose)
 
-    def should_keep_rolling(
-        self, max_rolls: float | int, max_shooter: float | int, runout: bool
+    def is_run_complete(
+        self,
+        max_rolls: float | int,
+        max_shooter: float | int,
     ) -> bool:
         """
-        Determines whether the program should keep running or not.
+        Determines whether the conditions specified for the run are complete.
 
         Parameters
         ----------
@@ -281,6 +292,25 @@ class Table:
             Maximum number of rolls to run for
         max_shooter
             Maximum number of shooters to run for
+
+        Returns
+        -------
+        If True, run has completed the roll and shooter conditions and strategies have completed.
+        """
+        return (
+            self.dice.n_rolls >= max_rolls
+            or self.n_shooters > max_shooter
+            or all(x.strategy.completed(x) for x in self.players)
+        )
+
+    def should_keep_rolling(self, run_complete: bool, runout: bool) -> bool:
+        """
+        Determines whether the program should keep running or not.
+
+        Parameters
+        ----------
+        run_complete
+            If true, run has completed the roll and shooter conditions and strategies have completed.
         runout
             If true, continue past max_rolls until player has no more bets on the table
 
@@ -289,17 +319,9 @@ class Table:
         If True, the program should continue running. If False the program should stop running.
         """
         if runout:
-            return (
-                self.dice.n_rolls < max_rolls
-                and self.n_shooters <= max_shooter
-                and not any(x.strategy.completed(x) for x in self.players)
-            ) or self.player_has_bets
+            return (not run_complete) or self.player_has_bets
         else:
-            return (
-                self.dice.n_rolls < max_rolls
-                and self.n_shooters <= max_shooter
-                and not any(x.strategy.completed(x) for x in self.players)
-            )
+            return not run_complete
 
     def ensure_one_player(self) -> None:
         """Make sure there is at least one player at the table"""
