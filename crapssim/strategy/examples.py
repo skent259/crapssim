@@ -1,5 +1,5 @@
 """The strategies included in this module are completed strategies that are runnable by the player
-in order to do the intended """
+in order to do the intended"""
 
 import typing
 
@@ -490,12 +490,12 @@ class Risk12(Strategy):
     is established, places either the 6 the 8, or both depending on if the player won enough
     pre-point to cover those bets."""
 
-    def __init__(self) -> None:
+    def __init__(self, base_amount: float = 5) -> None:
         """Pass line and field bet before the point is established. Once the point is established
         place the 6 and 8.
         """
         super().__init__()
-        self.pre_point_winnings: float = 0.0
+        self.base_amount = float(base_amount)
 
     def completed(self, player: Player) -> bool:
         """The strategy is completed if the Player can no longer make the initial PassLine bet, and
@@ -510,34 +510,22 @@ class Risk12(Strategy):
         -------
         True if the player can no longer continue the strategy, otherwise False.
         """
-        return player.bankroll < 5 and len(player.bets) == 0
+        return player.bankroll < self.base_amount and len(player.bets) == 0
 
-    def after_roll(self, player: Player) -> None:
-        """Determine the pre-point winnings which is used to determine which bets to place when the
-        point is on.
-
-        Parameters
-        ----------
-        player
-            The player to check the bets for.
-        """
-        bet_results = [x.get_result(player.table) for x in player.bets]
-        if player.table.point.status == "Off" and any(x.won for x in bet_results):
-            self.pre_point_winnings += sum(x.bankroll_change for x in bet_results)
-        elif player.table.point.status == "On" and player.table.dice.total == 7:
-            self.pre_point_winnings = 0
-
-    @staticmethod
-    def point_off(player: Player) -> None:
-        """Place a 5 PassLine and Field bet.
+    def point_off(self, player: Player) -> None:
+        """Place a PassLine and Field bet for 5.
 
         Parameters
         ----------
         player
             The player to check the bets for.
         """
-        AddIfNotBet(PassLine(5)).update_bets(player)
-        AddIfNotBet(Field(5)).update_bets(player)
+        budget_left = player.bankroll - self.min_bankroll
+
+        bets = [PassLine(self.base_amount), Field(self.base_amount)]
+        for bet in bets:
+            if budget_left >= bet.amount:
+                AddIfNotBet(bet).update_bets(player)
 
     def point_on(self, player: Player) -> None:
         """If your winnings were enough to cover the place bets (throwing in another dollar for
@@ -548,13 +536,16 @@ class Risk12(Strategy):
         player
             The player to place the bets for.
         """
-        if self.pre_point_winnings >= 6 - 1:
+        budget_left = player.bankroll - self.min_bankroll
+        amount68 = 6 / 5 * self.base_amount
+
+        if budget_left >= 2 * amount68:
+            BetPlace({6: amount68, 8: amount68}, skip_point=True).update_bets(player)
+        elif budget_left >= amount68:
             if player.table.point.number != 6:
-                AddIfNotBet(Place(6, 6)).update_bets(player)
+                AddIfNotBet(Place(6, amount68)).update_bets(player)
             else:
-                AddIfNotBet(Place(8, 6)).update_bets(player)
-        if self.pre_point_winnings >= 12 - 2:
-            BetPlace({6: 6, 8: 6}).update_bets(player)
+                AddIfNotBet(Place(8, amount68)).update_bets(player)
 
     def update_bets(self, player: Player) -> None:
         """If the point is off make a Field and PassLine bet. If the point is on
@@ -565,9 +556,15 @@ class Risk12(Strategy):
         player
             The player to make the bets for.
         """
-        if player.table.point.status == "Off":
+        table = player.table
+        if table.new_shooter:
+            self.min_bankroll = (
+                player.bankroll - 6 / 5 * 2 * self.base_amount
+            )  # $12 for a $5 base amount
+
+        if table.point.status == "Off":
             self.point_off(player)
-        elif player.table.point.status == "On":
+        elif table.point.status == "On":
             self.point_on(player)
 
 
