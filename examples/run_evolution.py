@@ -1,5 +1,5 @@
 
-import os, sys, json
+import os, json, sys, time, sys, json
 REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if REPO_ROOT not in sys.path: sys.path.insert(0, REPO_ROOT)
 
@@ -54,11 +54,35 @@ if __name__ == "__main__":
     parser.add_argument("--gens", type=int, default=3, help="Number of generations to run")
     parser.add_argument("--pop", type=int, default=None, help="Population size override")
     parser.add_argument("--seed", type=int, default=0, help="Random seed / rollset seed")
-    args = parser.parse_args()
+    
+    parser.add_argument("--out", type=str, default="runs", help="Output directory (default: runs)")
+    parser.add_argument("--resume", action="store_true", help="Resume from last gen_*.json in --out")
+    parser.add_argument("--report", action="store_true", help="Print a brief top-10 EF table per gen")
+args = parser.parse_args()
 
-    outdir = os.path.join(REPO_ROOT, "runs")
+    outdir = os.path.join(REPO_ROOT, args.out)
 
+    
+    # Output handling
+    ts = time.strftime("%Y-%m-%d_%H%M%S")
+    if os.path.exists(outdir) and not args.resume:
+        outdir = f"{outdir}_{ts}"
     os.makedirs(outdir, exist_ok=True)
+
+    # manifest
+    manifest = {"cmd": " ".join(sys.argv), "defaults": DEFAULTS}
+    with open(os.path.join(outdir, "manifest.json"), "w") as mf:
+        json.dump(manifest, mf, indent=2)
+
+    # CSV init
+    csv_path = os.path.join(outdir, "ef_gen.csv")
+    if not os.path.exists(csv_path) or not args.resume:
+        with open(csv_path, "w") as cf:
+            cf.write("generation,genome_id,name,domain,ef,profit,rolls,variance,table_cq,danger\n")
+
+    # SUMMARY_INIT
+    summary = {"gens": [], "best": {"ef": -1e9}, "worst": {"ef": 1e9}, "hall_fame": 0, "hall_shame": 0}
+os.makedirs(outdir, exist_ok=True)
 
     genomes = load_genomes()
     if args.pop:
@@ -71,3 +95,31 @@ if __name__ == "__main__":
         print(f"Wrote {outfile} | table_cq={snap.table_cq} | main={len(snap.main_pool)} danger={len(snap.danger_pool)}")
         parents = select_parents(snap, DEFAULTS)
         genomes = produce_offspring(parents, DEFAULTS)
+
+        # CSV_APPEND
+        with open(csv_path, "a") as cf:
+            for item in (snap.main_pool + snap.danger_pool):
+                s = item["stats"]; gnm = item["genome"]
+                cf.write(f"{gen},{gnm.get('id')},{gnm.get('name')},{gnm.get('domain')},{s['ef']},{s['profit']},{s['rolls_survived']},{s['variance_score']},{s['table_cq']},{int(s['danger_zone'])}\n")
+
+        if args.report:
+            top = sorted((snap.main_pool + snap.danger_pool), key=lambda x: x["stats"]["ef"], reverse=True)[:10]
+            print("EF    Profit  Rolls  D  Name/ID")
+            for it in top:
+                s=it["stats"]; g=it["genome"]
+                print(f"{s['ef']:.3f} {s['profit']:+.0f}   {s['rolls_survived']:4d}  {int(s['danger_zone'])} {g.get('name') or g.get('id')}")
+
+        # summary accumulators
+        all_stats = [it["stats"] for it in (snap.main_pool + snap.danger_pool)]
+        if all_stats:
+            best = max(all_stats, key=lambda s: s["ef"])
+            worst = min(all_stats, key=lambda s: s["ef"])
+            if best["ef"] > summary["best"]["ef"]:
+                summary["best"] = {"ef": best["ef"], "profit": best["profit"], "rolls": best["rolls_survived"], "generation": gen}
+            if worst["ef"] < summary["worst"]["ef"]:
+                summary["worst"] = {"ef": worst["ef"], "profit": worst["profit"], "rolls": worst["rolls_survived"], "generation": gen}
+            summary["gens"].append({"gen": gen, "table_cq": snap.table_cq, "main": len(snap.main_pool), "danger": len(snap.danger_pool)})
+
+# write summary.json
+with open(os.path.join(outdir, "summary.json"), "w") as sf:
+    json.dump(summary, sf, indent=2)
