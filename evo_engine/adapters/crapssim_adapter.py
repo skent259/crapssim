@@ -85,18 +85,18 @@ def _build_strategy_from_genome(genome: Dict[str, Any]):
             ops.append(BetThree(amount))
 
         
-elif btype == "lay":
-    # Emulate Lay bets using Don't Come entries + odds multipliers.
-    # This will place up to N DC bets (N = len(targets)). As the DC travels, it lands
-    # on whatever box numbers roll (not strictly the requested targets), which approximates
-    # lay exposure against established numbers. Vig not modeled.
-    targets = [int(t) for t in bet.get("targets", []) if int(t) in (4,5,6,8,9,10)]
-    amount = float(bet.get("amount", base_unit))
-    odds = _odds_from_any(bet.get("odds", 2))  # default to 2x as a rough stand-in
-    count = max(1, len(targets)) if targets else 1
-    ops.append(CountStrategy(craps.bet.DontCome, count, craps.bet.DontCome(amount)))
-    if odds:
-        ops.append(DontComeOddsMultiplier(odds))
+        elif btype == "lay":
+            # Emulate Lay bets using Don't Come entries + odds multipliers.
+            # This will place up to N DC bets (N = len(targets)). As the DC travels, it lands
+            # on whatever box numbers roll (not strictly the requested targets), which approximates
+            # lay exposure against established numbers. Vig not modeled.
+            targets = [int(t) for t in bet.get("targets", []) if int(t) in (4,5,6,8,9,10)]
+            amount = float(bet.get("amount", base_unit))
+            odds = _odds_from_any(bet.get("odds", 2))  # default to 2x as a rough stand-in
+            count = max(1, len(targets)) if targets else 1
+            ops.append(CountStrategy(craps.bet.DontCome, count, craps.bet.DontCome(amount)))
+            if odds:
+            ops.append(DontComeOddsMultiplier(odds))
 
         # else: ignore unknown bet types for now
 
