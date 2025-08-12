@@ -54,11 +54,12 @@ def _build_strategy_from_genome(genome: Dict[str, Any]):
             ops.append(BetPlace({int(t): amount for t in targets}))
 
         elif btype == "hardway":
-            # targets should be subset of [4,6,8,10]
-            targets = [int(t) for t in bet.get("targets", []) if int(t) in (4,6,8,10)]
+            # targets must be 4, 6, 8, or 10
+            targets = [int(t) for t in bet.get("targets", []) if int(t) in (4, 6, 8, 10)]
             amount = float(bet.get("amount", base_unit))
             for t in targets:
-                ops.append(BetHardWay({t: amount}))
+                ops.append(BetHardWay(t, amount))
+
 
         elif btype == "field":
             amount = float(bet.get("amount", base_unit))
