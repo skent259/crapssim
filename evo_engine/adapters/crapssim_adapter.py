@@ -1,12 +1,18 @@
-
 from __future__ import annotations
 from typing import Dict, Any, List
+
 import crapssim as craps
 from crapssim.strategy import (
-    BetPassLine, BetDontPass, BetPlace, BetCome,
-    PassLineOddsMultiplier, DontPassOddsMultiplier,
-    AggregateStrategy, CountStrategy
+    BetPassLine,
+    BetDontPass,
+    BetPlace,
+    PassLineOddsMultiplier,
+    DontPassOddsMultiplier,
+    AggregateStrategy,
+    CountStrategy,
 )
+from crapssim.strategy.single_bet import BetCome
+
 from evo_engine.stats import StrategyStats
 from evo_engine.lineage import new_lineage
 
