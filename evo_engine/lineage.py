@@ -1,4 +1,3 @@
-
 import uuid
 
 def new_lineage(generation:int=0, parent_id:str|None=None) -> dict:
