@@ -1,0 +1,18 @@
+id: seed_hybrid_basic
+name: Hybrid Basic
+domain: hybrid
+bankroll: 1000
+base_unit: 10
+bets:
+  - type: pass_line
+    amount: 10
+    odds: 2x
+  - type: place
+    targets: [6, 8]
+    amount: 12
+stop_rules:
+  profit_target: 120
+  loss_limit: -180
+  max_rolls: 250
+mutations_allowed: true
+notes: "Simple light bias with place 6/8."

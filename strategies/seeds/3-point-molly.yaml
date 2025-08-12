@@ -1,7 +1,6 @@
+id: seed_3pt_molly
 name: 3-Point Molly
 domain: light
-phylum: session-surviving
-class: progressionist
 bankroll: 1000
 base_unit: 10
 bets:
@@ -17,4 +16,4 @@ stop_rules:
   loss_limit: -200
   max_rolls: 300
 mutations_allowed: true
-notes: "Classic Pass + two Come with odds."
+notes: "Pass + two Come with odds."

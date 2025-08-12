@@ -1,0 +1,22 @@
+id: seed_contra_cruise
+name: ContraCruise
+domain: dark
+bankroll: 1000
+base_unit: 10
+bets:
+  - type: dont_pass
+    amount: 10
+    odds: 2x
+  - type: lay
+    targets: [4, 10]
+    amount: 20
+    odds: 2x
+  - type: hardway
+    targets: [6, 8]
+    amount: 5
+stop_rules:
+  profit_target: 150
+  loss_limit: -200
+  max_rolls: 300
+mutations_allowed: true
+notes: "Don’t base with lays; hard 6/8 hedge."

@@ -1,0 +1,17 @@
+id: seed_iron_cross
+name: Iron Cross (legal)
+domain: light
+bankroll: 1000
+base_unit: 10
+bets:
+  - type: place
+    targets: [5, 6, 8]
+    amount: 12
+  - type: field
+    amount: 10
+stop_rules:
+  profit_target: 120
+  loss_limit: -180
+  max_rolls: 250
+mutations_allowed: true
+notes: "Classic Iron Cross variant."
