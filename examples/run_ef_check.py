@@ -1,10 +1,7 @@
-import os
-import sys
 
-# Ensure repo root is on sys.path so "evo_engine" is importable
+import os, sys
 REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-if REPO_ROOT not in sys.path:
-    sys.path.insert(0, REPO_ROOT)
+if REPO_ROOT not in sys.path: sys.path.insert(0, REPO_ROOT)
 
 from evo_engine import DEFAULTS
 from evo_engine.population import run_one_generation
@@ -21,6 +18,7 @@ def demo_genomes():
             "bets": [
                 {"type": "pass_line", "amount": 10, "odds": "2x"},
                 {"type": "come", "amount": 10, "odds": "2x", "max_concurrent": 2},
+                {"type": "hardway", "targets": [6,8], "amount": 5},
             ],
             "stop_rules": {"profit_target": 150, "loss_limit": -200, "max_rolls": 300},
         },
@@ -33,6 +31,8 @@ def demo_genomes():
             "bets": [
                 {"type": "dont_pass", "amount": 10, "odds": "2x"},
                 {"type": "place", "targets": [6,8], "amount": 5},
+                {"type": "field", "amount": 5},
+                {"type": "yo", "amount": 1},
             ],
             "stop_rules": {"profit_target": 150, "loss_limit": -200, "max_rolls": 300},
         },
