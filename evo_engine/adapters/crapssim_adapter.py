@@ -96,7 +96,7 @@ def _build_strategy_from_genome(genome: Dict[str, Any]):
             count = max(1, len(targets)) if targets else 1
             ops.append(CountStrategy(craps.bet.DontCome, count, craps.bet.DontCome(amount)))
             if odds:
-            ops.append(DontComeOddsMultiplier(odds))
+                ops.append(DontComeOddsMultiplier(odds))
 
         # else: ignore unknown bet types for now
 
