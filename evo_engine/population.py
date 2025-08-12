@@ -69,28 +69,30 @@ def select_parents(snapshot: PopulationSnapshot, config: Dict[str,Any]) -> List[
     return [e['genome'] for e in elites[:k]]
 
 
-def produce_offspring(parents: List[Dict[str,Any]], config: Dict[str,Any]) -> List[Dict[str,Any]]:
+def produce_offspring(parents: list[dict], config: dict, gen: int | None = None) -> list[dict]:
     from evo_engine.mutation import mutate_predictable, mutate_wildcard50, mutate_wildcard_chaos
-    if not parents: 
+    if not parents:
         return []
-    size = max(len(parents), int(config.get('population_size', 10)))
-    n_pred = max(0, int(size * config.get('predictables_pct', 0.6)))
-    n_w50  = max(0, int(size * config.get('wildcard50_pct', 0.2)))
-    n_wc   = max(0, int(size * config.get('wildcardChaos_pct', 0.2)))
-    children: List[Dict[str,Any]] = []
-    # Always carry elites forward unchanged (elitism)
-    elites_keep = max(1, int(size * config.get('elite_keep_pct', 0.2)))
+    size = max(len(parents), int(config.get("population_size", 10)))
+
+    mix = _annealed_mix(config, int(gen or 0))
+    n_pred = max(0, int(size * mix["predictables_pct"]))
+    n_w50  = max(0, int(size * mix["wildcard50_pct"]))
+    n_wc   = max(0, int(size * mix["wildcardChaos_pct"]))
+
+    children: list[dict] = []
+    elites_keep = max(1, int(size * config.get("elite_keep_pct", 0.1)))
     elites = parents[:elites_keep]
     children.extend(elites)
-    # Fill with mutations sampled from parents
+
     import random
     for _ in range(n_pred):
-        p = random.choice(parents); children.append(mutate_predictable(p, config))
+        children.append(mutate_predictable(random.choice(parents), config))
     for _ in range(n_w50):
-        p = random.choice(parents); children.append(mutate_wildcard50(p, config))
+        children.append(mutate_wildcard50(random.choice(parents), config))
     for _ in range(n_wc):
-        p = random.choice(parents); children.append(mutate_wildcard_chaos(p, config))
-    # Trim/pad to size
+        children.append(mutate_wildcard_chaos(random.choice(parents), config))
+
     while len(children) < size:
         children.append(random.choice(parents))
     return children[:size]
