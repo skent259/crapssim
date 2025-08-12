@@ -5,7 +5,7 @@ from typing import Dict, Any, List
 import crapssim as craps
 from crapssim.strategy import (
     BetPassLine, BetDontPass, BetPlace,
-    PassLineOddsMultiplier, DontPassOddsMultiplier, ComeOddsMultiplier,
+    PassLineOddsMultiplier, DontPassOddsMultiplier, ComeOddsMultiplier, DontComeOddsMultiplier,
     AggregateStrategy, CountStrategy,
 )
 from crapssim.strategy.single_bet import (
@@ -54,12 +54,11 @@ def _build_strategy_from_genome(genome: Dict[str, Any]):
             ops.append(BetPlace({int(t): amount for t in targets}))
 
         elif btype == "hardway":
-            # targets must be 4, 6, 8, or 10
-            targets = [int(t) for t in bet.get("targets", []) if int(t) in (4, 6, 8, 10)]
+            # targets should be subset of [4,6,8,10]
+            targets = [int(t) for t in bet.get("targets", []) if int(t) in (4,6,8,10)]
             amount = float(bet.get("amount", base_unit))
             for t in targets:
-                ops.append(BetHardWay(t, amount))
-
+                ops.append(BetHardWay({t: amount}))
 
         elif btype == "field":
             amount = float(bet.get("amount", base_unit))
@@ -85,10 +84,19 @@ def _build_strategy_from_genome(genome: Dict[str, Any]):
             amount = float(bet.get("amount", base_unit))
             ops.append(BetThree(amount))
 
-        elif btype == "lay":
-            # NOTE: The current engine does not provide an explicit Lay bet type.
-            # We'll skip these gracefully for now; future: emulate via DC with odds.
-            continue
+        
+elif btype == "lay":
+    # Emulate Lay bets using Don't Come entries + odds multipliers.
+    # This will place up to N DC bets (N = len(targets)). As the DC travels, it lands
+    # on whatever box numbers roll (not strictly the requested targets), which approximates
+    # lay exposure against established numbers. Vig not modeled.
+    targets = [int(t) for t in bet.get("targets", []) if int(t) in (4,5,6,8,9,10)]
+    amount = float(bet.get("amount", base_unit))
+    odds = _odds_from_any(bet.get("odds", 2))  # default to 2x as a rough stand-in
+    count = max(1, len(targets)) if targets else 1
+    ops.append(CountStrategy(craps.bet.DontCome, count, craps.bet.DontCome(amount)))
+    if odds:
+        ops.append(DontComeOddsMultiplier(odds))
 
         # else: ignore unknown bet types for now
 

@@ -46,5 +46,29 @@ def select_parents(snapshot: PopulationSnapshot, config: Dict[str,Any]) -> List[
     k = max(1, int(len(elites) * config.get('elite_keep_pct', 0.2)))
     return [e['genome'] for e in elites[:k]]
 
+
 def produce_offspring(parents: List[Dict[str,Any]], config: Dict[str,Any]) -> List[Dict[str,Any]]:
-    return list(parents)
+    from evo_engine.mutation import mutate_predictable, mutate_wildcard50, mutate_wildcard_chaos
+    if not parents: 
+        return []
+    size = max(len(parents), int(config.get('population_size', 10)))
+    n_pred = max(0, int(size * config.get('predictables_pct', 0.6)))
+    n_w50  = max(0, int(size * config.get('wildcard50_pct', 0.2)))
+    n_wc   = max(0, int(size * config.get('wildcardChaos_pct', 0.2)))
+    children: List[Dict[str,Any]] = []
+    # Always carry elites forward unchanged (elitism)
+    elites_keep = max(1, int(size * config.get('elite_keep_pct', 0.2)))
+    elites = parents[:elites_keep]
+    children.extend(elites)
+    # Fill with mutations sampled from parents
+    import random
+    for _ in range(n_pred):
+        p = random.choice(parents); children.append(mutate_predictable(p, config))
+    for _ in range(n_w50):
+        p = random.choice(parents); children.append(mutate_wildcard50(p, config))
+    for _ in range(n_wc):
+        p = random.choice(parents); children.append(mutate_wildcard_chaos(p, config))
+    # Trim/pad to size
+    while len(children) < size:
+        children.append(random.choice(parents))
+    return children[:size]
