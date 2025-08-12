@@ -37,15 +37,18 @@ def _build_strategy_from_genome(genome: Dict[str, Any]):
             odds = bet.get("odds", 0)
             if odds:
                 ops.append(_odds_multiplier(odds, light=True))
-        elif btype == "come":
-            amt = float(bet.get("amount", base_unit))
-            maxc = int(bet.get("max_concurrent", 1))
-            come_strat = CountStrategy(craps.bet.Come, maxc, BetCome(amt))
-            ops.append(come_strat)
-            odds = bet.get("odds", 0)
-            if odds:
-                # Pass line odds multiplier also applies to Come odds in this simplified mapping
-                ops.append(_odds_multiplier(odds, light=True))
+       elif btype == "come":
+    amt = float(bet.get("amount", base_unit))
+    maxc = int(bet.get("max_concurrent", 1))
+    # CountStrategy wants a Bet instance, not a Strategy.
+    come_strat = CountStrategy(craps.bet.Come, maxc, craps.bet.Come(amt))
+    ops.append(come_strat)
+    odds = bet.get("odds", 0)
+    if odds:
+        # Use ComeOddsMultiplier, not PassLineOddsMultiplier
+        mult = int(str(odds).rstrip("x")) if isinstance(odds, str) and odds.endswith("x") else int(odds)
+        ops.append(ComeOddsMultiplier(mult))
+
         elif btype == "dont_pass":
             amt = float(bet.get("amount", base_unit))
             ops.append(BetDontPass(amt))
