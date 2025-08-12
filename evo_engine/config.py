@@ -18,6 +18,4 @@ DEFAULTS = {
     "anneal_floor": {"predictables_pct": 0.75, "wildcard50_pct": 0.20, "wildcardChaos_pct": 0.05},
     "crossbreed": {"enable": False, "rate": 0.15},
 }
-,
-  "crossbreed": {"enable": False, "rate": 0.15},
-}
+
