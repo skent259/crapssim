@@ -8,6 +8,26 @@ from evo_engine.scoring import variance_score, ef_main, ef_danger, in_danger
 from evo_engine.stats import StrategyStats
 from evo_engine.util import category_fit_bonus
 
+def _annealed_mix(config: dict, gen: int) -> dict:
+    if not config.get("anneal_enable", False):
+        return {
+            "predictables_pct": config.get("predictables_pct", 0.6),
+            "wildcard50_pct":  config.get("wildcard50_pct", 0.25),
+            "wildcardChaos_pct": config.get("wildcardChaos_pct", 0.15),
+        }
+    g0 = int(config.get("anneal_start_gen", 0))
+    g1 = int(config.get("anneal_end_gen", 20))
+    t = 0.0 if gen <= g0 else 1.0 if gen >= g1 else (gen - g0) / max(1, (g1 - g0))
+
+    # start = current config; end = floor targets
+    start = {
+        "predictables_pct": config.get("predictables_pct", 0.6),
+        "wildcard50_pct":  config.get("wildcard50_pct", 0.25),
+        "wildcardChaos_pct": config.get("wildcardChaos_pct", 0.15),
+    }
+    end = config.get("anneal_floor", {"predictables_pct":0.75,"wildcard50_pct":0.2,"wildcardChaos_pct":0.05})
+    return {k: (start[k] * (1 - t) + end.get(k, start[k]) * t) for k in start}
+
 @dataclass
 class PopulationSnapshot:
     generation: int
