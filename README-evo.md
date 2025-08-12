@@ -9,3 +9,12 @@ This fork adds:
 pip install -r requirements.txt
 python examples/run_ef_check.py
 ```
+
+
+## Running tests
+
+```bash
+pip install -r requirements.txt
+pip install pytest pyyaml
+python -m pytest -q
+```
