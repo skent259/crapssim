@@ -1,45 +1,30 @@
+
 from __future__ import annotations
 from typing import Dict, Any, List
 
 import crapssim as craps
 from crapssim.strategy import (
-    BetPassLine,
-    BetDontPass,
-    BetPlace,
-    PassLineOddsMultiplier,
-    DontPassOddsMultiplier,
-    ComeOddsMultiplier,
-    DontComeOddsMultiplier,
-    AggregateStrategy,
-    CountStrategy,
+    BetPassLine, BetDontPass, BetPlace,
+    PassLineOddsMultiplier, DontPassOddsMultiplier, ComeOddsMultiplier, DontComeOddsMultiplier,
+    AggregateStrategy, CountStrategy,
 )
 from crapssim.strategy.single_bet import (
-    BetHardWay,
-    BetAny7,
-    BetTwo,
-    BetThree,
-    BetYo,
-    BetBoxcars,
-    BetField,
+    BetHardWay, BetAny7, BetTwo, BetThree, BetYo, BetBoxcars, BetField
 )
 from evo_engine.stats import StrategyStats
 
-
-def _odds_from_any(odds: str | int | float) -> int:
+def _odds_from_any(odds: str|int|float)->int:
     if isinstance(odds, (int, float)):
         return int(odds)
     if isinstance(odds, str) and odds.endswith("x"):
         return int(odds[:-1] or 0)
     return 0
 
-
 def _build_strategy_from_genome(genome: Dict[str, Any]):
     ops: List = []
     base_unit = float(genome.get("base_unit", 10))
-
     for bet in genome.get("bets", []):
         btype = bet.get("type")
-
         if btype == "pass_line":
             amt = float(bet.get("amount", base_unit))
             ops.append(BetPassLine(amt))
@@ -50,7 +35,6 @@ def _build_strategy_from_genome(genome: Dict[str, Any]):
         elif btype == "come":
             amt = float(bet.get("amount", base_unit))
             maxc = int(bet.get("max_concurrent", 1))
-            # CountStrategy expects a Bet instance (Come), not a Strategy wrapper
             come_strat = CountStrategy(craps.bet.Come, maxc, craps.bet.Come(amt))
             ops.append(come_strat)
             odds = bet.get("odds", 0)
@@ -70,11 +54,11 @@ def _build_strategy_from_genome(genome: Dict[str, Any]):
             ops.append(BetPlace({int(t): amount for t in targets}))
 
         elif btype == "hardway":
-            # targets must be in {4, 6, 8, 10}
-            targets = [int(t) for t in bet.get("targets", []) if int(t) in (4, 6, 8, 10)]
+            # targets should be subset of [4,6,8,10]
+            targets = [int(t) for t in bet.get("targets", []) if int(t) in (4,6,8,10)]
             amount = float(bet.get("amount", base_unit))
             for t in targets:
-                ops.append(BetHardWay(t, amount))
+                ops.append(BetHardWay({t: amount}))
 
         elif btype == "field":
             amount = float(bet.get("amount", base_unit))
@@ -84,34 +68,37 @@ def _build_strategy_from_genome(genome: Dict[str, Any]):
             amount = float(bet.get("amount", base_unit))
             ops.append(BetAny7(amount))
 
-        elif btype in ("yo", "eleven", "11"):
+        elif btype in ("yo","eleven","11"):
             amount = float(bet.get("amount", base_unit))
             ops.append(BetYo(amount))
 
-        elif btype in ("boxcars", "12"):
+        elif btype in ("boxcars","12"):
             amount = float(bet.get("amount", base_unit))
             ops.append(BetBoxcars(amount))
 
-        elif btype in ("aces", "2"):
+        elif btype in ("aces","2"):
             amount = float(bet.get("amount", base_unit))
             ops.append(BetTwo(amount))
 
-        elif btype in ("ace_deuce", "three", "3"):
+        elif btype in ("ace_deuce","three","3"):
             amount = float(bet.get("amount", base_unit))
             ops.append(BetThree(amount))
 
-        elif btype == "lay":
-            # Emulate Lay via Don't Come entries + odds multiplier.
-            # Note: This approximates exposure against established numbers (no commission modeled).
-            targets = [int(t) for t in bet.get("targets", []) if int(t) in (4, 5, 6, 8, 9, 10)]
-            amount = float(bet.get("amount", base_unit))
-            odds = _odds_from_any(bet.get("odds", 2))  # default to 2x
-            count = max(1, len(targets)) if targets else 1
-            ops.append(CountStrategy(craps.bet.DontCome, count, craps.bet.DontCome(amount)))
-            if odds:
-                ops.append(DontComeOddsMultiplier(odds))
+        
+elif btype == "lay":
+    # Emulate Lay bets using Don't Come entries + odds multipliers.
+    # This will place up to N DC bets (N = len(targets)). As the DC travels, it lands
+    # on whatever box numbers roll (not strictly the requested targets), which approximates
+    # lay exposure against established numbers. Vig not modeled.
+    targets = [int(t) for t in bet.get("targets", []) if int(t) in (4,5,6,8,9,10)]
+    amount = float(bet.get("amount", base_unit))
+    odds = _odds_from_any(bet.get("odds", 2))  # default to 2x as a rough stand-in
+    count = max(1, len(targets)) if targets else 1
+    ops.append(CountStrategy(craps.bet.DontCome, count, craps.bet.DontCome(amount)))
+    if odds:
+        ops.append(DontComeOddsMultiplier(odds))
 
-        # Unknown types are ignored for now.
+        # else: ignore unknown bet types for now
 
     if not ops:
         ops = [BetPassLine(base_unit)]
@@ -119,43 +106,28 @@ def _build_strategy_from_genome(genome: Dict[str, Any]):
         return ops[0]
     return AggregateStrategy(*ops)
 
-
 def run_strategy_with_crapssim(genome: dict, roll_set: dict, config: dict) -> StrategyStats:
     table = craps.Table()
     strategy = _build_strategy_from_genome(genome)
-    table.add_player(
-        bankroll=float(genome.get("bankroll", config.get("starting_bankroll", 1000.0))),
-        strategy=strategy,
-        name=genome.get("name", "Genome"),
-    )
+    table.add_player(bankroll=float(genome.get("bankroll", config.get("starting_bankroll", 1000.0))), strategy=strategy, name=genome.get("name","Genome"))
     player = table.players[0]
 
     bankroll_curve = [float(player.bankroll)]
     rolls_survived = 0
-
-    for roll in roll_set.get("rolls", []):
+    for i, roll in enumerate(roll_set.get("rolls", [])):
         craps.table.TableUpdate().run(table, dice_outcome=roll, verbose=False)
         bankroll_curve.append(float(player.bankroll))
         rolls_survived += 1
-
         stop = genome.get("stop_rules", {})
         if stop:
-            profit = float(player.bankroll) - float(
-                genome.get("bankroll", config.get("starting_bankroll", 1000.0))
-            )
-            if profit >= float(stop.get("profit_target", 1e18)):
-                break
-            if profit <= float(stop.get("loss_limit", -1e18)):
-                break
-            if rolls_survived >= int(stop.get("max_rolls", 1e18)):
-                break
+            profit = float(player.bankroll) - float(genome.get("bankroll", config.get("starting_bankroll", 1000.0)))
+            if profit >= float(stop.get("profit_target", 1e18)): break
+            if profit <= float(stop.get("loss_limit", -1e18)): break
+            if rolls_survived >= int(stop.get("max_rolls", 1e18)): break
 
-    profit = float(player.bankroll) - float(
-        genome.get("bankroll", config.get("starting_bankroll", 1000.0))
-    )
-
+    profit = float(player.bankroll) - float(genome.get("bankroll", config.get("starting_bankroll", 1000.0)))
     return StrategyStats(
-        id=str(genome.get("id", genome.get("name", "genome"))),
+        id=str(genome.get("id", genome.get("name","genome"))),
         generation=int(genome.get("lineage", {}).get("generation", 0)),
         rolls_survived=int(rolls_survived),
         profit=float(profit),

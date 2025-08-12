@@ -6,6 +6,7 @@ from evo_engine.rollsets import generate_roll_set, compute_table_cq, validate_ta
 from evo_engine.adapters.crapssim_adapter import run_strategy_with_crapssim
 from evo_engine.scoring import variance_score, ef_main, ef_danger, in_danger
 from evo_engine.stats import StrategyStats
+from evo_engine.util import category_fit_bonus
 
 @dataclass
 class PopulationSnapshot:
@@ -28,7 +29,8 @@ def run_one_generation(genomes: List[Dict[str,Any]], config: Dict[str,Any], seed
         stats.variance_score = v; stats.table_cq = cq
         ef_fn = ef_danger if in_danger(v, config.get('danger_variance_threshold',0.75)) else ef_main
         stats.danger_zone = ef_fn is ef_danger
-        stats.ef = ef_fn(stats.rolls_survived, stats.profit, v,
+        cb = category_fit_bonus(g)
+        stats.ef = ef_fn(stats.rolls_survived, stats.profit, v, category_fit_bonus=cb,
                          start_bankroll=config.get('starting_bankroll',1000.0),
                          max_rolls_cap=config.get('max_rolls_cap',2000))
         item = {"genome": g, "stats": stats.__dict__}
