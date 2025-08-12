@@ -47,14 +47,25 @@ def load_genomes():
         g.setdefault("lineage", {"parent_id": None, "generation": 0})
     return genomes
 
+
 if __name__ == "__main__":
+    import argparse
+    parser = argparse.ArgumentParser(description="Run evolutionary craps sim for N generations.")
+    parser.add_argument("--gens", type=int, default=3, help="Number of generations to run")
+    parser.add_argument("--pop", type=int, default=None, help="Population size override")
+    parser.add_argument("--seed", type=int, default=0, help="Random seed / rollset seed")
+    args = parser.parse_args()
+
     outdir = os.path.join(REPO_ROOT, "runs")
+
     os.makedirs(outdir, exist_ok=True)
 
     genomes = load_genomes()
-    gens = 3  # run a few gens fast
+    if args.pop:
+        DEFAULTS['population_size'] = int(args.pop)
+    gens = int(args.gens)
     for gen in range(gens):
-        snap = run_one_generation(genomes, DEFAULTS, seed=gen)
+        snap = run_one_generation(genomes, DEFAULTS, seed=(args.seed + gen))
         outfile = os.path.join(outdir, f"gen_{gen}.json")
         write_snapshot(snap, outfile)
         print(f"Wrote {outfile} | table_cq={snap.table_cq} | main={len(snap.main_pool)} danger={len(snap.danger_pool)}")
