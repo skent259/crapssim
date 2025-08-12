@@ -50,17 +50,33 @@ def load_genomes():
 
 if __name__ == "__main__":
     import argparse
-    parser = argparse.ArgumentParser(description="Run evolutionary craps sim for N generations.")
-    parser.add_argument("--gens", type=int, default=3, help="Number of generations to run")
-    parser.add_argument("--pop", type=int, default=None, help="Population size override")
-    parser.add_argument("--seed", type=int, default=0, help="Random seed / rollset seed")
-    
-    parser.add_argument("--out", type=str, default="runs", help="Output directory (default: runs)")
-    parser.add_argument("--resume", action="store_true", help="Resume from last gen_*.json in --out")
-    parser.add_argument("--report", action="store_true", help="Print a brief top-10 EF table per gen")
+import os
+import argparse
+import datetime
+
+REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--gens", type=int, default=5, help="Number of generations to run")
+parser.add_argument("--pop", type=int, default=40, help="Population size")
+parser.add_argument("--seed", type=int, default=123, help="Base random seed")
+parser.add_argument("--out", type=str, default="runs", help="Output folder name")
+parser.add_argument("--resume", action="store_true", help="Resume from existing folder")
+parser.add_argument("--report", action="store_true", help="Print EF table each generation")
 args = parser.parse_args()
 
+# Determine output directory
+if not args.resume:
     outdir = os.path.join(REPO_ROOT, args.out)
+    if os.path.exists(outdir):
+        timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H%M%S")
+        outdir = f"{outdir}_{timestamp}"
+else:
+    outdir = os.path.join(REPO_ROOT, args.out)
+
+os.makedirs(outdir, exist_ok=True)
+print(f"[INFO] Results will be written to: {outdir}")
+
 
     
     # Output handling
@@ -123,3 +139,41 @@ os.makedirs(outdir, exist_ok=True)
 # write summary.json
 with open(os.path.join(outdir, "summary.json"), "w") as sf:
     json.dump(summary, sf, indent=2)
+import json
+from statistics import mean
+
+# Collect summary data
+cq_values = []
+ef_values = []
+best_ef = None
+worst_ef = None
+
+for fname in sorted(os.listdir(outdir)):
+    if fname.startswith("gen_") and fname.endswith(".json"):
+        with open(os.path.join(outdir, fname)) as f:
+            data = json.load(f)
+        cq_values.append(data.get("table_cq", None))
+        if "strategies" in data:
+            for strat in data["strategies"]:
+                ef = strat.get("ef_score")
+                if ef is not None:
+                    ef_values.append(ef)
+                    if best_ef is None or ef > best_ef:
+                        best_ef = ef
+                    if worst_ef is None or ef < worst_ef:
+                        worst_ef = ef
+
+summary = {
+    "generations": args.gens,
+    "population": args.pop,
+    "avg_table_cq": mean([c for c in cq_values if c is not None]) if cq_values else None,
+    "best_ef_score": best_ef,
+    "worst_ef_score": worst_ef,
+    "total_strategies_evaluated": len(ef_values),
+}
+
+summary_path = os.path.join(outdir, "summary.json")
+with open(summary_path, "w") as f:
+    json.dump(summary, f, indent=2)
+
+print(f"[INFO] Summary written to: {summary_path}")
