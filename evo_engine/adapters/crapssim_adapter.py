@@ -8,6 +8,7 @@ from crapssim.strategy import (
     BetPlace,
     PassLineOddsMultiplier,
     DontPassOddsMultiplier,
+    ComeOddsMultiplier, 
     AggregateStrategy,
     CountStrategy,
 )
