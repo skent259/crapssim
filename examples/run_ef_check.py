@@ -1,3 +1,10 @@
+import os
+import sys
+
+# Ensure repo root is on sys.path so "evo_engine" is importable
+REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+if REPO_ROOT not in sys.path:
+    sys.path.insert(0, REPO_ROOT)
 
 from evo_engine import DEFAULTS
 from evo_engine.population import run_one_generation
