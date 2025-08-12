@@ -166,7 +166,11 @@ def main() -> int:
             parents = (snap.main_pool or snap.danger_pool)[:]
             parents = parents[:max(1, int(len(parents) * 0.5))]
 
-        parent_genomes = [p["genome"] for p in parents]
+        parent_genomes = [
+    (p["genome"] if isinstance(p, dict) and "genome" in p else p)
+    for p in parents
+]
+
         genomes = produce_offspring(parent_genomes, DEFAULTS)
 
         # Size control
