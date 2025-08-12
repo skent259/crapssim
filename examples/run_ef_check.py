@@ -38,13 +38,30 @@ def demo_genomes():
         },
     ]
 
+
 if __name__ == "__main__":
-    genomes = demo_genomes()
+    import os, sys
+    REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+    if REPO_ROOT not in sys.path: sys.path.insert(0, REPO_ROOT)
+    from evo_engine.io.seeds import load_seed_genomes
+
+    seeds_path = os.path.join(REPO_ROOT, "strategies", "seeds")
+    genomes = load_seed_genomes(seeds_path) or demo_genomes()
+    # Ensure basic IDs
+    for i,g in enumerate(genomes):
+        g.setdefault("id", g.get("name", f"genome_{i}").lower().replace(" ","_"))
+        g.setdefault("bankroll", 1000)
+        g.setdefault("base_unit", 10)
+
+    from evo_engine import DEFAULTS
+    from evo_engine.population import run_one_generation
     snap = run_one_generation(genomes, DEFAULTS, seed=0)
+
     outdir = os.path.join(os.path.dirname(__file__), "..", "runs")
     os.makedirs(outdir, exist_ok=True)
     outfile = os.path.join(outdir, "gen_0.json")
     from evo_engine.io.snapshot import write_snapshot
     write_snapshot(snap, outfile)
     print("Wrote", outfile)
+    import json
     print(json.dumps({"table_cq": snap.table_cq, "main_pool": len(snap.main_pool), "danger_pool": len(snap.danger_pool)}, indent=2))
