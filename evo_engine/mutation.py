@@ -86,8 +86,11 @@ def mutate_wildcard_chaos(parent: Dict[str, Any], config: Dict[str, Any]) -> Dic
             n = random.choice([0,1,2,3,4,5])
             b['odds'] = f"{n}x"
     return c
+
+
 def crossover_one_point(a: dict, b: dict) -> dict:
     import copy, random, uuid
+    from evo_engine.util import normalize_genome
     child = copy.deepcopy(a)
     child["id"] = f"xb_{str(uuid.uuid4())[:8]}"
     bets_a = a.get("bets", []) or []
@@ -97,9 +100,6 @@ def crossover_one_point(a: dict, b: dict) -> dict:
     cut_a = random.randrange(len(bets_a)+1) if bets_a else 0
     cut_b = random.randrange(len(bets_b)+1) if bets_b else 0
     child["bets"] = (bets_a[:cut_a] + bets_b[cut_b:]) or (bets_a or bets_b)
-    # mix some scalar knobs
     child["base_unit"] = int(round((a.get("base_unit",10)+b.get("base_unit",10))/2))
-    # normalize to enforce legal sizes/targets
-    from evo_engine.util import normalize_genome
     child, _notes = normalize_genome(child)
     return child
