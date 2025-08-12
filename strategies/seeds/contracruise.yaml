@@ -1,0 +1,26 @@
+name: ContraCruise
+domain: dark
+phylum: low-yield-high-comp
+class: combo/adaptive
+bankroll: 1000
+base_unit: 10
+bets:
+  - type: dont_pass
+    amount: 10
+    odds: 2x
+  - type: place
+    targets: [6, 8]
+    amount: 5
+  - type: hardway
+    targets: [6, 8]
+    amount: 5
+stop_rules:
+  profit_target: 150
+  loss_limit: -200
+  max_rolls: 300
+quirks:
+  confidence_creep:
+    trigger_wins: 3
+    bet_increase_pct: 25
+mutations_allowed: true
+notes: "Don’t base with lays; hedges on hard 6/8; conservative transitions."

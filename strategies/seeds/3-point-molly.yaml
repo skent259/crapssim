@@ -1,0 +1,20 @@
+name: 3-Point Molly
+domain: light
+phylum: session-surviving
+class: progressionist
+bankroll: 1000
+base_unit: 10
+bets:
+  - type: pass_line
+    amount: 10
+    odds: 2x
+  - type: come
+    amount: 10
+    odds: 2x
+    max_concurrent: 2
+stop_rules:
+  profit_target: 150
+  loss_limit: -200
+  max_rolls: 300
+mutations_allowed: true
+notes: "Classic Pass + two Come with odds."
