@@ -25,6 +25,8 @@ from crapssim.bet import (
     Yo,
 )
 from crapssim.point import Point
+from crapssim.strategy.odds import ComeOddsMultiplier
+from crapssim.strategy.single_bet import BetCome, BetPassLine
 from crapssim.strategy.tools import NullStrategy
 from crapssim.table import TableUpdate
 
@@ -744,3 +746,16 @@ def test_all_tall_small_table_payout_ratio(
 
     ratio = (bet.get_result(table).amount - bet.amount) / bet.amount
     assert ratio == correct_ratio
+
+
+def test_odds_inactive_when_point_off():
+
+    table = Table()
+    strat = BetPassLine(10) + BetCome(10) + ComeOddsMultiplier()
+
+    table.add_player(bankroll=200, strategy=strat)
+    table.fixed_run(
+        dice_outcomes=[(5, 5), (5, 1), (5, 5), (5, 2), (3, 3)], verbose=True
+    )
+
+    assert table.players[0].bankroll == 190
