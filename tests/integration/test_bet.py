@@ -748,14 +748,17 @@ def test_all_tall_small_table_payout_ratio(
     assert ratio == correct_ratio
 
 
-def test_odds_inactive_when_point_off():
+def test_odds_inactive_when_point_off_unless_always_working():
 
     table = Table()
-    strat = BetPassLine(10) + BetCome(10) + ComeOddsMultiplier()
+    strat1 = BetPassLine(10) + BetCome(10) + ComeOddsMultiplier()
+    strat2 = BetPassLine(10) + BetCome(10) + ComeOddsMultiplier(always_working=True)
 
-    table.add_player(bankroll=200, strategy=strat)
+    table.add_player(bankroll=200, strategy=strat1)
+    table.add_player(bankroll=200, strategy=strat2)
     table.fixed_run(
         dice_outcomes=[(5, 5), (5, 1), (5, 5), (5, 2), (3, 3)], verbose=True
     )
 
     assert table.players[0].bankroll == 190
+    assert table.players[1].bankroll == 110
