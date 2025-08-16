@@ -37,7 +37,7 @@ class OddsAmount(Strategy):
             if bet.is_allowed(player) and not player.already_placed(bet):
                 player.add_bet(bet)
 
-    def get_always_working_repr(self) -> str:
+    def _get_always_working_repr(self) -> str:
         """Since the default is false, only need to print when True"""
         return (
             f", always_working={self.always_working})" if self.always_working else f")"
@@ -47,7 +47,7 @@ class OddsAmount(Strategy):
         return (
             f"{self.__class__.__name__}(base_type={self.base_type}, "
             f"odds_amounts={self.odds_amounts}"
-            f"{self.get_always_working_repr()}"
+            f"{self._get_always_working_repr()}"
         )
 
 
@@ -65,7 +65,7 @@ class PassLineOddsAmount(OddsAmount):
     def __repr__(self) -> str:
         return (
             f"{self.__class__.__name__}(bet_amount={self.bet_amount}, numbers={self.numbers}"
-            f"{self.get_always_working_repr()}"
+            f"{self._get_always_working_repr()}"
         )
 
 
@@ -83,7 +83,7 @@ class DontPassOddsAmount(OddsAmount):
     def __repr__(self) -> str:
         return (
             f"{self.__class__.__name__}(bet_amount={self.bet_amount}, numbers={self.numbers}"
-            f"{self.get_always_working_repr()}"
+            f"{self._get_always_working_repr()}"
         )
 
 
@@ -101,7 +101,7 @@ class ComeOddsAmount(OddsAmount):
     def __repr__(self) -> str:
         return (
             f"{self.__class__.__name__}(bet_amount={self.bet_amount}, numbers={self.numbers}"
-            f"{self.get_always_working_repr()}"
+            f"{self._get_always_working_repr()}"
         )
 
 
@@ -119,7 +119,7 @@ class DontComeOddsAmount(OddsAmount):
     def __repr__(self) -> str:
         return (
             f"{self.__class__.__name__}(bet_amount={self.bet_amount}, numbers={self.numbers}"
-            f"{self.get_always_working_repr()}"
+            f"{self._get_always_working_repr()}"
         )
 
 
@@ -197,7 +197,7 @@ class OddsMultiplier(Strategy):
         """
         return len([x for x in player.bets if isinstance(x, self.base_type)]) == 0
 
-    def get_odds_multiplier_repr(self) -> int | dict[int, int]:
+    def _get_odds_multiplier_repr(self) -> int | dict[int, int]:
         """If the odds_multiplier has multiple values return a dictionary with the values,
         if all the multipliers are the same return an integer of the multiplier."""
         if all([x == self.odds_multiplier[4] for x in self.odds_multiplier.values()]):
@@ -206,7 +206,7 @@ class OddsMultiplier(Strategy):
             odds_multiplier = self.odds_multiplier
         return odds_multiplier
 
-    def get_always_working_repr(self) -> str:
+    def _get_always_working_repr(self) -> str:
         """Since the default is false, only need to print when True"""
         return (
             f", always_working={self.always_working})" if self.always_working else f")"
@@ -216,7 +216,7 @@ class OddsMultiplier(Strategy):
         return (
             f"{self.__class__.__name__}(base_type={self.base_type}, "
             f"odds_multiplier={self.get_odds_multiplier_repr()}"
-            f"{self.get_always_working_repr()}"
+            f"{self._get_always_working_repr()}"
         )
 
 
@@ -244,8 +244,8 @@ class PassLineOddsMultiplier(OddsMultiplier):
 
     def __repr__(self) -> str:
         return (
-            f"{self.__class__.__name__}(odds_multiplier={self.get_odds_multiplier_repr()}"
-            f"{self.get_always_working_repr()}"
+            f"{self.__class__.__name__}(odds_multiplier={self._get_odds_multiplier_repr()}"
+            f"{self._get_always_working_repr()}"
         )
 
 
@@ -273,8 +273,8 @@ class DontPassOddsMultiplier(OddsMultiplier):
 
     def __repr__(self) -> str:
         return (
-            f"{self.__class__.__name__}(odds_multiplier={self.get_odds_multiplier_repr()}"
-            f"{self.get_always_working_repr()}"
+            f"{self.__class__.__name__}(odds_multiplier={self._get_odds_multiplier_repr()}"
+            f"{self._get_always_working_repr()}"
         )
 
 
@@ -302,8 +302,8 @@ class ComeOddsMultiplier(OddsMultiplier):
 
     def __repr__(self) -> str:
         return (
-            f"{self.__class__.__name__}(odds_multiplier={self.get_odds_multiplier_repr()}"
-            f"{self.get_always_working_repr()}"
+            f"{self.__class__.__name__}(odds_multiplier={self._get_odds_multiplier_repr()}"
+            f"{self._get_always_working_repr()}"
         )
 
 
@@ -331,6 +331,6 @@ class DontComeOddsMultiplier(OddsMultiplier):
 
     def __repr__(self) -> str:
         return (
-            f"{self.__class__.__name__}(odds_multiplier={self.get_odds_multiplier_repr()}"
-            f"{self.get_always_working_repr()}"
+            f"{self.__class__.__name__}(odds_multiplier={self._get_odds_multiplier_repr()}"
+            f"{self._get_always_working_repr()}"
         )

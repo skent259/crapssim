@@ -62,19 +62,19 @@ def test_ev_oneroll(bet, ev):
         (crapssim.bet.DontCome(1), "DontCome(amount=1.0, number=None)"),
         (
             crapssim.bet.Odds(crapssim.bet.PassLine, 6, 1, False),
-            "Odds(base_type=crapssim.bet.PassLine, number=6, amount=1.0, always_working=False)",
+            "Odds(base_type=crapssim.bet.PassLine, number=6, amount=1.0)",
         ),
         (
             crapssim.bet.Odds(crapssim.bet.Come, 8, 1),
-            "Odds(base_type=crapssim.bet.Come, number=8, amount=1.0, always_working=False)",
+            "Odds(base_type=crapssim.bet.Come, number=8, amount=1.0)",
         ),
         (
             crapssim.bet.Odds(crapssim.bet.DontPass, 9, 1),
-            "Odds(base_type=crapssim.bet.DontPass, number=9, amount=1.0, always_working=False)",
+            "Odds(base_type=crapssim.bet.DontPass, number=9, amount=1.0)",
         ),
         (
             crapssim.bet.Odds(crapssim.bet.DontCome, 10, 1),
-            "Odds(base_type=crapssim.bet.DontCome, number=10, amount=1.0, always_working=False)",
+            "Odds(base_type=crapssim.bet.DontCome, number=10, amount=1.0)",
         ),
         (
             crapssim.bet.Odds(crapssim.bet.PassLine, 6, 1, True),

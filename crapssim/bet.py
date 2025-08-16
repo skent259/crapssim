@@ -596,14 +596,20 @@ class Odds(_WinningLosingNumbersBet):
         ]
         return sum(x.amount for x in base_bets)
 
+    def _get_always_working_repr(self) -> str:
+        """Since the default is false, only need to print when True"""
+        return (
+            f", always_working={self.always_working})" if self.always_working else f")"
+        )
+
     @property
     def _placed_key(self) -> typing.Hashable:
         return type(self), self.base_type, self.number
 
     def __repr__(self):
         return (
-            f"Odds(base_type={self.base_type}, number={self.number}, "
-            f"amount={self.amount}, always_working={self.always_working})"
+            f"Odds(base_type={self.base_type}, number={self.number}, amount={self.amount}"
+            f"{self._get_always_working_repr()}"
         )
 
     # def __str__(self):
