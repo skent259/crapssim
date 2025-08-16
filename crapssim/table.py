@@ -462,3 +462,5 @@ class Player:
             print(f"{self.name} won ${result.amount - bet.amount} on {bet}!")
         elif result.lost:
             print(f"{self.name} lost ${bet.amount} on {bet}.")
+        elif result.pushed:
+            print(f"{self.name} pushed for ${bet.amount} on {bet}.")

@@ -41,7 +41,13 @@ from crapssim.strategy.examples import (
     PlaceInside,
     Risk12,
 )
-from crapssim.strategy.odds import OddsAmount, OddsMultiplier
+from crapssim.strategy.odds import (
+    ComeOddsMultiplier,
+    DontComeOddsMultiplier,
+    DontPassOddsMultiplier,
+    OddsAmount,
+    OddsMultiplier,
+)
 from crapssim.strategy.single_bet import StrategyMode, _BaseSingleBet
 from crapssim.strategy.tools import RemoveByType, RemoveIfPointOff, ReplaceIfTrue
 
@@ -570,6 +576,22 @@ def test_odds_multiplier_dont_come_bet_placed(player):
     player.add_bet = MagicMock()
     strategy.update_bets(player)
     player.add_bet.assert_called_with(Odds(DontCome, 6, 30))
+
+
+def test_come_odds_multiplier_always_working_argument_passes_through(player):
+    strategy = ComeOddsMultiplier(1, always_working=True)
+    player.bets = [Come(5, 6)]
+    player.add_bet = MagicMock()
+    strategy.update_bets(player)
+    player.add_bet.assert_called_with(Odds(Come, 6, 5, always_working=True))
+
+
+def test_dontcome_odds_multiplier_always_working_argument_passes_through(player):
+    strategy = DontComeOddsMultiplier(1, always_working=True)
+    player.bets = [DontCome(5, 6)]
+    player.add_bet = MagicMock()
+    strategy.update_bets(player)
+    player.add_bet.assert_called_with(Odds(DontCome, 6, 5, always_working=True))
 
 
 def test_base_single_bet_add_if_non_existent_add(player):
@@ -1300,6 +1322,85 @@ def test_place_68_cpr_update_bets_initial_bets_placed_no_update(player):
         (
             crapssim.strategy.examples.Place68DontCome2Odds(6, 5),
             "Place68DontCome2Odds(six_eight_amount=6.0, dont_come_amount=5.0)",
+        ),
+        # Odds strategies
+        (
+            crapssim.strategy.odds.OddsAmount(
+                PassLine, {x: 10 for x in (4, 5, 6, 8, 9, 10)}
+            ),
+            "OddsAmount(base_type=crapssim.bet.PassLine, odds_amounts={4: 10, 5: 10, 6: 10, 8: 10, 9: 10, 10: 10})",
+        ),
+        (
+            crapssim.strategy.odds.OddsAmount(
+                PassLine, {x: 10 for x in (4, 5, 6, 8, 9, 10)}, always_working=True
+            ),
+            "OddsAmount(base_type=crapssim.bet.PassLine, odds_amounts={4: 10, 5: 10, 6: 10, 8: 10, 9: 10, 10: 10}, always_working=True)",
+        ),
+        (
+            crapssim.strategy.odds.OddsAmount(
+                Come, {x: 10 for x in (4, 5, 6, 8, 9, 10)}
+            ),
+            "OddsAmount(base_type=crapssim.bet.Come, odds_amounts={4: 10, 5: 10, 6: 10, 8: 10, 9: 10, 10: 10})",
+        ),
+        (
+            crapssim.strategy.odds.OddsAmount(
+                DontPass, {x: 10 for x in (4, 5, 6, 8, 9, 10)}
+            ),
+            "OddsAmount(base_type=crapssim.bet.DontPass, odds_amounts={4: 10, 5: 10, 6: 10, 8: 10, 9: 10, 10: 10})",
+        ),
+        (
+            crapssim.strategy.odds.OddsAmount(
+                DontCome, {x: 10 for x in (4, 5, 6, 8, 9, 10)}, always_working=True
+            ),
+            "OddsAmount(base_type=crapssim.bet.DontCome, odds_amounts={4: 10, 5: 10, 6: 10, 8: 10, 9: 10, 10: 10}, always_working=True)",
+        ),
+        (
+            crapssim.strategy.odds.PassLineOddsAmount(10),
+            "PassLineOddsAmount(bet_amount=10.0, numbers=(4, 5, 6, 8, 9, 10))",
+        ),
+        (
+            crapssim.strategy.odds.PassLineOddsAmount(10, always_working=True),
+            "PassLineOddsAmount(bet_amount=10.0, numbers=(4, 5, 6, 8, 9, 10), always_working=True)",
+        ),
+        (
+            crapssim.strategy.odds.ComeOddsAmount(10, always_working=True),
+            "ComeOddsAmount(bet_amount=10.0, numbers=(4, 5, 6, 8, 9, 10), always_working=True)",
+        ),
+        (
+            crapssim.strategy.odds.ComeOddsAmount(10),
+            "ComeOddsAmount(bet_amount=10.0, numbers=(4, 5, 6, 8, 9, 10))",
+        ),
+        (
+            crapssim.strategy.odds.DontPassOddsAmount(10),
+            "DontPassOddsAmount(bet_amount=10.0, numbers=(4, 5, 6, 8, 9, 10))",
+        ),
+        (
+            crapssim.strategy.odds.DontComeOddsAmount(10),
+            "DontComeOddsAmount(bet_amount=10.0, numbers=(4, 5, 6, 8, 9, 10))",
+        ),
+        (
+            crapssim.strategy.odds.PassLineOddsMultiplier(),
+            "PassLineOddsMultiplier(odds_multiplier={4: 3, 5: 4, 6: 5, 8: 5, 9: 4, 10: 3})",
+        ),
+        (
+            crapssim.strategy.odds.PassLineOddsMultiplier(2),
+            "PassLineOddsMultiplier(odds_multiplier=2)",
+        ),
+        (
+            crapssim.strategy.odds.PassLineOddsMultiplier(2, always_working=True),
+            "PassLineOddsMultiplier(odds_multiplier=2, always_working=True)",
+        ),
+        (
+            crapssim.strategy.odds.ComeOddsMultiplier(2, always_working=True),
+            "ComeOddsMultiplier(odds_multiplier=2, always_working=True)",
+        ),
+        (
+            crapssim.strategy.odds.DontPassOddsMultiplier(2),
+            "DontPassOddsMultiplier(odds_multiplier=2)",
+        ),
+        (
+            crapssim.strategy.odds.DontComeOddsMultiplier(2, always_working=True),
+            "DontComeOddsMultiplier(odds_multiplier=2, always_working=True)",
         ),
     ],
 )
