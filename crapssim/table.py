@@ -74,7 +74,7 @@ class TableUpdate:
             table.dice.roll()
         if verbose:
             print("")
-            print("Dice out!")
+            print(f"Dice out! (roll {table.dice.n_rolls}, shooter {table.n_shooters})")
             print(f"Shooter rolled {table.dice.total} {table.dice.result}")
 
     @staticmethod
