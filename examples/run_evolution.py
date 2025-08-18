@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import os, sys, argparse, datetime, json, random
+import os, sys, argparse, datetime, json, random, dataclasses
 
 # --- ensure repo root on sys.path ---
 REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
@@ -55,6 +55,12 @@ print(f"[INFO] Results will be written to: {outdir}")
 # -----------------------------
 # Helpers
 # -----------------------------
+def _asdict_snapshot(snap):
+    """Return a plain dict view of PopulationSnapshot or pass through if already dict."""
+    if dataclasses.is_dataclass(snap):
+        return dataclasses.asdict(snap)
+    return snap
+
 def _pad_to_size(genomes, size):
     """Pad/trim a genome list to the requested size by sampling."""
     if not genomes:
@@ -66,13 +72,13 @@ def _pad_to_size(genomes, size):
         out.append(random.choice(genomes))
     return out
 
-def _top_rows_from_snapshot(snapshot, k=10):
-    """Extract top rows for reporting from PopulationSnapshot dict."""
+def _top_rows_from_snapshot(snap_dict, k=10):
+    """Extract top rows for reporting from a dict snapshot."""
     rows = []
     def pull(pool):
         for item in pool:
-            g = item.get("genome", {})
-            s = item.get("stats", {})
+            g = item.get("genome", {}) if isinstance(item, dict) else {}
+            s = item.get("stats", {}) if isinstance(item, dict) else {}
             rows.append({
                 "ef": float(s.get("ef", 0.0)),
                 "profit": float(s.get("profit", 0.0)),
@@ -80,8 +86,8 @@ def _top_rows_from_snapshot(snapshot, k=10):
                 "danger": 1 if bool(s.get("danger_zone", False)) else 0,
                 "name": f"{g.get('id', 'unknown')}/{g.get('name', '')}".strip("/"),
             })
-    pull(snapshot.get("main_pool", []))
-    pull(snapshot.get("danger_pool", []))
+    pull(snap_dict.get("main_pool", []))
+    pull(snap_dict.get("danger_pool", []))
     rows.sort(key=lambda r: (r["ef"], r["profit"]), reverse=True)
     return rows[:k]
 
@@ -102,30 +108,32 @@ for gen in range(start_gen, start_gen + int(args.gens)):
     # Lock RNG seed per generation for reproducibility
     random.seed(int(args.seed) + gen)
 
-    # Run generation
+    # Run generation -> returns PopulationSnapshot (dataclass)
     snap = run_one_generation(genomes, DEFAULTS, seed=(int(args.seed) + gen))
+    snap_dict = _asdict_snapshot(snap)
 
-    # Report
+    # Report (top 10)
     if args.report:
-        rows = _top_rows_from_snapshot(snap, k=10)
+        rows = _top_rows_from_snapshot(snap_dict, k=10)
         print("EF    Profit   Rolls  Danger  ID/Name")
         for r in rows:
             print(f"{r['ef']:.3f}\t{int(r['profit']):+4}\t{r['rolls']:5}\t{r['danger']}\t{r['name']}")
 
-    # Save snapshot JSON
+    # Save snapshot JSON (use engine's writer)
     outfile = os.path.join(outdir, f"gen_{gen}.json")
     write_snapshot(snap, outfile)
-    main_ct = len(snap.get("main_pool", []))
-    dang_ct = len(snap.get("danger_pool", []))
-    cq = snap.get("table_cq", "?")
+
+    main_ct = len(snap_dict.get("main_pool", []))
+    dang_ct = len(snap_dict.get("danger_pool", []))
+    cq = snap_dict.get("table_cq", "?")
     print(f"Wrote {outfile} | table_cq={cq} | main={main_ct} danger={dang_ct}")
 
-    # Select parents and produce offspring for next gen
+    # Parent selection and offspring (keep passing dataclass to selection)
     parents = select_parents(snap, DEFAULTS)
     parent_genomes = [(p["genome"] if isinstance(p, dict) and "genome" in p else p) for p in parents]
     genomes = produce_offspring(parent_genomes, DEFAULTS, gen=gen)
 
-# Write a tiny summary file (lightweight; not dependent on extra helpers)
+# Lightweight summary file
 summary_path = os.path.join(outdir, "summary.json")
 summary = {
     "outdir": outdir,
