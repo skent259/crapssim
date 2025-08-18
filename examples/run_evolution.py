@@ -36,6 +36,7 @@ args.no_anneal = getattr(args, "no_anneal", False)
 # Per-run config toggles (engine will ignore unknowns harmlessly)
 DEFAULTS["crossbreed"] = {"enable": bool(args.xbreed), "rate": float(args.xbreed_rate)}
 DEFAULTS["anneal_enable"] = not bool(args.no_anneal)
+DEFAULTS["population_size"] = int(args.pop)
 
 # -----------------------------
 # Output directory
