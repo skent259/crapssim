@@ -71,11 +71,15 @@ class BetResult:
     """The monetary value representing the bet outcome."""
     remove: bool
     """Flag indicating whether this bet result should be removed from table."""
+    bet_amount: float = 0
+    """The monetary value of the original bet size. Needed only for bets that 
+    push and return the wager to the player. Default is zero for quick 
+    results that can define wins and losses by comparing against zero."""
 
     @property
     def won(self) -> bool:
-        """Returns True if the bet won (positive amount)."""
-        return self.amount > 0
+        """Returns True if the bet won (amount more than initial bet)."""
+        return self.amount > self.bet_amount
 
     @property
     def lost(self) -> bool:
@@ -85,15 +89,12 @@ class BetResult:
     @property
     def pushed(self) -> bool:
         """Returns True if the bet tied (zero amount)."""
-        return self.amount == 0
+        return self.amount == self.bet_amount
 
     @property
     def bankroll_change(self) -> float:
         """Calculates the change to the bankroll (amount if bet won, zero otherwise)."""
-        if self.won:
-            return self.amount
-        else:
-            return 0
+        return self.amount if self.amount > 0 else 0
 
 
 class _MetaBetABC(ABCMeta):
@@ -232,7 +233,7 @@ class _WinningLosingNumbersBet(Bet, ABC):
             result_amount = 0
             should_remove = False
 
-        return BetResult(result_amount, should_remove)
+        return BetResult(result_amount, should_remove, self.amount)
 
     @abstractmethod
     def get_winning_numbers(self, table: Table) -> list[int]:
@@ -517,10 +518,12 @@ class Odds(_WinningLosingNumbersBet):
         base_type: typing.Type[PassLine | DontPass | Come | DontCome],
         number: int,
         amount: float,
+        always_working: bool = False,
     ):
         super().__init__(amount)
         self.base_type = base_type
         self.number = number
+        self.always_working = always_working
 
     @property
     def light_side(self) -> bool:
@@ -529,6 +532,20 @@ class Odds(_WinningLosingNumbersBet):
     @property
     def dark_side(self) -> bool:
         return issubclass(self.base_type, (DontPass, DontCome))
+
+    def get_result(self, table: Table) -> BetResult:
+
+        if table.point.status == "Off" and not self.always_working:
+
+            if table.dice.total in (
+                self.get_losing_numbers(table) + self.get_winning_numbers(table)
+            ):
+                # Bet "pushes" and returns to the player
+                return BetResult(
+                    amount=self.amount, remove=True, bet_amount=self.amount
+                )
+
+        return super().get_result(table)
 
     def get_winning_numbers(self, table: Table) -> list[int]:
         if self.light_side:
@@ -578,14 +595,20 @@ class Odds(_WinningLosingNumbersBet):
         ]
         return sum(x.amount for x in base_bets)
 
+    def _get_always_working_repr(self) -> str:
+        """Since the default is false, only need to print when True"""
+        return (
+            f", always_working={self.always_working})" if self.always_working else f")"
+        )
+
     @property
     def _placed_key(self) -> typing.Hashable:
         return type(self), self.base_type, self.number
 
     def __repr__(self):
         return (
-            f"Odds(base_type={self.base_type}, number={self.number}, "
-            f"amount={self.amount})"
+            f"Odds(base_type={self.base_type}, number={self.number}, amount={self.amount}"
+            f"{self._get_always_working_repr()}"
         )
 
 
@@ -807,7 +830,7 @@ class HardWay(Bet):
         else:
             result_amount = 0
             should_remove = False
-        return BetResult(result_amount, should_remove)
+        return BetResult(result_amount, should_remove, self.amount)
 
     @property
     def winning_result(self) -> tuple[int, int]:
@@ -851,7 +874,7 @@ class Hop(Bet):
         else:
             result_amount = -1 * self.amount
             should_remove = True
-        return BetResult(result_amount, should_remove)
+        return BetResult(result_amount, should_remove, self.amount)
 
     @property
     def is_easy(self) -> bool:
@@ -902,7 +925,7 @@ class Fire(Bet):
     def get_result(self, table: Table) -> BetResult:
 
         if table.point.status == "Off":
-            return BetResult(amount=0, remove=False)
+            return BetResult(amount=0, remove=False, bet_amount=self.amount)
 
         if table.dice.total == table.point.number:
             self.points_made.add(table.point.number)
@@ -920,7 +943,7 @@ class Fire(Bet):
         else:
             result_amount = 0
 
-        return BetResult(result_amount, remove=ended)
+        return BetResult(result_amount, remove=ended, bet_amount=self.amount)
 
     def is_removable(self, table: Table) -> bool:
         """Fire bet is removable only if there is a new shooter.
@@ -968,7 +991,7 @@ class _ATSBet(Bet):
             result_amount = 0
             should_remove = False
 
-        return BetResult(result_amount, should_remove)
+        return BetResult(result_amount, should_remove, self.amount)
 
     def is_removable(self, table: Table) -> bool:
         """All/Tall/Small bets are removable only if there is a new shooter.
