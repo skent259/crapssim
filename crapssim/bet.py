@@ -544,7 +544,6 @@ class Odds(_WinningLosingNumbersBet):
                 return BetResult(
                     amount=self.amount, remove=True, bet_amount=self.amount
                 )
-                # TODO: should this be self.amount?
 
         return super().get_result(table)
 
@@ -611,9 +610,6 @@ class Odds(_WinningLosingNumbersBet):
             f"Odds(base_type={self.base_type}, number={self.number}, amount={self.amount}"
             f"{self._get_always_working_repr()}"
         )
-
-    # def __str__(self):
-    #     return f"Odds({self.base_type!s}, number={self.number}, {self.amount})"
 
 
 # Place bets ------------------------------------------------------------------
