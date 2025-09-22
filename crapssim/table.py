@@ -52,7 +52,7 @@ class TableUpdate:
 
     @staticmethod
     def before_roll(table: "Table"):
-        table.last_roll = table.dice.total
+        pass
 
     @staticmethod
     def update_table_stats(table: "Table"):
@@ -76,6 +76,8 @@ class TableUpdate:
             print("")
             print(f"Dice out! (roll {table.dice.n_rolls}, shooter {table.n_shooters})")
             print(f"Shooter rolled {table.dice.total} {table.dice.result}")
+
+        table.last_roll = table.dice.total
 
     @staticmethod
     def after_roll(table: "Table"):

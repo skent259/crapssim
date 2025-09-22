@@ -994,20 +994,22 @@ class _ATSBet(Bet):
         return BetResult(result_amount, should_remove, self.amount)
 
     def is_removable(self, table: Table) -> bool:
-        """All/Tall/Small bets are removable only if there is a new shooter.
+        """All/Tall/Small bets are removable only if the last roll was a 7
+        (or starting a round, with a new shooter).
 
         Returns:
             True if the bet is removable, otherwise false.
         """
-        return table.new_shooter
+        return table.last_roll == 7 or table.new_shooter
 
     def is_allowed(self, player: Player) -> bool:
-        """All/Tall/Small bets are allowed if there is a new shooter.
+        """All/Tall/Small bets are allowed if the last roll was a 7
+        (or starting a round, with a new shooter).
 
         Returns:
             True if the bet is allowed, otherwise false.
         """
-        return player.table.new_shooter
+        return player.table.last_roll == 7 or player.table.new_shooter
 
 
 class All(_ATSBet):
