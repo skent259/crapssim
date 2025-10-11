@@ -24,7 +24,7 @@ from crapssim.strategy.examples import (
     PlaceInside,
     Risk12,
 )
-from crapssim.strategy.single_bet import BetFire
+from crapssim.strategy.single_bet import BetAll, BetFire
 from crapssim.strategy.tools import AddIfNewShooter, AddIfTrue, WinProgression
 from crapssim.table import TableUpdate
 
@@ -451,3 +451,69 @@ def test_placeinside_with_betpointon():
 
     assert p.total_player_cash == bankroll + 14
     assert len(p.bets) == 4
+
+
+def test_ATS_in_simulation():
+
+    bankroll = 100
+    strategy = BetAll(1)
+
+    # results = []
+    for i in range(100):
+
+        table = Table(seed=8)
+        table.add_player(bankroll, strategy)
+
+        table.run(max_rolls=200, max_shooter=float("inf"), verbose=False, runout=True)
+
+        p = table.players[0]
+        res = [i, p.name, p.bankroll, table.dice.n_rolls]
+        print(res)
+        assert p.bankroll < 500  # very unlikely to win >2 ATS in one session
+
+
+def test_ATS_in_simulation_persistent_features():
+
+    bankroll = 100
+    strategies = {
+        "All": BetAll(1),
+    }
+
+    # Simulation 1, All hits
+
+    # Simulation 1, five fire points hit
+    outcomes = [
+        (1, 1),
+        (1, 2),
+        (1, 3),
+        (1, 4),
+        (1, 5),
+        (6, 2),
+        (6, 3),
+        (6, 4),
+        (6, 5),
+        (6, 6),  # last one
+        (1, 6),  # seven-out
+    ]
+    table = Table()
+    for s in strategies:
+        table.add_player(bankroll, strategy=strategies[s], name=s)
+    table.fixed_run(outcomes, verbose=False)
+    for p in table.players:
+        print(f"{p.name}, {p.bankroll}, {bankroll}, {table.dice.n_rolls}")
+
+    assert p.bankroll == bankroll + table.settings["ATS_payouts"]["all"]
+
+    # Simulation 2, no fire points hit
+    outcomes = [
+        (2, 2),  # set a point
+        (1, 6),  # seven-out
+    ]
+    table = Table()
+    for s in strategies:
+        table.add_player(bankroll, strategy=strategies[s], name=s)
+    table.fixed_run(outcomes, verbose=False)
+    for p in table.players:
+        print(f"{p.name}, {p.bankroll}, {bankroll}, {table.dice.n_rolls}")
+
+    assert p.bankroll == bankroll - 1

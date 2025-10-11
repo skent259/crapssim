@@ -157,6 +157,11 @@ class Bet(ABC, metaclass=_MetaBetABC):
         """
         return True
 
+    def copy(self) -> "Bet":
+        """Create a fresh copy of this bet"""
+        new_bet = self.__class__(self.amount)
+        return new_bet
+
     @property
     def _placed_key(self) -> typing.Hashable:
         return type(self)
@@ -396,6 +401,11 @@ class Come(_WinningLosingNumbersBet):
         """
         return player.table.point.status == "On"
 
+    def copy(self) -> "Bet":
+        """Create a fresh copy of this bet with no number"""
+        new_bet = self.__class__(self.amount, number=None)
+        return new_bet
+
     @property
     def _placed_key(self) -> typing.Hashable:
         return type(self), self.number
@@ -491,6 +501,11 @@ class DontCome(_WinningLosingNumbersBet):
             True if the bet is allowed, otherwise false.
         """
         return player.table.point.status == "On"
+
+    def copy(self) -> "Bet":
+        """Create a fresh copy of this bet, with no number"""
+        new_bet = self.__class__(self.amount, number=None)
+        return new_bet
 
     @property
     def _placed_key(self) -> typing.Hashable:
@@ -595,6 +610,13 @@ class Odds(_WinningLosingNumbersBet):
         ]
         return sum(x.amount for x in base_bets)
 
+    def copy(self) -> "Bet":
+        """Create a fresh copy of this bet"""
+        new_bet = self.__class__(
+            self.base_type, self.number, self.amount, self.always_working
+        )
+        return new_bet
+
     def _get_always_working_repr(self) -> str:
         """Since the default is false, only need to print when True"""
         return (
@@ -634,6 +656,11 @@ class Place(_SimpleBet):
         """The placed number, which determines payout ratio"""
         self.payout_ratio = self.payout_ratios[number]
         self.winning_numbers = [number]
+
+    def copy(self) -> "Bet":
+        """Create a fresh copy of this bet"""
+        new_bet = self.__class__(self.number, self.amount)
+        return new_bet
 
     @property
     def _placed_key(self) -> typing.Hashable:
@@ -837,6 +864,11 @@ class HardWay(Bet):
         """Returns the dice result that wins, e.g. (2, 2) for Hard 4."""
         return (int(self.number / 2), int(self.number / 2))
 
+    def copy(self) -> "Bet":
+        """Create a fresh copy of this bet"""
+        new_bet = self.__class__(self.number, self.amount)
+        return new_bet
+
     @property
     def _placed_key(self) -> typing.Hashable:
         return type(self), self.number
@@ -890,6 +922,11 @@ class Hop(Bet):
     def payout_ratio(self, table: Table) -> int:
         payout_type = "easy" if self.is_easy else "hard"
         return table.settings["hop_payouts"][payout_type]
+
+    def copy(self) -> "Bet":
+        """Create a fresh copy of this bet"""
+        new_bet = self.__class__(self.result, self.amount)
+        return new_bet
 
     @property
     def _placed_key(self) -> typing.Hashable:

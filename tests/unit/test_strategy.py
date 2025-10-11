@@ -316,23 +316,31 @@ def test_replace_if_true_key_true_has_initial_bets_removed(player):
 def test_replace_if_true_key_true_has_replacement_bet_added(player):
     bet1 = MagicMock()
     bet2 = MagicMock()
+    copied_bet = MagicMock()  # What copy() returns
+    bet2.copy.return_value = copied_bet
     key = MagicMock(return_value=True)
     player.bets = [bet1]
     player.add_bet = MagicMock()
     player.remove_bet = MagicMock()
     strategy = ReplaceIfTrue(bet2, key)
     strategy.update_bets(player)
-    player.add_bet.assert_called_once_with(bet2)
+
+    bet2.copy.assert_called_once()  # Verify copy was called
+    player.add_bet.assert_called_once_with(copied_bet)  # Verify the copy was added
 
 
 def test_if_bet_not_exists_bet_doesnt_exist_add_bet(player):
     bet1 = MagicMock()
     bet2 = MagicMock()
+    copied_bet = MagicMock()  # What copy() returns
+    bet2.copy.return_value = copied_bet
     player.bets = [bet1]
     player.add_bet = MagicMock()
     strategy = AddIfNotBet(bet2)
     strategy.update_bets(player)
-    player.add_bet.assert_called_once_with(bet2)
+
+    bet2.copy.assert_called_once()  # Verify copy was called
+    player.add_bet.assert_called_once_with(copied_bet)  # Verify the copy was added
 
 
 def test_if_bet_exists_dont_add_bet(player):
@@ -355,9 +363,13 @@ def test_bet_point_off_add_bet(player):
     player.table.point.number = None
     player.add_bet = MagicMock()
     bet = MagicMock()
+    copied_bet = MagicMock()
+    bet.copy.return_value = copied_bet  # Returns a specific copy
     strategy = AddIfPointOff(bet)
     strategy.update_bets(player)
-    player.add_bet.assert_called_with(bet)
+
+    bet.copy.assert_called_once()  # Verify copy was called
+    player.add_bet.assert_called_with(copied_bet)  # Verify the copy was added
 
 
 def test_bet_point_off_dont_add_bet(player):
@@ -373,9 +385,13 @@ def test_bet_point_on_add_bet(player):
     player.table.point.number = 9
     player.add_bet = MagicMock()
     bet = MagicMock()
+    copied_bet = MagicMock()
+    bet.copy.return_value = copied_bet  # Returns a specific copy
     strategy = AddIfPointOn(bet)
     strategy.update_bets(player)
-    player.add_bet.assert_called_with(bet)
+
+    bet.copy.assert_called_once()  # Verify copy was called
+    player.add_bet.assert_called_with(copied_bet)  # Verify the copy was added
 
 
 def test_bet_point_on_dont_add_bet(player):
@@ -391,9 +407,13 @@ def test_bet_new_shooter_add_bet(player):
     player.table.new_shooter = True
     player.add_bet = MagicMock()
     bet = MagicMock()
+    copied_bet = MagicMock()
+    bet.copy.return_value = copied_bet  # Returns a specific copy
     strategy = AddIfNewShooter(bet)
     strategy.update_bets(player)
-    player.add_bet.assert_called_with(bet)
+
+    bet.copy.assert_called_once()  # Verify copy was called
+    player.add_bet.assert_called_with(copied_bet)  # Verify the copy was added
 
 
 def test_bet_new_shooter_dont_add_bet(player):

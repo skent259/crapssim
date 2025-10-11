@@ -124,6 +124,53 @@ def test_repr_names(bet, bet_name):
     assert repr(bet) == bet_name
 
 
+@pytest.mark.parametrize(
+    "bet",
+    [
+        crapssim.bet.PassLine(1),
+        crapssim.bet.Come(1),
+        crapssim.bet.DontPass(1),
+        crapssim.bet.DontCome(1),
+        crapssim.bet.Odds(crapssim.bet.PassLine, 6, 1, False),
+        crapssim.bet.Odds(crapssim.bet.Come, 8, 1),
+        crapssim.bet.Odds(crapssim.bet.DontPass, 9, 1),
+        crapssim.bet.Odds(crapssim.bet.DontCome, 10, 1),
+        crapssim.bet.Odds(crapssim.bet.PassLine, 6, 1, True),
+        crapssim.bet.Odds(crapssim.bet.Come, 8, 1, True),
+        crapssim.bet.Odds(crapssim.bet.DontPass, 9, 1, True),
+        crapssim.bet.Odds(crapssim.bet.DontCome, 10, 1, True),
+        crapssim.bet.Place(4, 1),
+        crapssim.bet.Place(5, 1),
+        crapssim.bet.Place(6, 1),
+        crapssim.bet.Place(8, 1),
+        crapssim.bet.Place(9, 1),
+        crapssim.bet.Place(10, 1),
+        crapssim.bet.Field(1),
+        crapssim.bet.Any7(1),
+        crapssim.bet.Two(1),
+        crapssim.bet.Three(1),
+        crapssim.bet.Yo(1),
+        crapssim.bet.Boxcars(1),
+        crapssim.bet.AnyCraps(1),
+        crapssim.bet.CAndE(1),
+        crapssim.bet.HardWay(4, 1),
+        crapssim.bet.HardWay(6, 1),
+        crapssim.bet.HardWay(8, 1),
+        crapssim.bet.HardWay(10, 1),
+        crapssim.bet.Hop((2, 3), 1),
+        crapssim.bet.Hop((3, 2), 1),
+        crapssim.bet.Hop((3, 3), 1),
+        crapssim.bet.Fire(1),
+        crapssim.bet.All(1),
+        crapssim.bet.Tall(1),
+        crapssim.bet.Small(1),
+    ],
+)
+def test_copy_returns_equal_bet(bet):
+    # Check above visually make sense
+    assert bet == bet.copy()
+
+
 def test_come_equality():
     come_one = Come(5)
     come_one.point = 5
