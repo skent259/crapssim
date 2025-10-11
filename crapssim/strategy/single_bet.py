@@ -74,7 +74,7 @@ class _BaseSingleBet(Strategy):
             case StrategyMode.ADD_IF_NEW_SHOOTER:
                 AddIfNewShooter(self.bet).update_bets(player)
             case StrategyMode.ADD_OR_INCREASE:
-                player.add_bet(self.bet)
+                player.add_bet(self.bet.copy())
             case StrategyMode.BET_IF_POINT_ON:
                 AddIfPointOn(self.bet).update_bets(player)
                 # If only betting when point on, also need to turn off when point off
@@ -83,7 +83,7 @@ class _BaseSingleBet(Strategy):
                 existing_bets = player.already_placed_bets(self.bet)
                 for bet in existing_bets:
                     player.remove_bet(bet)
-                player.add_bet(self.bet)
+                player.add_bet(self.bet.copy())
 
     def __repr__(self) -> str:
         return (

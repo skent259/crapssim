@@ -748,6 +748,29 @@ def test_all_tall_small_table_payout_ratio(
     assert ratio == correct_ratio
 
 
+def test_all_tall_small_allowed_after_comeout_seven():
+    table = Table()
+    table.add_player(strategy=NullStrategy())
+    player = table.players[0]
+    player.add_bet(All(1))
+
+    rolls = [(1, 2), (3, 4)]
+    table.fixed_run(rolls, verbose=True)
+
+    for bet in [All(1), Small(1), Tall(1)]:
+        assert bet.is_allowed(player)
+        assert bet.is_removable(table)
+
+    player.add_bet(All(1))
+    rolls = [(2, 2)]
+    table.fixed_run(rolls, verbose=True)
+
+    assert player.has_bets(All)
+    for bet in [All(1), Small(1), Tall(1)]:
+        assert not bet.is_allowed(player)
+        assert not bet.is_removable(table)
+
+
 def test_odds_inactive_when_point_off_unless_always_working():
 
     table = Table()

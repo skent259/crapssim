@@ -2,7 +2,6 @@
 strategies with the intended usage. Each of the strategies included in this package are intended
 to be used as building blocks when creating strategies."""
 
-import copy
 import typing
 from abc import ABC, abstractmethod
 from typing import Protocol
@@ -193,7 +192,7 @@ class AddIfTrue(Strategy):
             The Player to add the bet for.
         """
         if self.key(player) and self.bet.is_allowed(player):
-            player.add_bet(self.bet)
+            player.add_bet(self.bet.copy())
 
     def completed(self, player: Player) -> bool:
         """The strategy is completed when the player  can't make a bet because their bankroll is too
@@ -291,7 +290,7 @@ class ReplaceIfTrue(Strategy):
         for bet in player.bets:
             if self.key(bet, player):
                 player.remove_bet(bet)
-                player.add_bet(self.bet)
+                player.add_bet(self.bet.copy())
 
     def completed(self, player: Player) -> bool:
         """The strategy is completed when the player  can't make a bet because their bankroll is too
@@ -553,7 +552,7 @@ class WinProgression(Strategy):
         player
             The player to place the bet for.
         """
-        new_bet = copy.copy(self.bet)
+        new_bet = self.bet.copy()
         if self.current_progression >= len(self.multipliers):
             new_bet.amount = self.bet.amount * self.multipliers[-1]
         else:
