@@ -3,6 +3,7 @@ import json, csv, time, pathlib
 from dataclasses import dataclass, asdict
 
 from crapssim.table import Table, TableUpdate
+from crapssim.strategy.tools import NullStrategy
 import crapssim.bet as B
 
 
@@ -70,6 +71,35 @@ def scenario_horn_world() -> ScenarioResult:
     return ScenarioResult(
         name="HornWorld",
         settings=dict(table.settings),
+        start_bankroll=start_bankroll,
+        end_bankroll=player.bankroll,
+        rolls=rolls,
+        final_open_bets=[repr(bet) for bet in player.bets],
+    )
+
+
+def scenario_props_isolated() -> ScenarioResult:
+    table = Table()
+    player = table.add_player(bankroll=1000.0, strategy=NullStrategy())
+
+    # Defensive cleanup in case upstream defaults change before strategies run.
+    player.bets = [bet for bet in player.bets if "PassLine" not in bet.__class__.__name__]
+
+    start_bankroll = player.bankroll
+    player.add_bet(B.Horn(5))
+    player.add_bet(B.World(5))
+
+    rolls: list[RollRecord] = []
+    for i, total in enumerate([2, 3, 7, 11, 12]):
+        before = player.bankroll
+        roll_fixed(table, total)
+        rolls.append(
+            RollRecord("PropsIsolated", i + 1, total, before, player.bankroll)
+        )
+
+    return ScenarioResult(
+        name="PropsIsolated",
+        settings=dict(table.settings) | {"pass_line_suppressed": True},
         start_bankroll=start_bankroll,
         end_bankroll=player.bankroll,
         rolls=rolls,
@@ -278,10 +308,15 @@ def scenario_put_with_and_without_odds() -> list[ScenarioResult]:
 def main() -> None:
     timestamp = time.strftime("%Y%m%d-%H%M%S")
     outdir = pathlib.Path("reports") / "vxp_gauntlet" / timestamp
+    suffix = 1
+    while outdir.exists():
+        outdir = outdir.parent / f"{timestamp}_{suffix:02d}"
+        suffix += 1
     outdir.mkdir(parents=True, exist_ok=True)
 
     results: list[ScenarioResult] = []
     results.append(scenario_horn_world())
+    results.append(scenario_props_isolated())
     results.append(scenario_big6_big8())
     results.extend(scenario_buy_lay_matrix())
     results.extend(scenario_put_with_and_without_odds())
@@ -291,9 +326,19 @@ def main() -> None:
 
     with (outdir / "gauntlet_rolls.csv").open("w", newline="") as csv_file:
         writer = csv.writer(csv_file)
-        writer.writerow(["scenario", "step", "total", "bankroll_before", "bankroll_after"])
+        writer.writerow(
+            [
+                "scenario",
+                "step",
+                "total",
+                "bankroll_before",
+                "bankroll_after",
+                "delta",
+            ]
+        )
         for result in results:
             for record in result.rolls:
+                delta = record.bankroll_after - record.bankroll_before
                 writer.writerow(
                     [
                         record.scenario,
@@ -301,10 +346,16 @@ def main() -> None:
                         record.total,
                         f"{record.bankroll_before:.2f}",
                         f"{record.bankroll_after:.2f}",
+                        f"{delta:.2f}",
                     ]
                 )
 
     markdown_lines = ["# VXP Gauntlet Summary\n"]
+    markdown_lines.append(
+        "> Note: Table defaults include a $5 Pass Line on come-out. Some scenarios reflect "
+        "PL outcomes (e.g., come-out 2/3/7/11). An isolated-props scenario below disables "
+        "PL to show pure Horn/World net.\n"
+    )
     for result in results:
         markdown_lines.append(f"## {result.name}")
         settings_json = json.dumps(result.settings, separators=(",", ":"))

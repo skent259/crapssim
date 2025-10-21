@@ -1,0 +1,1234 @@
+[
+  {
+    "name": "HornWorld",
+    "settings": {
+      "ATS_payouts": {
+        "all": 150,
+        "tall": 30,
+        "small": 30
+      },
+      "field_payouts": {
+        "2": 2,
+        "3": 1,
+        "4": 1,
+        "9": 1,
+        "10": 1,
+        "11": 1,
+        "12": 2
+      },
+      "fire_payouts": {
+        "4": 24,
+        "5": 249,
+        "6": 999
+      },
+      "hop_payouts": {
+        "easy": 15,
+        "hard": 30
+      },
+      "max_odds": {
+        "4": 3,
+        "5": 4,
+        "6": 5,
+        "8": 5,
+        "9": 4,
+        "10": 3
+      },
+      "max_dont_odds": {
+        "4": 6,
+        "5": 6,
+        "6": 6,
+        "8": 6,
+        "9": 6,
+        "10": 6
+      },
+      "commission": 0.05
+    },
+    "start_bankroll": 1000.0,
+    "end_bankroll": 1054.75,
+    "rolls": [
+      {
+        "scenario": "HornWorld",
+        "step": 1,
+        "total": 2,
+        "bankroll_before": 990.0,
+        "bankroll_after": 1054.75
+      },
+      {
+        "scenario": "HornWorld",
+        "step": 2,
+        "total": 3,
+        "bankroll_before": 1054.75,
+        "bankroll_after": 1049.75
+      },
+      {
+        "scenario": "HornWorld",
+        "step": 3,
+        "total": 7,
+        "bankroll_before": 1049.75,
+        "bankroll_after": 1054.75
+      },
+      {
+        "scenario": "HornWorld",
+        "step": 4,
+        "total": 11,
+        "bankroll_before": 1054.75,
+        "bankroll_after": 1059.75
+      },
+      {
+        "scenario": "HornWorld",
+        "step": 5,
+        "total": 12,
+        "bankroll_before": 1059.75,
+        "bankroll_after": 1054.75
+      }
+    ],
+    "final_open_bets": []
+  },
+  {
+    "name": "PropsIsolated",
+    "settings": {
+      "ATS_payouts": {
+        "all": 150,
+        "tall": 30,
+        "small": 30
+      },
+      "field_payouts": {
+        "2": 2,
+        "3": 1,
+        "4": 1,
+        "9": 1,
+        "10": 1,
+        "11": 1,
+        "12": 2
+      },
+      "fire_payouts": {
+        "4": 24,
+        "5": 249,
+        "6": 999
+      },
+      "hop_payouts": {
+        "easy": 15,
+        "hard": 30
+      },
+      "max_odds": {
+        "4": 3,
+        "5": 4,
+        "6": 5,
+        "8": 5,
+        "9": 4,
+        "10": 3
+      },
+      "max_dont_odds": {
+        "4": 6,
+        "5": 6,
+        "6": 6,
+        "8": 6,
+        "9": 6,
+        "10": 6
+      },
+      "commission": 0.05,
+      "pass_line_suppressed": true
+    },
+    "start_bankroll": 1000.0,
+    "end_bankroll": 1059.75,
+    "rolls": [
+      {
+        "scenario": "PropsIsolated",
+        "step": 1,
+        "total": 2,
+        "bankroll_before": 990.0,
+        "bankroll_after": 1059.75
+      },
+      {
+        "scenario": "PropsIsolated",
+        "step": 2,
+        "total": 3,
+        "bankroll_before": 1059.75,
+        "bankroll_after": 1059.75
+      },
+      {
+        "scenario": "PropsIsolated",
+        "step": 3,
+        "total": 7,
+        "bankroll_before": 1059.75,
+        "bankroll_after": 1059.75
+      },
+      {
+        "scenario": "PropsIsolated",
+        "step": 4,
+        "total": 11,
+        "bankroll_before": 1059.75,
+        "bankroll_after": 1059.75
+      },
+      {
+        "scenario": "PropsIsolated",
+        "step": 5,
+        "total": 12,
+        "bankroll_before": 1059.75,
+        "bankroll_after": 1059.75
+      }
+    ],
+    "final_open_bets": []
+  },
+  {
+    "name": "Big6Big8",
+    "settings": {
+      "ATS_payouts": {
+        "all": 150,
+        "tall": 30,
+        "small": 30
+      },
+      "field_payouts": {
+        "2": 2,
+        "3": 1,
+        "4": 1,
+        "9": 1,
+        "10": 1,
+        "11": 1,
+        "12": 2
+      },
+      "fire_payouts": {
+        "4": 24,
+        "5": 249,
+        "6": 999
+      },
+      "hop_payouts": {
+        "easy": 15,
+        "hard": 30
+      },
+      "max_odds": {
+        "4": 3,
+        "5": 4,
+        "6": 5,
+        "8": 5,
+        "9": 4,
+        "10": 3
+      },
+      "max_dont_odds": {
+        "4": 6,
+        "5": 6,
+        "6": 6,
+        "8": 6,
+        "9": 6,
+        "10": 6
+      },
+      "commission": 0.05
+    },
+    "start_bankroll": 1000.0,
+    "end_bankroll": 1015.0,
+    "rolls": [
+      {
+        "scenario": "Big6Big8",
+        "step": 1,
+        "total": 6,
+        "bankroll_before": 980.0,
+        "bankroll_after": 995.0
+      },
+      {
+        "scenario": "Big6Big8",
+        "step": 2,
+        "total": 8,
+        "bankroll_before": 995.0,
+        "bankroll_after": 1015.0
+      },
+      {
+        "scenario": "Big6Big8",
+        "step": 3,
+        "total": 7,
+        "bankroll_before": 1015.0,
+        "bankroll_after": 1015.0
+      }
+    ],
+    "final_open_bets": []
+  },
+  {
+    "name": "Default_on_win_none::Buy4_then_hit_then_7",
+    "settings": {
+      "ATS_payouts": {
+        "all": 150,
+        "tall": 30,
+        "small": 30
+      },
+      "field_payouts": {
+        "2": 2,
+        "3": 1,
+        "4": 1,
+        "9": 1,
+        "10": 1,
+        "11": 1,
+        "12": 2
+      },
+      "fire_payouts": {
+        "4": 24,
+        "5": 249,
+        "6": 999
+      },
+      "hop_payouts": {
+        "easy": 15,
+        "hard": 30
+      },
+      "max_odds": {
+        "4": 3,
+        "5": 4,
+        "6": 5,
+        "8": 5,
+        "9": 4,
+        "10": 3
+      },
+      "max_dont_odds": {
+        "4": 6,
+        "5": 6,
+        "6": 6,
+        "8": 6,
+        "9": 6,
+        "10": 6
+      },
+      "commission": 0.05,
+      "commission_mode": "on_win",
+      "commission_rounding": "none"
+    },
+    "start_bankroll": 1000.0,
+    "end_bankroll": 1042.5,
+    "rolls": [
+      {
+        "scenario": "Default_on_win_none::Buy4_then_hit_then_7",
+        "step": 1,
+        "total": 4,
+        "bankroll_before": 975.0,
+        "bankroll_after": 1042.5
+      },
+      {
+        "scenario": "Default_on_win_none::Buy4_then_hit_then_7",
+        "step": 2,
+        "total": 7,
+        "bankroll_before": 1042.5,
+        "bankroll_after": 1042.5
+      }
+    ],
+    "final_open_bets": []
+  },
+  {
+    "name": "Default_on_win_none::Buy6_then_hit_then_7",
+    "settings": {
+      "ATS_payouts": {
+        "all": 150,
+        "tall": 30,
+        "small": 30
+      },
+      "field_payouts": {
+        "2": 2,
+        "3": 1,
+        "4": 1,
+        "9": 1,
+        "10": 1,
+        "11": 1,
+        "12": 2
+      },
+      "fire_payouts": {
+        "4": 24,
+        "5": 249,
+        "6": 999
+      },
+      "hop_payouts": {
+        "easy": 15,
+        "hard": 30
+      },
+      "max_odds": {
+        "4": 3,
+        "5": 4,
+        "6": 5,
+        "8": 5,
+        "9": 4,
+        "10": 3
+      },
+      "max_dont_odds": {
+        "4": 6,
+        "5": 6,
+        "6": 6,
+        "8": 6,
+        "9": 6,
+        "10": 6
+      },
+      "commission": 0.05,
+      "commission_mode": "on_win",
+      "commission_rounding": "none"
+    },
+    "start_bankroll": 1000.0,
+    "end_bankroll": 1029.2,
+    "rolls": [
+      {
+        "scenario": "Default_on_win_none::Buy6_then_hit_then_7",
+        "step": 1,
+        "total": 6,
+        "bankroll_before": 970.0,
+        "bankroll_after": 1029.2
+      },
+      {
+        "scenario": "Default_on_win_none::Buy6_then_hit_then_7",
+        "step": 2,
+        "total": 7,
+        "bankroll_before": 1029.2,
+        "bankroll_after": 1029.2
+      }
+    ],
+    "final_open_bets": []
+  },
+  {
+    "name": "Default_on_win_none::Lay10_then_7_then_10",
+    "settings": {
+      "ATS_payouts": {
+        "all": 150,
+        "tall": 30,
+        "small": 30
+      },
+      "field_payouts": {
+        "2": 2,
+        "3": 1,
+        "4": 1,
+        "9": 1,
+        "10": 1,
+        "11": 1,
+        "12": 2
+      },
+      "fire_payouts": {
+        "4": 24,
+        "5": 249,
+        "6": 999
+      },
+      "hop_payouts": {
+        "easy": 15,
+        "hard": 30
+      },
+      "max_odds": {
+        "4": 3,
+        "5": 4,
+        "6": 5,
+        "8": 5,
+        "9": 4,
+        "10": 3
+      },
+      "max_dont_odds": {
+        "4": 6,
+        "5": 6,
+        "6": 6,
+        "8": 6,
+        "9": 6,
+        "10": 6
+      },
+      "commission": 0.05,
+      "commission_mode": "on_win",
+      "commission_rounding": "none"
+    },
+    "start_bankroll": 1000.0,
+    "end_bankroll": 1011.875,
+    "rolls": [
+      {
+        "scenario": "Default_on_win_none::Lay10_then_7_then_10",
+        "step": 1,
+        "total": 7,
+        "bankroll_before": 975.0,
+        "bankroll_after": 1016.875
+      },
+      {
+        "scenario": "Default_on_win_none::Lay10_then_7_then_10",
+        "step": 2,
+        "total": 10,
+        "bankroll_before": 1016.875,
+        "bankroll_after": 1011.875
+      }
+    ],
+    "final_open_bets": [
+      "PassLine(amount=5.0)"
+    ]
+  },
+  {
+    "name": "Default_on_win_none::Lay8_then_7_then_8",
+    "settings": {
+      "ATS_payouts": {
+        "all": 150,
+        "tall": 30,
+        "small": 30
+      },
+      "field_payouts": {
+        "2": 2,
+        "3": 1,
+        "4": 1,
+        "9": 1,
+        "10": 1,
+        "11": 1,
+        "12": 2
+      },
+      "fire_payouts": {
+        "4": 24,
+        "5": 249,
+        "6": 999
+      },
+      "hop_payouts": {
+        "easy": 15,
+        "hard": 30
+      },
+      "max_odds": {
+        "4": 3,
+        "5": 4,
+        "6": 5,
+        "8": 5,
+        "9": 4,
+        "10": 3
+      },
+      "max_dont_odds": {
+        "4": 6,
+        "5": 6,
+        "6": 6,
+        "8": 6,
+        "9": 6,
+        "10": 6
+      },
+      "commission": 0.05,
+      "commission_mode": "on_win",
+      "commission_rounding": "none"
+    },
+    "start_bankroll": 1000.0,
+    "end_bankroll": 1023.75,
+    "rolls": [
+      {
+        "scenario": "Default_on_win_none::Lay8_then_7_then_8",
+        "step": 1,
+        "total": 7,
+        "bankroll_before": 970.0,
+        "bankroll_after": 1028.75
+      },
+      {
+        "scenario": "Default_on_win_none::Lay8_then_7_then_8",
+        "step": 2,
+        "total": 8,
+        "bankroll_before": 1028.75,
+        "bankroll_after": 1023.75
+      }
+    ],
+    "final_open_bets": [
+      "PassLine(amount=5.0)"
+    ]
+  },
+  {
+    "name": "On_bet_ceil_floor25::Buy4_then_hit_then_7",
+    "settings": {
+      "ATS_payouts": {
+        "all": 150,
+        "tall": 30,
+        "small": 30
+      },
+      "field_payouts": {
+        "2": 2,
+        "3": 1,
+        "4": 1,
+        "9": 1,
+        "10": 1,
+        "11": 1,
+        "12": 2
+      },
+      "fire_payouts": {
+        "4": 24,
+        "5": 249,
+        "6": 999
+      },
+      "hop_payouts": {
+        "easy": 15,
+        "hard": 30
+      },
+      "max_odds": {
+        "4": 3,
+        "5": 4,
+        "6": 5,
+        "8": 5,
+        "9": 4,
+        "10": 3
+      },
+      "max_dont_odds": {
+        "4": 6,
+        "5": 6,
+        "6": 6,
+        "8": 6,
+        "9": 6,
+        "10": 6
+      },
+      "commission": 0.05,
+      "commission_mode": "on_bet",
+      "commission_rounding": "ceil_dollar",
+      "commission_floor": 25.0
+    },
+    "start_bankroll": 1000.0,
+    "end_bankroll": 1043.0,
+    "rolls": [
+      {
+        "scenario": "On_bet_ceil_floor25::Buy4_then_hit_then_7",
+        "step": 1,
+        "total": 4,
+        "bankroll_before": 975.0,
+        "bankroll_after": 1043.0
+      },
+      {
+        "scenario": "On_bet_ceil_floor25::Buy4_then_hit_then_7",
+        "step": 2,
+        "total": 7,
+        "bankroll_before": 1043.0,
+        "bankroll_after": 1043.0
+      }
+    ],
+    "final_open_bets": []
+  },
+  {
+    "name": "On_bet_ceil_floor25::Buy6_then_hit_then_7",
+    "settings": {
+      "ATS_payouts": {
+        "all": 150,
+        "tall": 30,
+        "small": 30
+      },
+      "field_payouts": {
+        "2": 2,
+        "3": 1,
+        "4": 1,
+        "9": 1,
+        "10": 1,
+        "11": 1,
+        "12": 2
+      },
+      "fire_payouts": {
+        "4": 24,
+        "5": 249,
+        "6": 999
+      },
+      "hop_payouts": {
+        "easy": 15,
+        "hard": 30
+      },
+      "max_odds": {
+        "4": 3,
+        "5": 4,
+        "6": 5,
+        "8": 5,
+        "9": 4,
+        "10": 3
+      },
+      "max_dont_odds": {
+        "4": 6,
+        "5": 6,
+        "6": 6,
+        "8": 6,
+        "9": 6,
+        "10": 6
+      },
+      "commission": 0.05,
+      "commission_mode": "on_bet",
+      "commission_rounding": "ceil_dollar",
+      "commission_floor": 25.0
+    },
+    "start_bankroll": 1000.0,
+    "end_bankroll": 1029.0,
+    "rolls": [
+      {
+        "scenario": "On_bet_ceil_floor25::Buy6_then_hit_then_7",
+        "step": 1,
+        "total": 6,
+        "bankroll_before": 970.0,
+        "bankroll_after": 1029.0
+      },
+      {
+        "scenario": "On_bet_ceil_floor25::Buy6_then_hit_then_7",
+        "step": 2,
+        "total": 7,
+        "bankroll_before": 1029.0,
+        "bankroll_after": 1029.0
+      }
+    ],
+    "final_open_bets": []
+  },
+  {
+    "name": "On_bet_ceil_floor25::Lay10_then_7_then_10",
+    "settings": {
+      "ATS_payouts": {
+        "all": 150,
+        "tall": 30,
+        "small": 30
+      },
+      "field_payouts": {
+        "2": 2,
+        "3": 1,
+        "4": 1,
+        "9": 1,
+        "10": 1,
+        "11": 1,
+        "12": 2
+      },
+      "fire_payouts": {
+        "4": 24,
+        "5": 249,
+        "6": 999
+      },
+      "hop_payouts": {
+        "easy": 15,
+        "hard": 30
+      },
+      "max_odds": {
+        "4": 3,
+        "5": 4,
+        "6": 5,
+        "8": 5,
+        "9": 4,
+        "10": 3
+      },
+      "max_dont_odds": {
+        "4": 6,
+        "5": 6,
+        "6": 6,
+        "8": 6,
+        "9": 6,
+        "10": 6
+      },
+      "commission": 0.05,
+      "commission_mode": "on_bet",
+      "commission_rounding": "ceil_dollar",
+      "commission_floor": 25.0
+    },
+    "start_bankroll": 1000.0,
+    "end_bankroll": 1010.5,
+    "rolls": [
+      {
+        "scenario": "On_bet_ceil_floor25::Lay10_then_7_then_10",
+        "step": 1,
+        "total": 7,
+        "bankroll_before": 975.0,
+        "bankroll_after": 1015.5
+      },
+      {
+        "scenario": "On_bet_ceil_floor25::Lay10_then_7_then_10",
+        "step": 2,
+        "total": 10,
+        "bankroll_before": 1015.5,
+        "bankroll_after": 1010.5
+      }
+    ],
+    "final_open_bets": [
+      "PassLine(amount=5.0)"
+    ]
+  },
+  {
+    "name": "On_bet_ceil_floor25::Lay8_then_7_then_8",
+    "settings": {
+      "ATS_payouts": {
+        "all": 150,
+        "tall": 30,
+        "small": 30
+      },
+      "field_payouts": {
+        "2": 2,
+        "3": 1,
+        "4": 1,
+        "9": 1,
+        "10": 1,
+        "11": 1,
+        "12": 2
+      },
+      "fire_payouts": {
+        "4": 24,
+        "5": 249,
+        "6": 999
+      },
+      "hop_payouts": {
+        "easy": 15,
+        "hard": 30
+      },
+      "max_odds": {
+        "4": 3,
+        "5": 4,
+        "6": 5,
+        "8": 5,
+        "9": 4,
+        "10": 3
+      },
+      "max_dont_odds": {
+        "4": 6,
+        "5": 6,
+        "6": 6,
+        "8": 6,
+        "9": 6,
+        "10": 6
+      },
+      "commission": 0.05,
+      "commission_mode": "on_bet",
+      "commission_rounding": "ceil_dollar",
+      "commission_floor": 25.0
+    },
+    "start_bankroll": 1000.0,
+    "end_bankroll": 1023.0,
+    "rolls": [
+      {
+        "scenario": "On_bet_ceil_floor25::Lay8_then_7_then_8",
+        "step": 1,
+        "total": 7,
+        "bankroll_before": 970.0,
+        "bankroll_after": 1028.0
+      },
+      {
+        "scenario": "On_bet_ceil_floor25::Lay8_then_7_then_8",
+        "step": 2,
+        "total": 8,
+        "bankroll_before": 1028.0,
+        "bankroll_after": 1023.0
+      }
+    ],
+    "final_open_bets": [
+      "PassLine(amount=5.0)"
+    ]
+  },
+  {
+    "name": "Legacy_unset_mode::Buy4_then_hit_then_7",
+    "settings": {
+      "ATS_payouts": {
+        "all": 150,
+        "tall": 30,
+        "small": 30
+      },
+      "field_payouts": {
+        "2": 2,
+        "3": 1,
+        "4": 1,
+        "9": 1,
+        "10": 1,
+        "11": 1,
+        "12": 2
+      },
+      "fire_payouts": {
+        "4": 24,
+        "5": 249,
+        "6": 999
+      },
+      "hop_payouts": {
+        "easy": 15,
+        "hard": 30
+      },
+      "max_odds": {
+        "4": 3,
+        "5": 4,
+        "6": 5,
+        "8": 5,
+        "9": 4,
+        "10": 3
+      },
+      "max_dont_odds": {
+        "4": 6,
+        "5": 6,
+        "6": 6,
+        "8": 6,
+        "9": 6,
+        "10": 6
+      },
+      "commission": 0.05,
+      "commission_multiplier_legacy": true
+    },
+    "start_bankroll": 1000.0,
+    "end_bankroll": 1040.56,
+    "rolls": [
+      {
+        "scenario": "Legacy_unset_mode::Buy4_then_hit_then_7",
+        "step": 1,
+        "total": 4,
+        "bankroll_before": 975.0,
+        "bankroll_after": 1040.56
+      },
+      {
+        "scenario": "Legacy_unset_mode::Buy4_then_hit_then_7",
+        "step": 2,
+        "total": 7,
+        "bankroll_before": 1040.56,
+        "bankroll_after": 1040.56
+      }
+    ],
+    "final_open_bets": []
+  },
+  {
+    "name": "Legacy_unset_mode::Buy6_then_hit_then_7",
+    "settings": {
+      "ATS_payouts": {
+        "all": 150,
+        "tall": 30,
+        "small": 30
+      },
+      "field_payouts": {
+        "2": 2,
+        "3": 1,
+        "4": 1,
+        "9": 1,
+        "10": 1,
+        "11": 1,
+        "12": 2
+      },
+      "fire_payouts": {
+        "4": 24,
+        "5": 249,
+        "6": 999
+      },
+      "hop_payouts": {
+        "easy": 15,
+        "hard": 30
+      },
+      "max_odds": {
+        "4": 3,
+        "5": 4,
+        "6": 5,
+        "8": 5,
+        "9": 4,
+        "10": 3
+      },
+      "max_dont_odds": {
+        "4": 6,
+        "5": 6,
+        "6": 6,
+        "8": 6,
+        "9": 6,
+        "10": 6
+      },
+      "commission": 0.05,
+      "commission_multiplier_legacy": true
+    },
+    "start_bankroll": 1000.0,
+    "end_bankroll": 1028.9912,
+    "rolls": [
+      {
+        "scenario": "Legacy_unset_mode::Buy6_then_hit_then_7",
+        "step": 1,
+        "total": 6,
+        "bankroll_before": 970.0,
+        "bankroll_after": 1028.9912
+      },
+      {
+        "scenario": "Legacy_unset_mode::Buy6_then_hit_then_7",
+        "step": 2,
+        "total": 7,
+        "bankroll_before": 1028.9912,
+        "bankroll_after": 1028.9912
+      }
+    ],
+    "final_open_bets": []
+  },
+  {
+    "name": "Legacy_unset_mode::Lay10_then_7_then_10",
+    "settings": {
+      "ATS_payouts": {
+        "all": 150,
+        "tall": 30,
+        "small": 30
+      },
+      "field_payouts": {
+        "2": 2,
+        "3": 1,
+        "4": 1,
+        "9": 1,
+        "10": 1,
+        "11": 1,
+        "12": 2
+      },
+      "fire_payouts": {
+        "4": 24,
+        "5": 249,
+        "6": 999
+      },
+      "hop_payouts": {
+        "easy": 15,
+        "hard": 30
+      },
+      "max_odds": {
+        "4": 3,
+        "5": 4,
+        "6": 5,
+        "8": 5,
+        "9": 4,
+        "10": 3
+      },
+      "max_dont_odds": {
+        "4": 6,
+        "5": 6,
+        "6": 6,
+        "8": 6,
+        "9": 6,
+        "10": 6
+      },
+      "commission": 0.05,
+      "commission_multiplier_legacy": true
+    },
+    "start_bankroll": 1000.0,
+    "end_bankroll": 1010.28,
+    "rolls": [
+      {
+        "scenario": "Legacy_unset_mode::Lay10_then_7_then_10",
+        "step": 1,
+        "total": 7,
+        "bankroll_before": 975.0,
+        "bankroll_after": 1015.28
+      },
+      {
+        "scenario": "Legacy_unset_mode::Lay10_then_7_then_10",
+        "step": 2,
+        "total": 10,
+        "bankroll_before": 1015.28,
+        "bankroll_after": 1010.28
+      }
+    ],
+    "final_open_bets": [
+      "PassLine(amount=5.0)"
+    ]
+  },
+  {
+    "name": "Legacy_unset_mode::Lay8_then_7_then_8",
+    "settings": {
+      "ATS_payouts": {
+        "all": 150,
+        "tall": 30,
+        "small": 30
+      },
+      "field_payouts": {
+        "2": 2,
+        "3": 1,
+        "4": 1,
+        "9": 1,
+        "10": 1,
+        "11": 1,
+        "12": 2
+      },
+      "fire_payouts": {
+        "4": 24,
+        "5": 249,
+        "6": 999
+      },
+      "hop_payouts": {
+        "easy": 15,
+        "hard": 30
+      },
+      "max_odds": {
+        "4": 3,
+        "5": 4,
+        "6": 5,
+        "8": 5,
+        "9": 4,
+        "10": 3
+      },
+      "max_dont_odds": {
+        "4": 6,
+        "5": 6,
+        "6": 6,
+        "8": 6,
+        "9": 6,
+        "10": 6
+      },
+      "commission": 0.05,
+      "commission_multiplier_legacy": true
+    },
+    "start_bankroll": 1000.0,
+    "end_bankroll": 1023.326,
+    "rolls": [
+      {
+        "scenario": "Legacy_unset_mode::Lay8_then_7_then_8",
+        "step": 1,
+        "total": 7,
+        "bankroll_before": 970.0,
+        "bankroll_after": 1028.326
+      },
+      {
+        "scenario": "Legacy_unset_mode::Lay8_then_7_then_8",
+        "step": 2,
+        "total": 8,
+        "bankroll_before": 1028.326,
+        "bankroll_after": 1023.326
+      }
+    ],
+    "final_open_bets": [
+      "PassLine(amount=5.0)"
+    ]
+  },
+  {
+    "name": "PutOddsAllowed",
+    "settings": {
+      "ATS_payouts": {
+        "all": 150,
+        "tall": 30,
+        "small": 30
+      },
+      "field_payouts": {
+        "2": 2,
+        "3": 1,
+        "4": 1,
+        "9": 1,
+        "10": 1,
+        "11": 1,
+        "12": 2
+      },
+      "fire_payouts": {
+        "4": 24,
+        "5": 249,
+        "6": 999
+      },
+      "hop_payouts": {
+        "easy": 15,
+        "hard": 30
+      },
+      "max_odds": {
+        "4": 3,
+        "5": 4,
+        "6": 5,
+        "8": 5,
+        "9": 4,
+        "10": 3
+      },
+      "max_dont_odds": {
+        "4": 6,
+        "5": 6,
+        "6": 6,
+        "8": 6,
+        "9": 6,
+        "10": 6
+      },
+      "commission": 0.05
+    },
+    "start_bankroll": 1000.0,
+    "end_bankroll": 1044.0,
+    "rolls": [
+      {
+        "scenario": "PutOddsAllowed",
+        "step": 1,
+        "total": 6,
+        "bankroll_before": 965.0,
+        "bankroll_after": 1039.0
+      },
+      {
+        "scenario": "PutOddsAllowed",
+        "step": 2,
+        "total": 7,
+        "bankroll_before": 1039.0,
+        "bankroll_after": 1044.0
+      }
+    ],
+    "final_open_bets": []
+  },
+  {
+    "name": "PutOddsDisallowed",
+    "settings": {
+      "ATS_payouts": {
+        "all": 150,
+        "tall": 30,
+        "small": 30
+      },
+      "field_payouts": {
+        "2": 2,
+        "3": 1,
+        "4": 1,
+        "9": 1,
+        "10": 1,
+        "11": 1,
+        "12": 2
+      },
+      "fire_payouts": {
+        "4": 24,
+        "5": 249,
+        "6": 999
+      },
+      "hop_payouts": {
+        "easy": 15,
+        "hard": 30
+      },
+      "max_odds": {
+        "4": 3,
+        "5": 4,
+        "6": 5,
+        "8": 5,
+        "9": 4,
+        "10": 3
+      },
+      "max_dont_odds": {
+        "4": 6,
+        "5": 6,
+        "6": 6,
+        "8": 6,
+        "9": 6,
+        "10": 6
+      },
+      "commission": 0.05,
+      "allow_put_odds": false
+    },
+    "start_bankroll": 1000.0,
+    "end_bankroll": 1020.0,
+    "rolls": [
+      {
+        "scenario": "PutOddsDisallowed",
+        "step": 1,
+        "total": 6,
+        "bankroll_before": 985.0,
+        "bankroll_after": 1015.0
+      },
+      {
+        "scenario": "PutOddsDisallowed",
+        "step": 2,
+        "total": 7,
+        "bankroll_before": 1015.0,
+        "bankroll_after": 1020.0
+      }
+    ],
+    "final_open_bets": []
+  },
+  {
+    "name": "PutIllegalGuard",
+    "settings": {
+      "ATS_payouts": {
+        "all": 150,
+        "tall": 30,
+        "small": 30
+      },
+      "field_payouts": {
+        "2": 2,
+        "3": 1,
+        "4": 1,
+        "9": 1,
+        "10": 1,
+        "11": 1,
+        "12": 2
+      },
+      "fire_payouts": {
+        "4": 24,
+        "5": 249,
+        "6": 999
+      },
+      "hop_payouts": {
+        "easy": 15,
+        "hard": 30
+      },
+      "max_odds": {
+        "4": 3,
+        "5": 4,
+        "6": 5,
+        "8": 5,
+        "9": 4,
+        "10": 3
+      },
+      "max_dont_odds": {
+        "4": 6,
+        "5": 6,
+        "6": 6,
+        "8": 6,
+        "9": 6,
+        "10": 6
+      },
+      "commission": 0.05
+    },
+    "start_bankroll": 1000.0,
+    "end_bankroll": 1005.0,
+    "rolls": [
+      {
+        "scenario": "PutIllegalGuard",
+        "step": 1,
+        "total": 7,
+        "bankroll_before": 1000.0,
+        "bankroll_after": 1005.0
+      }
+    ],
+    "final_open_bets": []
+  }
+]
