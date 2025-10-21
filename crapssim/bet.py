@@ -26,6 +26,10 @@ __all__ = [
     "Yo",
     "Boxcars",
     "AnyCraps",
+    "Horn",
+    "World",
+    "Big6",
+    "Big8",
     "HardWay",
     "Hop",
     "Fire",
@@ -824,6 +828,145 @@ class AnyCraps(_SimpleBet):
     losing_numbers: list[int] = list(ALL_DICE_NUMBERS - {2, 3, 12})
     """Losing number is anything except (2, 3, 12)."""
     payout_ratio: int = 7
+
+
+class Horn(_WinningLosingNumbersBet):
+    """
+    Horn bet in craps.
+
+    A one-roll meta-style bet represented as a single wager that pays equivalent
+    to splitting the stake equally across (2, 3, 11, 12). Net payout ratios:
+      - 2 or 12: 6.75  (i.e., (30 - 3) / 4)
+      - 3 or 11: 3.0   (i.e., (15 - 3) / 4)
+    Loses on any other total.
+    """
+
+    winning_numbers: list[int] = [2, 3, 11, 12]
+    losing_numbers: list[int] = list(ALL_DICE_NUMBERS - {2, 3, 11, 12})
+
+    def __init__(self, amount: typing.SupportsFloat):
+        super().__init__(amount)
+
+    def get_winning_numbers(self, table: "Table") -> list[int]:
+        return self.winning_numbers
+
+    def get_losing_numbers(self, table: "Table") -> list[int]:
+        return self.losing_numbers
+
+    def get_payout_ratio(self, table: "Table") -> float:
+        total = table.dice.total
+        if total in (2, 12):
+            return 6.75
+        if total in (3, 11):
+            return 3.0
+        raise NotImplementedError
+
+    def copy(self):
+        return self.__class__(self.amount)
+
+    @property
+    def _placed_key(self) -> typing.Hashable:
+        return type(self)
+
+    def __repr__(self) -> str:
+        return f"Horn(amount={self.amount})"
+
+
+class World(_WinningLosingNumbersBet):
+    """
+    World (Whirl) bet in craps.
+
+    Equivalent to splitting the stake equally across Horn (2, 3, 11, 12) plus Any7.
+    Net payout ratios:
+      - 2 or 12: 5.2   (i.e., (30 - 4) / 5)
+      - 3 or 11: 2.2   (i.e., (15 - 4) / 5)
+      - 7:       0.0   (break-even)
+    Loses on any other total.
+    """
+
+    winning_numbers: list[int] = [2, 3, 7, 11, 12]
+    losing_numbers: list[int] = list(ALL_DICE_NUMBERS - {2, 3, 7, 11, 12})
+
+    def __init__(self, amount: typing.SupportsFloat):
+        super().__init__(amount)
+
+    def get_winning_numbers(self, table: "Table") -> list[int]:
+        return self.winning_numbers
+
+    def get_losing_numbers(self, table: "Table") -> list[int]:
+        return self.losing_numbers
+
+    def get_payout_ratio(self, table: "Table") -> float:
+        total = table.dice.total
+        if total in (2, 12):
+            return 5.2
+        if total in (3, 11):
+            return 2.2
+        if total == 7:
+            return 0.0
+        raise NotImplementedError
+
+    def copy(self):
+        return self.__class__(self.amount)
+
+    @property
+    def _placed_key(self) -> typing.Hashable:
+        return type(self)
+
+    def __repr__(self) -> str:
+        return f"World(amount={self.amount})"
+
+
+class Big6(_SimpleBet):
+    """
+    Big 6 bet in craps.
+
+    Wins even money (1:1) when a 6 rolls before a 7. Always working.
+    """
+
+    winning_numbers: list[int] = [6]
+    losing_numbers: list[int] = [7]
+    payout_ratio: float = 1.0
+
+    def __init__(self, amount: typing.SupportsFloat):
+        super().__init__(amount)
+        self.number = 6
+
+    def copy(self) -> "Big6":
+        return self.__class__(self.amount)
+
+    @property
+    def _placed_key(self) -> typing.Hashable:
+        return type(self)
+
+    def __repr__(self) -> str:
+        return f"Big6(amount={self.amount})"
+
+
+class Big8(_SimpleBet):
+    """
+    Big 8 bet in craps.
+
+    Wins even money (1:1) when an 8 rolls before a 7. Always working.
+    """
+
+    winning_numbers: list[int] = [8]
+    losing_numbers: list[int] = [7]
+    payout_ratio: float = 1.0
+
+    def __init__(self, amount: typing.SupportsFloat):
+        super().__init__(amount)
+        self.number = 8
+
+    def copy(self) -> "Big8":
+        return self.__class__(self.amount)
+
+    @property
+    def _placed_key(self) -> typing.Hashable:
+        return type(self)
+
+    def __repr__(self) -> str:
+        return f"Big8(amount={self.amount})"
 
 
 # HardWay Bets ----------------------------------------------------------------
