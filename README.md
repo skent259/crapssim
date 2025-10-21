@@ -83,7 +83,34 @@ Some results from this simulator have been posted to http://pages.stat.wisc.edu/
 - [All Bets Are Off: Re-learning the Pass Line Bet in Craps](http://pages.stat.wisc.edu/~kent/blog/2019.02.28_Craps_Passline/passline-and-odds.html)
 
 
-## Contributing 
+## Supported Bets (high level)
+
+- Line & numbers: Pass Line, Come, **Put**, Place (4/5/6/8/9/10), Odds (PL/Come/**Put**)
+- Dark side: Don’t Pass, Don’t Come, Odds (DP/DC), **Lay** (4/5/6/8/9/10)
+- Field & props: Field, **Horn**, **World (Whirl)**, Any 7, Any Craps, 2/3/11/12, Hardways, Hop
+- Side features: Fire, All/Tall/Small (ATS), **Big 6**, **Big 8**
+
+### Buy/Lay commission
+
+Buy and Lay use a commission (vig) rate from the table settings:
+
+```python
+# default if unset
+table.settings.get("commission", 0.05)  # 5%
+```
+
+Commission is applied by the bet implementation (current default: applied to the potential win). This can be changed by overriding commission in Table.settings.
+
+### Examples
+
+See `crapssim/strategy/examples.py` for:
+- QuickProps (World + Big6/Big8)
+- BuySampler (Buy 4/10)
+- LaySampler (Lay 5/9)
+- PutWithOdds (Put on 6 with odds)
+
+
+## Contributing
 
 If you discover something interesting using this simulator, please let me know so that I can highlight those results here.  You can find me at skent259@gmail.com.
 
