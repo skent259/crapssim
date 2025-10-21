@@ -55,3 +55,8 @@ Small changes in addition to v0.1.1
 ## v0.1.0
 
 Initial version 
+## vxp-phase-baseline — CrapsSim-Vanilla Expansion Complete
+- Added Horn, World (Whirl), Big6, Big8, Buy, Lay, Put bets.
+- Added commission framework in Buy/Lay.
+- Added single-bet strategy wrappers and examples.
+- Integration baseline captured under `baselines/vxp/`.
