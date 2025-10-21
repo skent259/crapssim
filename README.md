@@ -86,6 +86,15 @@ Some results from this simulator have been posted to http://pages.stat.wisc.edu/
 ## Supported Bets (high level)
 
 - Line & numbers: Pass Line, Come, **Put**, Place (4/5/6/8/9/10), Odds (PL/Come/**Put**)
+
+**Odds behind Put**
+
+Odds on Put bets follow the same logic as Come odds. This behavior can be
+disabled for strict house simulation by setting:
+
+```python
+table.settings["allow_put_odds"] = False
+```
 - Dark side: Don’t Pass, Don’t Come, Odds (DP/DC), **Lay** (4/5/6/8/9/10)
 - Field & props: Field, **Horn**, **World (Whirl)**, Any 7, Any Craps, 2/3/11/12, Hardways, Hop
 - Side features: Fire, All/Tall/Small (ATS), **Big 6**, **Big 8**
@@ -126,6 +135,18 @@ If `commission_mode` is **unset** and `commission_multiplier_legacy=True` (defau
 Buy/Lay use internal number-based multipliers to determine the commission base before
 applying the rate. Set `commission_multiplier_legacy=False` to disable this behavior
 and rely solely on the explicit `commission_mode` base.
+
+**Disabling the legacy commission base**
+
+By default, when `commission_mode` is unset and
+`commission_multiplier_legacy=True`, the simulator applies internal
+number-based multipliers to approximate standard vig behavior.
+To disable this legacy baseline and rely solely on the explicit mode:
+
+```python
+table.settings["commission_multiplier_legacy"] = False
+table.settings["commission_mode"] = "on_win"
+```
 
 ### Examples
 
