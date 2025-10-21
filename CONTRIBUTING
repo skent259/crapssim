@@ -102,4 +102,22 @@ By maintaining clarity in examples, precision in type hints, and strong linkage
 between simulation design and domain reasoning, the project can continue to
 serve both as a working simulator and as a reference for formal analysis of
 craps dynamics.
- 
+
+## Running Tests and Gauntlet
+
+To verify correctness locally:
+
+```bash
+pytest -q
+```
+
+For optional stress and batch validation:
+
+```bash
+pytest -q -m stress
+python tools/vxp_gauntlet.py           # single run
+bash -lc 'for i in $(seq 1 25); do python tools/vxp_gauntlet.py; sleep 0.2; done'  # batch
+```
+
+Artifacts will appear under reports/vxp_gauntlet/<timestamp>/ and include JSON, CSV, and Markdown summaries.
+

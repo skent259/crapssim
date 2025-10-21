@@ -181,6 +181,11 @@ Those looking to contribute to this project are welcome to do so.  Currently, th
 
 
 
+### Developer Documentation
+See [`docs/VXP_METHODLOGY.md`](docs/VXP_METHODLOGY.md) for a full record of the Vanilla Expansion Project,
+including design choices, validation methods, and audit results.
+
+
 ## Stress tests (optional)
 
 A randomized torture test for new bets lives under `tests/stress/`.
