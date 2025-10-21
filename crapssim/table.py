@@ -125,10 +125,16 @@ class TableSettings(typing.TypedDict):
     for the table (both for light-side and dark-side bets).
 
     Additional settings:
-    - commission: float
-        Commission (vig) rate applied to Buy/Lay bets. Defaults to 0.05 (5%)
-        if not provided in settings. Commission is applied as implemented in
-        Buy/Lay bet logic (current default: calculated on potential win).
+    - commission: float = 0.05
+        Commission (vig) rate applied to Buy/Lay bets.
+    - commission_mode: str = "on_win"
+        "on_win" to apply commission to the potential win (default), or "on_bet" to apply to bet amount.
+    - commission_rounding: str = "none"
+        "none" (default), "ceil_dollar" (round up to next whole dollar), or "nearest_dollar".
+    - commission_floor: float = 0.0
+        Minimum bet size under which commission is not charged.
+    - allow_put_odds: bool = True
+        If False, disallow taking odds behind Put bets.
     """
 
     ATS_payouts: dict[str, int]  # {"all": 150, "tall": 30, "small": 30}

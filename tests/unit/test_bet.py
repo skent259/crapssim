@@ -1,10 +1,11 @@
+import math
 import numpy as np
 import pytest
 
 import crapssim.bet
 from crapssim.bet import Bet, CAndE, Come, DontCome, Hop, Odds, PassLine
 from crapssim.point import Point
-from crapssim.table import Table
+from crapssim.table import Table, TableUpdate
 
 # Check EV of bets on a "per-roll" basis
 
@@ -343,3 +344,62 @@ def test_hop_inequality():
 
     assert hop_one != hop_two
     assert hop_one != hop_three
+
+
+def test_buy_invalid_number_raises():
+    with pytest.raises(ValueError):
+        crapssim.bet.Buy(3, 10)
+
+
+def test_lay_invalid_number_raises():
+    with pytest.raises(ValueError):
+        crapssim.bet.Lay(11, 10)
+
+
+def test_buy_commission_modes_and_rounding():
+    t = Table()
+    t.add_player()
+    player = t.players[0]
+    player.add_bet(crapssim.bet.Buy(4, 19))
+    t.settings.pop("commission_mode", None)
+    t.settings.pop("commission_rounding", None)
+    t.settings["commission"] = 0.05
+    TableUpdate.roll(t, fixed_outcome=(2, 2))
+    TableUpdate.update_bets(t)
+    assert math.isfinite(player.bankroll)
+
+    t = Table()
+    t.add_player()
+    player = t.players[0]
+    t.settings["commission"] = 0.05
+    t.settings["commission_mode"] = "on_bet"
+    t.settings["commission_rounding"] = "ceil_dollar"
+    player.add_bet(crapssim.bet.Buy(4, 19))
+    TableUpdate.roll(t, fixed_outcome=(2, 2))
+    TableUpdate.update_bets(t)
+    assert math.isfinite(player.bankroll)
+
+
+def test_lay_commission_floor():
+    t = Table()
+    t.add_player()
+    player = t.players[0]
+    t.settings["commission"] = 0.05
+    t.settings["commission_mode"] = "on_win"
+    t.settings["commission_floor"] = 25.0
+    starting_bankroll = player.bankroll
+    player.add_bet(crapssim.bet.Lay(10, 20))
+    TableUpdate.roll(t, fixed_outcome=(4, 3))
+    TableUpdate.update_bets(t)
+    assert player.bankroll == pytest.approx(starting_bankroll + 10.0)
+
+
+def test_put_odds_disallowed_when_toggled_off():
+    t = Table()
+    t.add_player()
+    player = t.players[0]
+    t.settings["allow_put_odds"] = False
+    t.point.number = 6
+    player.add_bet(crapssim.bet.Put(6, 10))
+    player.add_bet(crapssim.bet.Odds(crapssim.bet.Put, 6, 10, True))
+    assert not any(isinstance(b, crapssim.bet.Odds) for b in player.bets)
