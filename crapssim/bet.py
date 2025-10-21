@@ -788,7 +788,8 @@ class Buy(_SimpleBet):
         if table.dice.total == self.number:
             gross_win = self.payout_ratio * self.amount
             commission_base = gross_win
-            if "commission_mode" not in table.settings:
+            use_legacy = table.settings.get("commission_multiplier_legacy", True)
+            if use_legacy and ("commission_mode" not in table.settings):
                 commission_base = (
                     self.amount * self.commission_multipliers[self.number]
                 )
@@ -850,7 +851,8 @@ class Lay(_SimpleBet):
         if table.dice.total == 7:
             gross_win = self.payout_ratio * self.amount
             commission_base = gross_win
-            if "commission_mode" not in table.settings:
+            use_legacy = table.settings.get("commission_multiplier_legacy", True)
+            if use_legacy and ("commission_mode" not in table.settings):
                 commission_base = (
                     self.amount * self.commission_multipliers[self.number]
                 )

@@ -111,6 +111,22 @@ These are implemented as *net single-wager equivalents* of equal-split sub-bets 
 - `commission_floor` (float dollars, default `0.0`)
 - `allow_put_odds` (`True` default)
 
+**Rounding semantics**
+- `nearest_dollar` uses Python’s standard rounding (`round`) which is banker's rounding.
+  Ties (e.g., 2.5) round to the nearest even integer.
+- `ceil_dollar` always rounds up to the next whole dollar.
+
+| Scenario                         | Settings                                                                  | Effect (conceptual)                            |
+|----------------------------------|---------------------------------------------------------------------------|-----------------------------------------------|
+| Default explicit mode            | `commission=0.05`, `commission_mode="on_win"`, `commission_rounding="none"` | Commission = 5% of gross win                  |
+| On-bet with rounding + floor     | `commission=0.05`, `commission_mode="on_bet"`, `commission_rounding="ceil_dollar"`, `commission_floor=25.0` | Fee is 5% of bet, rounded up, waived < $25 |
+
+**Legacy commission base (optional)**
+If `commission_mode` is **unset** and `commission_multiplier_legacy=True` (default),
+Buy/Lay use internal number-based multipliers to determine the commission base before
+applying the rate. Set `commission_multiplier_legacy=False` to disable this behavior
+and rely solely on the explicit `commission_mode` base.
+
 ### Examples
 
 See `crapssim/strategy/examples.py` for:
