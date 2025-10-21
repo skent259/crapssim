@@ -2,10 +2,16 @@ import copy
 import typing
 from abc import ABC, ABCMeta, abstractmethod
 from dataclasses import dataclass
-from typing import Hashable, Iterable, Literal, Protocol, TypedDict
+from typing import Hashable, Iterable, Literal, Protocol, TypedDict, TypeAlias
 
 from crapssim.dice import Dice
 from crapssim.point import Point
+
+DicePair: TypeAlias = tuple[int, int]
+"""Pair of dice represented as (die_one, die_two)."""
+
+Currency: TypeAlias = float
+"""Currency amount expressed as float dollars."""
 
 
 class SupportsFloat(Protocol):
@@ -772,11 +778,10 @@ class Buy(_SimpleBet):
     """True-odds bet on 4/5/6/8/9/10 that charges commission per table policy."""
 
     true_odds = {4: 2.0, 10: 2.0, 5: 1.5, 9: 1.5, 6: 1.2, 8: 1.2}
-    # These multipliers approximate typical house commission baselines under
-    # common table minimums and commission policies. They are used only when
-    # commission_mode is unset and commission_multiplier_legacy=True. This
-    # preserves legacy simulation parity without implying any normative rule
-    # set.
+    # These multipliers approximate typical house commission baselines
+    # for Buy/Lay bets under common table minimums. They exist solely to
+    # preserve historical simulation parity when commission_mode is unset
+    # and commission_multiplier_legacy=True.
     commission_multipliers = {4: 3.552, 10: 3.552, 5: 2.169, 9: 2.169, 6: 1.3392, 8: 1.3392}
     losing_numbers: list[int] = [7]
 
@@ -825,11 +830,10 @@ class Lay(_SimpleBet):
     """True-odds bet against 4/5/6/8/9/10, paying if 7 arrives first."""
 
     true_odds = {4: 0.5, 10: 0.5, 5: 2 / 3, 9: 2 / 3, 6: 5 / 6, 8: 5 / 6}
-    # These multipliers approximate typical house commission baselines under
-    # common table minimums and commission policies. They are used only when
-    # commission_mode is unset and commission_multiplier_legacy=True. This
-    # preserves legacy simulation parity without implying any normative rule
-    # set.
+    # These multipliers approximate typical house commission baselines
+    # for Buy/Lay bets under common table minimums. They exist solely to
+    # preserve historical simulation parity when commission_mode is unset
+    # and commission_multiplier_legacy=True.
     commission_multipliers = {
         4: 1.776,
         10: 1.776,
@@ -1414,3 +1418,4 @@ class Small(_ATSBet):
 
     type: str = "small"
     numbers: list[int] = [2, 3, 4, 5, 6]
+
