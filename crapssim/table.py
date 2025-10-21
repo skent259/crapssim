@@ -4,6 +4,7 @@ import typing
 from crapssim.dice import Dice
 
 from .bet import Bet, BetResult
+import crapssim.bet as betmod
 from .point import Point
 from .strategy import BetPassLine, Strategy
 
@@ -21,6 +22,13 @@ class TableUpdate:
         verbose: bool = False,
     ):
         """Run through the roll logic of the table."""
+        # --- Illegal Put guard ---
+        if table.point != "On":
+            for player in table.players:
+                illegal_puts = [b for b in list(player.bets) if isinstance(b, betmod.Put)]
+                for b in illegal_puts:
+                    player.bets.remove(b)
+        # --- end guard ---
         self.run_strategies(table, run_complete, verbose)
         self.print_player_summary(table, verbose)
         self.before_roll(table)
