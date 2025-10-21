@@ -3,18 +3,25 @@ in order to do the intended"""
 
 import typing
 
-from crapssim.bet import Come, DontCome, DontPass, Field, PassLine, Place
+from crapssim.bet import Come, DontCome, DontPass, Field, PassLine, Place, Put
 from crapssim.strategy.odds import (
     DontPassOddsMultiplier,
     OddsMultiplier,
     PassLineOddsMultiplier,
 )
 from crapssim.strategy.single_bet import (
+    BetBig6,
+    BetBig8,
+    BetBuy,
     BetCome,
     BetDontPass,
     BetField,
+    BetHorn,
+    BetLay,
     BetPassLine,
     BetPlace,
+    BetPut,
+    BetWorld,
     StrategyMode,
 )
 from crapssim.strategy.tools import (
@@ -745,4 +752,55 @@ class Place68DontCome2Odds(AggregateStrategy):
         return (
             f"{self.__class__.__name__}(six_eight_amount={self.six_eight_amount}, "
             f"dont_come_amount={self.dont_come_amount})"
+        )
+
+
+class QuickProps(AggregateStrategy):
+    """
+    Example: keep a World bet up on each roll (demo one-roll behavior),
+    and optionally a Big6/Big8 pair for even-money action.
+    """
+
+    def __init__(self, world_amount: float = 5.0, big_amount: float = 10.0):
+        super().__init__(
+            BetWorld(world_amount),
+            BetBig6(big_amount),
+            BetBig8(big_amount),
+        )
+
+
+class BuySampler(AggregateStrategy):
+    """
+    Example: Buy the outside (4/10) for true-odds action with commission.
+    """
+
+    def __init__(self, amount: float = 25.0):
+        super().__init__(
+            BetBuy(4, amount),
+            BetBuy(10, amount),
+        )
+
+
+class LaySampler(AggregateStrategy):
+    """
+    Example: Lay the inside (5/9) for dark-side true-odds action with commission.
+    """
+
+    def __init__(self, amount: float = 30.0):
+        super().__init__(
+            BetLay(5, amount),
+            BetLay(9, amount),
+        )
+
+
+class PutWithOdds(AggregateStrategy):
+    """
+    Example: When point is ON, place a Put bet on 6 with odds behind it when eligible.
+    """
+
+    def __init__(self, flat_amount: float = 10.0, odds_multiple: float = 2.0):
+        super().__init__(
+            BetPut(6, flat_amount),
+            # Demonstrate odds via odds multiplier when Put exists (same pattern as Come odds)
+            OddsMultiplier(base_type=Put, odds_multiplier=odds_multiple, always_working=True),
         )

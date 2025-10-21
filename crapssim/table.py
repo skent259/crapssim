@@ -123,6 +123,12 @@ class TableSettings(typing.TypedDict):
     This controls the payouts for the ATS (All, Tall, Small), Field,
     Fire, and Hop bets. This also controls the maximum allowable odds
     for the table (both for light-side and dark-side bets).
+
+    Additional settings:
+    - commission: float
+        Commission (vig) rate applied to Buy/Lay bets. Defaults to 0.05 (5%)
+        if not provided in settings. Commission is applied as implemented in
+        Buy/Lay bet logic (current default: calculated on potential win).
     """
 
     ATS_payouts: dict[str, int]  # {"all": 150, "tall": 30, "small": 30}
