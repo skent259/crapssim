@@ -17,6 +17,7 @@ __all__ = [
     "DontPass",
     "DontCome",
     "Odds",
+    "Put",
     "Place",
     "Field",
     "CAndE",
@@ -537,7 +538,9 @@ class Odds(_WinningLosingNumbersBet):
 
     def __init__(
         self,
-        base_type: typing.Type[PassLine | DontPass | Come | DontCome],
+        base_type: typing.Type[
+            "PassLine | DontPass | Come | DontCome | Put"
+        ],
         number: int,
         amount: float,
         always_working: bool = False,
@@ -549,7 +552,7 @@ class Odds(_WinningLosingNumbersBet):
 
     @property
     def light_side(self) -> bool:
-        return issubclass(self.base_type, (PassLine, Come))
+        return issubclass(self.base_type, (PassLine, Come, Put))
 
     @property
     def dark_side(self) -> bool:
@@ -639,6 +642,41 @@ class Odds(_WinningLosingNumbersBet):
             f"Odds(base_type={self.base_type}, number={self.number}, amount={self.amount}"
             f"{self._get_always_working_repr()}"
         )
+
+
+class Put(_SimpleBet):
+    """
+    Put bet in craps.
+
+    A flat line wager placed directly on a box number after the point is ON.
+    Behaves like a Come flat bet already established on that number:
+      - Wins even money (1:1) if the number rolls before 7.
+      - Loses on 7.
+      - Remains until resolved.
+      - Only allowed when the table point is ON.
+    Odds may be taken behind a Put using the existing Odds bet with base_type=Put.
+    """
+
+    losing_numbers: list[int] = [7]
+
+    def __init__(self, number: int, amount: typing.SupportsFloat):
+        super().__init__(amount)
+        self.number = number
+        self.winning_numbers = [number]
+        self.payout_ratio = 1.0
+
+    def is_allowed(self, player: "Player") -> bool:
+        return player.table.point == "On"
+
+    def copy(self) -> "Put":
+        return self.__class__(self.number, self.amount)
+
+    @property
+    def _placed_key(self) -> typing.Hashable:
+        return type(self), self.number
+
+    def __repr__(self) -> str:
+        return f"Put({self.number}, amount={self.amount})"
 
 
 # Place bets ------------------------------------------------------------------
