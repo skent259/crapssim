@@ -133,6 +133,10 @@ class TableSettings(typing.TypedDict):
         "none" (default), "ceil_dollar" (round up to next whole dollar), or "nearest_dollar".
     - commission_floor: float = 0.0
         Minimum bet size under which commission is not charged.
+    - commission_multiplier_legacy: bool = True
+        If True (default), and commission_mode is unset, Buy/Lay use internal
+        number-based multipliers to determine the commission base. Set False to
+        disable this legacy fallback and use the explicit commission_mode base.
     - allow_put_odds: bool = True
         If False, disallow taking odds behind Put bets.
     """

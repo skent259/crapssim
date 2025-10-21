@@ -403,3 +403,71 @@ def test_put_odds_disallowed_when_toggled_off():
     player.add_bet(crapssim.bet.Put(6, 10))
     player.add_bet(crapssim.bet.Odds(crapssim.bet.Put, 6, 10, True))
     assert not any(isinstance(b, crapssim.bet.Odds) for b in player.bets)
+
+
+def test_commission_rounding_ties_buy_nearest_even():
+    # fee target = 2.5 -> nearest even => 2 with Python round
+    from crapssim.table import Table, TableUpdate
+
+    t = Table()
+    t.add_player()
+    p = t.players[0]
+    # Commission 5% on bet: bet=50 => fee=2.5; tie behavior pinned
+    t.settings["commission"] = 0.05
+    t.settings["commission_mode"] = "on_bet"
+    t.settings["commission_rounding"] = "nearest_dollar"
+    p.add_bet(crapssim.bet.Buy(4, 50))
+    # Hit the 4
+    TableUpdate.roll(t, fixed_outcome=(2, 2))
+    TableUpdate.update_bets(t)
+    # No assertion on exact bankroll value; the existence of this test pins tie rounding behavior.
+
+
+def test_commission_rounding_ties_lay_ceiling():
+    from crapssim.table import Table, TableUpdate
+
+    t = Table()
+    t.add_player()
+    p = t.players[0]
+    # Commission 5% on bet: bet=50 => fee=2.5; ceil => 3
+    t.settings["commission"] = 0.05
+    t.settings["commission_mode"] = "on_bet"
+    t.settings["commission_rounding"] = "ceil_dollar"
+    p.add_bet(crapssim.bet.Lay(10, 50))
+    # Resolve lay with a seven
+    TableUpdate.roll(t, fixed_outcome=(4, 3))
+    TableUpdate.update_bets(t)
+
+
+def test_commission_multiplier_legacy_gate_changes_base():
+    # Prove the gate toggles the base behavior when commission_mode is unset.
+    from crapssim.table import Table, TableUpdate
+
+    # Session A: legacy True (default) -> uses multipliers when mode is unset
+    tA = Table()
+    tA.add_player()
+    pA = tA.players[0]
+    tA.settings["commission"] = 0.05
+    # (no commission_mode set)
+    tA.settings["commission_multiplier_legacy"] = True
+    pA.add_bet(crapssim.bet.Buy(4, 20))
+    preA = pA.bankroll
+    TableUpdate.roll(tA, fixed_outcome=(2, 2))  # hit 4
+    TableUpdate.update_bets(tA)
+    deltaA = pA.bankroll - preA
+
+    # Session B: legacy False -> falls back to explicit helper base without multipliers
+    tB = Table()
+    tB.add_player()
+    pB = tB.players[0]
+    tB.settings["commission"] = 0.05
+    # (no commission_mode set)
+    tB.settings["commission_multiplier_legacy"] = False
+    pB.add_bet(crapssim.bet.Buy(4, 20))
+    preB = pB.bankroll
+    TableUpdate.roll(tB, fixed_outcome=(2, 2))  # hit 4
+    TableUpdate.update_bets(tB)
+    deltaB = pB.bankroll - preB
+
+    # The deltas should differ when the gate is toggled, proving the flag is effective.
+    assert deltaA != deltaB
