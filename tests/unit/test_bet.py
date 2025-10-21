@@ -37,6 +37,10 @@ from crapssim.table import Table
         (crapssim.bet.World(1), -0.1333),
         (crapssim.bet.Big6(1), -0.0278),
         (crapssim.bet.Big8(1), -0.0278),
+        (crapssim.bet.Buy(4, 1), -0.0148),
+        (crapssim.bet.Buy(6, 1), -0.0093),
+        (crapssim.bet.Lay(4, 1), -0.0148),
+        (crapssim.bet.Lay(6, 1), -0.0093),
     ],
 )
 def test_ev_oneroll(bet, ev):
@@ -125,6 +129,8 @@ def test_ev_oneroll(bet, ev):
         (crapssim.bet.World(1), "World(amount=1.0)"),
         (crapssim.bet.Big6(1), "Big6(amount=1.0)"),
         (crapssim.bet.Big8(1), "Big8(amount=1.0)"),
+        (crapssim.bet.Buy(4, 1), "Buy(4, amount=1.0)"),
+        (crapssim.bet.Lay(6, 1), "Lay(6, amount=1.0)"),
     ],
 )
 def test_repr_names(bet, bet_name):

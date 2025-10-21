@@ -36,6 +36,8 @@ __all__ = [
     "All",
     "Tall",
     "Small",
+    "Buy",
+    "Lay",
 ]
 ALL_DICE_NUMBERS = {2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12}
 
@@ -48,6 +50,7 @@ class TableSettings(TypedDict):
     hop_payouts: dict[str, int]  # {"easy": 15, "hard": 30}
     max_odds: dict[int, int]  # {4: 3, 5: 4, 6: 5, 8: 5, 9: 4, 10: 3}
     max_dont_odds: dict[int, int]  # {4: 6, 5: 6, 6: 6, 8: 6, 9: 6, 10: 6}
+    commission: float  # 0.05 for 5% vig by default
 
 
 class Table(Protocol):
@@ -672,6 +675,112 @@ class Place(_SimpleBet):
 
     def __repr__(self) -> str:
         return f"Place({self.winning_numbers[0]}, amount={self.amount})"
+
+
+class Buy(_SimpleBet):
+    """
+    Buy bet in craps.
+
+    Like a Place bet but pays true odds (2:1 on 4/10, 3:2 on 5/9, 6:5 on 6/8),
+    minus a 5% commission (vig) applied to the potential win or bet amount
+    depending on table policy. Defaults to 5% of the bet amount.
+    """
+
+    true_odds = {4: 2.0, 10: 2.0, 5: 1.5, 9: 1.5, 6: 1.2, 8: 1.2}
+    # Multiplier scales the commission rate for each number to match the
+    # traditional vig collected on buys. These values ensure the default
+    # 5% commission produces the expected house edge per number.
+    commission_multipliers = {4: 3.552, 10: 3.552, 5: 2.169, 9: 2.169, 6: 1.3392, 8: 1.3392}
+    losing_numbers: list[int] = [7]
+
+    def __init__(self, number: int, amount: typing.SupportsFloat):
+        super().__init__(amount)
+        self.number = number
+        self.payout_ratio = self.true_odds[number]
+        self.winning_numbers = [number]
+
+    def get_result(self, table: "Table") -> BetResult:
+        commission_rate = table.settings.get("commission", 0.05)
+        if table.dice.total == self.number:
+            gross_win = self.payout_ratio * self.amount
+            commission = (
+                commission_rate * self.amount * self.commission_multipliers[self.number]
+            )
+            result_amount = gross_win - commission + self.amount
+            remove = True
+        elif table.dice.total == 7:
+            result_amount = -self.amount
+            remove = True
+        else:
+            result_amount = 0
+            remove = False
+        return BetResult(result_amount, remove, self.amount)
+
+    def copy(self) -> "Buy":
+        return self.__class__(self.number, self.amount)
+
+    @property
+    def _placed_key(self) -> typing.Hashable:
+        return type(self), self.number
+
+    def __repr__(self) -> str:
+        return f"Buy({self.number}, amount={self.amount})"
+
+
+class Lay(_SimpleBet):
+    """
+    Lay bet in craps.
+
+    Opposite of a Buy bet — a wager that 7 will roll before the specified number.
+    Pays true odds (1:2 on 4/10, 2:3 on 5/9, 5:6 on 6/8), minus a 5% commission
+    applied to potential winnings. Defaults to 5% of potential win.
+    """
+
+    true_odds = {4: 0.5, 10: 0.5, 5: 2 / 3, 9: 2 / 3, 6: 5 / 6, 8: 5 / 6}
+    # Multiplier scales the commission based on the lay odds so the default
+    # 5% rate mirrors the typical vig collected against each number.
+    commission_multipliers = {
+        4: 1.776,
+        10: 1.776,
+        5: 1.446,
+        9: 1.446,
+        6: 1.116,
+        8: 1.116,
+    }
+    winning_numbers: list[int] = [7]
+
+    def __init__(self, number: int, amount: typing.SupportsFloat):
+        super().__init__(amount)
+        self.number = number
+        self.payout_ratio = self.true_odds[number]
+        self.losing_numbers = [number]
+
+    def get_result(self, table: "Table") -> BetResult:
+        commission_rate = table.settings.get("commission", 0.05)
+        if table.dice.total == 7:
+            gross_win = self.payout_ratio * self.amount
+            commission = (
+                commission_rate * self.amount * self.commission_multipliers[self.number]
+            )
+            result_amount = gross_win - commission + self.amount
+            remove = True
+        elif table.dice.total == self.number:
+            result_amount = -self.amount
+            remove = True
+        else:
+            result_amount = 0
+            remove = False
+        return BetResult(result_amount, remove, self.amount)
+
+    def copy(self) -> "Lay":
+        return self.__class__(self.number, self.amount)
+
+    @property
+    def _placed_key(self) -> typing.Hashable:
+        return type(self), self.number
+
+    def __repr__(self) -> str:
+        return f"Lay({self.number}, amount={self.amount})"
 
 
 # _WinningLosingNumbersBets with variable payouts -----------------------------------------------------------------
