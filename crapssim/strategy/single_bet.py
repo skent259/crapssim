@@ -84,19 +84,23 @@ class StrategyMode(enum.Enum):
 
 
 class _BaseSingleBet(Strategy):
+    """Base helper for wrapping a single :class:`Bet` in a strategy."""
+
     def __init__(
         self,
         bet: Bet,
         mode: StrategyMode = StrategyMode.ADD_IF_NOT_BET,
-    ):
+    ) -> None:
         super().__init__()
-        self.bet = bet
-        self.mode = mode
+        self.bet: Bet = bet
+        self.mode: StrategyMode = mode
 
     def completed(self, player: Player) -> bool:
+        """Return True if bankroll cannot cover the bet and no bets remain."""
         return player.bankroll < self.bet.amount and len(player.bets) == 0
 
     def update_bets(self, player: Player) -> None:
+        """Apply the configured single-bet strategy for ``player``."""
         if not self.bet.is_allowed(player):
             return
 
@@ -137,7 +141,7 @@ class BetSingle(_BaseSingleBet):
         self,
         bet_amount: typing.SupportsFloat,
         mode: StrategyMode = StrategyMode.ADD_IF_NOT_BET,
-    ):
+    ) -> None:
         super().__init__(self.bet_type(bet_amount), mode=mode)
 
 
@@ -151,7 +155,7 @@ class BetSingleNumber(_BaseSingleBet):
         number: int,
         bet_amount: typing.SupportsFloat,
         mode: StrategyMode = StrategyMode.ADD_IF_NOT_BET,
-    ):
+    ) -> None:
         super().__init__(self.bet_type(number, bet_amount), mode=mode)
 
 
@@ -367,38 +371,46 @@ class BetBig8(BetSingle):
 
 
 class BetTwo(_BaseSingleBet):
+    """Place a Two (snake eyes) bet when not already active."""
+
     def __init__(
         self,
         bet_amount: typing.SupportsFloat,
-        mode=StrategyMode.ADD_IF_NOT_BET,
-    ):
+        mode: StrategyMode = StrategyMode.ADD_IF_NOT_BET,
+    ) -> None:
         super().__init__(Two(bet_amount), mode=mode)
 
 
 class BetThree(_BaseSingleBet):
+    """Place a Three (ace deuce) bet when not already active."""
+
     def __init__(
         self,
         bet_amount: typing.SupportsFloat,
-        mode=StrategyMode.ADD_IF_NOT_BET,
-    ):
+        mode: StrategyMode = StrategyMode.ADD_IF_NOT_BET,
+    ) -> None:
         super().__init__(Three(bet_amount), mode=mode)
 
 
 class BetYo(_BaseSingleBet):
+    """Place a Yo (11) bet when not already active."""
+
     def __init__(
         self,
         bet_amount: typing.SupportsFloat,
-        mode=StrategyMode.ADD_IF_NOT_BET,
-    ):
+        mode: StrategyMode = StrategyMode.ADD_IF_NOT_BET,
+    ) -> None:
         super().__init__(Yo(bet_amount), mode=mode)
 
 
 class BetBoxcars(_BaseSingleBet):
+    """Place a Boxcars (12) bet when not already active."""
+
     def __init__(
         self,
         bet_amount: typing.SupportsFloat,
-        mode=StrategyMode.ADD_IF_NOT_BET,
-    ):
+        mode: StrategyMode = StrategyMode.ADD_IF_NOT_BET,
+    ) -> None:
         super().__init__(Boxcars(bet_amount), mode=mode)
 
 
@@ -421,20 +433,44 @@ class BetPut(BetSingleNumber):
 
 
 class BetFire(_BaseSingleBet):
-    def __init__(self, bet_amount: float, mode=StrategyMode.ADD_IF_NOT_BET):
+    """Place a Fire bet if not currently in action."""
+
+    def __init__(
+        self,
+        bet_amount: float,
+        mode: StrategyMode = StrategyMode.ADD_IF_NOT_BET,
+    ) -> None:
         super().__init__(Fire(bet_amount), mode=mode)
 
 
 class BetAll(_BaseSingleBet):
-    def __init__(self, bet_amount: float, mode=StrategyMode.ADD_IF_NOT_BET):
+    """Place an All bet if not currently in action."""
+
+    def __init__(
+        self,
+        bet_amount: float,
+        mode: StrategyMode = StrategyMode.ADD_IF_NOT_BET,
+    ) -> None:
         super().__init__(All(bet_amount), mode=mode)
 
 
 class BetTall(_BaseSingleBet):
-    def __init__(self, bet_amount: float, mode=StrategyMode.ADD_IF_NOT_BET):
+    """Place a Tall bet if not currently in action."""
+
+    def __init__(
+        self,
+        bet_amount: float,
+        mode: StrategyMode = StrategyMode.ADD_IF_NOT_BET,
+    ) -> None:
         super().__init__(Tall(bet_amount), mode=mode)
 
 
 class BetSmall(_BaseSingleBet):
-    def __init__(self, bet_amount: float, mode=StrategyMode.ADD_IF_NOT_BET):
+    """Place a Small bet if not currently in action."""
+
+    def __init__(
+        self,
+        bet_amount: float,
+        mode: StrategyMode = StrategyMode.ADD_IF_NOT_BET,
+    ) -> None:
         super().__init__(Small(bet_amount), mode=mode)
