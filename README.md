@@ -155,6 +155,17 @@ See `crapssim/strategy/examples.py` for:
 - BuySampler (Buy 4/10)
 - LaySampler (Lay 5/9)
 - PutWithOdds (Put on 6 with odds)
+- HornShowcase (Horn + World)
+
+### Running examples
+A deterministic demo script is provided:
+
+```bash
+python -m examples.run_examples
+```
+
+This script exercises the new bets (Horn, World, Big6/Big8, Buy/Lay, Put with odds)
+over a fixed roll sequence for reproducible behavior.
 
 
 ## Contributing

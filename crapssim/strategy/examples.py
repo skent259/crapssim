@@ -757,8 +757,8 @@ class Place68DontCome2Odds(AggregateStrategy):
 
 class QuickProps(AggregateStrategy):
     """
-    Example: keep a World bet up on each roll (demo one-roll behavior),
-    and optionally a Big6/Big8 pair for even-money action.
+    Keep a World bet up each roll (demonstrates one-roll behavior) and
+    carry Big6/Big8 for simple even-money resolutions.
     """
 
     def __init__(self, world_amount: float = 5.0, big_amount: float = 10.0):
@@ -771,7 +771,8 @@ class QuickProps(AggregateStrategy):
 
 class BuySampler(AggregateStrategy):
     """
-    Example: Buy the outside (4/10) for true-odds action with commission.
+    Buy the outside numbers (4 and 10). Commission behavior is governed by
+    table settings (commission, mode, rounding, floor).
     """
 
     def __init__(self, amount: float = 25.0):
@@ -783,7 +784,7 @@ class BuySampler(AggregateStrategy):
 
 class LaySampler(AggregateStrategy):
     """
-    Example: Lay the inside (5/9) for dark-side true-odds action with commission.
+    Lay the inside (5 and 9). Demonstrates dark-side true-odds with commission.
     """
 
     def __init__(self, amount: float = 30.0):
@@ -795,12 +796,36 @@ class LaySampler(AggregateStrategy):
 
 class PutWithOdds(AggregateStrategy):
     """
-    Example: When point is ON, place a Put bet on 6 with odds behind it when eligible.
+    When the point is ON, place a Put bet on 6 and take odds behind it.
+    Odds behind Put may be disabled by table.settings['allow_put_odds'] = False.
     """
 
-    def __init__(self, flat_amount: float = 10.0, odds_multiple: float = 2.0):
+    def __init__(
+        self,
+        flat_amount: float = 10.0,
+        odds_multiple: float = 2.0,
+        always_working: bool = True,
+    ):
         super().__init__(
             BetPut(6, flat_amount),
-            # Demonstrate odds via odds multiplier when Put exists (same pattern as Come odds)
-            OddsMultiplier(base_type=Put, odds_multiplier=odds_multiple, always_working=True),
+            # Use the odds multiplier utility pattern from existing examples:
+            # Adds odds behind an active Put at the given multiple (e.g., 2x).
+            OddsMultiplier(
+                base_type=Put,
+                odds_multiplier=odds_multiple,
+                always_working=always_working,
+            ),
+        )
+
+
+class HornShowcase(AggregateStrategy):
+    """
+    Demonstrates Horn and World side-by-side to illustrate net payouts and
+    removal semantics after a single resolving roll.
+    """
+
+    def __init__(self, horn_amount: float = 5.0, world_amount: float = 5.0):
+        super().__init__(
+            BetHorn(horn_amount),
+            BetWorld(world_amount),
         )
