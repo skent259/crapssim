@@ -122,3 +122,14 @@ Those looking to contribute to this project are welcome to do so.  Currently, th
 
 
 
+
+## Stress tests (optional)
+
+A randomized torture test for new bets lives under `tests/stress/`.
+
+- Quick smoke runs by default with `pytest -q`.
+- Heavy stress is opt-in:
+
+```bash
+pytest -q -m stress
+```
