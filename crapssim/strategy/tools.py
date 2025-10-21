@@ -401,18 +401,13 @@ class CountStrategy(AddIfTrue):
         bet_type: typing.Type[Bet] | tuple[typing.Type[Bet], ...],
         count: int,
         bet: Bet,
-    ):
-        """If there are less than count number of bets placed by player with a given bet_type, it
-        adds the given bet.
+    ) -> None:
+        """Configure the count rule and bet to place.
 
-        Parameters
-        ----------
-        bet_type
-            The types of bets to count.
-        count
-            How many of the bets to check against.
-        bet
-            The bet to place if there are less than count bets of a given type.
+        Args:
+            bet_type: Bet type(s) to count.
+            count: Maximum allowed instances before adding a new bet.
+            bet: Bet to place when below ``count``.
         """
         self.bet_type = bet_type
         self.count = count
@@ -420,19 +415,7 @@ class CountStrategy(AddIfTrue):
         super().__init__(bet, key=self.key)
 
     def key(self, player: Player) -> bool:
-        """Return True if the player has less than count number of bets for a given type and the
-        bet that is intended to be placed isn't already on the table.
-
-        Parameters
-        ----------
-        player
-            The player to count the bets for.
-
-        Returns
-        -------
-        Returns True if the player has less than count number of bets for a given type and the
-        bet that is intended to be placed isn't already on the table, otherwise returns False.
-        """
+        """Return True when the player is below the threshold for ``bet_type``."""
         count_of_bets_with_type = len(player.get_bets_by_type(bet_type=self.bet_type))
         identical_bet_is_not_on_table = self.bet not in player.bets
 
@@ -451,7 +434,12 @@ class RemoveIfPointOff(RemoveIfTrue):
     This will match bets based on type, and number for Place and Hardway bets.
     It will not consider bet amounts when matching."""
 
-    def __init__(self, bet: Bet):
+    def __init__(self, bet: Bet) -> None:
+        """Configure removal logic for the provided bet template.
+
+        Args:
+            bet: Bet instance describing which wagers to remove when the point is off.
+        """
         if not any([isinstance(bet, x) for x in [Place, HardWay, Hop]]):
             key = (
                 lambda b, p: isinstance(b, type(self.bet))
@@ -487,7 +475,10 @@ class RemoveIfPointOff(RemoveIfTrue):
 class RemoveByType(RemoveIfTrue):
     """Remove any bets that are of the given type(s)."""
 
-    def __init__(self, bet_type: typing.Type[Bet] | tuple[typing.Type[Bet], ...]):
+    def __init__(
+        self, bet_type: typing.Type[Bet] | tuple[typing.Type[Bet], ...]
+    ) -> None:
+        """Remove all bets matching ``bet_type``."""
         super().__init__(lambda b, p: isinstance(b, bet_type))
 
 
@@ -496,46 +487,25 @@ class WinProgression(Strategy):
     places a Field bet for that amount."""
 
     def __init__(self, first_bet: Bet, multipliers: list[typing.SupportsFloat]) -> None:
-        """Creates the given the progression.
+        """Configure the baseline bet and multiplier progression.
 
-        Parameters
-        ----------
-        first_bet
-            The initial bet, including the starting amount
-        progression
-            A list of multipliers on the bet amounts to make. As you win, progresses farther up list.
+        Args:
+            first_bet: Initial bet template, including starting amount.
+            multipliers: Sequence of bankroll multipliers applied after wins.
         """
         self.bet = first_bet
         self.multipliers = multipliers
         self.current_progression = 0
 
     def completed(self, player: Player) -> bool:
-        """If the players bankroll is below the minimum amount in the progression and if they
-        have no more bets on the table the strategy is completed.
-
-        Parameters
-        ----------
-        player
-            The player to check the bankroll and bets for.
-
-        Returns
-        -------
-        True if the
-        """
+        """Return True when bankroll is below minimum multiplier and no bets remain."""
         return (
             player.bankroll < min(float(x) for x in self.multipliers)
             and len(player.bets) == 0
         )
 
     def after_roll(self, player: Player) -> None:
-        """If the field bet wins, increase the progression by 1, if it loses reset the progression
-        to 0.
-
-        Parameters
-        ----------
-        player
-            The player to check the winning bets for.
-        """
+        """Advance or reset the progression based on whether the bet won."""
 
         win = all(x.get_result(player.table).won for x in player.bets)
 
@@ -545,13 +515,7 @@ class WinProgression(Strategy):
             self.current_progression = 0
 
     def update_bets(self, player: Player) -> None:
-        """If a bet isn't on the table, place one for the current progression amount.
-
-        Parameters
-        ----------
-        player
-            The player to place the bet for.
-        """
+        """Ensure a bet exists scaled by the current progression step."""
         new_bet = self.bet.copy()
         if self.current_progression >= len(self.multipliers):
             new_bet.amount = self.bet.amount * self.multipliers[-1]

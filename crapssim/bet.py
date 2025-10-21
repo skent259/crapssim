@@ -2,23 +2,32 @@ import copy
 import typing
 from abc import ABC, ABCMeta, abstractmethod
 from dataclasses import dataclass
-from typing import Protocol, TypedDict
+from typing import Hashable, Iterable, Literal, Protocol, TypedDict
 
 from crapssim.dice import Dice
 from crapssim.point import Point
 
 
+class SupportsFloat(Protocol):
+    """Protocol for objects that can be converted to ``float``."""
+
+    def __float__(self) -> float:
+        """Return a float representation."""
+
+
+
 def _compute_commission(
     table: "Table", *, gross_win: float, bet_amount: float
 ) -> float:
-    """
-    Commission calculator for Buy/Lay.
+    """Compute commission per table settings.
 
-    Table settings (all optional; defaults preserve current behavior):
-      - commission: float = 0.05
-      - commission_mode: "on_win" | "on_bet"  (default "on_win")
-      - commission_rounding: "none" | "ceil_dollar" | "nearest_dollar" (default "none")
-      - commission_floor: float = 0.0  (apply no commission if bet_amount < floor)
+    Args:
+      table: Policy source.
+      gross_win: The pre-commission win amount.
+      bet_amount: The stake for this bet.
+
+    Returns:
+      Commission fee as a float after applying mode, rounding, and floor.
     """
 
     rate = table.settings.get("commission", 0.05)
@@ -81,15 +90,21 @@ __all__ = [
 ALL_DICE_NUMBERS = {2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12}
 
 
-class TableSettings(TypedDict):
+class TableSettings(TypedDict, total=False):
+    """Subset of table policy toggles referenced by bet logic."""
 
-    ATS_payouts: dict[str, int]  # {"all": 150, "tall": 30, "small": 30}
-    field_payouts: dict[int, int]  # {2: 2, 3: 1, 4: 1, 9: 1, 10: 1, 11: 1, 12: 2}
-    fire_payouts: dict[int, int]  # {4: 24, 5: 249, 6: 999}
-    hop_payouts: dict[str, int]  # {"easy": 15, "hard": 30}
-    max_odds: dict[int, int]  # {4: 3, 5: 4, 6: 5, 8: 5, 9: 4, 10: 3}
-    max_dont_odds: dict[int, int]  # {4: 6, 5: 6, 6: 6, 8: 6, 9: 6, 10: 6}
-    commission: float  # 0.05 for 5% vig by default
+    ATS_payouts: dict[str, int]
+    field_payouts: dict[int, int]
+    fire_payouts: dict[int, int]
+    hop_payouts: dict[str, int]
+    max_odds: dict[int, int]
+    max_dont_odds: dict[int, int]
+    commission: float
+    commission_mode: Literal["on_win", "on_bet"]
+    commission_rounding: Literal["none", "ceil_dollar", "nearest_dollar"]
+    commission_floor: float
+    commission_multiplier_legacy: bool
+    allow_put_odds: bool
 
 
 class Table(Protocol):
@@ -100,7 +115,10 @@ class Table(Protocol):
 
 class Player(Protocol):
     table: Table
-    bets: list[typing.Type["Bet"]]
+    bets: list["Bet"]
+
+    @property
+    def bankroll(self) -> float: ...
 
 
 @dataclass(slots=True, frozen=True)
@@ -157,7 +175,7 @@ class Bet(ABC, metaclass=_MetaBetABC):
     All bets will be a subclass of this.
     """
 
-    def __init__(self, amount: typing.SupportsFloat):
+    def __init__(self, amount: SupportsFloat) -> None:
         self.amount: float = float(amount)
         """Wagered amount for the bet."""
 
@@ -209,11 +227,11 @@ class Bet(ABC, metaclass=_MetaBetABC):
         return new_bet
 
     @property
-    def _placed_key(self) -> typing.Hashable:
+    def _placed_key(self) -> Hashable:
         return type(self)
 
     @property
-    def _hash_key(self) -> typing.Hashable:
+    def _hash_key(self) -> Hashable:
         return self._placed_key, self.amount
 
     def __eq__(self, other: object) -> bool:
@@ -690,21 +708,11 @@ class Odds(_WinningLosingNumbersBet):
 
 
 class Put(_SimpleBet):
-    """
-    Put bet in craps.
-
-    A flat line wager placed directly on a box number after the point is ON.
-    Behaves like a Come flat bet already established on that number:
-      - Wins even money (1:1) if the number rolls before 7.
-      - Loses on 7.
-      - Remains until resolved.
-      - Only allowed when the table point is ON.
-    Odds may be taken behind a Put using the existing Odds bet with base_type=Put.
-    """
+    """Flat line bet on a box number; point must be ON and odds obey table policy."""
 
     losing_numbers: list[int] = [7]
 
-    def __init__(self, number: int, amount: typing.SupportsFloat):
+    def __init__(self, number: int, amount: SupportsFloat) -> None:
         super().__init__(amount)
         self.number = number
         self.winning_numbers = [number]
@@ -717,7 +725,7 @@ class Put(_SimpleBet):
         return self.__class__(self.number, self.amount)
 
     @property
-    def _placed_key(self) -> typing.Hashable:
+    def _placed_key(self) -> Hashable:
         return type(self), self.number
 
     def __repr__(self) -> str:
@@ -761,13 +769,7 @@ class Place(_SimpleBet):
 
 
 class Buy(_SimpleBet):
-    """
-    Buy bet in craps.
-
-    Like a Place bet but pays true odds (2:1 on 4/10, 3:2 on 5/9, 6:5 on 6/8),
-    minus a 5% commission (vig) applied to the potential win or bet amount
-    depending on table policy. Defaults to 5% of the bet amount.
-    """
+    """True-odds bet on 4/5/6/8/9/10 that charges commission per table policy."""
 
     true_odds = {4: 2.0, 10: 2.0, 5: 1.5, 9: 1.5, 6: 1.2, 8: 1.2}
     # These multipliers approximate typical house commission baselines under
@@ -778,7 +780,7 @@ class Buy(_SimpleBet):
     commission_multipliers = {4: 3.552, 10: 3.552, 5: 2.169, 9: 2.169, 6: 1.3392, 8: 1.3392}
     losing_numbers: list[int] = [7]
 
-    def __init__(self, number: int, amount: typing.SupportsFloat):
+    def __init__(self, number: int, amount: SupportsFloat) -> None:
         if number not in (4, 5, 6, 8, 9, 10):
             raise ValueError(f"Invalid Buy number: {number}")
         super().__init__(amount)
@@ -812,7 +814,7 @@ class Buy(_SimpleBet):
         return self.__class__(self.number, self.amount)
 
     @property
-    def _placed_key(self) -> typing.Hashable:
+    def _placed_key(self) -> Hashable:
         return type(self), self.number
 
     def __repr__(self) -> str:
@@ -820,13 +822,7 @@ class Buy(_SimpleBet):
 
 
 class Lay(_SimpleBet):
-    """
-    Lay bet in craps.
-
-    Opposite of a Buy bet — a wager that 7 will roll before the specified number.
-    Pays true odds (1:2 on 4/10, 2:3 on 5/9, 5:6 on 6/8), minus a 5% commission
-    applied to potential winnings. Defaults to 5% of potential win.
-    """
+    """True-odds bet against 4/5/6/8/9/10, paying if 7 arrives first."""
 
     true_odds = {4: 0.5, 10: 0.5, 5: 2 / 3, 9: 2 / 3, 6: 5 / 6, 8: 5 / 6}
     # These multipliers approximate typical house commission baselines under
@@ -844,7 +840,7 @@ class Lay(_SimpleBet):
     }
     winning_numbers: list[int] = [7]
 
-    def __init__(self, number: int, amount: typing.SupportsFloat):
+    def __init__(self, number: int, amount: SupportsFloat) -> None:
         if number not in (4, 5, 6, 8, 9, 10):
             raise ValueError(f"Invalid Lay number: {number}")
         super().__init__(amount)
@@ -878,7 +874,7 @@ class Lay(_SimpleBet):
         return self.__class__(self.number, self.amount)
 
     @property
-    def _placed_key(self) -> typing.Hashable:
+    def _placed_key(self) -> Hashable:
         return type(self), self.number
 
     def __repr__(self) -> str:
@@ -1042,20 +1038,12 @@ class AnyCraps(_SimpleBet):
 
 
 class Horn(_WinningLosingNumbersBet):
-    """
-    Horn bet in craps.
-
-    A one-roll meta-style bet represented as a single wager that pays equivalent
-    to splitting the stake equally across (2, 3, 11, 12). Net payout ratios:
-      - 2 or 12: 6.75  (i.e., (30 - 3) / 4)
-      - 3 or 11: 3.0   (i.e., (15 - 3) / 4)
-    Loses on any other total.
-    """
+    """One-roll bet split across 2, 3, 11, and 12; loses on all other totals."""
 
     winning_numbers: list[int] = [2, 3, 11, 12]
     losing_numbers: list[int] = list(ALL_DICE_NUMBERS - {2, 3, 11, 12})
 
-    def __init__(self, amount: typing.SupportsFloat):
+    def __init__(self, amount: SupportsFloat) -> None:
         super().__init__(amount)
 
     def get_winning_numbers(self, table: "Table") -> list[int]:
@@ -1072,11 +1060,11 @@ class Horn(_WinningLosingNumbersBet):
             return 3.0
         raise NotImplementedError
 
-    def copy(self):
+    def copy(self) -> "Horn":
         return self.__class__(self.amount)
 
     @property
-    def _placed_key(self) -> typing.Hashable:
+    def _placed_key(self) -> Hashable:
         return type(self)
 
     def __repr__(self) -> str:
@@ -1084,21 +1072,12 @@ class Horn(_WinningLosingNumbersBet):
 
 
 class World(_WinningLosingNumbersBet):
-    """
-    World (Whirl) bet in craps.
-
-    Equivalent to splitting the stake equally across Horn (2, 3, 11, 12) plus Any7.
-    Net payout ratios:
-      - 2 or 12: 5.2   (i.e., (30 - 4) / 5)
-      - 3 or 11: 2.2   (i.e., (15 - 4) / 5)
-      - 7:       0.0   (break-even)
-    Loses on any other total.
-    """
+    """One-roll bet covering Horn numbers plus 7; pays break-even on 7."""
 
     winning_numbers: list[int] = [2, 3, 7, 11, 12]
     losing_numbers: list[int] = list(ALL_DICE_NUMBERS - {2, 3, 7, 11, 12})
 
-    def __init__(self, amount: typing.SupportsFloat):
+    def __init__(self, amount: SupportsFloat) -> None:
         super().__init__(amount)
 
     def get_winning_numbers(self, table: "Table") -> list[int]:
@@ -1117,11 +1096,11 @@ class World(_WinningLosingNumbersBet):
             return 0.0
         raise NotImplementedError
 
-    def copy(self):
+    def copy(self) -> "World":
         return self.__class__(self.amount)
 
     @property
-    def _placed_key(self) -> typing.Hashable:
+    def _placed_key(self) -> Hashable:
         return type(self)
 
     def __repr__(self) -> str:
@@ -1129,17 +1108,13 @@ class World(_WinningLosingNumbersBet):
 
 
 class Big6(_SimpleBet):
-    """
-    Big 6 bet in craps.
-
-    Wins even money (1:1) when a 6 rolls before a 7. Always working.
-    """
+    """Even-money bet that wins on 6 before 7."""
 
     winning_numbers: list[int] = [6]
     losing_numbers: list[int] = [7]
     payout_ratio: float = 1.0
 
-    def __init__(self, amount: typing.SupportsFloat):
+    def __init__(self, amount: SupportsFloat) -> None:
         super().__init__(amount)
         self.number = 6
 
@@ -1147,7 +1122,7 @@ class Big6(_SimpleBet):
         return self.__class__(self.amount)
 
     @property
-    def _placed_key(self) -> typing.Hashable:
+    def _placed_key(self) -> Hashable:
         return type(self)
 
     def __repr__(self) -> str:
@@ -1155,17 +1130,13 @@ class Big6(_SimpleBet):
 
 
 class Big8(_SimpleBet):
-    """
-    Big 8 bet in craps.
-
-    Wins even money (1:1) when an 8 rolls before a 7. Always working.
-    """
+    """Even-money bet that wins on 8 before 7."""
 
     winning_numbers: list[int] = [8]
     losing_numbers: list[int] = [7]
     payout_ratio: float = 1.0
 
-    def __init__(self, amount: typing.SupportsFloat):
+    def __init__(self, amount: SupportsFloat) -> None:
         super().__init__(amount)
         self.number = 8
 
@@ -1173,7 +1144,7 @@ class Big8(_SimpleBet):
         return self.__class__(self.amount)
 
     @property
-    def _placed_key(self) -> typing.Hashable:
+    def _placed_key(self) -> Hashable:
         return type(self)
 
     def __repr__(self) -> str:
