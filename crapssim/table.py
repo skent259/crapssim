@@ -4,7 +4,7 @@ from typing import Generator, Iterable, Literal, TypedDict
 
 from crapssim.dice import Dice
 
-from .bet import Bet, BetResult
+from .bet import Bet, BetResult, DicePair
 import crapssim.bet as betmod
 from .point import Point
 from .strategy import BetPassLine, Strategy
@@ -18,7 +18,7 @@ class TableUpdate:
     def run(
         self,
         table: "Table",
-        dice_outcome: Iterable[int] | None = None,
+        dice_outcome: DicePair | None = None,
         run_complete: bool = False,
         verbose: bool = False,
     ) -> None:
@@ -26,9 +26,12 @@ class TableUpdate:
 
         Args:
             table: Active table instance being updated.
-            dice_outcome: Optional fixed dice values to use instead of rolling.
+            dice_outcome: Optional dice pair to use instead of rolling.
             run_complete: If True, skip strategy updates that place/remove bets.
             verbose: If True, print descriptive output for debugging.
+
+        Returns:
+            None: Always returns ``None``.
         """
         # --- Illegal Put guard ---
         if table.point != "On":
@@ -57,6 +60,9 @@ class TableUpdate:
             table: Active table instance being updated.
             run_complete: Flag indicating whether the simulation hit stop conditions.
             verbose: Unused, kept for compatibility with existing call sites.
+
+        Returns:
+            None: Always returns ``None``.
         """
         if run_complete:
             # Stop adding/modifying bets when run end criteria are met
@@ -68,7 +74,11 @@ class TableUpdate:
 
     @staticmethod
     def print_player_summary(table: "Table", verbose: bool = False) -> None:
-        """Emit a summary of each player's bankroll and bets when verbose."""
+        """Emit a summary of each player's bankroll and bets when verbose.
+
+        Returns:
+            None: Always returns ``None``.
+        """
         for player in table.players:
             if verbose:
                 print(
@@ -91,18 +101,21 @@ class TableUpdate:
     @staticmethod
     def roll(
         table: "Table",
-        fixed_outcome: Iterable[int] | None = None,
+        fixed_outcome: DicePair | None = None,
         verbose: bool = False,
     ) -> None:
         """Advance the game by one roll.
 
         Args:
             table: The active table.
-            fixed_outcome: Optional (d1, d2) to make the roll deterministic.
+            fixed_outcome: Optional dice pair to make the roll deterministic.
             verbose: If True, print event details for debugging.
 
         Side effects:
             - Updates dice, resolves/removes bets, mutates bankrolls accordingly.
+
+        Returns:
+            None: Always returns ``None``.
         """
         if fixed_outcome is not None:
             table.dice.fixed_roll(fixed_outcome)
@@ -122,7 +135,11 @@ class TableUpdate:
 
     @staticmethod
     def update_bets(table: "Table", verbose: bool = False) -> None:
-        """Settle each player's bets against the most recent roll."""
+        """Settle each player's bets against the most recent roll.
+
+        Returns:
+            None: Always returns ``None``.
+        """
         for player in table.players:
             player.update_bet(verbose=verbose)
 
@@ -136,7 +153,11 @@ class TableUpdate:
 
     @staticmethod
     def update_numbers(table: "Table", verbose: bool) -> None:
-        """Advance moving bets (Come/DontCome) and update the point."""
+        """Advance moving bets (Come/DontCome) and update the point.
+
+        Returns:
+            None: Always returns ``None``.
+        """
         for player, bet in table.yield_player_bets():
             bet.update_number(table)
         table.point.update(table.dice)
@@ -213,7 +234,7 @@ class Table:
             name: Optional explicit player name; defaults to ``"Player {n}"``.
 
         Returns:
-            The created :class:`Player` instance.
+            Player: The created :class:`Player` instance.
         """
         if name is None:
             name = f"Player {len(self.players)}"
@@ -224,7 +245,11 @@ class Table:
         return new_player
 
     def _setup_run(self, verbose: bool) -> None:
-        """Ensure the table has at least one player and emit greetings if verbose."""
+        """Ensure the table has at least one player and emit greetings if verbose.
+
+        Returns:
+            None: Always returns ``None``.
+        """
         if verbose and self.dice.n_rolls == 0:
             print("Welcome to the Craps Table!")
         self.ensure_one_player()
@@ -251,6 +276,9 @@ class Table:
             max_shooter: Maximum number of shooters to process.
             verbose: If True, print updates during execution.
             runout: If True, continue resolving remaining bets after hitting limits.
+
+        Returns:
+            None: Always returns ``None``.
         """
 
         self._setup_run(verbose)
@@ -272,13 +300,16 @@ class Table:
                 TableUpdate().print_player_summary(self, verbose=verbose)
 
     def fixed_run(
-        self, dice_outcomes: Iterable[Iterable[int]], verbose: bool = False
+        self, dice_outcomes: Iterable[DicePair], verbose: bool = False
     ) -> None:
         """Run the table using a predetermined dice outcome sequence.
 
         Args:
             dice_outcomes: Iterable of dice value pairs to apply sequentially.
             verbose: If True, print updates during execution.
+
+        Returns:
+            None: Always returns ``None``.
         """
         self._setup_run(verbose=verbose)
 
@@ -321,7 +352,11 @@ class Table:
             return not run_complete
 
     def ensure_one_player(self) -> None:
-        """Ensure there is at least one player registered on the table."""
+        """Ensure there is at least one player registered on the table.
+
+        Returns:
+            None: Always returns ``None``.
+        """
         if len(self.players) == 0:
             self.add_player()
 
@@ -368,7 +403,11 @@ class Player:
         return self._table
 
     def add_bet(self, bet: Bet) -> None:
-        """Attempt to place a bet while respecting bankroll and bet stacking rules."""
+        """Attempt to place a bet while respecting bankroll and bet stacking rules.
+
+        Returns:
+            None: Always returns ``None``.
+        """
         existing_bets: list[Bet] = self.already_placed_bets(bet)
         new_bet = sum(existing_bets + [bet])
         amount_available_to_bet = self.bankroll + sum(x.amount for x in existing_bets)
@@ -380,38 +419,78 @@ class Player:
             self.bets.append(new_bet)
 
     def already_placed_bets(self, bet: Bet) -> list[Bet]:
-        """Return existing bets with the same placement key as ``bet``."""
+        """Return existing bets with the same placement key as ``bet``.
+
+        Args:
+            bet: Bet candidate being compared to current layout bets.
+
+        Returns:
+            list[Bet]: Bets already placed with the same key.
+        """
         return [x for x in self.bets if x._placed_key == bet._placed_key]
 
     def already_placed(self, bet: Bet) -> bool:
-        """Check whether a bet with the same placement key already exists."""
+        """Check whether a bet with the same placement key already exists.
+
+        Args:
+            bet: Bet candidate being evaluated.
+
+        Returns:
+            bool: True if a matching bet already exists.
+        """
         return len(self.already_placed_bets(bet)) > 0
 
     def get_bets_by_type(
         self, bet_type: typing.Type[Bet] | tuple[typing.Type[Bet], ...]
     ) -> list[Bet]:
-        """Return bets whose type matches ``bet_type`` (supports tuples)."""
+        """Return bets whose type matches ``bet_type`` (supports tuples).
+
+        Args:
+            bet_type: Bet type or tuple of bet types to match.
+
+        Returns:
+            list[Bet]: Bets whose type matches ``bet_type``.
+        """
         return [x for x in self.bets if isinstance(x, bet_type)]
 
     def has_bets(
         self, bet_type: typing.Type[Bet] | tuple[typing.Type[Bet], ...]
     ) -> bool:
-        """Return True if any bet of ``bet_type`` is currently on the layout."""
+        """Return True if any bet of ``bet_type`` is currently on the layout.
+
+        Args:
+            bet_type: Bet type or tuple of bet types to check for.
+
+        Returns:
+            bool: True if any matching bet exists on the layout.
+        """
         return len(self.get_bets_by_type(bet_type)) > 0
 
     def remove_bet(self, bet: Bet) -> None:
-        """Remove a bet if it is present and removable."""
+        """Remove a bet if it is present and removable.
+
+        Returns:
+            None: Always returns ``None``.
+        """
         if bet in self.bets and bet.is_removable(self.table):
             self.bankroll += bet.amount
             self.bets.remove(bet)
 
     def add_strategy_bets(self) -> None:
-        """Apply the configured strategy to place new bets."""
+        """Apply the configured strategy to place new bets.
+
+        Returns:
+            None: Always returns ``None``.
+        """
         if self.strategy is not None:
             self.strategy.update_bets(self)
 
     def update_bet(self, verbose: bool = False) -> None:
-        """Resolve outstanding bets against the latest roll."""
+        """Resolve outstanding bets against the latest roll.
+
+        Returns:
+            None: Always returns ``None``.
+        """
         for bet in self.bets[:]:
             result: BetResult = bet.get_result(self.table)
             self.bankroll += result.bankroll_change
@@ -423,7 +502,11 @@ class Player:
                 self.bets.remove(bet)
 
     def print_bet_update(self, bet: Bet, result: BetResult) -> None:
-        """Emit verbose logging for a bet resolution."""
+        """Emit verbose logging for a bet resolution.
+
+        Returns:
+            None: Always returns ``None``.
+        """
         if result.won:
             print(f"{self.name} won ${result.amount - bet.amount} on {bet}!")
         elif result.lost:
