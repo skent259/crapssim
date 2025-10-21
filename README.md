@@ -101,6 +101,16 @@ table.settings.get("commission", 0.05)  # 5%
 
 Commission is applied by the bet implementation (current default: applied to the potential win). This can be changed by overriding commission in Table.settings.
 
+**Horn / World modeling:**  
+These are implemented as *net single-wager equivalents* of equal-split sub-bets (Horn across 2/3/11/12; World adds Any 7 break-even). This keeps payouts explicit and avoids sub-bet bookkeeping.
+
+**Buy/Lay commission policy (optional keys):**
+- `commission` (float, default `0.05`)
+- `commission_mode` (`"on_win"` default, or `"on_bet"`)
+- `commission_rounding` (`"none"` default, `"ceil_dollar"`, `"nearest_dollar"`)
+- `commission_floor` (float dollars, default `0.0`)
+- `allow_put_odds` (`True` default)
+
 ### Examples
 
 See `crapssim/strategy/examples.py` for:

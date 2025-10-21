@@ -154,13 +154,23 @@ def test_vxp_heavy_stress(require_stress):
         p = t.players[0]
         p.strategy = NullStrategy()
         # Vary commission across runs, including edge-ish values
-        t.settings["commission"] = rng.choice([0.03, 0.05, 0.07, 0.0, 0.10])
+        t.settings["commission"] = rng.choice([0.03, 0.05, 0.07, 0.10])
+        t.settings["commission_mode"] = rng.choice(["on_win", "on_bet"])
+        t.settings["commission_rounding"] = rng.choice(
+            ["none", "ceil_dollar", "nearest_dollar"]
+        )
+        t.settings["commission_floor"] = rng.choice([0.0, 10.0, 25.0])
+        t.settings["allow_put_odds"] = rng.choice([True, False])
 
         attempt = random_bet_mix(rng, bankroll_scale=rng.choice([0.5, 1.0, 2.0]))
 
         # Randomly choose to start with point ON or OFF
         if rng.random() < 0.5:
             roll_fixed(t, rng.choice([4,5,6,8,9,10]))  # set point ON
+
+        # Occasionally start with very low bankroll to stress rejection paths
+        if rng.random() < 0.25:
+            p.bankroll = rng.choice([30.0, 40.0, 50.0])
 
         # Rolls per session
         for _ in range(300):

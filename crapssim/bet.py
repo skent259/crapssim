@@ -7,6 +7,44 @@ from typing import Protocol, TypedDict
 from crapssim.dice import Dice
 from crapssim.point import Point
 
+
+def _compute_commission(
+    table: "Table", *, gross_win: float, bet_amount: float
+) -> float:
+    """
+    Commission calculator for Buy/Lay.
+
+    Table settings (all optional; defaults preserve current behavior):
+      - commission: float = 0.05
+      - commission_mode: "on_win" | "on_bet"  (default "on_win")
+      - commission_rounding: "none" | "ceil_dollar" | "nearest_dollar" (default "none")
+      - commission_floor: float = 0.0  (apply no commission if bet_amount < floor)
+    """
+
+    rate = table.settings.get("commission", 0.05)
+    mode = table.settings.get("commission_mode", "on_win")
+    rounding = table.settings.get("commission_rounding", "none")
+    floor = float(table.settings.get("commission_floor", 0.0) or 0.0)
+
+    if bet_amount < floor:
+        base = 0.0
+    else:
+        if mode == "on_bet":
+            base = bet_amount
+        else:
+            base = gross_win
+
+    fee = base * rate
+    if rounding == "ceil_dollar":
+        import math
+
+        fee = math.ceil(fee)
+    elif rounding == "nearest_dollar":
+        fee = round(fee)
+
+    return float(fee)
+
+
 __all__ = [
     "BetResult",
     "Bet",
@@ -600,7 +638,14 @@ class Odds(_WinningLosingNumbersBet):
             True if the bet is allowed, otherwise false.
         """
         max_bet = self.get_max_odds(player.table) * self.base_amount(player)
-        return self.amount <= max_bet
+        allowed = self.amount <= max_bet
+        try:
+            base_is_put = self.base_type.__name__ == "Put"
+        except Exception:
+            base_is_put = False
+        if base_is_put and player.table.settings.get("allow_put_odds", True) is False:
+            return False
+        return allowed
 
     def get_max_odds(self, table: Table) -> float:
         if self.light_side:
@@ -732,17 +777,23 @@ class Buy(_SimpleBet):
     losing_numbers: list[int] = [7]
 
     def __init__(self, number: int, amount: typing.SupportsFloat):
+        if number not in (4, 5, 6, 8, 9, 10):
+            raise ValueError(f"Invalid Buy number: {number}")
         super().__init__(amount)
         self.number = number
         self.payout_ratio = self.true_odds[number]
         self.winning_numbers = [number]
 
     def get_result(self, table: "Table") -> BetResult:
-        commission_rate = table.settings.get("commission", 0.05)
         if table.dice.total == self.number:
             gross_win = self.payout_ratio * self.amount
-            commission = (
-                commission_rate * self.amount * self.commission_multipliers[self.number]
+            commission_base = gross_win
+            if "commission_mode" not in table.settings:
+                commission_base = (
+                    self.amount * self.commission_multipliers[self.number]
+                )
+            commission = _compute_commission(
+                table, gross_win=commission_base, bet_amount=self.amount
             )
             result_amount = gross_win - commission + self.amount
             remove = True
@@ -788,17 +839,23 @@ class Lay(_SimpleBet):
     winning_numbers: list[int] = [7]
 
     def __init__(self, number: int, amount: typing.SupportsFloat):
+        if number not in (4, 5, 6, 8, 9, 10):
+            raise ValueError(f"Invalid Lay number: {number}")
         super().__init__(amount)
         self.number = number
         self.payout_ratio = self.true_odds[number]
         self.losing_numbers = [number]
 
     def get_result(self, table: "Table") -> BetResult:
-        commission_rate = table.settings.get("commission", 0.05)
         if table.dice.total == 7:
             gross_win = self.payout_ratio * self.amount
-            commission = (
-                commission_rate * self.amount * self.commission_multipliers[self.number]
+            commission_base = gross_win
+            if "commission_mode" not in table.settings:
+                commission_base = (
+                    self.amount * self.commission_multipliers[self.number]
+                )
+            commission = _compute_commission(
+                table, gross_win=commission_base, bet_amount=self.amount
             )
             result_amount = gross_win - commission + self.amount
             remove = True
