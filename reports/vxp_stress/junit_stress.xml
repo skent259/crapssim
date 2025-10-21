@@ -1,0 +1,1 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="0" skipped="0" tests="1" time="3.155" timestamp="2025-10-21T13:22:56.445004+00:00" hostname="8369a190d37d"><testcase classname="tests.stress.test_vxp_torture" name="test_vxp_heavy_stress" time="2.082" /></testsuite></testsuites>
