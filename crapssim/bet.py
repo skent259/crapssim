@@ -770,9 +770,11 @@ class Buy(_SimpleBet):
     """
 
     true_odds = {4: 2.0, 10: 2.0, 5: 1.5, 9: 1.5, 6: 1.2, 8: 1.2}
-    # Multiplier scales the commission rate for each number to match the
-    # traditional vig collected on buys. These values ensure the default
-    # 5% commission produces the expected house edge per number.
+    # These multipliers approximate typical house commission baselines under
+    # common table minimums and commission policies. They are used only when
+    # commission_mode is unset and commission_multiplier_legacy=True. This
+    # preserves legacy simulation parity without implying any normative rule
+    # set.
     commission_multipliers = {4: 3.552, 10: 3.552, 5: 2.169, 9: 2.169, 6: 1.3392, 8: 1.3392}
     losing_numbers: list[int] = [7]
 
@@ -827,8 +829,11 @@ class Lay(_SimpleBet):
     """
 
     true_odds = {4: 0.5, 10: 0.5, 5: 2 / 3, 9: 2 / 3, 6: 5 / 6, 8: 5 / 6}
-    # Multiplier scales the commission based on the lay odds so the default
-    # 5% rate mirrors the typical vig collected against each number.
+    # These multipliers approximate typical house commission baselines under
+    # common table minimums and commission policies. They are used only when
+    # commission_mode is unset and commission_multiplier_legacy=True. This
+    # preserves legacy simulation parity without implying any normative rule
+    # set.
     commission_multipliers = {
         4: 1.776,
         10: 1.776,
