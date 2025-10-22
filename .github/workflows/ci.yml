@@ -11,10 +11,9 @@ permissions:
 jobs:
   tests:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
@@ -34,15 +33,55 @@ jobs:
             echo "found=false" >> $GITHUB_OUTPUT
           fi
 
-      - name: Run pytest from source tree
+      - name: Run pytest (quiet first pass)
         if: steps.disco.outputs.found == 'true'
+        id: run1
         env:
           PYTHONPATH: ${{ github.workspace }}
+          PYTHONHASHSEED: '0'
+        shell: bash
         run: |
-          echo "PYTHONPATH=$PYTHONPATH"
-          python -c "import sys,os;print('cwd',os.getcwd());print('path0',sys.path[0])"
-          pytest -q -m "not stress"
+          mkdir -p reports
+          set +e
+          pytest -q -m "not stress" > reports/pytest_quiet.log 2>&1
+          echo "rc=$?" >> $GITHUB_OUTPUT
+          exit 0
+
+      - name: If failed, rerun first failing test verbosely
+        if: steps.disco.outputs.found == 'true' && steps.run1.outputs.rc != '0'
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+          PYTHONHASHSEED: '0'
+        shell: bash
+        run: |
+          echo "==== Quiet log head ===="
+          sed -n '1,200p' reports/pytest_quiet.log || true
+          echo "==== Env ===="
+          python --version; which python
+          echo "PWD: $(pwd)"
+          echo "PYTHONPATH: ${PYTHONPATH}"
+          echo "==== Pip freeze ===="
+          python -m pip freeze | tee reports/pip-freeze.txt
+          echo "==== Rerun verbose (first failure) ===="
+          # Use last-failed cache if available; else run with maxfail=1
+          pytest -vv -x --maxfail=1 --lf -ra --durations=25 | tee reports/pytest_verbose.log
+
+      - name: Upload logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pytest-logs
+          path: |
+            reports/pytest_quiet.log
+            reports/pytest_verbose.log
+            reports/pip-freeze.txt
+
+      - name: Fail job if tests failed
+        if: steps.disco.outputs.found == 'true' && steps.run1.outputs.rc != '0'
+        run: |
+          echo "Tests failed. See artifacts for verbose rerun."
+          exit 1
 
       - name: No tests found — pass
         if: steps.disco.outputs.found != 'true'
-        run: echo "No tests folder found; passing."
+        run: echo "No tests found; passing."
