@@ -1,0 +1,49 @@
+name: CI Diagnose
+on:
+  workflow_dispatch: {}
+  push:
+    branches: [ ci-debug/** ]
+permissions:
+  contents: read
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Dump GitHub context
+        run: |
+          echo "event: ${{ github.event_name }}"
+          echo "ref:   ${{ github.ref }}"
+          echo "sha:   ${{ github.sha }}"
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - name: Python env
+        run: |
+          python --version
+          which python
+      - name: Tree + key files
+        run: |
+          ls -la
+          echo "--- pyproject.toml ---"; [ -f pyproject.toml ] && sed -n '1,120p' pyproject.toml || echo "missing"
+          echo "--- setup.cfg ---"; [ -f setup.cfg ] && sed -n '1,120p' setup.cfg || echo "missing"
+          echo "--- requirements*.txt ---"; ls -1 requirements*.txt 2>/dev/null || echo "none"
+      - name: Test discovery
+        run: |
+          echo "tests tree:"
+          find tests -maxdepth 2 -type f -name "*.py" 2>/dev/null || echo "no tests dir"
+      - name: Import sanity
+        env: { PYTHONPATH: ${{ github.workspace }} }
+        run: |
+          python - <<'PY'
+try:
+  import crapssim as m
+  print("import crapssim OK:", getattr(m,'__file__',None))
+except Exception as e:
+  print("import crapssim FAILED:", e)
+try:
+  import crapssim_api as m
+  print("import crapssim_api OK:", getattr(m,'__file__',None))
+except Exception as e:
+  print("import crapssim_api FAILED:", e)
+PY
