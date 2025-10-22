@@ -33,9 +33,9 @@ This page summarizes the **current** phase plan and status. It is **overwritten*
 | P1·C0      | ✅ Done | Roadmap + changelog scaffold created. |
 | P1·C1      | ✅ Done | Adapter skeleton created; tests added. |
 | P1·C2      | ✅ Done | Seed+tape+replay harness; short hash; tests added. |
-| P1·C3      | ☐ Todo  |  |
+| P1·C3      | ✅ Done | Version & schema constants exposed; /healthz reports identity. |
 | P1·C4      | ☐ Todo  |  |
 
-**Next up:** P1·C2 — Determinism Harness
+**Next up:** P1·C4 — Baseline Conformance
 
 _Last updated: (auto-populated by commit time)_

@@ -3,5 +3,8 @@
 This package exposes a thin, deterministic API surface on top of the engine.
 Phase 1 focuses on scaffolding and test visibility only.
 """
-__all__ = ["__version__"]
+
+from .version import get_identity  # re-export helper
+
+__all__ = ["__version__", "get_identity"]
 __version__ = "0.1.0-api.dev"
