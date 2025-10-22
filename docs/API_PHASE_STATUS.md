@@ -31,11 +31,11 @@ This page summarizes the **current** phase plan and status. It is **overwritten*
 | Checkpoint | Status  | Notes |
 |------------|---------|-------|
 | P1·C0      | ✅ Done | Roadmap + changelog scaffold created. |
-| P1·C1      | ☐ Todo  |  |
+| P1·C1      | ✅ Done | Adapter skeleton created; tests added. |
 | P1·C2      | ☐ Todo  |  |
 | P1·C3      | ☐ Todo  |  |
 | P1·C4      | ☐ Todo  |  |
 
-**Next up:** P1·C1 — Adapter Skeleton
+**Next up:** P1·C2 — Determinism Harness
 
 _Last updated: (auto-populated by commit time)_

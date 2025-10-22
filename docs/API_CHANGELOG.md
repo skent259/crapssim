@@ -5,6 +5,14 @@ This changelog records **what changed at each checkpoint**. It is append-only an
 ---
 ## Phase 1 — API Scaffolding & Determinism Contract
 
+### P1·C1 — Adapter Skeleton
+- Created crapssim_api package with __init__.py, http.py, state.py, rng.py, errors.py, events.py.
+- Added skeleton tests (import, ASGI app callable, error codes, RNG determinism).
+- Zero core engine changes; dependency-free fallback for ASGI.
+
+_(Commit: pending (59f9bcb4ecd2c97ec08906692e0803dff8549e46); Date: 2025-10-22 17:04:44 UTC)_
+
+
 ### P1·C0 — Phase Mini-Roadmap & Changelog Scaffolding
 - Created docs/API_PHASE_STATUS.md (overwritten by every C0).
 - Created docs/API_CHANGELOG.md (append-only, checkpoint log).
