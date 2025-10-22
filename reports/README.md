@@ -1,1 +1,1 @@
-Generated artifacts (test JUnit, coverage, gauntlet/stress outputs) are uploaded by CI and not tracked.
+Generated artifacts (JUnit, coverage, stress/gauntlet outputs) are uploaded by CI and not tracked.
