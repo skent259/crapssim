@@ -1,22 +1,40 @@
 from __future__ import annotations
 import random
-from typing import Iterable, TypeVar
+from typing import Iterable, TypeVar, Any
 
 T = TypeVar("T")
 
 
 class SeededRNG:
-    """Thin wrapper to keep RNG calls centralized and seedable."""
+    """Thin wrapper to keep RNG calls centralized and seedable.
 
-    def __init__(self, seed: int | None = None):
+    If a recorder with a `_record(method, args, result)` method is provided,
+    all calls are logged for determinism tapes.
+    """
+
+    def __init__(self, seed: int | None = None, recorder: Any | None = None):
         self._random = random.Random(seed)
         self.seed = seed
+        self._recorder = recorder
+
+    def _record(self, method: str, args: tuple, result: Any) -> None:
+        if self._recorder is not None and hasattr(self._recorder, "_record"):
+            try:
+                self._recorder._record(method, args, result)  # type: ignore[attr-defined]
+            except Exception:
+                # Recording should never break RNG behavior
+                pass
 
     def randint(self, a: int, b: int) -> int:
-        return self._random.randint(a, b)
+        r = self._random.randint(a, b)
+        self._record("randint", (a, b), r)
+        return r
 
     def choice(self, seq: Iterable[T]) -> T:
-        seq = list(seq)
-        if not seq:
+        seq_list = list(seq)
+        if not seq_list:
             raise ValueError("choice() on empty sequence")
-        return self._random.choice(seq)
+        r = self._random.choice(seq_list)
+        # We record the logical value picked. For determinism, callers should replay with the same sequence.
+        self._record("choice", (seq_list,), r)
+        return r
