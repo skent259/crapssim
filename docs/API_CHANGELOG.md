@@ -5,6 +5,14 @@ This changelog records **what changed at each checkpoint**. It is append-only an
 ---
 ## Phase 1 — API Scaffolding & Determinism Contract
 
+### P1·C2 — Determinism Harness
+- Added crapssim_api/determinism.py with seed+tape+replay and short run hash.
+- Enhanced crapssim_api/rng.py to support optional recorder for RNG call logging.
+- Added tests validating same-seed same-tape parity, mismatch detection, and replay.
+
+_(Commit: pending (5e6565d210bb4d456d677d3d54c1f37c268ce83c); Date: 2025-10-22 18:09:48 UTC)_
+
+
 ### P1·C1 — Adapter Skeleton
 - Created crapssim_api package with __init__.py, http.py, state.py, rng.py, errors.py, events.py.
 - Added skeleton tests (import, ASGI app callable, error codes, RNG determinism).

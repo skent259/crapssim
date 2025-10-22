@@ -32,7 +32,7 @@ This page summarizes the **current** phase plan and status. It is **overwritten*
 |------------|---------|-------|
 | P1·C0      | ✅ Done | Roadmap + changelog scaffold created. |
 | P1·C1      | ✅ Done | Adapter skeleton created; tests added. |
-| P1·C2      | ☐ Todo  |  |
+| P1·C2      | ✅ Done | Seed+tape+replay harness; short hash; tests added. |
 | P1·C3      | ☐ Todo  |  |
 | P1·C4      | ☐ Todo  |  |
 
