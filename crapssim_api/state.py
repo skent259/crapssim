@@ -1,6 +1,8 @@
 from __future__ import annotations
 from typing import Any
 
+from .version import ENGINE_API_VERSION, CAPABILITIES_SCHEMA_VERSION
+
 
 def snapshot_from_table(table: Any) -> dict:
     """Return a minimal, stable snapshot dictionary for now.
@@ -18,5 +20,10 @@ def snapshot_from_table(table: Any) -> dict:
         "bankroll_after": None,
         "bets": {},
         "working_flags": {},
-        "identity": {"engine_version": None, "table_profile": "vanilla", "seed": None},
+        "identity": {
+            "engine_api_version": ENGINE_API_VERSION,
+            "capabilities_schema_version": CAPABILITIES_SCHEMA_VERSION,
+            "table_profile": "vanilla",
+            "seed": None,
+        },
     }

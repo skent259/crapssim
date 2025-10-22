@@ -5,6 +5,15 @@ This changelog records **what changed at each checkpoint**. It is append-only an
 ---
 ## Phase 1 — API Scaffolding & Determinism Contract
 
+### P1·C3 — Version & Schema Declaration
+- Added crapssim_api/version.py with ENGINE_API_VERSION and CAPABILITIES_SCHEMA_VERSION.
+- Exposed get_identity() at package root.
+- Extended /healthz endpoint and snapshot stub to include identity.
+- Added tests verifying version constants and /healthz response.
+
+_(Commit: pending (29f354244b9e95f291d4c3db83a2f2129a0f9dfe); Date: 2025-10-22 18:17:49 UTC)_
+
+
 ### P1·C2 — Determinism Harness
 - Added crapssim_api/determinism.py with seed+tape+replay and short run hash.
 - Enhanced crapssim_api/rng.py to support optional recorder for RNG call logging.
