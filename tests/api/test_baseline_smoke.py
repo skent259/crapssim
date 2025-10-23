@@ -10,7 +10,14 @@ def test_engine_version_tag():
     from crapssim_api import version as version
     v = version.ENGINE_API_VERSION
     # Accept both Phase 2 and Phase 3 tags for cross-compatibility
-    suffixes = ("-api.p2", "-api-p2", "-api.p3", "-api-p3", "-api-p3-sync")
+    suffixes = (
+        "-api.p2",
+        "-api-p2",
+        "-api.p3",
+        "-api-p3",
+        "-api-p3-sync",
+        "-api-p4",
+    )
     assert any(v.endswith(s) for s in suffixes), f"unexpected tag {v}"
 
 
