@@ -7,3 +7,8 @@
 ## 0.3.0-api.p3 — Phase 3 Actions & Legality Kickoff
 - Initialized Phase 3 documentation and scaffolds.
 - No behavior changes; groundwork for `/apply_action` begins.
+
+### P3 · C1 — Action Schema & Dispatch Stub
+- Added `/apply_action` endpoint with unified verb/args request and effect summary response.
+- Introduced `VerbRegistry` and a deterministic no-op stub handler.
+- Returns error envelopes for unknown verbs and malformed arguments.

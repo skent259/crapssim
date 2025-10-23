@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Dict, List, Literal, Optional, Union
+from typing import Any, Dict, List, Literal, Optional, Union
 from typing_extensions import TypedDict
 
 
@@ -41,3 +41,22 @@ class StartSessionRequest(TypedDict):
 class StartSessionResponse(TypedDict):
     session_id: str
     snapshot: Dict[str, Union[Dict[str, Union[int, str, bool]], Capabilities]]
+
+
+class ApplyActionRequest(TypedDict, total=False):
+    verb: str
+    args: Dict[str, Any]
+    session_id: Optional[str]
+
+
+class EffectSummary(TypedDict, total=False):
+    verb: str
+    args: Dict[str, Any]
+    applied: bool
+    bankroll_delta: float
+    note: str
+
+
+class ApplyActionResponse(TypedDict, total=False):
+    effect_summary: EffectSummary
+    snapshot: Dict[str, Any]
