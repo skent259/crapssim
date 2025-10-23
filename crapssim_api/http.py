@@ -21,6 +21,7 @@ from .actions import (
     get_bankroll,
 )
 from .errors import ApiError, api_error_handler, bad_args, table_rule_block, unsupported_bet
+from .events import build_event
 from .types import Capabilities, StartSessionRequest, StartSessionResponse, TableSpec
 from .version import CAPABILITIES_SCHEMA_VERSION, ENGINE_API_VERSION, get_identity
 
@@ -239,6 +240,46 @@ def step_roll(req: StepRollRequest):
     entry.update({"roll_seq": roll_seq, "last_dice": (d1, d2)})
     SessionRolls[session_id] = entry
 
+    bankroll_before = "1000.00"
+    bankroll_after = bankroll_before
+
+    events = []
+    if roll_seq == 1:
+        events.append(
+            build_event(
+                session_id,
+                hand_id,
+                roll_seq,
+                "hand_started",
+                bankroll_before,
+                bankroll_after,
+                {},
+            )
+        )
+
+    events.append(
+        build_event(
+            session_id,
+            hand_id,
+            roll_seq,
+            "roll_started",
+            bankroll_before,
+            bankroll_after,
+            {"mode": req.mode},
+        )
+    )
+    events.append(
+        build_event(
+            session_id,
+            hand_id,
+            roll_seq,
+            "roll_completed",
+            bankroll_before,
+            bankroll_after,
+            {"dice": [d1, d2]},
+        )
+    )
+
     snapshot = {
         "session_id": session_id,
         "hand_id": hand_id,
@@ -246,8 +287,8 @@ def step_roll(req: StepRollRequest):
         "dice": [d1, d2],
         "puck": "OFF",
         "point": None,
-        "bankroll_after": "1000.00",
-        "events": [],
+        "bankroll_after": bankroll_after,
+        "events": events,
         "identity": {
             "engine_api_version": ENGINE_API_VERSION,
             "capabilities_schema_version": CAPABILITIES_SCHEMA_VERSION,
