@@ -1,25 +1,39 @@
 name: Import Smoke
 on: { push: {}, pull_request: {}, workflow_dispatch: {} }
 permissions: { contents: read }
+
 jobs:
   import-smoke:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with: { python-version: '3.11' }
-      - name: Import modules from source
+
+      - name: Import modules from source tree
+        id: imp
         env: { PYTHONPATH: ${{ github.workspace }} }
+        shell: bash
         run: |
-          python - <<'PY'
-mods = ["crapssim", "crapssim_api"]
+          set +e
+          mkdir -p reports
+          python - <<'PY' | tee reports/import-smoke.log
 import importlib, sys
-for m in mods:
+mods = [("crapssim","core"), ("crapssim_api","api")]
+failed = False
+for mod, label in mods:
     try:
-        mod = importlib.import_module(m)
-        print(f"OK: import {m} ->", getattr(mod, "__file__", None))
+        m = importlib.import_module(mod)
+        print(f"OK: import {mod} ->", getattr(m,"__file__",None))
     except Exception as e:
-        print(f"FAIL: import {m} -> {e}")
-        sys.exit(1)
+        failed = True
+        print(f"FAIL: import {mod}: {e}")
+if failed:
+    sys.exit(2)
 PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: import-smoke-logs
+          path: reports/import-smoke.log

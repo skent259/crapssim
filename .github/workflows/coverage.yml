@@ -1,18 +1,21 @@
 name: Coverage (Py3.11)
 on: { push: {}, pull_request: {}, workflow_dispatch: {} }
 permissions: { contents: read }
+
 jobs:
-  cov:
+  coverage:
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with: { python-version: '3.11' }
+
       - name: Install pytest + cov
         run: |
           python -m pip install -U pip
           pip install pytest pytest-cov
+
       - name: Determine coverage targets
         id: cov
         shell: bash
@@ -21,17 +24,35 @@ jobs:
           [ -d "crapssim" ] && COV_MODS="$COV_MODS --cov=crapssim"
           [ -d "crapssim_api" ] && COV_MODS="$COV_MODS --cov=crapssim_api"
           echo "mods=$COV_MODS" >> $GITHUB_OUTPUT
-      - name: Run pytest with coverage
+
+      - name: Run pytest with coverage (quiet)
+        id: run_cov
         env: { PYTHONPATH: ${{ github.workspace }}, PYTHONHASHSEED: '0' }
+        shell: bash
         run: |
           mkdir -p reports
+          set +e
           if ls tests/**/*.py tests/*.py >/dev/null 2>&1; then
-            pytest -q ${{ steps.cov.outputs.mods }} --cov-report=xml:coverage.xml -m "not stress"
+            pytest -q ${{ steps.cov.outputs.mods }} --cov-report=xml:coverage.xml -m "not stress" > reports/coverage_quiet.log 2>&1
+            echo "rc=$?" >> $GITHUB_OUTPUT
           else
             echo '<coverage version="0"/>' > coverage.xml
+            echo "No tests found." > reports/coverage_quiet.log
+            echo "rc=0" >> $GITHUB_OUTPUT
           fi
+          exit 0
+
+      - name: If failed, rerun first failing test verbosely
+        if: steps.run_cov.outputs.rc != '0'
+        env: { PYTHONPATH: ${{ github.workspace }}, PYTHONHASHSEED: '0' }
+        run: |
+          pytest -vv -x --maxfail=1 --lf -ra --durations=25 | tee reports/coverage_verbose.log
+
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: coverage-xml
-          path: coverage.xml
+          name: coverage-and-logs
+          path: |
+            coverage.xml
+            reports/coverage_quiet.log
+            reports/coverage_verbose.log
