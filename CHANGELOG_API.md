@@ -24,3 +24,9 @@
 - Introduced SessionBankrolls for per-session bankroll tracking.
 - `/apply_action` now validates and deducts bankroll deterministically.
 - All errors now use standardized envelope and consistent HTTP codes.
+
+## 0.3.0-api-p3 — Phase 3 Baseline & Tag
+- Captured determinism baseline under `baselines/phase3/` (3× runs, JUnit + text hashes).
+- Added `docs/api/phase3_summary.md`.
+- Bumped version to `0.3.0-api-p3`.
+- No runtime behavior changes beyond version metadata.
