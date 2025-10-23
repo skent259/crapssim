@@ -5,7 +5,13 @@ from crapssim_api.http import apply_action
 
 
 def test_known_verb_stub_ok():
-    res = apply_action({"verb": "place", "args": {"box": 6, "amount": 12}})
+    res = apply_action(
+        {
+            "verb": "place",
+            "args": {"box": 6, "amount": 12},
+            "state": {"puck": "ON", "point": 6},
+        }
+    )
     eff = res["effect_summary"]
     assert eff["applied"] is True
     assert eff["bankroll_delta"] == 0.0

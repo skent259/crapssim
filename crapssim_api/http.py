@@ -8,6 +8,7 @@ from fastapi import FastAPI
 from fastapi.responses import Response
 
 from .actions import VerbRegistry
+from .actions import TableView, check_amount, check_limits, check_timing
 from .errors import ApiError, api_error_handler, bad_args, table_rule_block, unsupported_bet
 from .types import Capabilities, StartSessionRequest, StartSessionResponse, TableSpec
 from .version import CAPABILITIES_SCHEMA_VERSION, ENGINE_API_VERSION, get_identity
@@ -47,6 +48,11 @@ def _json_dumps(value: Any) -> str:
 
 def _json_response(payload: Any) -> Response:
     return Response(content=_json_dumps(payload), media_type="application/json")
+
+
+def _capabilities_dict() -> Dict[str, Any]:
+    resp = get_capabilities()
+    return json.loads(resp.body.decode())
 
 
 def create_app() -> FastAPI:
@@ -119,7 +125,32 @@ def apply_action(req: dict):
     if not isinstance(args, dict):
         raise bad_args("args must be a dictionary")
 
+    # ----- legality context ---------------------------------------------------
+    caps = _capabilities_dict()["capabilities"]
+    place_increments = {str(k): int(v) for k, v in caps.get("increments", {}).get("place", {}).items()}
+    odds_limits = caps.get("odds_limits", {"policy": "3-4-5", "max_x": 20})
+    odds_policy = str(odds_limits.get("policy", "3-4-5"))
+    odds_max_x = int(odds_limits.get("max_x", 20))
+
+    # Allow tests/clients to pass a minimal state hint; default puck OFF (come-out)
+    # Example: {"state": {"puck": "ON", "point": 6}}
+    state = req.get("state", {})
+    puck = state.get("puck", "OFF")
+    point = state.get("point", None)
+    table = TableView(puck=puck, point=point)
+
+    # ----- legality checks ----------------------------------------------------
+    check_timing(verb, table)
+    check_amount(verb, args, place_increments)
+    check_limits(verb, args, odds_policy, odds_max_x)
+
+    # ----- dispatch (still no-op stub) ---------------------------------------
     result = VerbRegistry[verb](args)
+    result_note = result.get("note", "")
+    if result_note.startswith("stub:"):
+        # clarify that legality passed
+        result["note"] = "validated (legal, stub execution)"
+
     return {
         "effect_summary": {
             "verb": verb,
@@ -132,5 +163,8 @@ def apply_action(req: dict):
                 "engine_api_version": ENGINE_API_VERSION,
                 "capabilities_schema_version": CAPABILITIES_SCHEMA_VERSION,
             },
+            # expose minimal table view echo for client tracing
+            "puck": table.puck,
+            "point": table.point,
         },
     }
