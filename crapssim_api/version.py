@@ -1,10 +1,10 @@
-"""Version and schema identity for the CrapsSim-Vanilla HTTP API adapter."""
+from __future__ import annotations
 
-ENGINE_API_VERSION: str = "0.1.0-api.dev"
-CAPABILITIES_SCHEMA_VERSION: int = 1
+ENGINE_API_VERSION = "0.1.0-api.dev"
+CAPABILITIES_SCHEMA_VERSION = 1
 
-def get_identity() -> dict:
-    """Return adapter identity for embedding in snapshots and responses."""
+
+def get_identity() -> dict[str, str | int]:
     return {
         "engine_api_version": ENGINE_API_VERSION,
         "capabilities_schema_version": CAPABILITIES_SCHEMA_VERSION,
