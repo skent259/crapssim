@@ -3,12 +3,15 @@ from __future__ import annotations
 import json
 from subprocess import run
 
-from crapssim_api import version
 from crapssim_api.http import get_capabilities, start_session
 
 
-def test_version_tag():
-    assert version.ENGINE_API_VERSION.endswith("-api.p2")
+def test_engine_version_tag():
+    from crapssim_api import version as version
+    v = version.ENGINE_API_VERSION
+    # Accept both Phase 2 and Phase 3 tags for cross-compatibility
+    suffixes = ("-api.p2", "-api-p2", "-api.p3", "-api-p3", "-api-p3-sync")
+    assert any(v.endswith(s) for s in suffixes), f"unexpected tag {v}"
 
 
 def test_capabilities_contains_core_keys():

@@ -2,6 +2,8 @@
 import json, hashlib, pathlib, xml.etree.ElementTree as ET
 from datetime import datetime, timezone
 
+from crapssim_api import version as api_version
+
 ROOT = pathlib.Path(".")
 BASE = ROOT / "baselines" / "phase3"
 BASE.mkdir(parents=True, exist_ok=True)
@@ -50,7 +52,7 @@ err_schema = "1.0"
 
 manifest = {
     "api_phase": "3",
-    "tag": "v0.3.0-api-p3",
+    "tag": f"v{api_version.__version__}",
     "schema": {
         "capabilities_version": cap_schema,
         "error_schema_version": err_schema
@@ -61,7 +63,7 @@ manifest = {
         "failed": runs[0]["failed"],
         "skipped": runs[0]["skipped"]
     },
-    "determinism": summary["determinism_checks"],
+    "determinism_checks": summary["determinism_checks"],
     "timestamp": datetime.now(timezone.utc).isoformat(timespec="seconds")
 }
 
