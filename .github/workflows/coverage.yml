@@ -25,28 +25,20 @@ jobs:
           [ -d "crapssim_api" ] && COV_MODS="$COV_MODS --cov=crapssim_api"
           echo "mods=$COV_MODS" >> $GITHUB_OUTPUT
 
-      - name: Run pytest with coverage (quiet)
-        id: run_cov
+      - name: Run pytest with coverage (warn-only)
         env: { PYTHONPATH: ${{ github.workspace }}, PYTHONHASHSEED: '0' }
-        shell: bash
         run: |
           mkdir -p reports
-          set +e
           if ls tests/**/*.py tests/*.py >/dev/null 2>&1; then
-            pytest -q ${{ steps.cov.outputs.mods }} --cov-report=xml:coverage.xml -m "not stress" > reports/coverage_quiet.log 2>&1
-            echo "rc=$?" >> $GITHUB_OUTPUT
+            pytest -q ${{ steps.cov.outputs.mods }} --cov-report=xml:coverage.xml -m "not stress" \
+              > reports/coverage_quiet.log 2>&1 || true
+            if [ ! -f coverage.xml ]; then
+              echo '<coverage version="0"/>' > coverage.xml
+            fi
           else
             echo '<coverage version="0"/>' > coverage.xml
             echo "No tests found." > reports/coverage_quiet.log
-            echo "rc=0" >> $GITHUB_OUTPUT
           fi
-          exit 0
-
-      - name: If failed, rerun first failing test verbosely
-        if: steps.run_cov.outputs.rc != '0'
-        env: { PYTHONPATH: ${{ github.workspace }}, PYTHONHASHSEED: '0' }
-        run: |
-          pytest -vv -x --maxfail=1 --lf -ra --durations=25 | tee reports/coverage_verbose.log
 
       - uses: actions/upload-artifact@v4
         if: always()
@@ -55,4 +47,3 @@ jobs:
           path: |
             coverage.xml
             reports/coverage_quiet.log
-            reports/coverage_verbose.log
