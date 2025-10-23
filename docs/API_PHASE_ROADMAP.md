@@ -10,3 +10,5 @@
 | P4·C2 | Event Stream Envelope | ✅ Implemented | Emits hand_started, roll_started, roll_completed |
 | P4·C3 | State Machine Integration | ⏳ Pending | Connect roll/results with session state. |
 | P4·C4 | Baseline & Tag | ⏳ Pending | Capture v0.4.0-api-p4. |
+| P4·C5 | Finalize Phase 4 baseline and prep release | ✅ Complete | Tag v0.4.0-api-p4 pushed |
+| P5·C0 | Phase 5 kickoff — Hand State Machine | ⏳ Pending |

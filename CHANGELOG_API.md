@@ -36,8 +36,9 @@
 - Re-generated determinism baseline under `baselines/phase3/`.
 - Docs roadmap added for Phase 4.
 
-## 0.4.0-api-p4 — Phase 4 Baseline & Tag
-- Verified deterministic roll/event behavior across three runs.
-- Captured manifest and reports in `baselines/phase4/`.
-- Added `docs/api/phase4_summary.md`.
-- Version bumped to `0.4.0-api-p4`.
+## 0.4.0-api-p4 — Phase 4 Baseline & Public Release
+- Verified deterministic roll and event flow across three runs.
+- Added API overview doc (`docs/api/README.md`).
+- Updated contributor instructions with baseline validation steps.
+- Cleaned baseline artifacts for public release.
+- Tag pushed: `v0.4.0-api-p4`
