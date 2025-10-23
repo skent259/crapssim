@@ -4,9 +4,10 @@ import json
 import uuid
 from typing import Any, Dict
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI
 from fastapi.responses import Response
 
+from .errors import ApiError, api_error_handler, bad_args, table_rule_block, unsupported_bet
 from .types import Capabilities, StartSessionRequest, StartSessionResponse, TableSpec
 from .version import CAPABILITIES_SCHEMA_VERSION, ENGINE_API_VERSION, get_identity
 
@@ -23,8 +24,10 @@ BASE_CAPABILITIES: Capabilities = {
         "hardways": {"break_on": "seven_or_easy"},
         "props": ["any7", "c&e", "horn", "world"],
     },
-    "increments": {"place": {"6": 6, "8": 6, "4": 5, "5": 5, "9": 5, "10": 5}, "odds_3_4_5": True},
-    "odds_limits": {"policy": "3-4-5", "min": 1, "max": 20},
+    "increments": {
+        "place": {"4": 5, "5": 5, "6": 6, "8": 6, "9": 5, "10": 5},
+    },
+    "odds_limits": {"policy": "3-4-5", "max_x": 20},
     "commission": {
         "buy": {"mode": "on_win", "rate_bips": 500, "rounding": "nearest_dollar"},
         "lay": {"mode": "on_win", "rate_bips": 500, "rounding": "nearest_dollar"},
@@ -46,6 +49,7 @@ def _json_response(payload: Any) -> Response:
 
 
 def create_app() -> FastAPI:
+    app.add_exception_handler(ApiError, api_error_handler)
     return app
 
 
@@ -70,7 +74,7 @@ def start_session(body: StartSessionRequest) -> Response:
     spec: TableSpec = body.get("spec", {})
     seed = body.get("seed", 0)
     if not isinstance(seed, int):
-        raise HTTPException(status_code=400, detail={"code": "BAD_ARGS", "hint": "seed must be int"})
+        raise bad_args("seed must be int")
 
     caps = dict(BASE_CAPABILITIES)
     if spec.get("enabled_buylay") is False:
@@ -94,3 +98,8 @@ def start_session(body: StartSessionRequest) -> Response:
         },
     }
     return _json_response(response)
+
+
+@app.post("/end_session")
+def end_session():
+    return {"report_min": {"hands": 0, "rolls": 0}}
