@@ -9,6 +9,9 @@ class ApiErrorCode(str, Enum):
     BAD_ARGS = "BAD_ARGS"
     TABLE_RULE_BLOCK = "TABLE_RULE_BLOCK"
     UNSUPPORTED_BET = "UNSUPPORTED_BET"
+    ILLEGAL_TIMING = "ILLEGAL_TIMING"
+    ILLEGAL_AMOUNT = "ILLEGAL_AMOUNT"
+    LIMIT_BREACH = "LIMIT_BREACH"
     INTERNAL = "INTERNAL"
 
 
@@ -36,6 +39,9 @@ async def api_error_handler(request: Request, exc: ApiError):
     status_map = {
         ApiErrorCode.BAD_ARGS: 400,
         ApiErrorCode.TABLE_RULE_BLOCK: 409,
+        ApiErrorCode.ILLEGAL_TIMING: 409,
+        ApiErrorCode.ILLEGAL_AMOUNT: 422,
+        ApiErrorCode.LIMIT_BREACH: 422,
         ApiErrorCode.UNSUPPORTED_BET: 422,
         ApiErrorCode.INTERNAL: 500,
     }

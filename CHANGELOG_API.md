@@ -12,3 +12,9 @@
 - Added `/apply_action` endpoint with unified verb/args request and effect summary response.
 - Introduced `VerbRegistry` and a deterministic no-op stub handler.
 - Returns error envelopes for unknown verbs and malformed arguments.
+
+### P3 · C2 — Timing & Legality Core
+- `/apply_action` enforces timing windows (come-out vs point-on).
+- Validates amount increments from `/capabilities`.
+- Adds error codes: ILLEGAL_TIMING, ILLEGAL_AMOUNT, LIMIT_BREACH.
+- No bankroll/payout math yet; returns deterministic no-op on legal actions.
