@@ -30,3 +30,8 @@
 - Added `docs/api/phase3_summary.md`.
 - Bumped version to `0.3.0-api-p3`.
 - No runtime behavior changes beyond version metadata.
+
+## 0.3.1-api-p3-sync — Pre-Phase 4 Tag Fix & Baseline Refresh
+- Fixed smoke test to accept `-api-p3`.
+- Re-generated determinism baseline under `baselines/phase3/`.
+- Docs roadmap added for Phase 4.

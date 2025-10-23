@@ -1,6 +1,6 @@
 {
   "api_phase": "3",
-  "tag": "v0.3.0-api-p3",
+  "tag": "v0.3.1-api-p3-sync",
   "schema": {
     "capabilities_version": "1.0",
     "error_schema_version": "1.0"
@@ -11,14 +11,14 @@
     "failed": 0,
     "skipped": 2
   },
-  "determinism": {
+  "determinism_checks": {
     "junit_identical": true,
     "text_hashes_identical": true,
     "text_hashes": [
-      "f8c760ee8878dd4ad14f6ad964259347e5013a14c2292a8e81624d9626b2a9eb",
-      "f8c760ee8878dd4ad14f6ad964259347e5013a14c2292a8e81624d9626b2a9eb",
-      "f8c760ee8878dd4ad14f6ad964259347e5013a14c2292a8e81624d9626b2a9eb"
+      "d1aaa98c7ce1bb9f17b75b231f6740dac51831b96b79e50da0b9cfb006c9ae04",
+      "d1aaa98c7ce1bb9f17b75b231f6740dac51831b96b79e50da0b9cfb006c9ae04",
+      "d1aaa98c7ce1bb9f17b75b231f6740dac51831b96b79e50da0b9cfb006c9ae04"
     ]
   },
-  "timestamp": "2025-10-23T20:00:14+00:00"
+  "timestamp": "2025-10-23T21:42:12+00:00"
 }
