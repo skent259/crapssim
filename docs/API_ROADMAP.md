@@ -99,3 +99,20 @@ _Add deterministic HTTP API adapter for CrapsSim-Vanilla (v0.1.0-api)._
 - `POST /step_roll`  
 - *(Pre-GA)* `GET /export_tape`, `POST /import_tape`
 
+
+# CrapsSim-Vanilla API — Roadmap
+
+## Phase 3 — Actions & Legality Enforcement
+**Goal:** Implement `/apply_action` with timing windows, increments/limits, and machine-readable errors. Keep adapter-only; no game math changes.
+
+### Checkpoints
+- **P3 · C0** — Docs Kickoff & Roadmap Sync (THIS)
+- **P3 · C1** — Action Schema & Dispatch Stub (unified verb & args shape, no side effects)
+- **P3 · C2** — Timing & Legality Core (windows, increments, limits, base/odds dependencies)
+- **P3 · C3** — Error Codes Expansion (ILLEGAL_TIMING, ILLEGAL_AMOUNT, LIMIT_BREACH, INSUFFICIENT_FUNDS)
+- **P3 · C4** — Baseline & Tag (v0.3.0-api.p3)
+
+### Principles
+- Determinism: same spec + seed + tape ⇒ identical outcomes.
+- Truthful capabilities; never over-promise.
+- Adapter-only: enforce legality and timing without duplicating engine math.
