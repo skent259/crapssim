@@ -7,6 +7,7 @@ from typing import Any, Dict
 from fastapi import FastAPI
 from fastapi.responses import Response
 
+from .actions import VerbRegistry
 from .errors import ApiError, api_error_handler, bad_args, table_rule_block, unsupported_bet
 from .types import Capabilities, StartSessionRequest, StartSessionResponse, TableSpec
 from .version import CAPABILITIES_SCHEMA_VERSION, ENGINE_API_VERSION, get_identity
@@ -103,3 +104,33 @@ def start_session(body: StartSessionRequest) -> Response:
 @app.post("/end_session")
 def end_session():
     return {"report_min": {"hands": 0, "rolls": 0}}
+
+
+@app.post("/apply_action")
+def apply_action(req: dict):
+    verb = req.get("verb")
+    args = req.get("args", {})
+    session_id = req.get("session_id", "stub-session")
+
+    if not isinstance(verb, str) or not verb:
+        raise bad_args("verb must be a non-empty string")
+    if verb not in VerbRegistry:
+        raise unsupported_bet(f"verb '{verb}' not recognized")
+    if not isinstance(args, dict):
+        raise bad_args("args must be a dictionary")
+
+    result = VerbRegistry[verb](args)
+    return {
+        "effect_summary": {
+            "verb": verb,
+            "args": args,
+            **result,
+        },
+        "snapshot": {
+            "session_id": session_id,
+            "identity": {
+                "engine_api_version": ENGINE_API_VERSION,
+                "capabilities_schema_version": CAPABILITIES_SCHEMA_VERSION,
+            },
+        },
+    }
