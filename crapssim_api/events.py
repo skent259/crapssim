@@ -1,20 +1,33 @@
-from __future__ import annotations
-from dataclasses import dataclass, asdict
-from typing import Any
+import hashlib
+import datetime
+from typing import Any, Dict
 
 
-@dataclass
-class Event:
-    id: str
-    type: str
-    roll_seq: int | None = None
-    hand_id: int | None = None
-    ts: str | None = None
-    bankroll_before: str | None = None
-    bankroll_after: str | None = None
-    meta: dict[str, Any] | None = None
+def _now_iso() -> str:
+    return datetime.datetime.utcnow().replace(microsecond=0).isoformat() + "Z"
 
-    def to_dict(self) -> dict:
-        d = asdict(self)
-        # Keep a compact payload
-        return {k: v for k, v in d.items() if v is not None}
+
+def make_event_id(session_id: str, hand_id: int, roll_seq: int, etype: str) -> str:
+    s = f"{session_id}/{hand_id}/{roll_seq}/{etype}"
+    return hashlib.sha1(s.encode()).hexdigest()[:12]
+
+
+def build_event(
+    session_id: str,
+    hand_id: int,
+    roll_seq: int,
+    etype: str,
+    bankroll_before: str,
+    bankroll_after: str,
+    data: Dict[str, Any],
+) -> Dict[str, Any]:
+    return {
+        "type": etype,
+        "id": make_event_id(session_id, hand_id, roll_seq, etype),
+        "ts": _now_iso(),
+        "hand_id": hand_id,
+        "roll_seq": roll_seq,
+        "bankroll_before": bankroll_before,
+        "bankroll_after": bankroll_after,
+        "data": data,
+    }
