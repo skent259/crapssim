@@ -121,3 +121,31 @@ bash -lc 'for i in $(seq 1 25); do python tools/vxp_gauntlet.py; sleep 0.2; done
 
 Artifacts will appear under reports/vxp_gauntlet/<timestamp>/ and include JSON, CSV, and Markdown summaries.
 
+---
+
+## API Baseline & Determinism Tests
+
+Before submitting any PR that affects API behavior:
+
+1. Run all tests locally:
+   ```bash
+   pytest -q
+   ```
+
+2. Verify determinism with:
+   ```bash
+   python tools/build_p4_manifest.py
+   cat baselines/phase4/manifest.json
+   ```
+   Expected result:
+   ```
+   "identical_runs": true,
+   "identical_text_hashes": true
+   ```
+
+3. Do not push modified baselines unless all tests pass.
+4. Include the manifest in your PR only if it reflects the current API tag.
+
+Tag: v0.4.0-api-p4
+
+---
