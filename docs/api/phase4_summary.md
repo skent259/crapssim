@@ -1,6 +1,10 @@
-# Phase 4 Kickoff — Event & Roll Flow Framework
+# Phase 4 Summary — Roll Flow & Event Envelope
 
-- Verified Phase 3 determinism (3 identical test runs).  
-- Patched smoke test to align with `-api-p3`.  
-- Baselines rebuilt → `baselines/phase3/manifest.json`.  
-- Next step: implement `/step_roll` stub and `events[]` schema.
+**Tag:** `v0.4.0-api-p4`
+
+Phase 4 delivered deterministic roll stepping and a structured event stream:
+- `/step_roll` supports `"auto"` and `"inject"` modes.
+- `events[]` includes `hand_started`, `roll_started`, `roll_completed` with deterministic IDs and stable ordering.
+- Determinism verified across 3 consecutive runs; artifacts recorded in `baselines/phase4/`.
+
+See `baselines/phase4/manifest.json` for totals and determinism checks.
