@@ -1,0 +1,25 @@
+name: Import Smoke
+on: { push: {}, pull_request: {}, workflow_dispatch: {} }
+permissions: { contents: read }
+jobs:
+  import-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.11' }
+      - name: Import modules from source
+        env: { PYTHONPATH: ${{ github.workspace }} }
+        run: |
+          python - <<'PY'
+mods = ["crapssim", "crapssim_api"]
+import importlib, sys
+for m in mods:
+    try:
+        mod = importlib.import_module(m)
+        print(f"OK: import {m} ->", getattr(mod, "__file__", None))
+    except Exception as e:
+        print(f"FAIL: import {m} -> {e}")
+        sys.exit(1)
+PY
