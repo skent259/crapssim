@@ -78,3 +78,35 @@ def check_limits(verb: str, args: Dict[str, Any], odds_policy: str, odds_max_x: 
         raise ApiError(ApiErrorCode.LIMIT_BREACH, f"{verb} exceeds table cap")
     # Odds-related checks will land in P3·C3 when odds verbs are implemented.
     # Kept here for structure; no-op for now.
+
+
+# ---------------------------------------------------------------------------
+# Session Bankroll Tracking (Phase 3 · C3)
+# ---------------------------------------------------------------------------
+
+SessionBankrolls: Dict[str, float] = {}
+DEFAULT_START_BANKROLL = 1000.0
+
+
+def get_bankroll(session_id: str) -> float:
+    """Return current bankroll for session, defaulting to start bankroll."""
+
+    return SessionBankrolls.get(session_id, DEFAULT_START_BANKROLL)
+
+
+def apply_bankroll_delta(session_id: str, delta: float):
+    """Apply deterministic bankroll delta and persist it in ledger."""
+
+    SessionBankrolls[session_id] = get_bankroll(session_id) + float(delta)
+
+
+def check_funds(session_id: str, amount: float):
+    """Ensure bankroll sufficient before placing action."""
+
+    bankroll = get_bankroll(session_id)
+    if amount > bankroll:
+        raise ApiError(
+            ApiErrorCode.INSUFFICIENT_FUNDS,
+            f"bankroll ${bankroll:.2f} < required ${amount:.2f}",
+            at_state={"session_id": session_id, "hand_id": None, "roll_seq": None},
+        )

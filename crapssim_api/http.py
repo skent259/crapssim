@@ -8,7 +8,15 @@ from fastapi import FastAPI
 from fastapi.responses import Response
 
 from .actions import VerbRegistry
-from .actions import TableView, check_amount, check_limits, check_timing
+from .actions import (
+    TableView,
+    apply_bankroll_delta,
+    check_amount,
+    check_funds,
+    check_limits,
+    check_timing,
+    get_bankroll,
+)
 from .errors import ApiError, api_error_handler, bad_args, table_rule_block, unsupported_bet
 from .types import Capabilities, StartSessionRequest, StartSessionResponse, TableSpec
 from .version import CAPABILITIES_SCHEMA_VERSION, ENGINE_API_VERSION, get_identity
@@ -144,6 +152,12 @@ def apply_action(req: dict):
     check_amount(verb, args, place_increments)
     check_limits(verb, args, odds_policy, odds_max_x)
 
+    amt = args.get("amount", 0)
+    if isinstance(amt, (int, float)) and amt > 0:
+        # Verify funds and deduct for deterministic ledger tracking
+        check_funds(session_id, amt)
+        apply_bankroll_delta(session_id, -amt)
+
     # ----- dispatch (still no-op stub) ---------------------------------------
     result = VerbRegistry[verb](args)
     result_note = result.get("note", "")
@@ -159,6 +173,7 @@ def apply_action(req: dict):
         },
         "snapshot": {
             "session_id": session_id,
+            "bankroll_after": get_bankroll(session_id),
             "identity": {
                 "engine_api_version": ENGINE_API_VERSION,
                 "capabilities_schema_version": CAPABILITIES_SCHEMA_VERSION,

@@ -8,6 +8,7 @@ from fastapi.responses import JSONResponse
 class ApiErrorCode(str, Enum):
     BAD_ARGS = "BAD_ARGS"
     TABLE_RULE_BLOCK = "TABLE_RULE_BLOCK"
+    INSUFFICIENT_FUNDS = "INSUFFICIENT_FUNDS"
     UNSUPPORTED_BET = "UNSUPPORTED_BET"
     ILLEGAL_TIMING = "ILLEGAL_TIMING"
     ILLEGAL_AMOUNT = "ILLEGAL_AMOUNT"
@@ -39,13 +40,20 @@ async def api_error_handler(request: Request, exc: ApiError):
     status_map = {
         ApiErrorCode.BAD_ARGS: 400,
         ApiErrorCode.TABLE_RULE_BLOCK: 409,
+        ApiErrorCode.INSUFFICIENT_FUNDS: 409,
         ApiErrorCode.ILLEGAL_TIMING: 409,
         ApiErrorCode.ILLEGAL_AMOUNT: 422,
         ApiErrorCode.LIMIT_BREACH: 422,
         ApiErrorCode.UNSUPPORTED_BET: 422,
         ApiErrorCode.INTERNAL: 500,
     }
+    if not isinstance(exc.code, ApiErrorCode):
+        status_code = 500
+        code = "INTERNAL"
+    else:
+        status_code = status_map.get(exc.code, 500)
+        code = exc.code
     return JSONResponse(
-        status_code=status_map.get(exc.code, 500),
-        content={"code": exc.code, "hint": exc.hint, "at_state": exc.at_state},
+        status_code=status_code,
+        content={"code": code, "hint": exc.hint, "at_state": exc.at_state},
     )

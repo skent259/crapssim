@@ -18,3 +18,9 @@
 - Validates amount increments from `/capabilities`.
 - Adds error codes: ILLEGAL_TIMING, ILLEGAL_AMOUNT, LIMIT_BREACH.
 - No bankroll/payout math yet; returns deterministic no-op on legal actions.
+
+### P3 · C3 — Error Codes Expansion & State Awareness
+- Added INSUFFICIENT_FUNDS and TABLE_RULE_BLOCK error codes.
+- Introduced SessionBankrolls for per-session bankroll tracking.
+- `/apply_action` now validates and deducts bankroll deterministically.
+- All errors now use standardized envelope and consistent HTTP codes.
