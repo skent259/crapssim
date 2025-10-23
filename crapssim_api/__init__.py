@@ -7,4 +7,4 @@ Phase 1 focuses on scaffolding and test visibility only.
 from .version import get_identity  # re-export helper
 
 __all__ = ["__version__", "get_identity"]
-__version__ = "0.1.0-api.dev"
+__version__ = "0.3.0-api-p3"
