@@ -22,15 +22,13 @@ from .actions import (
 )
 from .errors import ApiError, api_error_handler, bad_args, table_rule_block, unsupported_bet
 from .events import build_event
+from .session_store import SESSION_STORE
 from .types import Capabilities, StartSessionRequest, StartSessionResponse, TableSpec
 from .version import CAPABILITIES_SCHEMA_VERSION, ENGINE_API_VERSION, get_identity
 
 app = FastAPI(title="CrapsSim API")
 
 router = APIRouter()
-
-# Session roll ledger
-SessionRolls: dict[str, dict[str, Any]] = {}
 
 BASE_CAPABILITIES: Capabilities = {
     "schema_version": CAPABILITIES_SCHEMA_VERSION,
@@ -110,16 +108,31 @@ def start_session(body: StartSessionRequest) -> Response:
         caps["why_unsupported"]["buy"] = "disabled_by_spec"
         caps["why_unsupported"]["lay"] = "disabled_by_spec"
 
-    response: StartSessionResponse = {
-        "session_id": str(uuid.uuid4())[:8],
-        "snapshot": {
-            "identity": {
-                "engine_version": ENGINE_API_VERSION,
-                "table_profile": spec.get("table_profile", "vanilla-default"),
-                "seed": seed,
-            },
-            "capabilities": caps,
+    session_id = str(uuid.uuid4())[:8]
+    session_state = SESSION_STORE.ensure(session_id)
+    hand = session_state["hand"]
+    hand_fields = hand.to_snapshot_fields()
+
+    snapshot: Dict[str, Any] = {
+        "identity": {
+            "engine_version": ENGINE_API_VERSION,
+            "table_profile": spec.get("table_profile", "vanilla-default"),
+            "seed": seed,
+            "engine_api_version": ENGINE_API_VERSION,
+            "capabilities_schema_version": CAPABILITIES_SCHEMA_VERSION,
         },
+        "capabilities": caps,
+        "session_id": session_id,
+        **hand_fields,
+        "roll_seq": session_state["roll_seq"],
+        "dice": session_state["last_dice"],
+        "bankroll_after": "1000.00",
+        "events": [],
+    }
+
+    response: StartSessionResponse = {
+        "session_id": session_id,
+        "snapshot": snapshot,
     }
     return _json_response(response)
 
@@ -220,11 +233,12 @@ class StepRollRequest(BaseModel):
 @router.post("/step_roll")
 def step_roll(req: StepRollRequest):
     session_id = req.session_id
-    entry = SessionRolls.get(
-        session_id, {"roll_seq": 0, "hand_id": 1, "last_dice": None}
-    )
-    roll_seq = entry["roll_seq"] + 1
-    hand_id = entry["hand_id"]
+    sess = SESSION_STORE.ensure(session_id)
+    hand = sess["hand"]
+    hand_fields = hand.to_snapshot_fields()
+    roll_seq = sess["roll_seq"] + 1
+    sess["roll_seq"] = roll_seq
+    hand_id = hand_fields["hand_id"]
 
     # deterministic RNG seed
     rng_seed = hash(session_id) & 0xFFFFFFFF
@@ -232,13 +246,12 @@ def step_roll(req: StepRollRequest):
     if req.mode == "inject":
         assert req.dice is not None
         d1, d2 = req.dice
-    elif entry.get("last_dice"):
-        d1, d2 = entry["last_dice"]
+    elif sess.get("last_dice"):
+        d1, d2 = sess["last_dice"]
     else:
         d1, d2 = rnd.randint(1, 6), rnd.randint(1, 6)
 
-    entry.update({"roll_seq": roll_seq, "last_dice": (d1, d2)})
-    SessionRolls[session_id] = entry
+    sess["last_dice"] = (d1, d2)
 
     bankroll_before = "1000.00"
     bankroll_after = bankroll_before
@@ -280,13 +293,14 @@ def step_roll(req: StepRollRequest):
         )
     )
 
+    snap_state = hand_fields
     snapshot = {
         "session_id": session_id,
-        "hand_id": hand_id,
+        "hand_id": snap_state["hand_id"],
         "roll_seq": roll_seq,
         "dice": [d1, d2],
-        "puck": "OFF",
-        "point": None,
+        "puck": snap_state["puck"],
+        "point": snap_state["point"],
         "bankroll_after": bankroll_after,
         "events": events,
         "identity": {
