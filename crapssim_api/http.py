@@ -4,8 +4,11 @@ import json
 import uuid
 from typing import Any, Dict
 
-from fastapi import FastAPI
+import random
+
+from fastapi import APIRouter, FastAPI
 from fastapi.responses import Response
+from pydantic import BaseModel, Field, ValidationInfo, field_validator
 
 from .actions import VerbRegistry
 from .actions import (
@@ -22,6 +25,11 @@ from .types import Capabilities, StartSessionRequest, StartSessionResponse, Tabl
 from .version import CAPABILITIES_SCHEMA_VERSION, ENGINE_API_VERSION, get_identity
 
 app = FastAPI(title="CrapsSim API")
+
+router = APIRouter()
+
+# Session roll ledger
+SessionRolls: dict[str, dict[str, Any]] = {}
 
 BASE_CAPABILITIES: Capabilities = {
     "schema_version": CAPABILITIES_SCHEMA_VERSION,
@@ -183,3 +191,69 @@ def apply_action(req: dict):
             "point": table.point,
         },
     }
+
+
+class StepRollRequest(BaseModel):
+    session_id: str
+    mode: str = Field(..., description="auto or inject")
+    dice: list[int] | None = None
+
+    @field_validator("mode")
+    @classmethod
+    def validate_mode(cls, v: str) -> str:
+        if v not in ("auto", "inject"):
+            raise ValueError("mode must be 'auto' or 'inject'")
+        return v
+
+    @field_validator("dice")
+    @classmethod
+    def validate_dice(cls, v: list[int] | None, values: ValidationInfo):
+        if values.data.get("mode") == "inject":
+            if not isinstance(v, list) or len(v) != 2:
+                raise ValueError("dice must be [d1,d2]")
+            if not all(isinstance(d, int) and 1 <= d <= 6 for d in v):
+                raise ValueError("each die must be 1–6")
+        return v
+
+
+@router.post("/step_roll")
+def step_roll(req: StepRollRequest):
+    session_id = req.session_id
+    entry = SessionRolls.get(
+        session_id, {"roll_seq": 0, "hand_id": 1, "last_dice": None}
+    )
+    roll_seq = entry["roll_seq"] + 1
+    hand_id = entry["hand_id"]
+
+    # deterministic RNG seed
+    rng_seed = hash(session_id) & 0xFFFFFFFF
+    rnd = random.Random(rng_seed + roll_seq)
+    if req.mode == "inject":
+        assert req.dice is not None
+        d1, d2 = req.dice
+    elif entry.get("last_dice"):
+        d1, d2 = entry["last_dice"]
+    else:
+        d1, d2 = rnd.randint(1, 6), rnd.randint(1, 6)
+
+    entry.update({"roll_seq": roll_seq, "last_dice": (d1, d2)})
+    SessionRolls[session_id] = entry
+
+    snapshot = {
+        "session_id": session_id,
+        "hand_id": hand_id,
+        "roll_seq": roll_seq,
+        "dice": [d1, d2],
+        "puck": "OFF",
+        "point": None,
+        "bankroll_after": "1000.00",
+        "events": [],
+        "identity": {
+            "engine_api_version": ENGINE_API_VERSION,
+            "capabilities_schema_version": CAPABILITIES_SCHEMA_VERSION,
+        },
+    }
+    return snapshot
+
+
+app.include_router(router)
