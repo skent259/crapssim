@@ -13,7 +13,8 @@ All endpoints return machine-readable envelopes for errors.
 | Code | HTTP | Meaning |
 | --- | --- | --- |
 | BAD_ARGS | 400 | Schema or type mismatch |
-| TABLE_RULE_BLOCK | 409 | Spec contradicts engine rule |
+| TABLE_RULE_BLOCK | 409 | Table configuration prohibits action |
+| INSUFFICIENT_FUNDS | 409 | Bankroll too low for attempted action |
 | UNSUPPORTED_BET | 422 | Bet family not implemented |
 | INTERNAL | 500 | Unexpected server error |
 
