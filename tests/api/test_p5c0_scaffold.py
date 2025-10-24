@@ -22,8 +22,17 @@ def test_p5c0_does_not_change_prior_behavior():
     first = client.post("/step_roll", json={"session_id": "hsc2", "mode": "auto"}).json()
     second = client.post("/step_roll", json={"session_id": "hsc2", "mode": "auto"}).json()
 
-    assert first["puck"] == second["puck"] == "OFF"
-    assert first["point"] is None and second["point"] is None
+    if first["puck"] == "ON":
+        assert first["point"] == sum(first["dice"])
+        assert second["hand_id"] == first["hand_id"] + 1
+        assert second["puck"] == "OFF"
+        assert second["point"] is None
+    else:
+        assert first["puck"] == "OFF"
+        assert first["point"] is None
+        assert second["hand_id"] == first["hand_id"]
+        assert second["puck"] == "OFF"
+        assert second["point"] is None
     assert second["roll_seq"] == first["roll_seq"] + 1
 
 

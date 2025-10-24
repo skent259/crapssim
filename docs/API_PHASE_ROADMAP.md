@@ -12,3 +12,4 @@
 | P4·C4 | Baseline & Tag | ⏳ Pending | Capture v0.4.0-api-p4. |
 | P4·C5 | Finalize Phase 4 baseline and prep release | ✅ Complete | Tag v0.4.0-api-p4 pushed |
 | P5·C0 | Hand State scaffolds (puck/point/hand_id) wired into snapshot; no behavior change | ✅ Implemented |
+| P5·C1 | Implement come-out & point cycle transitions (ON/OFF, hand end) | ✅ Implemented |

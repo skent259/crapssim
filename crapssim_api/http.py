@@ -21,7 +21,13 @@ from .actions import (
     get_bankroll,
 )
 from .errors import ApiError, api_error_handler, bad_args, table_rule_block, unsupported_bet
-from .events import build_event
+from .events import (
+    build_event,
+    build_hand_ended,
+    build_point_made,
+    build_point_set,
+    build_seven_out,
+)
 from .session_store import SESSION_STORE
 from .types import Capabilities, StartSessionRequest, StartSessionResponse, TableSpec
 from .version import CAPABILITIES_SCHEMA_VERSION, ENGINE_API_VERSION, get_identity
@@ -235,10 +241,9 @@ def step_roll(req: StepRollRequest):
     session_id = req.session_id
     sess = SESSION_STORE.ensure(session_id)
     hand = sess["hand"]
-    hand_fields = hand.to_snapshot_fields()
     roll_seq = sess["roll_seq"] + 1
     sess["roll_seq"] = roll_seq
-    hand_id = hand_fields["hand_id"]
+    hand_id = hand.hand_id
 
     # deterministic RNG seed
     rng_seed = hash(session_id) & 0xFFFFFFFF
@@ -293,7 +298,57 @@ def step_roll(req: StepRollRequest):
         )
     )
 
-    snap_state = hand_fields
+    pre_hand_id = hand_id
+    state_evs = hand.on_roll((d1, d2))
+
+    for ev in state_evs:
+        et = ev["type"]
+        data = ev.get("data", {})
+        if et == "point_set":
+            events.append(
+                build_point_set(
+                    session_id,
+                    pre_hand_id,
+                    roll_seq,
+                    bankroll_before,
+                    bankroll_after,
+                    data["point"],
+                )
+            )
+        elif et == "point_made":
+            events.append(
+                build_point_made(
+                    session_id,
+                    pre_hand_id,
+                    roll_seq,
+                    bankroll_before,
+                    bankroll_after,
+                    data["point"],
+                )
+            )
+        elif et == "seven_out":
+            events.append(
+                build_seven_out(
+                    session_id,
+                    pre_hand_id,
+                    roll_seq,
+                    bankroll_before,
+                    bankroll_after,
+                )
+            )
+        elif et == "hand_ended":
+            events.append(
+                build_hand_ended(
+                    session_id,
+                    pre_hand_id,
+                    roll_seq,
+                    bankroll_before,
+                    bankroll_after,
+                    data.get("end_reason", "unknown"),
+                )
+            )
+
+    snap_state = hand.to_snapshot_fields()
     snapshot = {
         "session_id": session_id,
         "hand_id": snap_state["hand_id"],

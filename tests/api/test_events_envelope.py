@@ -15,7 +15,8 @@ def test_event_order_and_types():
     assert r.status_code == 200
     ev = r.json()["events"]
     types = [e["type"] for e in ev]
-    assert types == ["hand_started", "roll_started", "roll_completed"]
+    assert types[:3] == ["hand_started", "roll_started", "roll_completed"]
+    assert types[3:] == ["point_set"]
 
 
 def test_event_ids_are_deterministic():
