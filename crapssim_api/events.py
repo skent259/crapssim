@@ -31,3 +31,78 @@ def build_event(
         "bankroll_after": bankroll_after,
         "data": data,
     }
+
+
+def build_point_set(
+    session_id: str,
+    hand_id: int,
+    roll_seq: int,
+    bankroll_before: str,
+    bankroll_after: str,
+    point: int,
+) -> Dict[str, Any]:
+    return build_event(
+        session_id,
+        hand_id,
+        roll_seq,
+        "point_set",
+        bankroll_before,
+        bankroll_after,
+        {"point": point},
+    )
+
+
+def build_point_made(
+    session_id: str,
+    hand_id: int,
+    roll_seq: int,
+    bankroll_before: str,
+    bankroll_after: str,
+    point: int,
+) -> Dict[str, Any]:
+    return build_event(
+        session_id,
+        hand_id,
+        roll_seq,
+        "point_made",
+        bankroll_before,
+        bankroll_after,
+        {"point": point},
+    )
+
+
+def build_seven_out(
+    session_id: str,
+    hand_id: int,
+    roll_seq: int,
+    bankroll_before: str,
+    bankroll_after: str,
+) -> Dict[str, Any]:
+    return build_event(
+        session_id,
+        hand_id,
+        roll_seq,
+        "seven_out",
+        bankroll_before,
+        bankroll_after,
+        {},
+    )
+
+
+def build_hand_ended(
+    session_id: str,
+    hand_id: int,
+    roll_seq: int,
+    bankroll_before: str,
+    bankroll_after: str,
+    end_reason: str,
+) -> Dict[str, Any]:
+    return build_event(
+        session_id,
+        hand_id,
+        roll_seq,
+        "hand_ended",
+        bankroll_before,
+        bankroll_after,
+        {"end_reason": end_reason},
+    )

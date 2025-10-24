@@ -40,4 +40,7 @@ def test_no_state_mutations_yet():
     r = client.post("/step_roll", json=body)
     snap = r.json()
     assert snap["bankroll_after"] == "1000.00"
-    assert snap["point"] is None
+    if snap["puck"] == "ON":
+        assert snap["point"] == sum(snap["dice"])
+    else:
+        assert snap["point"] is None
