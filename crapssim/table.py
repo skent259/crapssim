@@ -33,13 +33,6 @@ class TableUpdate:
         Returns:
             None: Always returns ``None``.
         """
-        # --- Illegal Put guard ---
-        if table.point != "On":
-            for player in table.players:
-                illegal_puts = [b for b in list(player.bets) if isinstance(b, betmod.Put)]
-                for b in illegal_puts:
-                    player.bets.remove(b)
-        # --- end guard ---
         self.run_strategies(table, run_complete, verbose)
         self.print_player_summary(table, verbose)
         self.before_roll(table)
