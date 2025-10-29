@@ -153,13 +153,6 @@ def scenario_buy_lay_matrix() -> list[ScenarioResult]:
                 "commission_floor": 25.0,
             },
         },
-        {
-            "name": "Legacy_unset_mode",
-            "settings": {
-                "commission": 0.05,
-                "commission_multiplier_legacy": True,
-            },
-        },
     ]
     tests = [
         (

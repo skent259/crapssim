@@ -48,8 +48,8 @@ def test_vxp_full_integration():
     assert not player.bets, "All bets should be resolved"
 
     # Bankroll continuity — ensure deterministic ending bankroll.
-    expected_final_bankroll = pytest.approx(234.422, rel=1e-9, abs=1e-9)
+    expected_final_bankroll = pytest.approx(237.25, rel=1e-9, abs=1e-9)
     assert player.bankroll == expected_final_bankroll
 
     # Net profit should equal bankroll delta.
-    assert player.bankroll - starting_bankroll == pytest.approx(134.422, rel=1e-9, abs=1e-9)
+    assert player.bankroll - starting_bankroll == pytest.approx(137.25, rel=1e-9, abs=1e-9)

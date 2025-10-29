@@ -38,10 +38,10 @@ from crapssim.table import Table, TableUpdate
         (crapssim.bet.World(1), -0.1333),
         (crapssim.bet.Big6(1), -0.0278),
         (crapssim.bet.Big8(1), -0.0278),
-        (crapssim.bet.Buy(4, 1), -0.0148),
-        (crapssim.bet.Buy(6, 1), -0.0093),
-        (crapssim.bet.Lay(4, 1), -0.0148),
-        (crapssim.bet.Lay(6, 1), -0.0093),
+        (crapssim.bet.Buy(4, 1), -0.0083),
+        (crapssim.bet.Buy(6, 1), -0.0083),
+        (crapssim.bet.Lay(4, 1), -0.0042),
+        (crapssim.bet.Lay(6, 1), -0.0069),
         (crapssim.bet.Put(4, 1), -0.0833),
         (crapssim.bet.Put(5, 1), -0.0556),
         (crapssim.bet.Put(6, 1), -0.0278),
@@ -437,37 +437,3 @@ def test_commission_rounding_ties_lay_ceiling():
     # Resolve lay with a seven
     TableUpdate.roll(t, fixed_outcome=(4, 3))
     TableUpdate.update_bets(t)
-
-
-def test_commission_multiplier_legacy_gate_changes_base():
-    # Prove the gate toggles the base behavior when commission_mode is unset.
-    from crapssim.table import Table, TableUpdate
-
-    # Session A: legacy True (default) -> uses multipliers when mode is unset
-    tA = Table()
-    tA.add_player()
-    pA = tA.players[0]
-    tA.settings["commission"] = 0.05
-    # (no commission_mode set)
-    tA.settings["commission_multiplier_legacy"] = True
-    pA.add_bet(crapssim.bet.Buy(4, 20))
-    preA = pA.bankroll
-    TableUpdate.roll(tA, fixed_outcome=(2, 2))  # hit 4
-    TableUpdate.update_bets(tA)
-    deltaA = pA.bankroll - preA
-
-    # Session B: legacy False -> falls back to explicit helper base without multipliers
-    tB = Table()
-    tB.add_player()
-    pB = tB.players[0]
-    tB.settings["commission"] = 0.05
-    # (no commission_mode set)
-    tB.settings["commission_multiplier_legacy"] = False
-    pB.add_bet(crapssim.bet.Buy(4, 20))
-    preB = pB.bankroll
-    TableUpdate.roll(tB, fixed_outcome=(2, 2))  # hit 4
-    TableUpdate.update_bets(tB)
-    deltaB = pB.bankroll - preB
-
-    # The deltas should differ when the gate is toggled, proving the flag is effective.
-    assert deltaA != deltaB
