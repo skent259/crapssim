@@ -161,8 +161,6 @@ def test_vxp_heavy_stress(require_stress):
             ["none", "ceil_dollar", "nearest_dollar"]
         )
         t.settings["commission_floor"] = rng.choice([0.0, 10.0, 25.0])
-        t.settings["allow_put_odds"] = rng.choice([True, False])
-
         attempt = random_bet_mix(rng, bankroll_scale=rng.choice([0.5, 1.0, 2.0]))
 
         # Randomly choose to start with point ON or OFF

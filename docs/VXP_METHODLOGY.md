@@ -10,14 +10,13 @@ It is meant to be a maintainer-facing record rather than a user guide.
 - **World (Whirl)** (Horn + Any 7 break-even; net-modeled)  
 - **Big6 / Big8** (even-money; persistent)  
 - **Buy / Lay** (true-odds with commission policy knobs)  
-- **Put** (legal only with point ON; odds optional)
+- **Put** (legal only with point ON)
 
 ### Policy toggles (Table.settings)
 - `commission` (float rate, default `0.05`)
 - `commission_mode`: `"on_win"` (default) | `"on_bet"`
 - `commission_rounding`: `"none"` (default) | `"ceil_dollar"` | `"nearest_dollar"` (banker’s rounding)
 - `commission_floor` (float dollars, default `0.0`)
-- `allow_put_odds` (bool, default `True`)
 
 ### Guards
 - **Put** bets automatically stripped pre-roll when point is OFF.
@@ -30,12 +29,8 @@ It is meant to be a maintainer-facing record rather than a user guide.
 - **Net-modeled Horn/World:**  
   We model equal-split books as a single net wager to keep payouts transparent and avoid sub-bet bookkeeping. This is documented and tested with EV pins.
 
-- **Commission policy as first-class settings:**  
+- **Commission policy as first-class settings:**
   Houses vary on “on-win vs on-bet,” rounding, and floors. We exposed the variants as settings and kept **defaults backward compatible**.
-
-
-- **Odds behind Put:**  
-  Default allowed (common), with a table toggle for strict houses.
 
 ---
 
@@ -45,11 +40,11 @@ It is meant to be a maintainer-facing record rather than a user guide.
    - EV and `repr` tests for new bets.
    - Input validation: Buy/Lay only on {4,5,6,8,9,10}.
    - Commission variants: `on_win`, `on_bet`, rounding, floor.
-   - Put-odds toggle: odds refused when disabled.
+   - Put odds allowed when point is ON.
 
 2. **Stress tests**
    - Randomized harness (`@pytest.mark.stress`) varying:
-     - commission rate/mode/rounding/floor, `allow_put_odds`
+     - commission rate/mode/rounding/floor
      - bankroll size (including small)
      - injected illegal Put (guard check)
    - Invariants: no NaN/inf, no lingering one-roll props, Put absent when point OFF.
@@ -60,7 +55,7 @@ It is meant to be a maintainer-facing record rather than a user guide.
      - **PropsIsolated** (PL suppressed) to show **pure net**,
      - Big6/Big8 resolves,
      - Buy/Lay matrix with policy permutations,
-     - Put with/without odds and illegal Put guard.
+     - Put with odds and illegal Put guard.
    - Artifacts per run: `gauntlet.json`, `gauntlet_rolls.csv` (with Δ), `summary.md`.
    - Batch evidence: 25 repeated runs, collated summaries retained.
 

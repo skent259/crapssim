@@ -797,7 +797,6 @@ class LaySampler(AggregateStrategy):
 class PutWithOdds(AggregateStrategy):
     """
     When the point is ON, place a Put bet on 6 and take odds behind it.
-    Odds behind Put may be disabled by table.settings['allow_put_odds'] = False.
     """
 
     def __init__(

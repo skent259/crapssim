@@ -242,38 +242,7 @@ def scenario_put_with_and_without_odds() -> list[ScenarioResult]:
         )
     )
 
-    # B) disallow odds
-    table2 = Table()
-    player2 = table2.add_player(bankroll=1000.0)
-    start_bankroll2 = player2.bankroll
-    table2.settings["allow_put_odds"] = False
-    establish_point(table2, 6)
-    player2.add_bet(B.Put(6, 10))
-    try:
-        player2.add_bet(B.Odds(B.Put, 6, 20, True))
-    except Exception:
-        pass
-
-    sequence2 = [6, 7]
-    rolls2: list[RollRecord] = []
-    for i, total in enumerate(sequence2):
-        before = player2.bankroll
-        roll_fixed(table2, total)
-        rolls2.append(
-            RollRecord("PutOddsDisallowed", i + 1, total, before, player2.bankroll)
-        )
-    output.append(
-        ScenarioResult(
-            "PutOddsDisallowed",
-            dict(table2.settings),
-            start_bankroll2,
-            player2.bankroll,
-            rolls2,
-            [repr(bet) for bet in player2.bets],
-        )
-    )
-
-    # C) illegal Put while point OFF gets stripped pre-roll
+    # B) illegal Put while point OFF gets stripped pre-roll
     table3 = Table()
     player3 = table3.add_player(bankroll=1000.0)
     start_bankroll3 = player3.bankroll
