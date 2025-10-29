@@ -816,14 +816,15 @@ class PutWithOdds(AggregateStrategy):
         )
 
 
-class HornShowcase(AggregateStrategy):
-    """
-    Demonstrates Horn and World side-by-side to illustrate net payouts and
-    removal semantics after a single resolving roll.
-    """
+class HornExample(AggregateStrategy):
+    """Demonstrates Horn bet lifecycle and resolution."""
 
-    def __init__(self, horn_amount: float = 5.0, world_amount: float = 5.0):
-        super().__init__(
-            BetHorn(horn_amount),
-            BetWorld(world_amount),
-        )
+    def __init__(self, amount: float = 5.0):
+        super().__init__(BetHorn(amount))
+
+
+class WorldExample(AggregateStrategy):
+    """Demonstrates World bet lifecycle and resolution."""
+
+    def __init__(self, amount: float = 5.0):
+        super().__init__(BetWorld(amount))

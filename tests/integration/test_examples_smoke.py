@@ -4,7 +4,8 @@ from crapssim.strategy.examples import (
     BuySampler,
     LaySampler,
     PutWithOdds,
-    HornShowcase,
+    HornExample,
+    WorldExample,
 )
 
 
@@ -23,4 +24,5 @@ def test_examples_smoke():
     _run(BuySampler(25.0), rolls)
     _run(LaySampler(30.0), rolls)
     _run(PutWithOdds(10.0, 2.0, True), rolls)
-    _run(HornShowcase(5.0, 5.0), rolls)
+    _run(HornExample(5.0), rolls)
+    _run(WorldExample(5.0), rolls)

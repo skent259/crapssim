@@ -122,7 +122,8 @@ See `crapssim/strategy/examples.py` for:
 - BuySampler (Buy 4/10)
 - LaySampler (Lay 5/9)
 - PutWithOdds (Put on 6 with odds)
-- HornShowcase (Horn + World)
+- HornExample (Horn)
+- WorldExample (World)
 
 ### Running examples
 A deterministic demo script is provided:

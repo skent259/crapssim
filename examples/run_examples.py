@@ -4,7 +4,8 @@ from crapssim.strategy.examples import (
     BuySampler,
     LaySampler,
     PutWithOdds,
-    HornShowcase,
+    HornExample,
+    WorldExample,
 )
 
 # Fixed roll sequence to exercise typical paths:
@@ -40,7 +41,8 @@ def main():
                 always_working=True,
             ),
         ),
-        ("HornShowcase", lambda: HornShowcase(horn_amount=5.0, world_amount=5.0)),
+        ("HornExample", lambda: HornExample(amount=5.0)),
+        ("WorldExample", lambda: WorldExample(amount=5.0)),
     ]
     for name, factory in runs:
         run_example(name, factory)
