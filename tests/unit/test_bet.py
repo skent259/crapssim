@@ -3,7 +3,22 @@ import numpy as np
 import pytest
 
 import crapssim.bet
-from crapssim.bet import Bet, CAndE, Come, DontCome, Hop, Odds, PassLine
+from crapssim.bet import (
+    Any7,
+    Bet,
+    Boxcars,
+    CAndE,
+    Come,
+    DontCome,
+    Horn,
+    Hop,
+    Odds,
+    PassLine,
+    Three,
+    Two,
+    World,
+    Yo,
+)
 from crapssim.point import Point
 from crapssim.table import Table, TableUpdate
 
@@ -34,8 +49,8 @@ from crapssim.table import Table, TableUpdate
         (crapssim.bet.Hop([2, 3], 1), -0.1111),
         (crapssim.bet.Hop([3, 2], 1), -0.1111),
         (crapssim.bet.Hop([3, 3], 1), -0.1389),
-        (crapssim.bet.Horn(1), -0.1250),
-        (crapssim.bet.World(1), -0.1333),
+        (crapssim.bet.Horn(1), -0.25),
+        (crapssim.bet.World(1), -0.2667),
         (crapssim.bet.Big6(1), -0.0278),
         (crapssim.bet.Big8(1), -0.0278),
         (crapssim.bet.Buy(4, 1), -0.0083),
@@ -437,3 +452,29 @@ def test_commission_rounding_ties_lay_ceiling():
     # Resolve lay with a seven
     TableUpdate.roll(t, fixed_outcome=(4, 3))
     TableUpdate.update_bets(t)
+
+
+@pytest.mark.parametrize(
+    "bets_1, bets_2",
+    [
+        ([Horn(4)], [Two(1), Three(1), Yo(1), Boxcars(1)]),
+        ([World(5)], [Two(1), Three(1), Yo(1), Boxcars(1), Any7(1)]),
+        ([World(5)], [Horn(4), Any7(1)]),
+    ],
+)
+def test_combined_bet_equality(bets_1, bets_2):
+    t = Table()
+    t.add_player()
+
+    for bet in [*bets_1, *bets_2]:
+        t.players[0].add_bet(bet)
+
+    outcomes_1 = []
+    outcomes_2 = []
+    for d1 in range(1, 7):
+        for d2 in range(1, 7):
+            t.dice.fixed_roll([d1, d2])
+            outcomes_1.append(sum(b.get_result(t).amount for b in bets_1))
+            outcomes_2.append(sum(b.get_result(t).amount for b in bets_2))
+
+    assert outcomes_1 == outcomes_2

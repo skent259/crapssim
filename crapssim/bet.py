@@ -1023,11 +1023,16 @@ class Horn(_WinningLosingNumbersBet):
         return self.losing_numbers
 
     def get_payout_ratio(self, table: "Table") -> float:
+        """
+        Payout ratios expressed as 'to 1', aligned with single bets:
+        - 2/12: (30 - 6) / 4 = 6.0
+        - 3/11: (15 - 6) / 4 = 2.25
+        """
         total = table.dice.total
         if total in (2, 12):
-            return 6.75
+            return (30 - 6) / 4
         if total in (3, 11):
-            return 3.0
+            return (15 - 6) / 4
         raise NotImplementedError
 
     def copy(self) -> "Horn":
@@ -1057,13 +1062,19 @@ class World(_WinningLosingNumbersBet):
         return self.losing_numbers
 
     def get_payout_ratio(self, table: "Table") -> float:
+        """
+        Payout ratios expressed as 'to 1', consistent with simulator:
+        - 2/12: (30 - 8) / 5 = 4.4
+        - 3/11: (15 - 8) / 5 = 1.4
+        - 7:    (4  - 8) / 5 = -0.8
+        """
         total = table.dice.total
         if total in (2, 12):
-            return 5.2
+            return (30 - 8) / 5
         if total in (3, 11):
-            return 2.2
+            return (15 - 8) / 5
         if total == 7:
-            return 0.0
+            return (4 - 8) / 5
         raise NotImplementedError
 
     def copy(self) -> "World":
