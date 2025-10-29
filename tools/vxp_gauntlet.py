@@ -1,5 +1,8 @@
 from __future__ import annotations
-import json, csv, time, pathlib
+import json
+import csv
+import time
+import pathlib
 from dataclasses import dataclass, asdict
 
 from crapssim.table import Table, TableUpdate
@@ -64,9 +67,7 @@ def scenario_horn_world() -> ScenarioResult:
     for i, total in enumerate([2, 3, 7, 11, 12]):
         before = player.bankroll
         roll_fixed(table, total)
-        rolls.append(
-            RollRecord("HornWorld", i + 1, total, before, player.bankroll)
-        )
+        rolls.append(RollRecord("HornWorld", i + 1, total, before, player.bankroll))
 
     return ScenarioResult(
         name="HornWorld",
@@ -83,7 +84,9 @@ def scenario_props_isolated() -> ScenarioResult:
     player = table.add_player(bankroll=1000.0, strategy=NullStrategy())
 
     # Defensive cleanup in case upstream defaults change before strategies run.
-    player.bets = [bet for bet in player.bets if "PassLine" not in bet.__class__.__name__]
+    player.bets = [
+        bet for bet in player.bets if "PassLine" not in bet.__class__.__name__
+    ]
 
     start_bankroll = player.bankroll
     player.add_bet(B.Horn(5))
@@ -93,9 +96,7 @@ def scenario_props_isolated() -> ScenarioResult:
     for i, total in enumerate([2, 3, 7, 11, 12]):
         before = player.bankroll
         roll_fixed(table, total)
-        rolls.append(
-            RollRecord("PropsIsolated", i + 1, total, before, player.bankroll)
-        )
+        rolls.append(RollRecord("PropsIsolated", i + 1, total, before, player.bankroll))
 
     return ScenarioResult(
         name="PropsIsolated",
@@ -119,9 +120,7 @@ def scenario_big6_big8() -> ScenarioResult:
     for i, total in enumerate(sequence):
         before = player.bankroll
         roll_fixed(table, total)
-        rolls.append(
-            RollRecord("Big6Big8", i + 1, total, before, player.bankroll)
-        )
+        rolls.append(RollRecord("Big6Big8", i + 1, total, before, player.bankroll))
 
     return ScenarioResult(
         "Big6Big8",
@@ -139,7 +138,6 @@ def scenario_buy_lay_matrix() -> list[ScenarioResult]:
         {
             "name": "Default_on_win_none",
             "settings": {
-                "commission": 0.05,
                 "commission_mode": "on_win",
                 "commission_rounding": "none",
             },
@@ -147,7 +145,6 @@ def scenario_buy_lay_matrix() -> list[ScenarioResult]:
         {
             "name": "On_bet_ceil_floor25",
             "settings": {
-                "commission": 0.05,
                 "commission_mode": "on_bet",
                 "commission_rounding": "ceil_dollar",
                 "commission_floor": 25.0,

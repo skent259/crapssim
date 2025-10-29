@@ -10,12 +10,18 @@ from crapssim.point import Point
 DicePair: TypeAlias = tuple[int, int]
 """Pair of dice represented as (die_one, die_two)."""
 
+
 class SupportsFloat(Protocol):
     """Protocol for objects that can be converted to ``float``."""
 
     def __float__(self) -> float:
         """Return a float representation."""
 
+
+def compute_commission(base_amount: float) -> float:
+    """Compute standard 5% commission for Buy/Lay style bets."""
+
+    return base_amount * 0.05
 
 
 def _compute_commission(
@@ -32,7 +38,6 @@ def _compute_commission(
       Commission fee as a float after applying mode, rounding, and floor.
     """
 
-    rate = table.settings.get("commission", 0.05)
     mode = table.settings.get("commission_mode", "on_win")
     rounding = table.settings.get("commission_rounding", "none")
     floor = float(table.settings.get("commission_floor", 0.0) or 0.0)
@@ -45,7 +50,7 @@ def _compute_commission(
         else:
             base = gross_win
 
-    fee = base * rate
+    fee = compute_commission(base)
     if rounding == "ceil_dollar":
         import math
 
@@ -57,6 +62,7 @@ def _compute_commission(
 
 
 __all__ = [
+    "compute_commission",
     "BetResult",
     "Bet",
     "_WinningLosingNumbersBet",
@@ -101,7 +107,6 @@ class TableSettings(TypedDict, total=False):
     hop_payouts: dict[str, int]
     max_odds: dict[int, int]
     max_dont_odds: dict[int, int]
-    commission: float
     commission_mode: Literal["on_win", "on_bet"]
     commission_rounding: Literal["none", "ceil_dollar", "nearest_dollar"]
     commission_floor: float
@@ -594,9 +599,7 @@ class Odds(_WinningLosingNumbersBet):
 
     def __init__(
         self,
-        base_type: typing.Type[
-            "PassLine | DontPass | Come | DontCome | Put"
-        ],
+        base_type: typing.Type["PassLine | DontPass | Come | DontCome | Put"],
         number: int,
         amount: float,
         always_working: bool = False,
@@ -687,7 +690,7 @@ class Odds(_WinningLosingNumbersBet):
     def _get_always_working_repr(self) -> str:
         """Since the default is false, only need to print when True"""
         return (
-            f", always_working={self.always_working})" if self.always_working else f")"
+            f", always_working={self.always_working})" if self.always_working else ")"
         )
 
     @property
@@ -1360,4 +1363,3 @@ class Small(_ATSBet):
 
     type: str = "small"
     numbers: list[int] = [2, 3, 4, 5, 6]
-

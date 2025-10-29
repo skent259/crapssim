@@ -5,7 +5,6 @@ from typing import Generator, Iterable, Literal, TypedDict
 from crapssim.dice import Dice
 
 from .bet import Bet, BetResult, DicePair
-import crapssim.bet as betmod
 from .point import Point
 from .strategy import BetPassLine, Strategy
 
@@ -163,7 +162,6 @@ class TableSettings(TypedDict, total=False):
     """Simulation and payout policy toggles.
 
     Keys:
-      commission: float
       commission_mode: Literal["on_win", "on_bet"]
       commission_rounding: Literal["none", "ceil_dollar", "nearest_dollar"]
       commission_floor: float
@@ -176,7 +174,6 @@ class TableSettings(TypedDict, total=False):
     hop_payouts: dict[str, int]
     max_odds: dict[int, int]
     max_dont_odds: dict[int, int]
-    commission: float
     commission_mode: Literal["on_win", "on_bet"]
     commission_rounding: Literal["none", "ceil_dollar", "nearest_dollar"]
     commission_floor: float
@@ -197,7 +194,6 @@ class Table:
             "hop_payouts": {"easy": 15, "hard": 30},
             "max_odds": {4: 3, 5: 4, 6: 5, 8: 5, 9: 4, 10: 3},
             "max_dont_odds": {4: 6, 5: 6, 6: 6, 8: 6, 9: 6, 10: 6},
-            "commission": 0.05,
         }
         self.pass_rolls: int = 0
         self.last_roll: int | None = None
