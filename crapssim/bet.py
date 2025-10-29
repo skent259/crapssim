@@ -2,17 +2,13 @@ import copy
 import typing
 from abc import ABC, ABCMeta, abstractmethod
 from dataclasses import dataclass
-from typing import Hashable, Iterable, Literal, Protocol, TypedDict, TypeAlias
+from typing import Hashable, Literal, Protocol, TypedDict, TypeAlias
 
 from crapssim.dice import Dice
 from crapssim.point import Point
 
 DicePair: TypeAlias = tuple[int, int]
 """Pair of dice represented as (die_one, die_two)."""
-
-Currency: TypeAlias = float
-"""Currency amount expressed as float dollars."""
-
 
 class SupportsFloat(Protocol):
     """Protocol for objects that can be converted to ``float``."""
