@@ -409,15 +409,14 @@ def test_lay_commission_floor():
     assert player.bankroll == pytest.approx(starting_bankroll + 10.0)
 
 
-def test_put_odds_disallowed_when_toggled_off():
+def test_put_odds_allowed_when_point_on():
     t = Table()
     t.add_player()
     player = t.players[0]
-    t.settings["allow_put_odds"] = False
     t.point.number = 6
     player.add_bet(crapssim.bet.Put(6, 10))
     player.add_bet(crapssim.bet.Odds(crapssim.bet.Put, 6, 10, True))
-    assert not any(isinstance(b, crapssim.bet.Odds) for b in player.bets)
+    assert any(isinstance(b, crapssim.bet.Odds) for b in player.bets)
 
 
 def test_commission_rounding_ties_buy_nearest_even():

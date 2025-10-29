@@ -87,14 +87,6 @@ Some results from this simulator have been posted to http://pages.stat.wisc.edu/
 
 - Line & numbers: Pass Line, Come, **Put**, Place (4/5/6/8/9/10), Odds (PL/Come/**Put**)
 
-**Odds behind Put**
-
-Odds on Put bets follow the same logic as Come odds. This behavior can be
-disabled for strict house simulation by setting:
-
-```python
-table.settings["allow_put_odds"] = False
-```
 - Dark side: Don’t Pass, Don’t Come, Odds (DP/DC), **Lay** (4/5/6/8/9/10)
 - Field & props: Field, **Horn**, **World (Whirl)**, Any 7, Any Craps, 2/3/11/12, Hardways, Hop
 - Side features: Fire, All/Tall/Small (ATS), **Big 6**, **Big 8**
@@ -118,7 +110,6 @@ These are implemented as *net single-wager equivalents* of equal-split sub-bets 
 - `commission_mode` (`"on_win"` default, or `"on_bet"`)
 - `commission_rounding` (`"none"` default, `"ceil_dollar"`, `"nearest_dollar"`)
 - `commission_floor` (float dollars, default `0.0`)
-- `allow_put_odds` (`True` default)
 
 **Rounding semantics**
 - `nearest_dollar` uses Python’s standard rounding (`round`) which is banker's rounding.

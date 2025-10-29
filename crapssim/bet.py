@@ -105,7 +105,6 @@ class TableSettings(TypedDict, total=False):
     commission_mode: Literal["on_win", "on_bet"]
     commission_rounding: Literal["none", "ceil_dollar", "nearest_dollar"]
     commission_floor: float
-    allow_put_odds: bool
 
 
 class Table(Protocol):
@@ -658,12 +657,6 @@ class Odds(_WinningLosingNumbersBet):
         """
         max_bet = self.get_max_odds(player.table) * self.base_amount(player)
         allowed = self.amount <= max_bet
-        try:
-            base_is_put = self.base_type.__name__ == "Put"
-        except Exception:
-            base_is_put = False
-        if base_is_put and player.table.settings.get("allow_put_odds", True) is False:
-            return False
         return allowed
 
     def get_max_odds(self, table: Table) -> float:
