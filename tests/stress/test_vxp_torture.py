@@ -10,8 +10,8 @@ from crapssim.strategy.tools import NullStrategy
 
 # --- Utilities ---------------------------------------------------------------
 
-DICE_PAIRS = [(d1, d2) for d1 in range(1,7) for d2 in range(1,7)]
-BOX = [4,5,6,8,9,10]
+DICE_PAIRS = [(d1, d2) for d1 in range(1, 7) for d2 in range(1, 7)]
+BOX = [4, 5, 6, 8, 9, 10]
 
 
 @pytest.fixture
@@ -20,6 +20,7 @@ def require_stress(pytestconfig):
     markexpr = getattr(pytestconfig.option, "markexpr", "") or ""
     if "stress" not in markexpr:
         pytest.skip("stress test: run with -m stress")
+
 
 def roll_fixed(table: Table, total: int):
     """Roll a specific total using a consistent (d1,d2) producing that total."""
@@ -30,6 +31,7 @@ def roll_fixed(table: Table, total: int):
             return
     raise ValueError(f"Bad total {total}")
 
+
 def try_add(player, bet):
     """Attempt to add a bet via Player.add_bet(). Silently ignore if not allowed."""
     try:
@@ -38,8 +40,10 @@ def try_add(player, bet):
         # We never want a randomized harness to explode on add attempts
         pass
 
+
 def random_bet_mix(rng: random.Random, bankroll_scale=1.0):
     """Return a function that, given (table, player), attempts random bet adds."""
+
     def attempt(table: Table, player):
         amt = bankroll_scale * rng.choice([5, 10, 15, 25, 30])
         num = rng.choice(BOX)
@@ -65,7 +69,9 @@ def random_bet_mix(rng: random.Random, bankroll_scale=1.0):
                         odds_amt = min(amt, max(5.0, player.bankroll * 0.05))
                         try_add(player, B.Odds(B.Put, bet.number, odds_amt, True))
                         break
+
     return attempt
+
 
 def invariants_after_roll(
     table: Table,
@@ -105,6 +111,7 @@ def invariants_after_roll(
 
 # --- Quick, deterministic smoke test (always runs) ---------------------------
 
+
 def test_vxp_randomized_smoke():
     rng = random.Random(1337)
 
@@ -112,7 +119,6 @@ def test_vxp_randomized_smoke():
     t.add_player()
     p = t.players[0]
     p.strategy = NullStrategy()
-    t.settings["commission"] = 0.05
 
     attempt = random_bet_mix(rng, bankroll_scale=1.0)
 
@@ -131,7 +137,7 @@ def test_vxp_randomized_smoke():
             roll_fixed(t, 7)
         else:
             # random non-zero roll
-            roll_fixed(t, rng.choice([2,3,4,5,6,8,9,10,11,12]))
+            roll_fixed(t, rng.choice([2, 3, 4, 5, 6, 8, 9, 10, 11, 12]))
 
         invariants_after_roll(t, pre, point_was_on, prior_one_roll)
 
@@ -144,18 +150,18 @@ def test_vxp_randomized_smoke():
 
 # --- Heavy stress (opt-in via -m stress) -------------------------------------
 
+
 @pytest.mark.stress
 def test_vxp_heavy_stress(require_stress):
     rng = random.Random(424242)
 
-    # Multiple sessions with varied commissions & seeds
+    # Multiple sessions with varied commission policies & seeds
     for sess in range(60):  # sessions
         t = Table()
         t.add_player()
         p = t.players[0]
         p.strategy = NullStrategy()
-        # Vary commission across runs, including edge-ish values
-        t.settings["commission"] = rng.choice([0.03, 0.05, 0.07, 0.10])
+        # Vary commission policy knobs (mode/rounding/floor) across runs
         t.settings["commission_mode"] = rng.choice(["on_win", "on_bet"])
         t.settings["commission_rounding"] = rng.choice(
             ["none", "ceil_dollar", "nearest_dollar"]
@@ -165,7 +171,7 @@ def test_vxp_heavy_stress(require_stress):
 
         # Randomly choose to start with point ON or OFF
         if rng.random() < 0.5:
-            roll_fixed(t, rng.choice([4,5,6,8,9,10]))  # set point ON
+            roll_fixed(t, rng.choice([4, 5, 6, 8, 9, 10]))  # set point ON
 
         # Occasionally start with very low bankroll to stress rejection paths
         if rng.random() < 0.25:
@@ -182,7 +188,7 @@ def test_vxp_heavy_stress(require_stress):
             if rng.random() < 0.18:
                 roll_fixed(t, 7)
             else:
-                roll_fixed(t, rng.choice([2,3,4,5,6,8,9,10,11,12]))
+                roll_fixed(t, rng.choice([2, 3, 4, 5, 6, 8, 9, 10, 11, 12]))
 
             invariants_after_roll(t, pre, point_was_on, prior_one_roll)
 

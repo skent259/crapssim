@@ -18,9 +18,6 @@ def run_example(name, strategy_factory):
     player = table.add_player()
     player.strategy = strategy_factory()
 
-    # Optional: tweak commission defaults to show effect consistently
-    table.settings.setdefault("commission", 0.05)
-
     for die_one, die_two in ROLLS:
         TableUpdate.roll(table, fixed_outcome=(die_one, die_two), verbose=False)
 

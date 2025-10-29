@@ -15,7 +15,6 @@ from crapssim.strategy.single_bet import (
     BetBuy,
     BetCome,
     BetDontPass,
-    BetField,
     BetHorn,
     BetLay,
     BetPassLine,
@@ -33,7 +32,6 @@ from crapssim.strategy.tools import (
     CountStrategy,
     Player,
     RemoveByType,
-    RemoveIfTrue,
     Strategy,
     WinProgression,
 )
@@ -771,8 +769,8 @@ class QuickProps(AggregateStrategy):
 
 class BuySampler(AggregateStrategy):
     """
-    Buy the outside numbers (4 and 10). Commission behavior is governed by
-    table settings (commission, mode, rounding, floor).
+    Buy the outside numbers (4 and 10). Commission behavior uses the fixed
+    5% rate with table policy (mode, rounding, floor).
     """
 
     def __init__(self, amount: float = 25.0):
@@ -784,7 +782,8 @@ class BuySampler(AggregateStrategy):
 
 class LaySampler(AggregateStrategy):
     """
-    Lay the inside (5 and 9). Demonstrates dark-side true-odds with commission.
+    Lay the inside (5 and 9). Demonstrates dark-side true-odds with the fixed
+    commission.
     """
 
     def __init__(self, amount: float = 30.0):

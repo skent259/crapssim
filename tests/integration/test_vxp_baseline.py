@@ -12,7 +12,6 @@ def test_vxp_full_integration():
     """
     table = Table()
     table.add_player(strategy=NullStrategy())
-    table.settings["commission"] = 0.05
 
     table_update = TableUpdate()
     player = table.players[0]
@@ -52,4 +51,6 @@ def test_vxp_full_integration():
     assert player.bankroll == expected_final_bankroll
 
     # Net profit should equal bankroll delta.
-    assert player.bankroll - starting_bankroll == pytest.approx(129.5, rel=1e-9, abs=1e-9)
+    assert player.bankroll - starting_bankroll == pytest.approx(
+        129.5, rel=1e-9, abs=1e-9
+    )

@@ -13,7 +13,6 @@ It is meant to be a maintainer-facing record rather than a user guide.
 - **Put** (legal only with point ON)
 
 ### Policy toggles (Table.settings)
-- `commission` (float rate, default `0.05`)
 - `commission_mode`: `"on_win"` (default) | `"on_bet"`
 - `commission_rounding`: `"none"` (default) | `"ceil_dollar"` | `"nearest_dollar"` (banker’s rounding)
 - `commission_floor` (float dollars, default `0.0`)
@@ -30,7 +29,7 @@ It is meant to be a maintainer-facing record rather than a user guide.
   We model equal-split books as a single net wager to keep payouts transparent and avoid sub-bet bookkeeping. This is documented and tested with EV pins.
 
 - **Commission policy as first-class settings:**
-  Houses vary on “on-win vs on-bet,” rounding, and floors. We exposed the variants as settings and kept **defaults backward compatible**.
+  Houses vary on “on-win vs on-bet,” rounding, and floors. The rate is fixed at 5%, but we exposed the remaining variants as settings and kept **defaults backward compatible**.
 
 ---
 
@@ -44,7 +43,7 @@ It is meant to be a maintainer-facing record rather than a user guide.
 
 2. **Stress tests**
    - Randomized harness (`@pytest.mark.stress`) varying:
-     - commission rate/mode/rounding/floor
+     - commission mode/rounding/floor
      - bankroll size (including small)
      - injected illegal Put (guard check)
    - Invariants: no NaN/inf, no lingering one-roll props, Put absent when point OFF.

@@ -12,7 +12,6 @@ def _run(strategy, rolls):
     table = Table()
     player = table.add_player()
     player.strategy = strategy
-    table.settings.setdefault("commission", 0.05)
     for die_one, die_two in rolls:
         TableUpdate.roll(table, fixed_outcome=(die_one, die_two))
     assert player.bankroll == player.bankroll  # finite; ensures no NaN/inf

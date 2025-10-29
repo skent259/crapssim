@@ -19,7 +19,6 @@ from crapssim.bet import (
     World,
     Yo,
 )
-from crapssim.point import Point
 from crapssim.table import Table, TableUpdate
 
 # Check EV of bets on a "per-roll" basis
@@ -256,7 +255,7 @@ def test_dont_come_point_inequality():
 
 
 def test_cant_instantiate_bet_object():
-    with pytest.raises(TypeError) as e_info:
+    with pytest.raises(TypeError):
         Bet(400)
 
 
@@ -378,7 +377,6 @@ def test_buy_commission_modes_and_rounding():
     player.add_bet(crapssim.bet.Buy(4, 19))
     t.settings.pop("commission_mode", None)
     t.settings.pop("commission_rounding", None)
-    t.settings["commission"] = 0.05
     TableUpdate.roll(t, fixed_outcome=(2, 2))
     TableUpdate.update_bets(t)
     assert math.isfinite(player.bankroll)
@@ -386,7 +384,6 @@ def test_buy_commission_modes_and_rounding():
     t = Table()
     t.add_player()
     player = t.players[0]
-    t.settings["commission"] = 0.05
     t.settings["commission_mode"] = "on_bet"
     t.settings["commission_rounding"] = "ceil_dollar"
     player.add_bet(crapssim.bet.Buy(4, 19))
@@ -399,7 +396,6 @@ def test_lay_commission_floor():
     t = Table()
     t.add_player()
     player = t.players[0]
-    t.settings["commission"] = 0.05
     t.settings["commission_mode"] = "on_win"
     t.settings["commission_floor"] = 25.0
     starting_bankroll = player.bankroll
@@ -426,8 +422,7 @@ def test_commission_rounding_ties_buy_nearest_even():
     t = Table()
     t.add_player()
     p = t.players[0]
-    # Commission 5% on bet: bet=50 => fee=2.5; tie behavior pinned
-    t.settings["commission"] = 0.05
+    # Commission fixed at 5% on bet: bet=50 => fee=2.5; tie behavior pinned
     t.settings["commission_mode"] = "on_bet"
     t.settings["commission_rounding"] = "nearest_dollar"
     p.add_bet(crapssim.bet.Buy(4, 50))
@@ -443,8 +438,7 @@ def test_commission_rounding_ties_lay_ceiling():
     t = Table()
     t.add_player()
     p = t.players[0]
-    # Commission 5% on bet: bet=50 => fee=2.5; ceil => 3
-    t.settings["commission"] = 0.05
+    # Commission fixed at 5% on bet: bet=50 => fee=2.5; ceil => 3
     t.settings["commission_mode"] = "on_bet"
     t.settings["commission_rounding"] = "ceil_dollar"
     p.add_bet(crapssim.bet.Lay(10, 50))
