@@ -161,3 +161,8 @@ cython_debug/
 
 # VScode
 .vscode
+# === Generated Reports (do not commit) ===
+reports/
+**/reports/
+# End reports ignore
+
