@@ -1035,13 +1035,6 @@ class Horn(_WinningLosingNumbersBet):
             return (15 - 6) / 4
         raise NotImplementedError
 
-    def copy(self) -> "Horn":
-        return self.__class__(self.amount)
-
-    @property
-    def _placed_key(self) -> Hashable:
-        return type(self)
-
     def __repr__(self) -> str:
         return f"Horn(amount={self.amount})"
 
@@ -1077,13 +1070,6 @@ class World(_WinningLosingNumbersBet):
             return (4 - 8) / 5
         raise NotImplementedError
 
-    def copy(self) -> "World":
-        return self.__class__(self.amount)
-
-    @property
-    def _placed_key(self) -> Hashable:
-        return type(self)
-
     def __repr__(self) -> str:
         return f"World(amount={self.amount})"
 
@@ -1099,13 +1085,6 @@ class Big6(_SimpleBet):
         super().__init__(amount)
         self.number = 6
 
-    def copy(self) -> "Big6":
-        return self.__class__(self.amount)
-
-    @property
-    def _placed_key(self) -> Hashable:
-        return type(self)
-
     def __repr__(self) -> str:
         return f"Big6(amount={self.amount})"
 
@@ -1120,13 +1099,6 @@ class Big8(_SimpleBet):
     def __init__(self, amount: SupportsFloat) -> None:
         super().__init__(amount)
         self.number = 8
-
-    def copy(self) -> "Big8":
-        return self.__class__(self.amount)
-
-    @property
-    def _placed_key(self) -> Hashable:
-        return type(self)
 
     def __repr__(self) -> str:
         return f"Big8(amount={self.amount})"
