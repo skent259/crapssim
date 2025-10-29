@@ -175,7 +175,6 @@ class TableSettings(TypedDict, total=False):
       commission_rounding: Literal["none", "ceil_dollar", "nearest_dollar"]
       commission_floor: float
       allow_put_odds: bool
-      commission_multiplier_legacy: bool
       # existing: ATS_payouts, field_payouts, fire_payouts, hop_payouts, max odds, etc.
     """
 
@@ -189,7 +188,6 @@ class TableSettings(TypedDict, total=False):
     commission_mode: Literal["on_win", "on_bet"]
     commission_rounding: Literal["none", "ceil_dollar", "nearest_dollar"]
     commission_floor: float
-    commission_multiplier_legacy: bool
     allow_put_odds: bool
 
 

@@ -105,7 +105,6 @@ class TableSettings(TypedDict, total=False):
     commission_mode: Literal["on_win", "on_bet"]
     commission_rounding: Literal["none", "ceil_dollar", "nearest_dollar"]
     commission_floor: float
-    commission_multiplier_legacy: bool
     allow_put_odds: bool
 
 
@@ -774,11 +773,6 @@ class Buy(_SimpleBet):
     """True-odds bet on 4/5/6/8/9/10 that charges commission per table policy."""
 
     true_odds = {4: 2.0, 10: 2.0, 5: 1.5, 9: 1.5, 6: 1.2, 8: 1.2}
-    # These multipliers approximate typical house commission baselines
-    # for Buy/Lay bets under common table minimums. They exist solely to
-    # preserve historical simulation parity when commission_mode is unset
-    # and commission_multiplier_legacy=True.
-    commission_multipliers = {4: 3.552, 10: 3.552, 5: 2.169, 9: 2.169, 6: 1.3392, 8: 1.3392}
     losing_numbers: list[int] = [7]
 
     def __init__(self, number: int, amount: SupportsFloat) -> None:
@@ -792,14 +786,8 @@ class Buy(_SimpleBet):
     def get_result(self, table: "Table") -> BetResult:
         if table.dice.total == self.number:
             gross_win = self.payout_ratio * self.amount
-            commission_base = gross_win
-            use_legacy = table.settings.get("commission_multiplier_legacy", True)
-            if use_legacy and ("commission_mode" not in table.settings):
-                commission_base = (
-                    self.amount * self.commission_multipliers[self.number]
-                )
             commission = _compute_commission(
-                table, gross_win=commission_base, bet_amount=self.amount
+                table, gross_win=gross_win, bet_amount=self.amount
             )
             result_amount = gross_win - commission + self.amount
             remove = True
@@ -826,18 +814,6 @@ class Lay(_SimpleBet):
     """True-odds bet against 4/5/6/8/9/10, paying if 7 arrives first."""
 
     true_odds = {4: 0.5, 10: 0.5, 5: 2 / 3, 9: 2 / 3, 6: 5 / 6, 8: 5 / 6}
-    # These multipliers approximate typical house commission baselines
-    # for Buy/Lay bets under common table minimums. They exist solely to
-    # preserve historical simulation parity when commission_mode is unset
-    # and commission_multiplier_legacy=True.
-    commission_multipliers = {
-        4: 1.776,
-        10: 1.776,
-        5: 1.446,
-        9: 1.446,
-        6: 1.116,
-        8: 1.116,
-    }
     winning_numbers: list[int] = [7]
 
     def __init__(self, number: int, amount: SupportsFloat) -> None:
@@ -851,14 +827,8 @@ class Lay(_SimpleBet):
     def get_result(self, table: "Table") -> BetResult:
         if table.dice.total == 7:
             gross_win = self.payout_ratio * self.amount
-            commission_base = gross_win
-            use_legacy = table.settings.get("commission_multiplier_legacy", True)
-            if use_legacy and ("commission_mode" not in table.settings):
-                commission_base = (
-                    self.amount * self.commission_multipliers[self.number]
-                )
             commission = _compute_commission(
-                table, gross_win=commission_base, bet_amount=self.amount
+                table, gross_win=gross_win, bet_amount=self.amount
             )
             result_amount = gross_win - commission + self.amount
             remove = True

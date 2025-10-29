@@ -130,24 +130,6 @@ These are implemented as *net single-wager equivalents* of equal-split sub-bets 
 | Default explicit mode            | `commission=0.05`, `commission_mode="on_win"`, `commission_rounding="none"` | Commission = 5% of gross win                  |
 | On-bet with rounding + floor     | `commission=0.05`, `commission_mode="on_bet"`, `commission_rounding="ceil_dollar"`, `commission_floor=25.0` | Fee is 5% of bet, rounded up, waived < $25 |
 
-**Legacy commission base (optional)**
-If `commission_mode` is **unset** and `commission_multiplier_legacy=True` (default),
-Buy/Lay use internal number-based multipliers to determine the commission base before
-applying the rate. Set `commission_multiplier_legacy=False` to disable this behavior
-and rely solely on the explicit `commission_mode` base.
-
-**Disabling the legacy commission base**
-
-By default, when `commission_mode` is unset and
-`commission_multiplier_legacy=True`, the simulator applies internal
-number-based multipliers to approximate standard vig behavior.
-To disable this legacy baseline and rely solely on the explicit mode:
-
-```python
-table.settings["commission_multiplier_legacy"] = False
-table.settings["commission_mode"] = "on_win"
-```
-
 ### Examples
 
 See `crapssim/strategy/examples.py` for:

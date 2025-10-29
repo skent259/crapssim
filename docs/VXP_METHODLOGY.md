@@ -17,9 +17,6 @@ It is meant to be a maintainer-facing record rather than a user guide.
 - `commission_mode`: `"on_win"` (default) | `"on_bet"`
 - `commission_rounding`: `"none"` (default) | `"ceil_dollar"` | `"nearest_dollar"` (banker’s rounding)
 - `commission_floor` (float dollars, default `0.0`)
-- `commission_multiplier_legacy` (bool, default `True`)  
-  If `True` **and** `commission_mode` **unset**, Buy/Lay use calibrated multipliers
-  to preserve legacy simulation parity.
 - `allow_put_odds` (bool, default `True`)
 
 ### Guards
@@ -36,8 +33,6 @@ It is meant to be a maintainer-facing record rather than a user guide.
 - **Commission policy as first-class settings:**  
   Houses vary on “on-win vs on-bet,” rounding, and floors. We exposed the variants as settings and kept **defaults backward compatible**.
 
-- **Legacy multiplier gate:**  
-  Some existing baselines expected a number-based fee base when `commission_mode` wasn’t explicitly set. We retained it behind `commission_multiplier_legacy=True` and documented the behavior.
 
 - **Odds behind Put:**  
   Default allowed (common), with a table toggle for strict houses.
@@ -51,7 +46,6 @@ It is meant to be a maintainer-facing record rather than a user guide.
    - Input validation: Buy/Lay only on {4,5,6,8,9,10}.
    - Commission variants: `on_win`, `on_bet`, rounding, floor.
    - Put-odds toggle: odds refused when disabled.
-   - Legacy gate: differential outcome proves the toggle is effective.
 
 2. **Stress tests**
    - Randomized harness (`@pytest.mark.stress`) varying:
