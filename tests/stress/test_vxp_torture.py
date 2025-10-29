@@ -86,8 +86,9 @@ def invariants_after_roll(
         r = repr(b)
         assert isinstance(r, str) and len(r) > 0
 
-    # Put legality: if point is OFF, there should be no Put bets (guard strips them)
-    if table.point != "On" and not point_was_on:
+    # Put legality: while the point is OFF, Put bets should not exist on the layout
+    # because they cannot be added and seven-outs resolve any active puts.
+    if table.point != "On":
         assert all(not isinstance(b, B.Put) for b in p.bets)
 
     # One-roll bets (Horn, World) must not persist beyond one resolution.
@@ -176,10 +177,6 @@ def test_vxp_heavy_stress(require_stress):
         for _ in range(300):
             pre = p.bankroll
             prior_one_roll = {id(b) for b in p.bets if isinstance(b, (B.Horn, B.World))}
-
-            # Occasionally inject illegal Put manually while point OFF to exercise guard
-            if t.point != "On" and rng.random() < 0.08:
-                p.bets.append(B.Put(rng.choice(BOX), rng.choice([5,10,15,25])))
 
             # Random next roll, 7-outs sprinkled to churn table state
             point_was_on = t.point == "On"

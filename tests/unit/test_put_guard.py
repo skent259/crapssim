@@ -3,18 +3,18 @@ from crapssim.strategy.tools import NullStrategy
 from crapssim.table import Table, TableUpdate
 
 
-def test_illegal_put_removed_when_point_off():
+def test_put_only_allowed_when_point_on():
     t = Table()
     t.add_player(strategy=NullStrategy())
     p = t.players[0]
     starting_bankroll = p.bankroll
 
-    # Point should be OFF by default at table start; force-append an illegal Put.
-    p.bets.append(crapssim.bet.Put(6, 10))
-
-    # Run a table update; guard should strip the illegal Put before any roll.
-    TableUpdate().run(t, dice_outcome=(1, 1))
-
-    # Bet is removed and bankroll unchanged (because manual append never debited bankroll)
+    # Come-out roll has point OFF; Put bet should not be accepted.
+    p.add_bet(crapssim.bet.Put(6, 10))
     assert not any(isinstance(b, crapssim.bet.Put) for b in p.bets)
     assert p.bankroll == starting_bankroll
+
+    # Establish the point and retry – bet should now be accepted.
+    TableUpdate().run(t, dice_outcome=(3, 3))
+    p.add_bet(crapssim.bet.Put(6, 10))
+    assert any(isinstance(b, crapssim.bet.Put) for b in p.bets)
