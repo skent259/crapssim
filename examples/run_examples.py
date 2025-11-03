@@ -1,4 +1,4 @@
-from crapssim.table import Table, TableUpdate
+from crapssim.table import Table
 from crapssim.strategy.examples import (
     QuickProps,
     BuySampler,
@@ -19,8 +19,7 @@ def run_example(name, strategy_factory):
     player = table.add_player()
     player.strategy = strategy_factory()
 
-    for die_one, die_two in ROLLS:
-        TableUpdate.roll(table, fixed_outcome=(die_one, die_two), verbose=False)
+    table.fixed_run(dice_outcomes=ROLLS, verbose=False)
 
     print(f"Final bankroll: {player.bankroll:.2f}")
     # Show remaining open bets (should be few or none in these demos)
