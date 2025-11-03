@@ -4,7 +4,7 @@ from typing import Generator, Iterable, Literal, TypedDict
 
 from crapssim.dice import Dice
 
-from .bet import Bet, BetResult, DicePair
+from .bet import Bet, BetResult, DicePair, Odds, Put
 from .point import Point
 from .strategy import BetPassLine, Strategy
 
@@ -153,6 +153,14 @@ class TableUpdate:
         for player, bet in table.yield_player_bets():
             bet.update_number(table)
         table.point.update(table.dice)
+
+        if table.point != "On":
+            for player in table.players:
+                for bet in player.bets[:]:
+                    if isinstance(bet, Put) or (
+                        isinstance(bet, Odds) and bet.base_type is Put
+                    ):
+                        player.remove_bet(bet)
 
         if verbose:
             print(f"Point is {table.point.status} ({table.point.number})")
