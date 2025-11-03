@@ -110,6 +110,7 @@ class TableSettings(TypedDict, total=False):
     commission_mode: Literal["on_win", "on_bet"]
     commission_rounding: Literal["none", "ceil_dollar", "nearest_dollar"]
     commission_floor: float
+    buy_vig_on_win: bool
 
 
 class Table(Protocol):
@@ -194,6 +195,11 @@ class Bet(ABC, metaclass=_MetaBetABC):
         BetResult object.
         """
         pass
+
+    def placement_cost(self, table: Table) -> float:
+        """Total bankroll required to put this bet in action on ``table``."""
+
+        return self.amount
 
     def update_number(self, table: Table):
         """
@@ -766,7 +772,10 @@ class Place(_SimpleBet):
 
 
 class Buy(_SimpleBet):
-    """True-odds bet on 4/5/6/8/9/10 that charges commission per table policy."""
+    """True-odds bet on 4/5/6/8/9/10 that charges commission per table policy.
+
+    Commission may be taken on the win or upfront based on ``buy_vig_on_win``.
+    """
 
     true_odds = {4: 2.0, 10: 2.0, 5: 1.5, 9: 1.5, 6: 1.2, 8: 1.2}
     losing_numbers: list[int] = [7]
@@ -778,25 +787,43 @@ class Buy(_SimpleBet):
         self.number = number
         self.payout_ratio = self.true_odds[number]
         self.winning_numbers = [number]
+        self.wager: float = self.amount
+        """Base amount that determines true-odds payouts."""
+        self.vig_paid: float = 0.0
+        """Commission already collected upfront (non-refundable)."""
+
+    def placement_cost(self, table: "Table") -> float:
+        if table.settings.get("buy_vig_on_win", True):
+            return self.wager
+        commission = _compute_commission(
+            table, gross_win=self.wager, bet_amount=self.wager
+        )
+        return self.wager + commission
 
     def get_result(self, table: "Table") -> BetResult:
         if table.dice.total == self.number:
-            gross_win = self.payout_ratio * self.amount
-            commission = _compute_commission(
-                table, gross_win=gross_win, bet_amount=self.amount
-            )
-            result_amount = gross_win - commission + self.amount
+            gross_win = self.payout_ratio * self.wager
+            if table.settings.get("buy_vig_on_win", True):
+                commission = _compute_commission(
+                    table, gross_win=gross_win, bet_amount=self.wager
+                )
+            else:
+                commission = 0.0
+            result_amount = gross_win - commission + self.wager
             remove = True
         elif table.dice.total == 7:
-            result_amount = -self.amount
+            result_amount = -(self.wager + self.vig_paid)
             remove = True
         else:
             result_amount = 0
             remove = False
-        return BetResult(result_amount, remove, self.amount)
+        return BetResult(result_amount, remove, self.wager)
 
     def copy(self) -> "Buy":
-        return self.__class__(self.number, self.amount)
+        new_bet = self.__class__(self.number, self.amount)
+        new_bet.wager = self.wager
+        new_bet.vig_paid = self.vig_paid
+        return new_bet
 
     @property
     def _placed_key(self) -> Hashable:
@@ -807,7 +834,10 @@ class Buy(_SimpleBet):
 
 
 class Lay(_SimpleBet):
-    """True-odds bet against 4/5/6/8/9/10, paying if 7 arrives first."""
+    """True-odds bet against 4/5/6/8/9/10, paying if 7 arrives first.
+
+    Commission may be taken on the win or upfront based on ``buy_vig_on_win``.
+    """
 
     true_odds = {4: 0.5, 10: 0.5, 5: 2 / 3, 9: 2 / 3, 6: 5 / 6, 8: 5 / 6}
     winning_numbers: list[int] = [7]
@@ -819,25 +849,43 @@ class Lay(_SimpleBet):
         self.number = number
         self.payout_ratio = self.true_odds[number]
         self.losing_numbers = [number]
+        self.wager: float = self.amount
+        """Base amount risked against the box number."""
+        self.vig_paid: float = 0.0
+        """Commission already collected upfront (non-refundable)."""
+
+    def placement_cost(self, table: "Table") -> float:
+        if table.settings.get("buy_vig_on_win", True):
+            return self.wager
+        commission = _compute_commission(
+            table, gross_win=self.wager, bet_amount=self.wager
+        )
+        return self.wager + commission
 
     def get_result(self, table: "Table") -> BetResult:
         if table.dice.total == 7:
-            gross_win = self.payout_ratio * self.amount
-            commission = _compute_commission(
-                table, gross_win=gross_win, bet_amount=self.amount
-            )
-            result_amount = gross_win - commission + self.amount
+            gross_win = self.payout_ratio * self.wager
+            if table.settings.get("buy_vig_on_win", True):
+                commission = _compute_commission(
+                    table, gross_win=gross_win, bet_amount=self.wager
+                )
+            else:
+                commission = 0.0
+            result_amount = gross_win - commission + self.wager
             remove = True
         elif table.dice.total == self.number:
-            result_amount = -self.amount
+            result_amount = -(self.wager + self.vig_paid)
             remove = True
         else:
             result_amount = 0
             remove = False
-        return BetResult(result_amount, remove, self.amount)
+        return BetResult(result_amount, remove, self.wager)
 
     def copy(self) -> "Lay":
-        return self.__class__(self.number, self.amount)
+        new_bet = self.__class__(self.number, self.amount)
+        new_bet.wager = self.wager
+        new_bet.vig_paid = self.vig_paid
+        return new_bet
 
     @property
     def _placed_key(self) -> Hashable:

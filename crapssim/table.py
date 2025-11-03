@@ -165,6 +165,7 @@ class TableSettings(TypedDict, total=False):
       commission_mode: Literal["on_win", "on_bet"]
       commission_rounding: Literal["none", "ceil_dollar", "nearest_dollar"]
       commission_floor: float
+      buy_vig_on_win: bool
       # existing: ATS_payouts, field_payouts, fire_payouts, hop_payouts, max odds, etc.
     """
 
@@ -177,6 +178,7 @@ class TableSettings(TypedDict, total=False):
     commission_mode: Literal["on_win", "on_bet"]
     commission_rounding: Literal["none", "ceil_dollar", "nearest_dollar"]
     commission_floor: float
+    buy_vig_on_win: bool
 
 
 class Table:
@@ -194,6 +196,7 @@ class Table:
             "hop_payouts": {"easy": 15, "hard": 30},
             "max_odds": {4: 3, 5: 4, 6: 5, 8: 5, 9: 4, 10: 3},
             "max_dont_odds": {4: 6, 5: 6, 6: 6, 8: 6, 9: 6, 10: 6},
+            "buy_vig_on_win": True,
         }
         self.pass_rolls: int = 0
         self.last_roll: int | None = None
@@ -394,13 +397,22 @@ class Player:
             None: Always returns ``None``.
         """
         existing_bets: list[Bet] = self.already_placed_bets(bet)
+        existing_cost = sum(x.placement_cost(self.table) for x in existing_bets)
         new_bet = sum(existing_bets + [bet])
-        amount_available_to_bet = self.bankroll + sum(x.amount for x in existing_bets)
+        if hasattr(new_bet, "wager"):
+            new_bet.wager = new_bet.amount
+        new_cost = new_bet.placement_cost(self.table)
+        required_cash = new_cost - existing_cost
 
-        if new_bet.is_allowed(self) and new_bet.amount <= amount_available_to_bet:
+        if new_bet.is_allowed(self) and required_cash <= self.bankroll + 1e-9:
             for bet in existing_bets:
                 self.bets.remove(bet)
-            self.bankroll -= bet.amount
+            self.bankroll -= required_cash
+            if hasattr(new_bet, "vig_paid"):
+                if self.table.settings.get("buy_vig_on_win", True):
+                    new_bet.vig_paid = 0.0
+                else:
+                    new_bet.vig_paid = new_cost - new_bet.wager
             self.bets.append(new_bet)
 
     def already_placed_bets(self, bet: Bet) -> list[Bet]:
