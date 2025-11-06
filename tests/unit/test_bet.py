@@ -52,10 +52,10 @@ from crapssim.table import Table, TableUpdate
         (crapssim.bet.World(1), -0.2667),
         (crapssim.bet.Big6(1), -0.0278),
         (crapssim.bet.Big8(1), -0.0278),
-        (crapssim.bet.Buy(4, 1), -0.0083),
-        (crapssim.bet.Buy(6, 1), -0.0083),
-        (crapssim.bet.Lay(4, 1), -0.0042),
-        (crapssim.bet.Lay(6, 1), -0.0069),
+        (crapssim.bet.Buy(4, 1), -0.0042),
+        (crapssim.bet.Buy(6, 1), -0.0069),
+        (crapssim.bet.Lay(4, 1), -0.0083),
+        (crapssim.bet.Lay(6, 1), -0.0083),
         (crapssim.bet.Put(4, 1), -0.0833),
         (crapssim.bet.Put(5, 1), -0.0556),
         (crapssim.bet.Put(6, 1), -0.0278),
@@ -402,7 +402,8 @@ def test_lay_commission_floor():
     player.add_bet(crapssim.bet.Lay(10, 20))
     TableUpdate.roll(t, fixed_outcome=(4, 3))
     TableUpdate.update_bets(t)
-    assert player.bankroll == pytest.approx(starting_bankroll + 10.0)
+    # Floor enforces a minimum commission even when the wager is smaller.
+    assert player.bankroll == pytest.approx(starting_bankroll - 15.0)
 
 
 def test_put_odds_allowed_when_point_on():

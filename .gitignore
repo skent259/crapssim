@@ -159,6 +159,12 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 
+# Project-specific artifacts
+baselines/vxp/
+reports/
+**/vxp_gauntlet/**/summary.md
+**/vxp_gauntlet/**/journal.csv
+
 # VScode
 .vscode
 # === Generated Reports (do not commit) ===
