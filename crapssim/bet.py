@@ -1,4 +1,5 @@
 import copy
+import math
 import typing
 from abc import ABC, ABCMeta, abstractmethod
 from dataclasses import dataclass
@@ -17,44 +18,52 @@ class SupportsFloat(Protocol):
     def __float__(self) -> float:
         """Return a float representation."""
 def _compute_commission(
-    table: "Table", *, gross_win: float, bet_amount: float
+    bet_amount: float,
+    /,
+    *,
+    rounding: Literal["ceil_dollar", "nearest_dollar", "none"] = "nearest_dollar",
+    floor: float = 0.0,
+    mode: Literal["on_bet", "on_win"] = "on_bet",
+    **legacy_kwargs: typing.Any,
 ) -> float:
-    """Compute commission per table settings.
+    """Return commission in dollars using a fixed 5% rate on ``bet_amount``.
 
-    Args:
-      table: Policy source.
-      gross_win: The pre-commission win amount.
-      bet_amount: The stake for this bet.
-
-    Returns:
-      Commission fee as a float after applying mode, rounding, and floor.
+    Mode does not change the numerical result, only who charges it (placement vs
+    resolution).
     """
 
-    mode = table.settings.get("commission_mode", "on_win")
-    rounding = table.settings.get("commission_rounding", "none")
-    floor = float(table.settings.get("commission_floor", 0.0) or 0.0)
+    if not isinstance(bet_amount, (int, float)):
+        legacy_table = bet_amount
+        bet_amount = float(legacy_kwargs.get("bet_amount", 0.0))
+        rounding, floor = _commission_policy(legacy_table.settings)
+    commission = bet_amount * 0.05
 
-    # Commission parity: regardless of timing (``on_bet`` vs ``on_win``), the
-    # amount charged is always based on the wagered amount. ``gross_win`` is
-    # ignored for fee size, but retained in the signature for compatibility.
-    if mode not in {"on_bet", "on_win"}:
-        # Unknown future toggles still fall back to wager-based calculation.
-        mode = "on_win"
-    _ = gross_win
-
-    fee = bet_amount * 0.05
     if rounding == "ceil_dollar":
-        import math
-
-        fee = math.ceil(fee)
+        commission = math.ceil(commission)
     elif rounding == "nearest_dollar":
-        fee = round(fee)
+        commission = math.floor(commission + 0.5)
+    elif rounding == "none":
+        commission = float(commission)
+    else:
+        commission = float(commission)
 
-    fee = float(fee)
-    if fee < floor:
-        fee = floor
+    commission = float(commission)
+    if commission < floor:
+        commission = floor
 
-    return fee
+    return commission
+
+
+def _commission_policy(
+    settings: "TableSettings",
+) -> tuple[Literal["ceil_dollar", "nearest_dollar", "none"], float]:
+    rounding = settings.get("commission_rounding", "none")
+    if rounding not in {"ceil_dollar", "nearest_dollar", "none"}:
+        rounding = "nearest_dollar"
+    floor_value = float(settings.get("commission_floor", 0.0) or 0.0)
+    return typing.cast(
+        Literal["ceil_dollar", "nearest_dollar", "none"], rounding
+    ), floor_value
 
 
 __all__ = [
@@ -790,17 +799,19 @@ class Buy(_SimpleBet):
     def placement_cost(self, table: "Table") -> float:
         if table.settings.get("buy_vig_on_win", True):
             return self.wager
+        rounding, floor = _commission_policy(table.settings)
         commission = _compute_commission(
-            table, gross_win=self.wager, bet_amount=self.wager
+            self.wager, rounding=rounding, floor=floor, mode="on_bet"
         )
         return self.wager + commission
 
     def get_result(self, table: "Table") -> BetResult:
         if table.dice.total == self.number:
             gross_win = self.payout_ratio * self.wager
+            rounding, floor = _commission_policy(table.settings)
             if table.settings.get("buy_vig_on_win", True):
                 commission = _compute_commission(
-                    table, gross_win=gross_win, bet_amount=self.wager
+                    self.wager, rounding=rounding, floor=floor, mode="on_win"
                 )
             else:
                 commission = 0.0
@@ -852,17 +863,19 @@ class Lay(_SimpleBet):
     def placement_cost(self, table: "Table") -> float:
         if table.settings.get("buy_vig_on_win", True):
             return self.wager
+        rounding, floor = _commission_policy(table.settings)
         commission = _compute_commission(
-            table, gross_win=self.wager, bet_amount=self.wager
+            self.wager, rounding=rounding, floor=floor, mode="on_bet"
         )
         return self.wager + commission
 
     def get_result(self, table: "Table") -> BetResult:
         if table.dice.total == 7:
             gross_win = self.payout_ratio * self.wager
+            rounding, floor = _commission_policy(table.settings)
             if table.settings.get("buy_vig_on_win", True):
                 commission = _compute_commission(
-                    table, gross_win=gross_win, bet_amount=self.wager
+                    self.wager, rounding=rounding, floor=floor, mode="on_win"
                 )
             else:
                 commission = 0.0

@@ -2,9 +2,9 @@
 
 ## Development version
 
-- Simplify commission logic: single `_compute_commission` (fixed 5%), consistent across "on_bet"/"on_win"; enforce floor as minimum.
+- Simplify commission logic: single `_compute_commission` (fixed 5%), consistent across "on_bet"/"on_win"; floor enforced as minimum.
 - Add parametrized unit tests for commission calculations.
-- Stop committing generated baselines/reports; add to `.gitignore`.
+- Stop committing generated baselines/reports via `.gitignore`.
 - Minor: Horn example amount set to 4.0.
 
 ## v0.3.1
