@@ -16,14 +16,6 @@ class SupportsFloat(Protocol):
 
     def __float__(self) -> float:
         """Return a float representation."""
-
-
-def compute_commission(base_amount: float) -> float:
-    """Compute standard 5% commission for Buy/Lay style bets."""
-
-    return base_amount * 0.05
-
-
 def _compute_commission(
     table: "Table", *, gross_win: float, bet_amount: float
 ) -> float:
@@ -42,15 +34,15 @@ def _compute_commission(
     rounding = table.settings.get("commission_rounding", "none")
     floor = float(table.settings.get("commission_floor", 0.0) or 0.0)
 
-    if bet_amount < floor:
-        base = 0.0
-    else:
-        if mode == "on_bet":
-            base = bet_amount
-        else:
-            base = gross_win
+    # Commission parity: regardless of timing (``on_bet`` vs ``on_win``), the
+    # amount charged is always based on the wagered amount. ``gross_win`` is
+    # ignored for fee size, but retained in the signature for compatibility.
+    if mode not in {"on_bet", "on_win"}:
+        # Unknown future toggles still fall back to wager-based calculation.
+        mode = "on_win"
+    _ = gross_win
 
-    fee = compute_commission(base)
+    fee = bet_amount * 0.05
     if rounding == "ceil_dollar":
         import math
 
@@ -58,11 +50,14 @@ def _compute_commission(
     elif rounding == "nearest_dollar":
         fee = round(fee)
 
-    return float(fee)
+    fee = float(fee)
+    if fee < floor:
+        fee = floor
+
+    return fee
 
 
 __all__ = [
-    "compute_commission",
     "BetResult",
     "Bet",
     "_WinningLosingNumbersBet",
