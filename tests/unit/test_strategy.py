@@ -1399,8 +1399,24 @@ def test_place_68_cpr_update_bets_initial_bets_placed_no_update(player):
             "DontComeOddsAmount(bet_amount=10.0, numbers=(4, 5, 6, 8, 9, 10))",
         ),
         (
+            crapssim.strategy.odds.OddsMultiplier(PassLine, 2.0, False),
+            "OddsMultiplier(base_type=crapssim.bet.PassLine, odds_multiplier=2.0)",
+        ),
+        (
+            crapssim.strategy.odds.OddsMultiplier(PassLine, 2.0, False),
+            "OddsMultiplier(base_type=crapssim.bet.PassLine, odds_multiplier=2.0)",
+        ),
+        (
+            crapssim.strategy.odds.OddsMultiplier(PassLine, 2, True),
+            "OddsMultiplier(base_type=crapssim.bet.PassLine, odds_multiplier=2, always_working=True)",
+        ),
+        (
+            crapssim.strategy.odds.OddsMultiplier(DontPass, 1.0, False),
+            "OddsMultiplier(base_type=crapssim.bet.DontPass, odds_multiplier=1.0)",
+        ),
+        (
             crapssim.strategy.odds.PassLineOddsMultiplier(),
-            "PassLineOddsMultiplier(odds_multiplier={4: 3, 5: 4, 6: 5, 8: 5, 9: 4, 10: 3})",
+            "PassLineOddsMultiplier(odds_multiplier={4: 3.0, 5: 4.0, 6: 5.0, 8: 5.0, 9: 4.0, 10: 3.0})",
         ),
         (
             crapssim.strategy.odds.PassLineOddsMultiplier(2),

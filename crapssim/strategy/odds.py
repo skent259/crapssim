@@ -131,7 +131,7 @@ class OddsMultiplier(Strategy):
     def __init__(
         self,
         base_type: typing.Type[PassLine | DontPass | Come | DontCome],
-        odds_multiplier: dict[int, int] | int,
+        odds_multiplier: dict[int, typing.SupportsFloat] | typing.SupportsFloat,
         always_working: bool = False,
     ):
         """Takes an AllowsOdds item (ex. PassLine, Come, DontPass) and adds a BaseOdds bet
@@ -142,20 +142,15 @@ class OddsMultiplier(Strategy):
         base_type
             The bet that odds will be added to.
         odds_multiplier
-            If odds_multiplier is an integer adds multiplier * base_bets amount to the odds.
-            If the odds multiplier is a dictionary of integers, looks at the dictionary to
+            If odds_multiplier is a float, adds multiplier * base_bets amount to the odds.
+            If the odds multiplier is a dictionary of floats, looks at the dictionary to
             determine what odds multiplier to use depending on the given point.
         """
         self.base_type = base_type
         self.always_working = always_working
 
-        if isinstance(odds_multiplier, numbers.Real):
-            multiplier_value = float(odds_multiplier)
-            if multiplier_value.is_integer():
-                multiplier_value = int(multiplier_value)
-            self.odds_multiplier = {
-                x: multiplier_value for x in (4, 5, 6, 8, 9, 10)
-            }
+        if isinstance(odds_multiplier, typing.SupportsFloat):
+            self.odds_multiplier = {x: odds_multiplier for x in (4, 5, 6, 8, 9, 10)}
         else:
             self.odds_multiplier = odds_multiplier
 
@@ -205,11 +200,15 @@ class OddsMultiplier(Strategy):
         """
         return len([x for x in player.bets if isinstance(x, self.base_type)]) == 0
 
-    def _get_odds_multiplier_repr(self) -> int | dict[int, int]:
+    def _get_odds_multiplier_repr(
+        self,
+    ) -> typing.SupportsFloat | dict[int, typing.SupportsFloat]:
         """If the odds_multiplier has multiple values return a dictionary with the values,
         if all the multipliers are the same return an integer of the multiplier."""
         if all([x == self.odds_multiplier[4] for x in self.odds_multiplier.values()]):
-            odds_multiplier: int | dict[int, int] = self.odds_multiplier[4]
+            odds_multiplier: typing.SupportsFloat | dict[int, typing.SupportsFloat] = (
+                self.odds_multiplier[4]
+            )
         else:
             odds_multiplier = self.odds_multiplier
         return odds_multiplier
@@ -223,7 +222,7 @@ class OddsMultiplier(Strategy):
     def __repr__(self) -> str:
         return (
             f"{self.__class__.__name__}(base_type={self.base_type}, "
-            f"odds_multiplier={self.get_odds_multiplier_repr()}"
+            f"odds_multiplier={self._get_odds_multiplier_repr()}"
             f"{self._get_always_working_repr()}"
         )
 
@@ -234,7 +233,9 @@ class PassLineOddsMultiplier(OddsMultiplier):
 
     def __init__(
         self,
-        odds_multiplier: dict[int, int] | int | None = None,
+        odds_multiplier: (
+            dict[int, typing.SupportsFloat] | typing.SupportsFloat | None
+        ) = None,
         always_working: bool = False,
     ):
         """Add odds to PassLine bets with the multiplier specified by the odds_multiplier variable.
@@ -247,7 +248,7 @@ class PassLineOddsMultiplier(OddsMultiplier):
             the multiplier. Defaults to {4: 3, 5: 4, 6: 5, 8: 5, 9: 4, 10: 3} which are 345x odds.
         """
         if odds_multiplier is None:
-            odds_multiplier = {4: 3, 5: 4, 6: 5, 8: 5, 9: 4, 10: 3}
+            odds_multiplier = {4: 3.0, 5: 4.0, 6: 5.0, 8: 5.0, 9: 4.0, 10: 3.0}
         super().__init__(PassLine, odds_multiplier, always_working)
 
     def __repr__(self) -> str:
@@ -263,7 +264,9 @@ class DontPassOddsMultiplier(OddsMultiplier):
 
     def __init__(
         self,
-        odds_multiplier: dict[int, int] | int | None = None,
+        odds_multiplier: (
+            dict[int, typing.SupportsFloat] | typing.SupportsFloat | None
+        ) = None,
         always_working: bool = False,
     ):
         """Add odds to DontPass bets with the multiplier specified by odds.
@@ -273,10 +276,10 @@ class DontPassOddsMultiplier(OddsMultiplier):
         odds_multiplier
             If odds_multiplier is an integer the bet amount is the DontPass bet amount *
             odds_multiplier. If it's a dictionary it uses the DontPass bet's point to determine the
-            multiplier. Defaults to 6.
+            multiplier. Defaults to 6.0.
         """
         if odds_multiplier is None:
-            odds_multiplier = 6
+            odds_multiplier = 6.0
         super().__init__(DontPass, odds_multiplier, always_working)
 
     def __repr__(self) -> str:
@@ -292,7 +295,9 @@ class ComeOddsMultiplier(OddsMultiplier):
 
     def __init__(
         self,
-        odds_multiplier: dict[int, int] | int | None = None,
+        odds_multiplier: (
+            dict[int, typing.SupportsFloat] | typing.SupportsFloat | None
+        ) = None,
         always_working: bool = False,
     ):
         """Add odds to Come bets with the multiplier specified by the odds_multiplier variable.
@@ -305,7 +310,7 @@ class ComeOddsMultiplier(OddsMultiplier):
             the multiplier. Defaults to {4: 3, 5: 4, 6: 5, 8: 5, 9: 4, 10: 3} which are 345x odds.
         """
         if odds_multiplier is None:
-            odds_multiplier = {4: 3, 5: 4, 6: 5, 8: 5, 9: 4, 10: 3}
+            odds_multiplier = {4: 3.0, 5: 4.0, 6: 5.0, 8: 5.0, 9: 4.0, 10: 3.0}
         super().__init__(Come, odds_multiplier, always_working)
 
     def __repr__(self) -> str:
@@ -321,7 +326,9 @@ class DontComeOddsMultiplier(OddsMultiplier):
 
     def __init__(
         self,
-        odds_multiplier: dict[int, int] | int | None = None,
+        odds_multiplier: (
+            dict[int, typing.SupportsFloat] | typing.SupportsFloat | None
+        ) = None,
         always_working: bool = False,
     ):
         """Add odds to DontCome bets with the multiplier specified by the odds_multiplier variable.
@@ -334,7 +341,7 @@ class DontComeOddsMultiplier(OddsMultiplier):
             the multiplier. Defaults to 6.
         """
         if odds_multiplier is None:
-            odds_multiplier = 6
+            odds_multiplier = 6.0
         super().__init__(DontCome, odds_multiplier, always_working)
 
     def __repr__(self) -> str:
