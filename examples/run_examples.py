@@ -40,7 +40,7 @@ def main():
                 always_working=True,
             ),
         ),
-        ("HornExample", lambda: HornExample(amount=5.0)),
+        ("HornExample", lambda: HornExample(amount=4.0)),
         ("WorldExample", lambda: WorldExample(amount=5.0)),
     ]
     for name, factory in runs:
