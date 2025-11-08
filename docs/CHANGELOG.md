@@ -2,10 +2,10 @@
 
 ## Development version
 
-- Simplify commission logic: single `_compute_vig` (fixed 5%), consistent across "on_bet"/"on_win"; floor enforced as minimum.
-- Add parametrized unit tests for commission calculations.
-- Stop committing generated baselines/reports via `.gitignore`.
-- Minor: Horn example amount set to 4.0.
+* Vanilla Expansion Project
+  * Add new bets: Horn, World (Whirl), Big6/Big8, Buy, Lay, and Put (with or without odds).
+  * Add vig policy settings to TableSettings
+  * Add stress tests, expanded examples, tools, 
 
 ## v0.3.1
 

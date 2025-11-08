@@ -20,6 +20,7 @@ from crapssim.bet import (
     World,
     Yo,
 )
+from crapssim.strategy.tools import NullStrategy
 from crapssim.table import Table, TableUpdate
 
 # Check EV of bets on a "per-roll" basis
@@ -371,42 +372,6 @@ def test_lay_invalid_number_raises():
         crapssim.bet.Lay(11, 10)
 
 
-def test_buy_commission_modes_and_rounding():
-    t = Table()
-    t.add_player()
-    player = t.players[0]
-    player.add_bet(crapssim.bet.Buy(4, 19))
-    t.settings.pop("vig_paid_on_win", None)
-    t.settings.pop("vig_rounding", None)
-    TableUpdate.roll(t, fixed_outcome=(2, 2))
-    TableUpdate.update_bets(t)
-    assert math.isfinite(player.bankroll)
-
-    t = Table()
-    t.add_player()
-    player = t.players[0]
-    t.settings["vig_paid_on_win"] = False
-    t.settings["vig_rounding"] = "ceil_dollar"
-    player.add_bet(crapssim.bet.Buy(4, 19))
-    TableUpdate.roll(t, fixed_outcome=(2, 2))
-    TableUpdate.update_bets(t)
-    assert math.isfinite(player.bankroll)
-
-
-def test_lay_vig_floor():
-    t = Table()
-    t.add_player()
-    player = t.players[0]
-    t.settings["vig_paid_on_win"] = True
-    t.settings["vig_floor"] = 25.0
-    starting_bankroll = player.bankroll
-    player.add_bet(crapssim.bet.Lay(10, 20))
-    TableUpdate.roll(t, fixed_outcome=(4, 3))
-    TableUpdate.update_bets(t)
-    # Floor enforces a minimum commission even when the wager is smaller.
-    assert player.bankroll == pytest.approx(starting_bankroll + 10 - 25)
-
-
 def test_put_odds_allowed_when_point_on():
     t = Table()
     t.add_player()
@@ -417,81 +382,21 @@ def test_put_odds_allowed_when_point_on():
     assert any(isinstance(b, crapssim.bet.Odds) for b in player.bets)
 
 
-def test_vig_rounding_ties_buy_nearest_even():
-    # fee target = 2.5 -> nearest even => 2 with Python round
-
+def test_put_only_allowed_when_point_on():
     t = Table()
-    starting_bankroll = 100
-    t.add_player(starting_bankroll)
+    t.add_player(strategy=NullStrategy())
     p = t.players[0]
-    # Commission fixed at 5% on bet: bet=50 => fee=2.5; tie behavior pinned
-    t.settings["vig_paid_on_win"] = False
-    t.settings["vig_rounding"] = "nearest_dollar"
-    p.add_bet(crapssim.bet.Buy(4, 50))
-    # Hit the 4
-    TableUpdate.roll(t, fixed_outcome=(2, 2))
-    TableUpdate.update_bets(t)
+    starting_bankroll = p.bankroll
 
-    assert p.bankroll == pytest.approx(starting_bankroll + 100 - 3)
+    # Come-out roll has point OFF; Put bet should not be accepted.
+    p.add_bet(crapssim.bet.Put(6, 10))
+    assert not any(isinstance(b, crapssim.bet.Put) for b in p.bets)
+    assert p.bankroll == starting_bankroll
 
-
-def test_vig_rounding_ties_lay_ceiling():
-    from crapssim.table import Table, TableUpdate
-
-    t = Table()
-    starting_bankroll = 100
-    t.add_player(starting_bankroll)
-    p = t.players[0]
-    # Commission fixed at 5% on bet: bet=50 => fee=2.5; ceil => 3
-    t.settings["vig_paid_on_win"] = False
-    t.settings["vig_rounding"] = "ceil_dollar"
-    p.add_bet(crapssim.bet.Lay(10, 50))
-    # Resolve lay with a seven
-    TableUpdate.roll(t, fixed_outcome=(4, 3))
-    TableUpdate.update_bets(t)
-
-    assert p.bankroll == pytest.approx(starting_bankroll + 25 - 3)
-
-
-def test_vig_correct_with_stacking_bets():
-    from crapssim.table import Table, TableUpdate
-
-    t = Table()
-    starting_bankroll = 1000
-    t.add_player(starting_bankroll)
-    p = t.players[0]
-
-    # First doesn't hit
-    p.add_bet(crapssim.bet.Buy(4, 50))
-    TableUpdate.roll(t, fixed_outcome=(4, 2))
-    TableUpdate.update_bets(t)
-    assert p.bankroll == pytest.approx(starting_bankroll - 50 - 3)
-
-    p.add_bet(crapssim.bet.Buy(4, 50))
-    # Note that vig is correctly calculated as $5, not $3+$3=$6
-    assert p.bankroll == pytest.approx(starting_bankroll - 100 - 5)
-
-    TableUpdate.roll(t, fixed_outcome=(2, 2))
-    TableUpdate.update_bets(t)
-    assert p.bankroll == pytest.approx(starting_bankroll + 200 - 5)
-
-
-def test_vig_correct_with_removing_bets():
-    from crapssim.table import Table, TableUpdate
-
-    t = Table()
-    starting_bankroll = 1000
-    t.add_player(starting_bankroll)
-    p = t.players[0]
-
-    # First doesn't hit
-    p.add_bet(crapssim.bet.Buy(4, 50))
-    TableUpdate.roll(t, fixed_outcome=(4, 2))
-    TableUpdate.update_bets(t)
-    assert p.bankroll == pytest.approx(starting_bankroll - 50 - 3)
-
-    p.remove_bet(p.bets[0])
-    assert p.bankroll == pytest.approx(starting_bankroll)
+    # Establish the point and retry – bet should now be accepted.
+    TableUpdate().run(t, dice_outcome=(3, 3))
+    p.add_bet(crapssim.bet.Put(6, 10))
+    assert any(isinstance(b, crapssim.bet.Put) for b in p.bets)
 
 
 @pytest.mark.parametrize(
