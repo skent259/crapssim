@@ -49,8 +49,8 @@ from crapssim.table import Table, TableUpdate
         (crapssim.bet.Hop([2, 3], 1), -0.1111),
         (crapssim.bet.Hop([3, 2], 1), -0.1111),
         (crapssim.bet.Hop([3, 3], 1), -0.1389),
-        (crapssim.bet.Horn(1), -0.25),
-        (crapssim.bet.World(1), -0.2667),
+        (crapssim.bet.Horn(1), -0.1250),
+        (crapssim.bet.World(1), -0.1333),
         (crapssim.bet.Big6(1), -0.0278),
         (crapssim.bet.Big8(1), -0.0278),
         (crapssim.bet.Buy(4, 1), 0),
@@ -514,7 +514,7 @@ def test_combined_bet_equality(bets_1, bets_2):
     for d1 in range(1, 7):
         for d2 in range(1, 7):
             t.dice.fixed_roll([d1, d2])
-            outcomes_1.append(sum(b.get_result(t).amount for b in bets_1))
-            outcomes_2.append(sum(b.get_result(t).amount for b in bets_2))
+            outcomes_1.append(sum(b.get_result(t).bankroll_change for b in bets_1))
+            outcomes_2.append(sum(b.get_result(t).bankroll_change for b in bets_2))
 
     assert outcomes_1 == outcomes_2
