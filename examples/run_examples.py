@@ -1,12 +1,12 @@
-from crapssim.table import Table
 from crapssim.strategy.examples import (
-    QuickProps,
     BuySampler,
+    HornExample,
     LaySampler,
     PutWithOdds,
-    HornExample,
+    QuickProps,
     WorldExample,
 )
+from crapssim.table import Table
 
 # Fixed roll sequence to exercise typical paths:
 # - Set point ON at 6, hit 6/8, toss a 7, then a horn number, then 4/10.

@@ -13,9 +13,9 @@ It is meant to be a maintainer-facing record rather than a user guide.
 - **Put** (legal only with point ON)
 
 ### Policy toggles (Table.settings)
-- `commission_mode`: `"on_win"` (default) | `"on_bet"`
-- `commission_rounding`: `"none"` (default) | `"ceil_dollar"` | `"nearest_dollar"` (banker’s rounding)
-- `commission_floor` (float dollars, default `0.0`)
+- `vig_rounding`: `"none"` (default) | `"ceil_dollar"` | `"nearest_dollar"` (banker’s rounding)
+- `vig_floor` (float dollars, default `0.0`)
+- `vig_paid_on_win`: (bool, default `False`)
 
 ### Guards
 - **Put** bets automatically stripped pre-roll when point is OFF.

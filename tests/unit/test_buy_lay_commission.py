@@ -1,14 +1,42 @@
-import math
-
 import pytest
 
-from crapssim.bet import Buy, _compute_commission
+from crapssim.bet import Buy, _compute_vig
 from crapssim.table import Table, TableUpdate
+
+
+@pytest.mark.parametrize(
+    ("rounding", "floor", "bet", "expected"),
+    [
+        ("none", 0.0, 20.0, 1.0),
+        ("none", 0.0, 25.0, 1.25),
+        ("none", 0.0, 50.0, 2.50),
+        ("none", 0.0, 85.0, 4.25),
+        ("none", 2.0, 20.0, 2.0),
+        ("ceil_dollar", 0.0, 20.0, 1.0),
+        ("ceil_dollar", 0.0, 25.0, 2.0),
+        ("ceil_dollar", 0.0, 50.0, 3.0),
+        ("ceil_dollar", 0.0, 85.0, 5.0),
+        ("ceil_dollar", 2.0, 20.0, 2.0),
+        ("nearest_dollar", 0.0, 20.0, 1.0),
+        ("nearest_dollar", 0.0, 25.0, 1.0),
+        ("nearest_dollar", 0.0, 50.0, 3.0),
+        ("nearest_dollar", 0.0, 85.0, 4.0),
+        ("nearest_dollar", 1.0, 5.0, 1.0),
+    ],
+)
+def test_compute_vig_expected_values(rounding, floor, bet, expected):
+    result = _compute_vig(
+        bet,
+        rounding=rounding,
+        floor=floor,
+    )
+
+    assert abs(result - expected) < 1e-9
 
 
 def test_buy_upfront_vig_debits_bankroll():
     table = Table()
-    table.settings["buy_vig_on_win"] = False
+    table.settings["vig_paid_on_win"] = False
     player = table.add_player(bankroll=100)
 
     for _ in range(5):
@@ -22,7 +50,7 @@ def test_buy_upfront_vig_debits_bankroll():
 
 def test_buy_upfront_vig_loss_is_principal_plus_vig():
     table = Table()
-    table.settings["buy_vig_on_win"] = False
+    table.settings["vig_paid_on_win"] = False
     player = table.add_player(bankroll=100)
 
     starting_bankroll = player.bankroll
@@ -36,22 +64,19 @@ def test_buy_upfront_vig_loss_is_principal_plus_vig():
     assert player.bankroll == pytest.approx(starting_bankroll - 21)
 
 
-def test_buy_vig_on_win_does_not_charge_at_placement():
+def test_vig_paid_on_win_does_not_charge_at_placement():
     table = Table()
-    table.settings["buy_vig_on_win"] = True
+    table.settings["vig_paid_on_win"] = True
     player = table.add_player(bankroll=100)
 
     player.add_bet(Buy(4, 20))
     assert player.bankroll == pytest.approx(80)
     active_bet = player.bets[0]
-    assert math.isclose(active_bet.vig_paid, 0.0)
 
-    gross_win = active_bet.payout_ratio * active_bet.wager
-    commission = _compute_commission(
-        table, gross_win=gross_win, bet_amount=active_bet.wager
-    )
+    gross_win = active_bet.payout_ratio * active_bet.amount
+    vig = _compute_vig(active_bet.amount)
 
     TableUpdate.roll(table, fixed_outcome=(2, 2))
     TableUpdate.update_bets(table)
 
-    assert player.bankroll == pytest.approx(100 + gross_win - commission)
+    assert player.bankroll == pytest.approx(100 + gross_win - vig)

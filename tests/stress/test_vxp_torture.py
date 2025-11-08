@@ -5,8 +5,8 @@ from typing import Optional, Set
 import pytest
 
 import crapssim.bet as B
-from crapssim.table import Table, TableUpdate
 from crapssim.strategy.tools import NullStrategy
+from crapssim.table import Table, TableUpdate
 
 # --- Utilities ---------------------------------------------------------------
 
@@ -162,11 +162,11 @@ def test_vxp_heavy_stress(require_stress):
         p = t.players[0]
         p.strategy = NullStrategy()
         # Vary commission policy knobs (mode/rounding/floor) across runs
-        t.settings["commission_mode"] = rng.choice(["on_win", "on_bet"])
-        t.settings["commission_rounding"] = rng.choice(
+        t.settings["vig_rounding"] = rng.choice(
             ["none", "ceil_dollar", "nearest_dollar"]
         )
-        t.settings["commission_floor"] = rng.choice([0.0, 10.0, 25.0])
+        t.settings["vig_floor"] = rng.choice([0.0, 10.0, 25.0])
+        t.settings["vig_paid_on_win"] = rng.choice([True, False])
         attempt = random_bet_mix(rng, bankroll_scale=rng.choice([0.5, 1.0, 2.0]))
 
         # Randomly choose to start with point ON or OFF

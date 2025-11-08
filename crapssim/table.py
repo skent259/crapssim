@@ -170,10 +170,9 @@ class TableSettings(TypedDict, total=False):
     """Simulation and payout policy toggles.
 
     Keys:
-      commission_mode: Literal["on_win", "on_bet"]
-      commission_rounding: Literal["none", "ceil_dollar", "nearest_dollar"]
-      commission_floor: float
-      buy_vig_on_win: bool
+      vig_rounding: Literal["none", "ceil_dollar", "nearest_dollar"]
+      vig_floor: float
+      vig_paid_on_win: bool
       # existing: ATS_payouts, field_payouts, fire_payouts, hop_payouts, max odds, etc.
     """
 
@@ -183,10 +182,9 @@ class TableSettings(TypedDict, total=False):
     hop_payouts: dict[str, int]
     max_odds: dict[int, int]
     max_dont_odds: dict[int, int]
-    commission_mode: Literal["on_win", "on_bet"]
-    commission_rounding: Literal["none", "ceil_dollar", "nearest_dollar"]
-    commission_floor: float
-    buy_vig_on_win: bool
+    vig_rounding: Literal["none", "ceil_dollar", "nearest_dollar"]
+    vig_floor: float
+    vig_paid_on_win: bool
 
 
 class Table:
@@ -204,7 +202,9 @@ class Table:
             "hop_payouts": {"easy": 15, "hard": 30},
             "max_odds": {4: 3, 5: 4, 6: 5, 8: 5, 9: 4, 10: 3},
             "max_dont_odds": {4: 6, 5: 6, 6: 6, 8: 6, 9: 6, 10: 6},
-            "buy_vig_on_win": True,
+            "vig_rounding": "nearest_dollar",
+            "vig_floor": 0,
+            "vig_paid_on_win": False,
         }
         self.pass_rolls: int = 0
         self.last_roll: int | None = None
@@ -385,12 +385,12 @@ class Player:
 
     @property
     def total_bet_amount(self) -> float:
-        """Total amount currently wagered on the layout."""
-        return sum(x.amount for x in self.bets)
+        """Total amount currently wagered on the layout (plus any recoverable vigs)."""
+        return sum(x.cost(self.table) for x in self.bets)
 
     @property
     def total_player_cash(self) -> float:
-        """Bankroll plus outstanding bet amounts."""
+        """Bankroll plus outstanding bet amounts and vigs."""
         return self.bankroll + self.total_bet_amount
 
     @property
@@ -405,22 +405,15 @@ class Player:
             None: Always returns ``None``.
         """
         existing_bets: list[Bet] = self.already_placed_bets(bet)
-        existing_cost = sum(x.placement_cost(self.table) for x in existing_bets)
+        existing_cost = sum(x.cost(self.table) for x in existing_bets)
         new_bet = sum(existing_bets + [bet])
-        if hasattr(new_bet, "wager"):
-            new_bet.wager = new_bet.amount
-        new_cost = new_bet.placement_cost(self.table)
+        new_cost = new_bet.cost(self.table)
         required_cash = new_cost - existing_cost
 
         if new_bet.is_allowed(self) and required_cash <= self.bankroll + 1e-9:
             for bet in existing_bets:
                 self.bets.remove(bet)
             self.bankroll -= required_cash
-            if hasattr(new_bet, "vig_paid"):
-                if self.table.settings.get("buy_vig_on_win", True):
-                    new_bet.vig_paid = 0.0
-                else:
-                    new_bet.vig_paid = new_cost - new_bet.wager
             self.bets.append(new_bet)
 
     def already_placed_bets(self, bet: Bet) -> list[Bet]:
@@ -478,7 +471,7 @@ class Player:
             None: Always returns ``None``.
         """
         if bet in self.bets and bet.is_removable(self.table):
-            self.bankroll += bet.amount
+            self.bankroll += bet.cost(self.table)
             self.bets.remove(bet)
 
     def add_strategy_bets(self) -> None:
