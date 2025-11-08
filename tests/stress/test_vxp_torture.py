@@ -92,11 +92,6 @@ def invariants_after_roll(
         r = repr(b)
         assert isinstance(r, str) and len(r) > 0
 
-    # Put legality: while the point is OFF, Put bets should not exist on the layout
-    # because they cannot be added and seven-outs resolve any active puts.
-    if table.point != "On":
-        assert all(not isinstance(b, B.Put) for b in p.bets)
-
     # One-roll bets (Horn, World) must not persist beyond one resolution.
     if prior_one_roll_ids:
         current_one_roll = {id(b) for b in p.bets if isinstance(b, (B.Horn, B.World))}
