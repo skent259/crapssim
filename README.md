@@ -91,9 +91,9 @@ Some results from this simulator have been posted to http://pages.stat.wisc.edu/
 - Field & props: Field, **Horn**, **World (Whirl)**, Any 7, Any Craps, 2/3/11/12, Hardways, Hop
 - Side features: Fire, All/Tall/Small (ATS), **Big 6**, **Big 8**
 
-### Commission
+### Vig (Commission)
 
-This simulator uses a fixed 5% commission for applicable bets (e.g., Buy/Lay) to match common table practice. The rate is not configurable.
+This simulator uses a fixed 5% commission for applicable bets (e.g., Buy/Lay) to match common table practice. 
 
 Commission is applied by the bet implementation (current default: applied to the potential win).
 
@@ -101,19 +101,15 @@ Commission is applied by the bet implementation (current default: applied to the
 These are implemented as *net single-wager equivalents* of equal-split sub-bets (Horn across 2/3/11/12; World adds Any 7 break-even). This keeps payouts explicit and avoids sub-bet bookkeeping.
 
 **Buy/Lay commission policy (optional keys):**
-- `commission_mode` (`"on_win"` default, or `"on_bet"`)
-- `commission_rounding` (`"none"` default, `"ceil_dollar"`, `"nearest_dollar"`)
-- `commission_floor` (float dollars, default `0.0`)
+- `vig_rounding` (`"none"` default, `"ceil_dollar"`, `"nearest_dollar"`)
+- `vig_floor` (float dollars, default `0.0`)
+- `vig_paid_on_win`: (bool, default `False`)
 
 **Rounding semantics**
 - `nearest_dollar` uses Python’s standard rounding (`round`) which is banker's rounding.
   Ties (e.g., 2.5) round to the nearest even integer.
 - `ceil_dollar` always rounds up to the next whole dollar.
 
-| Scenario                         | Settings                                                                  | Effect (conceptual)                            |
-|----------------------------------|---------------------------------------------------------------------------|-----------------------------------------------|
-| Default explicit mode            | `commission_mode="on_win"`, `commission_rounding="none"` | Commission = 5% of gross win                  |
-| On-bet with rounding + floor     | `commission_mode="on_bet"`, `commission_rounding="ceil_dollar"`, `commission_floor=25.0` | Fee is 5% of bet, rounded up, waived < $25 |
 
 ### Examples
 

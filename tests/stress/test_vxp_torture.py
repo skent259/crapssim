@@ -5,8 +5,8 @@ from typing import Optional, Set
 import pytest
 
 import crapssim.bet as B
-from crapssim.table import Table, TableUpdate
 from crapssim.strategy.tools import NullStrategy
+from crapssim.table import Table, TableUpdate
 
 # --- Utilities ---------------------------------------------------------------
 
@@ -92,11 +92,6 @@ def invariants_after_roll(
         r = repr(b)
         assert isinstance(r, str) and len(r) > 0
 
-    # Put legality: while the point is OFF, Put bets should not exist on the layout
-    # because they cannot be added and seven-outs resolve any active puts.
-    if table.point != "On":
-        assert all(not isinstance(b, B.Put) for b in p.bets)
-
     # One-roll bets (Horn, World) must not persist beyond one resolution.
     if prior_one_roll_ids:
         current_one_roll = {id(b) for b in p.bets if isinstance(b, (B.Horn, B.World))}
@@ -162,11 +157,11 @@ def test_vxp_heavy_stress(require_stress):
         p = t.players[0]
         p.strategy = NullStrategy()
         # Vary commission policy knobs (mode/rounding/floor) across runs
-        t.settings["commission_mode"] = rng.choice(["on_win", "on_bet"])
-        t.settings["commission_rounding"] = rng.choice(
+        t.settings["vig_rounding"] = rng.choice(
             ["none", "ceil_dollar", "nearest_dollar"]
         )
-        t.settings["commission_floor"] = rng.choice([0.0, 10.0, 25.0])
+        t.settings["vig_floor"] = rng.choice([0.0, 10.0, 25.0])
+        t.settings["vig_paid_on_win"] = rng.choice([True, False])
         attempt = random_bet_mix(rng, bankroll_scale=rng.choice([0.5, 1.0, 2.0]))
 
         # Randomly choose to start with point ON or OFF

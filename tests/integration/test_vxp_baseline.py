@@ -21,7 +21,7 @@ def test_vxp_full_integration():
         table_update.run(table, dice_outcome=outcome, verbose=False)
 
     # --- Horn & World (one-roll) ---
-    player.add_bet(crapssim.bet.Horn(5))
+    player.add_bet(crapssim.bet.Horn(4))
     player.add_bet(crapssim.bet.World(5))
     do_roll((1, 1))  # total = 2 → Horn + World hit
 
@@ -47,10 +47,10 @@ def test_vxp_full_integration():
     assert not player.bets, "All bets should be resolved"
 
     # Bankroll continuity — ensure deterministic ending bankroll.
-    expected_final_bankroll = pytest.approx(230.0, rel=1e-9, abs=1e-9)
+    expected_final_bankroll = pytest.approx(231.0, rel=1e-9, abs=1e-9)
     assert player.bankroll == expected_final_bankroll
 
     # Net profit should equal bankroll delta.
     assert player.bankroll - starting_bankroll == pytest.approx(
-        130.0, rel=1e-9, abs=1e-9
+        131.0, rel=1e-9, abs=1e-9
     )

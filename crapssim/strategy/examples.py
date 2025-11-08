@@ -819,7 +819,7 @@ class PutWithOdds(AggregateStrategy):
 class HornExample(AggregateStrategy):
     """Demonstrates Horn bet lifecycle and resolution."""
 
-    def __init__(self, amount: float = 5.0):
+    def __init__(self, amount: float = 4.0):
         super().__init__(BetHorn(amount))
 
 

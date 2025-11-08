@@ -1,14 +1,14 @@
 from __future__ import annotations
-import json
+
 import csv
-import time
+import json
 import pathlib
-from dataclasses import dataclass, asdict
+import time
+from dataclasses import asdict, dataclass
 
-from crapssim.table import Table, TableUpdate
-from crapssim.strategy.tools import NullStrategy
 import crapssim.bet as B
-
+from crapssim.strategy.tools import NullStrategy
+from crapssim.table import Table, TableUpdate
 
 # ---------- Utilities ----------
 
@@ -137,17 +137,14 @@ def scenario_buy_lay_matrix() -> list[ScenarioResult]:
     matrix = [
         {
             "name": "Default_on_win_none",
-            "settings": {
-                "commission_mode": "on_win",
-                "commission_rounding": "none",
-            },
+            "settings": {"vig_rounding": "none", "vig_paid_on_win": True},
         },
         {
             "name": "On_bet_ceil_floor25",
             "settings": {
-                "commission_mode": "on_bet",
-                "commission_rounding": "ceil_dollar",
-                "commission_floor": 25.0,
+                "vig_rounding": "ceil_dollar",
+                "vig_floor": 25.0,
+                "vig_paid_on_win": False,
             },
         },
     ]

@@ -1,12 +1,12 @@
-from crapssim.table import Table, TableUpdate
 from crapssim.strategy.examples import (
-    QuickProps,
     BuySampler,
+    HornExample,
     LaySampler,
     PutWithOdds,
-    HornExample,
+    QuickProps,
     WorldExample,
 )
+from crapssim.table import Table, TableUpdate
 
 
 def _run(strategy, rolls):
@@ -24,5 +24,5 @@ def test_examples_smoke():
     _run(BuySampler(25.0), rolls)
     _run(LaySampler(30.0), rolls)
     _run(PutWithOdds(10.0, 2.0, True), rolls)
-    _run(HornExample(5.0), rolls)
+    _run(HornExample(4.0), rolls)
     _run(WorldExample(5.0), rolls)
