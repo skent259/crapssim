@@ -1,5 +1,12 @@
 # Changelog
 
+## Development version
+
+* Vanilla Expansion Project
+  * Add new bets: Horn, World (Whirl), Big6/Big8, Buy, Lay, and Put (with or without odds).
+  * Add vig policy settings to TableSettings
+  * Add stress tests, expanded examples, tools, 
+
 ## v0.3.1
 
 ### What's Changed
@@ -55,3 +62,8 @@ Small changes in addition to v0.1.1
 ## v0.1.0
 
 Initial version 
+## vxp-phase-baseline — CrapsSim-Vanilla Expansion Complete
+- Added Horn, World (Whirl), Big6, Big8, Buy, Lay, Put bets.
+- Added commission framework in Buy/Lay.
+- Added single-bet strategy wrappers and examples.
+- Integration baseline captured under `baselines/vxp/`.

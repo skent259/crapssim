@@ -1,10 +1,27 @@
+import math
+
 import numpy as np
 import pytest
 
 import crapssim.bet
-from crapssim.bet import Bet, CAndE, Come, DontCome, Hop, Odds, PassLine
-from crapssim.point import Point
-from crapssim.table import Table
+from crapssim.bet import (
+    Any7,
+    Bet,
+    Boxcars,
+    CAndE,
+    Come,
+    DontCome,
+    Hop,
+    Horn,
+    Odds,
+    PassLine,
+    Three,
+    Two,
+    World,
+    Yo,
+)
+from crapssim.strategy.tools import NullStrategy
+from crapssim.table import Table, TableUpdate
 
 # Check EV of bets on a "per-roll" basis
 
@@ -33,6 +50,20 @@ from crapssim.table import Table
         (crapssim.bet.Hop([2, 3], 1), -0.1111),
         (crapssim.bet.Hop([3, 2], 1), -0.1111),
         (crapssim.bet.Hop([3, 3], 1), -0.1389),
+        (crapssim.bet.Horn(1), -0.1250),
+        (crapssim.bet.World(1), -0.1333),
+        (crapssim.bet.Big6(1), -0.0278),
+        (crapssim.bet.Big8(1), -0.0278),
+        (crapssim.bet.Buy(4, 1), 0),
+        (crapssim.bet.Buy(6, 1), 0),
+        (crapssim.bet.Lay(4, 1), 0),
+        (crapssim.bet.Lay(6, 1), 0),
+        (crapssim.bet.Put(4, 1), -0.0833),
+        (crapssim.bet.Put(5, 1), -0.0556),
+        (crapssim.bet.Put(6, 1), -0.0278),
+        (crapssim.bet.Put(8, 1), -0.0278),
+        (crapssim.bet.Put(9, 1), -0.0556),
+        (crapssim.bet.Put(10, 1), -0.0833),
     ],
 )
 def test_ev_oneroll(bet, ev):
@@ -117,6 +148,14 @@ def test_ev_oneroll(bet, ev):
         (crapssim.bet.All(1), "All(amount=1.0)"),
         (crapssim.bet.Tall(1), "Tall(amount=1.0)"),
         (crapssim.bet.Small(1), "Small(amount=1.0)"),
+        (crapssim.bet.Horn(1), "Horn(amount=1.0)"),
+        (crapssim.bet.World(1), "World(amount=1.0)"),
+        (crapssim.bet.Big6(1), "Big6(amount=1.0)"),
+        (crapssim.bet.Big8(1), "Big8(amount=1.0)"),
+        (crapssim.bet.Buy(4, 1), "Buy(4, amount=1.0)"),
+        (crapssim.bet.Lay(6, 1), "Lay(6, amount=1.0)"),
+        (crapssim.bet.Put(6, 1), "Put(6, amount=1.0)"),
+        (crapssim.bet.Put(10, 1), "Put(10, amount=1.0)"),
     ],
 )
 def test_repr_names(bet, bet_name):
@@ -218,7 +257,7 @@ def test_dont_come_point_inequality():
 
 
 def test_cant_instantiate_bet_object():
-    with pytest.raises(TypeError) as e_info:
+    with pytest.raises(TypeError):
         Bet(400)
 
 
@@ -321,3 +360,66 @@ def test_hop_inequality():
 
     assert hop_one != hop_two
     assert hop_one != hop_three
+
+
+def test_buy_invalid_number_raises():
+    with pytest.raises(ValueError):
+        crapssim.bet.Buy(3, 10)
+
+
+def test_lay_invalid_number_raises():
+    with pytest.raises(ValueError):
+        crapssim.bet.Lay(11, 10)
+
+
+def test_put_odds_allowed_when_point_on():
+    t = Table()
+    t.add_player()
+    player = t.players[0]
+    t.point.number = 6
+    player.add_bet(crapssim.bet.Put(6, 10))
+    player.add_bet(crapssim.bet.Odds(crapssim.bet.Put, 6, 10, True))
+    assert any(isinstance(b, crapssim.bet.Odds) for b in player.bets)
+
+
+def test_put_only_allowed_when_point_on():
+    t = Table()
+    t.add_player(strategy=NullStrategy())
+    p = t.players[0]
+    starting_bankroll = p.bankroll
+
+    # Come-out roll has point OFF; Put bet should not be accepted.
+    p.add_bet(crapssim.bet.Put(6, 10))
+    assert not any(isinstance(b, crapssim.bet.Put) for b in p.bets)
+    assert p.bankroll == starting_bankroll
+
+    # Establish the point and retry – bet should now be accepted.
+    TableUpdate().run(t, dice_outcome=(3, 3))
+    p.add_bet(crapssim.bet.Put(6, 10))
+    assert any(isinstance(b, crapssim.bet.Put) for b in p.bets)
+
+
+@pytest.mark.parametrize(
+    "bets_1, bets_2",
+    [
+        ([Horn(4)], [Two(1), Three(1), Yo(1), Boxcars(1)]),
+        ([World(5)], [Two(1), Three(1), Yo(1), Boxcars(1), Any7(1)]),
+        ([World(5)], [Horn(4), Any7(1)]),
+    ],
+)
+def test_combined_bet_equality(bets_1, bets_2):
+    t = Table()
+    t.add_player()
+
+    for bet in [*bets_1, *bets_2]:
+        t.players[0].add_bet(bet)
+
+    outcomes_1 = []
+    outcomes_2 = []
+    for d1 in range(1, 7):
+        for d2 in range(1, 7):
+            t.dice.fixed_roll([d1, d2])
+            outcomes_1.append(sum(b.get_result(t).bankroll_change for b in bets_1))
+            outcomes_2.append(sum(b.get_result(t).bankroll_change for b in bets_2))
+
+    assert outcomes_1 == outcomes_2

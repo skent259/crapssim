@@ -1,6 +1,7 @@
+import numbers
 import typing
 
-from crapssim.bet import Bet, Come, DontCome, DontPass, Odds, PassLine
+from crapssim.bet import Bet, Come, DontCome, DontPass, Odds, PassLine, Put
 from crapssim.strategy.tools import Player, Strategy, Table
 
 
@@ -148,8 +149,13 @@ class OddsMultiplier(Strategy):
         self.base_type = base_type
         self.always_working = always_working
 
-        if isinstance(odds_multiplier, int):
-            self.odds_multiplier = {x: odds_multiplier for x in (4, 5, 6, 8, 9, 10)}
+        if isinstance(odds_multiplier, numbers.Real):
+            multiplier_value = float(odds_multiplier)
+            if multiplier_value.is_integer():
+                multiplier_value = int(multiplier_value)
+            self.odds_multiplier = {
+                x: multiplier_value for x in (4, 5, 6, 8, 9, 10)
+            }
         else:
             self.odds_multiplier = odds_multiplier
 
@@ -158,6 +164,8 @@ class OddsMultiplier(Strategy):
         if isinstance(bet, (PassLine, DontPass)):
             return table.point.number
         elif isinstance(bet, (Come, DontCome)):
+            return bet.number
+        elif isinstance(bet, Put):
             return bet.number
         else:
             raise NotImplementedError

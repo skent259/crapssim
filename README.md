@@ -83,7 +83,56 @@ Some results from this simulator have been posted to http://pages.stat.wisc.edu/
 - [All Bets Are Off: Re-learning the Pass Line Bet in Craps](http://pages.stat.wisc.edu/~kent/blog/2019.02.28_Craps_Passline/passline-and-odds.html)
 
 
-## Contributing 
+## Supported Bets (high level)
+
+- Line & numbers: Pass Line, Come, **Put**, Place (4/5/6/8/9/10), Odds (PL/Come/**Put**)
+
+- Dark side: Don’t Pass, Don’t Come, Odds (DP/DC), **Lay** (4/5/6/8/9/10)
+- Field & props: Field, **Horn**, **World (Whirl)**, Any 7, Any Craps, 2/3/11/12, Hardways, Hop
+- Side features: Fire, All/Tall/Small (ATS), **Big 6**, **Big 8**
+
+### Vig (Commission)
+
+This simulator uses a fixed 5% commission for applicable bets (e.g., Buy/Lay) to match common table practice. 
+
+Commission is applied by the bet implementation (current default: applied to the potential win).
+
+**Horn / World modeling:**  
+These are implemented as *net single-wager equivalents* of equal-split sub-bets (Horn across 2/3/11/12; World adds Any 7 break-even). This keeps payouts explicit and avoids sub-bet bookkeeping.
+
+**Buy/Lay commission policy (optional keys):**
+- `vig_rounding` (`"none"` default, `"ceil_dollar"`, `"nearest_dollar"`)
+- `vig_floor` (float dollars, default `0.0`)
+- `vig_paid_on_win`: (bool, default `False`)
+
+**Rounding semantics**
+- `nearest_dollar` uses Python’s standard rounding (`round`) which is banker's rounding.
+  Ties (e.g., 2.5) round to the nearest even integer.
+- `ceil_dollar` always rounds up to the next whole dollar.
+
+
+### Examples
+
+See `crapssim/strategy/examples.py` for:
+- QuickProps (World + Big6/Big8)
+- BuySampler (Buy 4/10)
+- LaySampler (Lay 5/9)
+- PutWithOdds (Put on 6 with odds)
+- HornExample (Horn)
+- WorldExample (World)
+
+### Running examples
+A deterministic demo script is provided:
+
+```bash
+python -m examples.run_examples
+```
+
+This script exercises the new bets (Horn, World, Big6/Big8, Buy/Lay, Put with odds)
+over a fixed roll sequence for reproducible behavior.
+
+
+## Contributing
 
 If you discover something interesting using this simulator, please let me know so that I can highlight those results here.  You can find me at skent259@gmail.com.
 
@@ -95,3 +144,19 @@ Those looking to contribute to this project are welcome to do so.  Currently, th
 
 
 
+
+### Developer Documentation
+See [`docs/VXP_METHODLOGY.md`](docs/VXP_METHODLOGY.md) for a full record of the Vanilla Expansion Project,
+including design choices, validation methods, and audit results.
+
+
+## Stress tests (optional)
+
+A randomized torture test for new bets lives under `tests/stress/`.
+
+- Quick smoke runs by default with `pytest -q`.
+- Heavy stress is opt-in:
+
+```bash
+pytest -q -m stress
+```

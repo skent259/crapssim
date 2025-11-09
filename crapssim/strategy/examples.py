@@ -3,18 +3,24 @@ in order to do the intended"""
 
 import typing
 
-from crapssim.bet import Come, DontCome, DontPass, Field, PassLine, Place
+from crapssim.bet import Come, DontCome, DontPass, Field, PassLine, Place, Put
 from crapssim.strategy.odds import (
     DontPassOddsMultiplier,
     OddsMultiplier,
     PassLineOddsMultiplier,
 )
 from crapssim.strategy.single_bet import (
+    BetBig6,
+    BetBig8,
+    BetBuy,
     BetCome,
     BetDontPass,
-    BetField,
+    BetHorn,
+    BetLay,
     BetPassLine,
     BetPlace,
+    BetPut,
+    BetWorld,
     StrategyMode,
 )
 from crapssim.strategy.tools import (
@@ -26,7 +32,6 @@ from crapssim.strategy.tools import (
     CountStrategy,
     Player,
     RemoveByType,
-    RemoveIfTrue,
     Strategy,
     WinProgression,
 )
@@ -746,3 +751,80 @@ class Place68DontCome2Odds(AggregateStrategy):
             f"{self.__class__.__name__}(six_eight_amount={self.six_eight_amount}, "
             f"dont_come_amount={self.dont_come_amount})"
         )
+
+
+class QuickProps(AggregateStrategy):
+    """
+    Keep a World bet up each roll (demonstrates one-roll behavior) and
+    carry Big6/Big8 for simple even-money resolutions.
+    """
+
+    def __init__(self, world_amount: float = 5.0, big_amount: float = 10.0):
+        super().__init__(
+            BetWorld(world_amount),
+            BetBig6(big_amount),
+            BetBig8(big_amount),
+        )
+
+
+class BuySampler(AggregateStrategy):
+    """
+    Buy the outside numbers (4 and 10). Commission behavior uses the fixed
+    5% rate with table policy (mode, rounding, floor).
+    """
+
+    def __init__(self, amount: float = 25.0):
+        super().__init__(
+            BetBuy(4, amount),
+            BetBuy(10, amount),
+        )
+
+
+class LaySampler(AggregateStrategy):
+    """
+    Lay the inside (5 and 9). Demonstrates dark-side true-odds with the fixed
+    commission.
+    """
+
+    def __init__(self, amount: float = 30.0):
+        super().__init__(
+            BetLay(5, amount),
+            BetLay(9, amount),
+        )
+
+
+class PutWithOdds(AggregateStrategy):
+    """
+    When the point is ON, place a Put bet on 6 and take odds behind it.
+    """
+
+    def __init__(
+        self,
+        flat_amount: float = 10.0,
+        odds_multiple: float = 2.0,
+        always_working: bool = True,
+    ):
+        super().__init__(
+            BetPut(6, flat_amount),
+            # Use the odds multiplier utility pattern from existing examples:
+            # Adds odds behind an active Put at the given multiple (e.g., 2x).
+            OddsMultiplier(
+                base_type=Put,
+                odds_multiplier=odds_multiple,
+                always_working=always_working,
+            ),
+        )
+
+
+class HornExample(AggregateStrategy):
+    """Demonstrates Horn bet lifecycle and resolution."""
+
+    def __init__(self, amount: float = 4.0):
+        super().__init__(BetHorn(amount))
+
+
+class WorldExample(AggregateStrategy):
+    """Demonstrates World bet lifecycle and resolution."""
+
+    def __init__(self, amount: float = 5.0):
+        super().__init__(BetWorld(amount))

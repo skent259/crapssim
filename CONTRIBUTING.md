@@ -1,3 +1,5 @@
+# Contributing 
+
 ## How to contribute to crapssim
 
 The current top priorities for the package are to improve 
@@ -28,4 +30,69 @@ This will require detailed knowledge of the package's `bet` module and also of t
 
 * Please double check the bug has not already been reported in the [Github issues](https://github.com/skent259/crapssim/issues)
 * If your issue has not already been reported, [open a new issue](https://github.com/skent259/crapssim/issues/new) with as much detail to reproduce your problem as possible. The more details you provide, the easier it will be to isolate and fix the problem!
- 
+
+## Contributing — Documentation and Examples
+
+### 1. Function and Type Hinting
+
+All internal functions and classes should include:
+
+- A one-line summary docstring describing purpose and domain.
+- Explicit type hints for all parameters and return values.
+- Reference to table or player context if applicable.
+
+Example:
+
+```python
+def payout_ratio(number: int) -> float:
+    """Return the true odds payout ratio for a given point number."""
+```
+
+When adding new modules, prefer `typing.Annotated` or `typing.Literal` where
+constraints are known (e.g., specific point numbers, payout categories).
+
+### 3. Descriptive Internal Documentation
+
+When introducing new rules, toggles, or simulation assumptions:
+
+- Explain why the choice exists, not only how it works.
+- Link or cite standard rule variants (e.g., "3-4-5x odds structure",
+  "commission on win vs. on bet").
+- Use consistent, declarative tone — avoid subjective phrasing or casual
+  language.
+
+### 4. Testing Philosophy
+
+Tests are expected to cover both numerical and structural correctness. Each
+feature addition should include:
+
+- A unit test verifying direct functional behavior.
+- An integration or stress test demonstrating stable interaction with other
+  bets.
+- Deterministic seeds where possible to ensure reproducibility.
+
+Well-documented test cases are considered part of the public tutorial layer:
+future contributors should be able to learn from them.
+
+By maintaining clarity in examples, precision in type hints, and strong linkage
+between simulation design and domain reasoning, the project can continue to
+serve both as a working simulator and as a reference for formal analysis of
+craps dynamics.
+
+## Running Tests and Gauntlet
+
+To verify correctness locally:
+
+```bash
+pytest -q
+```
+
+For optional stress and batch validation:
+
+```bash
+pytest -q -m stress
+python tools/vxp_gauntlet.py           # single run
+bash -lc 'for i in $(seq 1 25); do python tools/vxp_gauntlet.py; sleep 0.2; done'  # batch
+```
+
+Artifacts will appear under reports/vxp_gauntlet/<timestamp>/ and include JSON, CSV, and Markdown summaries.

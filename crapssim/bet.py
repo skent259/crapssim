@@ -1,11 +1,23 @@
 import copy
+import math
 import typing
 from abc import ABC, ABCMeta, abstractmethod
 from dataclasses import dataclass
-from typing import Protocol, TypedDict
+from typing import Hashable, Literal, Protocol, TypeAlias, TypedDict
 
 from crapssim.dice import Dice
 from crapssim.point import Point
+
+DicePair: TypeAlias = tuple[int, int]
+"""Pair of dice represented as (die_one, die_two)."""
+
+
+class SupportsFloat(Protocol):
+    """Protocol for objects that can be converted to ``float``."""
+
+    def __float__(self) -> float:
+        """Return a float representation."""
+
 
 __all__ = [
     "BetResult",
@@ -17,6 +29,7 @@ __all__ = [
     "DontPass",
     "DontCome",
     "Odds",
+    "Put",
     "Place",
     "Field",
     "CAndE",
@@ -26,24 +39,34 @@ __all__ = [
     "Yo",
     "Boxcars",
     "AnyCraps",
+    "Horn",
+    "World",
+    "Big6",
+    "Big8",
     "HardWay",
     "Hop",
     "Fire",
     "All",
     "Tall",
     "Small",
+    "Buy",
+    "Lay",
 ]
 ALL_DICE_NUMBERS = {2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12}
 
 
-class TableSettings(TypedDict):
+class TableSettings(TypedDict, total=False):
+    """Subset of table policy toggles referenced by bet logic."""
 
-    ATS_payouts: dict[str, int]  # {"all": 150, "tall": 30, "small": 30}
-    field_payouts: dict[int, int]  # {2: 2, 3: 1, 4: 1, 9: 1, 10: 1, 11: 1, 12: 2}
-    fire_payouts: dict[int, int]  # {4: 24, 5: 249, 6: 999}
-    hop_payouts: dict[str, int]  # {"easy": 15, "hard": 30}
-    max_odds: dict[int, int]  # {4: 3, 5: 4, 6: 5, 8: 5, 9: 4, 10: 3}
-    max_dont_odds: dict[int, int]  # {4: 6, 5: 6, 6: 6, 8: 6, 9: 6, 10: 6}
+    ATS_payouts: dict[str, int]
+    field_payouts: dict[int, int]
+    fire_payouts: dict[int, int]
+    hop_payouts: dict[str, int]
+    max_odds: dict[int, int]
+    max_dont_odds: dict[int, int]
+    vig_rounding: Literal["none", "ceil_dollar", "nearest_dollar"]
+    vig_floor: float
+    vig_paid_on_win: bool
 
 
 class Table(Protocol):
@@ -54,7 +77,10 @@ class Table(Protocol):
 
 class Player(Protocol):
     table: Table
-    bets: list[typing.Type["Bet"]]
+    bets: list["Bet"]
+
+    @property
+    def bankroll(self) -> float: ...
 
 
 @dataclass(slots=True, frozen=True)
@@ -111,7 +137,7 @@ class Bet(ABC, metaclass=_MetaBetABC):
     All bets will be a subclass of this.
     """
 
-    def __init__(self, amount: typing.SupportsFloat):
+    def __init__(self, amount: SupportsFloat) -> None:
         self.amount: float = float(amount)
         """Wagered amount for the bet."""
 
@@ -125,6 +151,10 @@ class Bet(ABC, metaclass=_MetaBetABC):
         BetResult object.
         """
         pass
+
+    def cost(self, table: Table) -> float:
+        """Total bankroll required to put this bet in action on ``table``."""
+        return self.amount
 
     def update_number(self, table: Table):
         """
@@ -163,11 +193,11 @@ class Bet(ABC, metaclass=_MetaBetABC):
         return new_bet
 
     @property
-    def _placed_key(self) -> typing.Hashable:
+    def _placed_key(self) -> Hashable:
         return type(self)
 
     @property
-    def _hash_key(self) -> typing.Hashable:
+    def _hash_key(self) -> Hashable:
         return self._placed_key, self.amount
 
     def __eq__(self, other: object) -> bool:
@@ -530,7 +560,7 @@ class Odds(_WinningLosingNumbersBet):
 
     def __init__(
         self,
-        base_type: typing.Type[PassLine | DontPass | Come | DontCome],
+        base_type: typing.Type["PassLine | DontPass | Come | DontCome | Put"],
         number: int,
         amount: float,
         always_working: bool = False,
@@ -542,7 +572,7 @@ class Odds(_WinningLosingNumbersBet):
 
     @property
     def light_side(self) -> bool:
-        return issubclass(self.base_type, (PassLine, Come))
+        return issubclass(self.base_type, (PassLine, Come, Put))
 
     @property
     def dark_side(self) -> bool:
@@ -590,7 +620,8 @@ class Odds(_WinningLosingNumbersBet):
             True if the bet is allowed, otherwise false.
         """
         max_bet = self.get_max_odds(player.table) * self.base_amount(player)
-        return self.amount <= max_bet
+        allowed = self.amount <= max_bet
+        return allowed
 
     def get_max_odds(self, table: Table) -> float:
         if self.light_side:
@@ -620,7 +651,7 @@ class Odds(_WinningLosingNumbersBet):
     def _get_always_working_repr(self) -> str:
         """Since the default is false, only need to print when True"""
         return (
-            f", always_working={self.always_working})" if self.always_working else f")"
+            f", always_working={self.always_working})" if self.always_working else ")"
         )
 
     @property
@@ -632,6 +663,31 @@ class Odds(_WinningLosingNumbersBet):
             f"Odds(base_type={self.base_type}, number={self.number}, amount={self.amount}"
             f"{self._get_always_working_repr()}"
         )
+
+
+class Put(_SimpleBet):
+    """Flat line bet on a box number; point must be ON and odds obey table policy."""
+
+    losing_numbers: list[int] = [7]
+
+    def __init__(self, number: int, amount: SupportsFloat) -> None:
+        super().__init__(amount)
+        self.number = number
+        self.winning_numbers = [number]
+        self.payout_ratio = 1.0
+
+    def is_allowed(self, player: "Player") -> bool:
+        return player.table.point == "On"
+
+    def copy(self) -> "Put":
+        return self.__class__(self.number, self.amount)
+
+    @property
+    def _placed_key(self) -> Hashable:
+        return type(self), self.number
+
+    def __repr__(self) -> str:
+        return f"Put({self.number}, amount={self.amount})"
 
 
 # Place bets ------------------------------------------------------------------
@@ -668,6 +724,146 @@ class Place(_SimpleBet):
 
     def __repr__(self) -> str:
         return f"Place({self.winning_numbers[0]}, amount={self.amount})"
+
+
+def _compute_vig(
+    bet_amount: float,
+    rounding: Literal["ceil_dollar", "nearest_dollar", "none"] = "nearest_dollar",
+    floor: float = 0.0,
+) -> float:
+    """Return commission in dollars using a fixed 5% rate on ``bet_amount``."""
+
+    vig = bet_amount * 0.05
+
+    if rounding == "ceil_dollar":
+        vig = math.ceil(vig)
+    elif rounding == "nearest_dollar":
+        vig = math.floor(vig + 0.5)
+
+    vig = max(vig, floor)
+
+    return float(vig)
+
+
+def _vig_policy(
+    settings: "TableSettings",
+) -> tuple[Literal["ceil_dollar", "nearest_dollar", "none"], float]:
+    """Pull table vig rules from TableSettings."""
+
+    rounding = settings.get("vig_rounding", "nearest_dollar")
+    if rounding not in {"ceil_dollar", "nearest_dollar", "none"}:
+        rounding = "nearest_dollar"
+    floor_value = float(settings.get("vig_floor", 0.0) or 0.0)
+    return (
+        typing.cast(Literal["ceil_dollar", "nearest_dollar", "none"], rounding),
+        floor_value,
+    )
+
+
+class Buy(_SimpleBet):
+    """True-odds bet on 4/5/6/8/9/10 that charges vig per table policy.
+
+    Vig (commission) may be taken on the win or upfront based on ``vig_paid_on_win``.
+    """
+
+    true_odds = {4: 2.0, 10: 2.0, 5: 1.5, 9: 1.5, 6: 1.2, 8: 1.2}
+    losing_numbers: list[int] = [7]
+
+    def __init__(self, number: int, amount: SupportsFloat) -> None:
+        if number not in (4, 5, 6, 8, 9, 10):
+            raise ValueError(f"Invalid Buy number: {number}")
+        super().__init__(amount)
+        self.number = number
+        self.payout_ratio = self.true_odds[number]
+        self.winning_numbers = [number]
+        """Base amount that determines true-odds payouts."""
+
+    def vig(self, table: "Table") -> float:
+        rounding, floor = _vig_policy(table.settings)
+        return _compute_vig(self.amount, rounding=rounding, floor=floor)
+
+    def cost(self, table: "Table") -> float:
+        if table.settings.get("vig_paid_on_win", True):
+            return self.amount
+        return self.amount + self.vig(table)
+
+    def get_result(self, table: "Table") -> BetResult:
+        if table.dice.total == self.number:
+            result_amount = self.payout_ratio * self.amount + self.amount
+            if table.settings.get("vig_paid_on_win", True):
+                result_amount -= self.vig(table)
+            remove = True
+        elif table.dice.total == 7:
+            result_amount = -self.cost(table)
+            remove = True
+        else:
+            result_amount = 0
+            remove = False
+        return BetResult(result_amount, remove, self.amount)
+
+    def copy(self) -> "Buy":
+        new_bet = self.__class__(self.number, self.amount)
+        return new_bet
+
+    @property
+    def _placed_key(self) -> Hashable:
+        return type(self), self.number
+
+    def __repr__(self) -> str:
+        return f"Buy({self.number}, amount={self.amount})"
+
+
+class Lay(_SimpleBet):
+    """True-odds bet against 4/5/6/8/9/10, paying if 7 arrives first.
+
+    Commission may be taken on the win or upfront based on ``vig_paid_on_win``.
+    """
+
+    true_odds = {4: 0.5, 10: 0.5, 5: 2 / 3, 9: 2 / 3, 6: 5 / 6, 8: 5 / 6}
+    winning_numbers: list[int] = [7]
+
+    def __init__(self, number: int, amount: SupportsFloat) -> None:
+        if number not in (4, 5, 6, 8, 9, 10):
+            raise ValueError(f"Invalid Lay number: {number}")
+        super().__init__(amount)
+        self.number = number
+        self.payout_ratio = self.true_odds[number]
+        self.losing_numbers = [number]
+        """Base amount risked against the box number."""
+
+    def vig(self, table: "Table") -> float:
+        rounding, floor = _vig_policy(table.settings)
+        return _compute_vig(self.amount, rounding=rounding, floor=floor)
+
+    def cost(self, table: "Table") -> float:
+        if table.settings.get("vig_paid_on_win", True):
+            return self.amount
+        return self.amount + self.vig(table)
+
+    def get_result(self, table: "Table") -> BetResult:
+        if table.dice.total == 7:
+            result_amount = self.payout_ratio * self.amount + self.amount
+            if table.settings.get("vig_paid_on_win", True):
+                result_amount -= self.vig(table)
+            remove = True
+        elif table.dice.total == self.number:
+            result_amount = -self.cost(table)
+            remove = True
+        else:
+            result_amount = 0
+            remove = False
+        return BetResult(result_amount, remove, self.amount)
+
+    def copy(self) -> "Lay":
+        new_bet = self.__class__(self.number, self.amount)
+        return new_bet
+
+    @property
+    def _placed_key(self) -> Hashable:
+        return type(self), self.number
+
+    def __repr__(self) -> str:
+        return f"Lay({self.number}, amount={self.amount})"
 
 
 # _WinningLosingNumbersBets with variable payouts -----------------------------------------------------------------
@@ -824,6 +1020,105 @@ class AnyCraps(_SimpleBet):
     losing_numbers: list[int] = list(ALL_DICE_NUMBERS - {2, 3, 12})
     """Losing number is anything except (2, 3, 12)."""
     payout_ratio: int = 7
+
+
+class Horn(_WinningLosingNumbersBet):
+    """One-roll bet split across 2, 3, 11, and 12; loses on all other totals."""
+
+    winning_numbers: list[int] = [2, 3, 11, 12]
+    losing_numbers: list[int] = list(ALL_DICE_NUMBERS - {2, 3, 11, 12})
+
+    def __init__(self, amount: SupportsFloat) -> None:
+        super().__init__(amount)
+
+    def get_winning_numbers(self, table: "Table") -> list[int]:
+        return self.winning_numbers
+
+    def get_losing_numbers(self, table: "Table") -> list[int]:
+        return self.losing_numbers
+
+    def get_payout_ratio(self, table: "Table") -> float:
+        """
+        Payout ratios expressed as 'to 1', aligned with single bets and
+        adjusting for the full bet amount returned on a win:
+        - 2/12: (30 - 3) / 4 = 6.75
+        - 3/11: (15 - 3) / 4 = 3.0
+        """
+        total = table.dice.total
+        if total in (2, 12):
+            return (30 - 3) / 4
+        if total in (3, 11):
+            return (15 - 3) / 4
+        raise NotImplementedError
+
+    def __repr__(self) -> str:
+        return f"Horn(amount={self.amount})"
+
+
+class World(_WinningLosingNumbersBet):
+    """One-roll bet covering Horn numbers plus 7; pays break-even on 7."""
+
+    winning_numbers: list[int] = [2, 3, 7, 11, 12]
+    losing_numbers: list[int] = list(ALL_DICE_NUMBERS - {2, 3, 7, 11, 12})
+
+    def __init__(self, amount: SupportsFloat) -> None:
+        super().__init__(amount)
+
+    def get_winning_numbers(self, table: "Table") -> list[int]:
+        return self.winning_numbers
+
+    def get_losing_numbers(self, table: "Table") -> list[int]:
+        return self.losing_numbers
+
+    def get_payout_ratio(self, table: "Table") -> float:
+        """
+        Payout ratios expressed as 'to 1', consistent with simulator and
+        adjusting for the full bet amount returned on a win::
+        - 2/12: (30 - 4) / 5 = 5.2
+        - 3/11: (15 - 4) / 5 = 2.2
+        - 7:    (4  - 4) / 5 = 0.0
+        """
+        total = table.dice.total
+        if total in (2, 12):
+            return (30 - 4) / 5
+        if total in (3, 11):
+            return (15 - 4) / 5
+        if total == 7:
+            return (4 - 4) / 5
+        raise NotImplementedError
+
+    def __repr__(self) -> str:
+        return f"World(amount={self.amount})"
+
+
+class Big6(_SimpleBet):
+    """Even-money bet that wins on 6 before 7."""
+
+    winning_numbers: list[int] = [6]
+    losing_numbers: list[int] = [7]
+    payout_ratio: float = 1.0
+
+    def __init__(self, amount: SupportsFloat) -> None:
+        super().__init__(amount)
+        self.number = 6
+
+    def __repr__(self) -> str:
+        return f"Big6(amount={self.amount})"
+
+
+class Big8(_SimpleBet):
+    """Even-money bet that wins on 8 before 7."""
+
+    winning_numbers: list[int] = [8]
+    losing_numbers: list[int] = [7]
+    payout_ratio: float = 1.0
+
+    def __init__(self, amount: SupportsFloat) -> None:
+        super().__init__(amount)
+        self.number = 8
+
+    def __repr__(self) -> str:
+        return f"Big8(amount={self.amount})"
 
 
 # HardWay Bets ----------------------------------------------------------------
