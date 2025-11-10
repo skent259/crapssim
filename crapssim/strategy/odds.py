@@ -10,7 +10,7 @@ class OddsAmount(Strategy):
 
     def __init__(
         self,
-        base_type: typing.Type[PassLine | DontPass | Come | DontCome],
+        base_type: typing.Type[PassLine | DontPass | Come | DontCome | Put],
         odds_amounts: dict[int, typing.SupportsFloat],
         always_working: bool = False,
     ):
@@ -130,7 +130,7 @@ class OddsMultiplier(Strategy):
 
     def __init__(
         self,
-        base_type: typing.Type[PassLine | DontPass | Come | DontCome],
+        base_type: typing.Type[PassLine | DontPass | Come | DontCome | Put],
         odds_multiplier: dict[int, typing.SupportsFloat] | typing.SupportsFloat,
         always_working: bool = False,
     ):
@@ -347,5 +347,90 @@ class DontComeOddsMultiplier(OddsMultiplier):
     def __repr__(self) -> str:
         return (
             f"{self.__class__.__name__}(odds_multiplier={self._get_odds_multiplier_repr()}"
+            f"{self._get_always_working_repr()}"
+        )
+
+
+class WinMultiplier(OddsMultiplier):
+    """Strategy that takes an AllowsOdds object and places Odds on it given the
+    multiplier that is desired to win (or a dictionary of numbers and win
+    multipliers).
+
+    Args:
+        base_type: The bet that odds will be added to.
+        win_multiplier: If win_multiplier is a float, adds amount so that
+            multiplier * base_bets is the win amount for the odds.
+            If the odds multiplier is a dictionary of floats, looks at the
+            dictionary to determine what win multiplier to use
+            depending on the given point.
+        always_working (bool): Whether the odds are working when the point is off.
+    """
+
+    def __init__(
+        self,
+        base_type: typing.Type[PassLine | DontPass | Come | DontCome | Put],
+        win_multiplier: dict[int, typing.SupportsFloat] | typing.SupportsFloat,
+        always_working: bool = False,
+    ):
+        self.base_type = base_type
+        self.always_working = always_working
+
+        if isinstance(win_multiplier, typing.SupportsFloat):
+            self.win_multiplier = {x: win_multiplier for x in (4, 5, 6, 8, 9, 10)}
+        else:
+            self.win_multiplier = win_multiplier
+
+        odds_multiplier = self._convert_win_to_odds_mult(
+            self.win_multiplier, self.base_type
+        )
+
+        super().__init__(
+            base_type=base_type,
+            odds_multiplier=odds_multiplier,
+            always_working=always_working,
+        )
+
+    def _convert_win_to_odds_mult(
+        self,
+        win_multiplier: dict[int, typing.SupportsFloat],
+        base_type: typing.Type[PassLine | DontPass | Come | DontCome | Put],
+    ):
+        """
+        Converts a win multiplier to an odds multiplier
+
+        For example, for the Don't Pass bet with point of 4, if we want to win
+        1x the bet, need to bet 2x odds. A win multiplier of 1.0 will return 2.0.
+        The conversion is flipped for a lightside bet. For example, for the Pass
+        Line, to win 1x the bet, need 0.5x odds only (note: some casinos won't
+        let you have less than 1x odds at any point, but this function will not
+        restrict things)
+        """
+
+        if base_type in (DontPass, DontCome):
+            conversion = {4: 2.0, 5: 3 / 2, 6: 6 / 5, 8: 6 / 5, 9: 3 / 2, 10: 2}
+        elif base_type in (PassLine, Come, Put):
+            conversion = {4: 1 / 2, 5: 2 / 3, 6: 5 / 6, 8: 5 / 6, 9: 2 / 3, 10: 1 / 2}
+        else:
+            return None
+
+        return {x: conversion[x] * mult for x, mult in win_multiplier.items()}
+
+    def _get_win_multiplier_repr(
+        self,
+    ) -> typing.SupportsFloat | dict[int, typing.SupportsFloat]:
+        """If the win_multiplier has multiple values return a dictionary with the values,
+        if all the multipliers are the same return an integer of the multiplier."""
+
+        all_mult_same = len(set(self.win_multiplier.values())) == 1
+        mult_has_all_numbers = set(self.win_multiplier.keys()) == {4, 5, 6, 8, 9, 10}
+        if all_mult_same and mult_has_all_numbers:
+            return list(self.win_multiplier.values())[0]
+        else:
+            return self.win_multiplier
+
+    def __repr__(self) -> str:
+        return (
+            f"{self.__class__.__name__}(base_type={self.base_type}, "
+            f"win_multiplier={self._get_win_multiplier_repr()}"
             f"{self._get_always_working_repr()}"
         )
