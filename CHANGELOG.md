@@ -1,13 +1,42 @@
 # Changelog
 
-## Development version
+All notable changes to this project will be documented in this file. 
 
-* Vanilla Expansion Project
-  * Add new bets: Horn, World (Whirl), Big6/Big8, Buy, Lay, and Put (with or without odds).
-  * Add vig policy settings to TableSettings
-  * Add stress tests, expanded examples, tools, 
+For an alternative view, connecting these changes to Pull Requests, Issues, and new contributors, see the [GitHub Releases](https://github.com/skent259/crapssim/releases)
 
-## v0.3.1
+The format is moving towards this style for new entries: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), 
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
+
+## [Unreleased]
+
+### Added
+
+* New bets: `Horn`, `World` (Whirl), `Big6`/`Big8`, `Buy`, `Lay`, and `Put` (with or without odds) 
+  * Corresponding single bet strategies
+  * Corresponding odds strategies: `PutOddsAmount`, `PutOddsMultiplier`
+  * Corresponding examples strategies: `QuickProps`, `BuySampler`, `LaySampler`, `PutWithOdds`, `HornExample`, `WorldExample`
+* Vig policy settings to TableSettings
+* `WinMultiplier` family of strategies which take a desired win multiple and calculates the correct amount based on the bet amount. 
+  * `WinMultiplier` is the general strategy which takes specific bet type argument
+  * Convenience strategies for individual bets: `PassLineWinMultiplier`, `ComeWinMultiplier`, `DontPassWinMultiplier`, `DontComeWinMultiplier`, and `PutWinMultiplier` 
+* Stress tests, expanded examples, tools as part of the Vanilla Expansion Project
+
+### Fixed
+
+*  `OddsMultiplier `__repr__` logic so that floats, ints, and incomplete dictionaries all work for odds/win multiplier
+ 
+## [0.3.2] - 2025-10-11
+
+### What's Changed
+* Restrict strategy updates during runout by @skent259 in https://github.com/skent259/crapssim/pull/62
+* Update Risk12 strategy by @skent259 in https://github.com/skent259/crapssim/pull/63
+* Reorder integration tests by @skent259 in https://github.com/skent259/crapssim/pull/64
+* Verbose: print roll and shooter counts by @JotaGreen in https://github.com/skent259/crapssim/pull/65
+* Fix odds bet having result when the point is off by @skent259 in https://github.com/skent259/crapssim/pull/66
+* Fix ATS bets, ATS strategy, and strategies with persistent bet features by @skent259 in https://github.com/skent259/crapssim/pull/71
+
+
+## [0.3.1] - 2025-02-13
 
 ### What's Changed
 * **BREAKING**: Rename strategy tools and implement new strategy modes by @skent259 in https://github.com/skent259/crapssim/pull/55
@@ -21,9 +50,7 @@
 * Improve documentation by @skent259 in https://github.com/skent259/crapssim/pull/50
 
 
-**Full Changelog**: https://github.com/skent259/crapssim/compare/v0.3.0...v0.3.1
-
-## v0.3.0 (2024/12/01)
+## [0.3.0] - 2024-12-01
 
 This is a major update with breaking changes throughout the package. The changes ensure we can implement new bets and make the strategies much easier for new and old users alike, building for the future of the package. 
 
@@ -45,25 +72,23 @@ This is a major update with breaking changes throughout the package. The changes
 * Clean up strategy module by @skent259 in https://github.com/skent259/crapssim/pull/44
 * Incorporate dev updates for version 0.3.0 by @skent259 in https://github.com/skent259/crapssim/pull/45
 
-### New Contributors
 
-* @amortization made their first contribution in https://github.com/skent259/crapssim/pull/3
+## [0.2.0] - 2021-03-07
 
-**Full Changelog**: https://github.com/skent259/crapssim/compare/v0.2.0...v0.3.0
+ - v0.2.0 improves on the UI of v0.1.0 by clarifying internal vs external functions, improving documentation, and other minor changes.
 
-## v0.2.0 (2021/03/07)
+## [0.1.1] - 2021-03-07
 
-v0.2.0 improves on the UI of v0.1.0 by clarifying internal vs external functions, improving documentation, and other minor changes.
+ - Small changes in addition to v0.1.1
 
-## v0.1.1 (2021/03/07)
-
-Small changes in addition to v0.1.1
-
-## v0.1.0
+## 0.1.0 - 2019-03-09
 
 Initial version 
-## vxp-phase-baseline — CrapsSim-Vanilla Expansion Complete
-- Added Horn, World (Whirl), Big6, Big8, Buy, Lay, Put bets.
-- Added commission framework in Buy/Lay.
-- Added single-bet strategy wrappers and examples.
-- Integration baseline captured under `baselines/vxp/`.
+
+
+[unreleased]: https://github.com/skent259/crapssim/compare/v0.3.2...HEAD
+[0.3.2]: https://github.com/skent259/crapssim/compare/v0.3.1...v0.3.2
+[0.3.1]: https://github.com/skent259/crapssim/compare/v0.3.0...v0.3.1
+[0.3.0]: https://github.com/skent259/crapssim/compare/v0.2.0...v0.3.0
+[0.2.0]: https://github.com/skent259/crapssim/compare/v0.1.1...v0.2.0
+[0.1.1]: https://github.com/skent259/crapssim/releases/tag/v0.1.1
