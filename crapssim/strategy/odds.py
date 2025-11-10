@@ -10,10 +10,27 @@ def _expand_multiplier_dict(multiplier):
 
     Args:
         multiplier: A dictionary of point numbers and their associated
-            multipliers.
+            multipliers or a float to be applied to all point numbers.
     """
     if isinstance(multiplier, typing.SupportsFloat):
         return {x: multiplier for x in (4, 5, 6, 8, 9, 10)}
+    else:
+        return multiplier
+
+
+def _condense_multiplier_dict(
+    multiplier: dict[int, typing.SupportsFloat],
+) -> typing.SupportsFloat | dict[int, typing.SupportsFloat]:
+    """Helper function to condense a multiplier dictionary to a single
+    float if all the multipliers are the same for all point numbers.
+    Args:
+        multiplier: A dictionary of point numbers and their associated
+            multipliers.
+    """
+    all_mult_same = len(set(multiplier.values())) == 1
+    mult_has_all_numbers = set(multiplier.keys()) == {4, 5, 6, 8, 9, 10}
+    if all_mult_same and mult_has_all_numbers:
+        return list(multiplier.values())[0]
     else:
         return multiplier
 
@@ -179,19 +196,6 @@ class OddsMultiplier(Strategy):
         """
         return len([x for x in player.bets if isinstance(x, self.base_type)]) == 0
 
-    def _get_odds_multiplier_repr(
-        self,
-    ) -> typing.SupportsFloat | dict[int, typing.SupportsFloat]:
-        """If the odds_multiplier has multiple values return a dictionary with the values,
-        if all the multipliers are the same return an integer of the multiplier."""
-
-        all_mult_same = len(set(self.odds_multiplier.values())) == 1
-        mult_has_all_numbers = set(self.odds_multiplier.keys()) == {4, 5, 6, 8, 9, 10}
-        if all_mult_same and mult_has_all_numbers:
-            return list(self.odds_multiplier.values())[0]
-        else:
-            return self.odds_multiplier
-
     def _get_always_working_repr(self) -> str:
         """Since the default is false, only need to print when True"""
         return (
@@ -201,7 +205,7 @@ class OddsMultiplier(Strategy):
     def __repr__(self) -> str:
         return (
             f"{self.__class__.__name__}(base_type={self.base_type}, "
-            f"odds_multiplier={self._get_odds_multiplier_repr()}"
+            f"odds_multiplier={_condense_multiplier_dict(self.odds_multiplier)}"
             f"{self._get_always_working_repr()}"
         )
 
@@ -233,7 +237,8 @@ class _OddsMultiplier(OddsMultiplier):
 
     def __repr__(self) -> str:
         return (
-            f"{self.__class__.__name__}(odds_multiplier={self._get_odds_multiplier_repr()}"
+            f"{self.__class__.__name__}("
+            f"odds_multiplier={_condense_multiplier_dict(self.odds_multiplier)}"
             f"{self._get_always_working_repr()}"
         )
 
@@ -300,9 +305,7 @@ class WinMultiplier(OddsMultiplier):
         always_working: bool = False,
     ):
         self.win_multiplier = _expand_multiplier_dict(win_multiplier)
-        odds_multiplier = self._convert_win_to_odds_mult(
-            self.win_multiplier, self.base_type
-        )
+        odds_multiplier = self._convert_win_to_odds_mult(self.win_multiplier, base_type)
 
         super().__init__(
             base_type=base_type,
@@ -335,23 +338,10 @@ class WinMultiplier(OddsMultiplier):
 
         return {x: conversion[x] * mult for x, mult in win_multiplier.items()}
 
-    def _get_win_multiplier_repr(
-        self,
-    ) -> typing.SupportsFloat | dict[int, typing.SupportsFloat]:
-        """If the win_multiplier has multiple values return a dictionary with the values,
-        if all the multipliers are the same return an integer of the multiplier."""
-
-        all_mult_same = len(set(self.win_multiplier.values())) == 1
-        mult_has_all_numbers = set(self.win_multiplier.keys()) == {4, 5, 6, 8, 9, 10}
-        if all_mult_same and mult_has_all_numbers:
-            return list(self.win_multiplier.values())[0]
-        else:
-            return self.win_multiplier
-
     def __repr__(self) -> str:
         return (
             f"{self.__class__.__name__}(base_type={self.base_type}, "
-            f"win_multiplier={self._get_win_multiplier_repr()}"
+            f"win_multiplier={_condense_multiplier_dict(self.win_multiplier)}"
             f"{self._get_always_working_repr()}"
         )
 
@@ -388,7 +378,7 @@ class _WinMultiplier(WinMultiplier):
     def __repr__(self) -> str:
         return (
             f"{self.__class__.__name__}("
-            f"win_multiplier={self._get_win_multiplier_repr()}"
+            f"win_multiplier={_condense_multiplier_dict(self.win_multiplier)}"
             f"{self._get_always_working_repr()}"
         )
 
