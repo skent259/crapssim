@@ -5,8 +5,7 @@ from crapssim.strategy.tools import Player, Strategy, Table
 
 
 def _expand_multiplier_dict(multiplier):
-    """Helper function to expand a multiplier dictionary to include all
-    possible point numbers (4, 5, 6, 8, 9, 10) if not already present.
+    """Helper to expand multiplier dictionary if it's only a float.
 
     Args:
         multiplier: A dictionary of point numbers and their associated
@@ -21,8 +20,8 @@ def _expand_multiplier_dict(multiplier):
 def _condense_multiplier_dict(
     multiplier: dict[int, typing.SupportsFloat],
 ) -> typing.SupportsFloat | dict[int, typing.SupportsFloat]:
-    """Helper function to condense a multiplier dictionary to a single
-    float if all the multipliers are the same for all point numbers.
+    """Helper to condense multiplier dictionary if all are the same
+
     Args:
         multiplier: A dictionary of point numbers and their associated
             multipliers.
@@ -36,7 +35,14 @@ def _condense_multiplier_dict(
 
 
 class OddsAmount(Strategy):
-    """Strategy that takes places odds on a given number for a given bet type."""
+    """Adds Odds for the bet type and specified numbers
+
+    Args:
+        base_type: The bet that odds will be added to.
+        odds_amounts: A dictionary of point numbers and the amount to bet
+            on each number.
+        always_working (bool): Whether the odds are working when the point is off.
+    """
 
     def __init__(
         self,
@@ -83,7 +89,14 @@ class OddsAmount(Strategy):
         )
 
 
-class _OddsAmount(OddsAmount):
+class _BaseOddsAmount(OddsAmount):
+    """Helper to define OddsAmount strategies for each bet type.
+
+    Args:
+        bet_amount: The amount to bet on each specified number.
+        numbers: The point numbers to place the odds on. Defaults to (4, 5, 6, 8, 9, 10).
+        always_working (bool): Whether the odds are working when the point is off.
+    """
 
     bet_type: type[PassLine | DontPass | Come | DontCome | Put]
 
@@ -106,29 +119,46 @@ class _OddsAmount(OddsAmount):
         )
 
 
-class PassLineOddsAmount(_OddsAmount):
+class PassLineOddsAmount(_BaseOddsAmount):
+    """Adds PassLine Odds on specified numbers"""
+
     bet_type = PassLine
 
 
-class DontPassOddsAmount(_OddsAmount):
+class DontPassOddsAmount(_BaseOddsAmount):
+    """Adds DontPass Odds on specified numbers"""
+
     bet_type = DontPass
 
 
-class ComeOddsAmount(_OddsAmount):
+class ComeOddsAmount(_BaseOddsAmount):
+    """Adds Come Odds on specified numbers"""
+
     bet_type = Come
 
 
-class DontComeOddsAmount(_OddsAmount):
+class DontComeOddsAmount(_BaseOddsAmount):
+    """Adds DontCome Odds on specified numbers"""
+
     bet_type = DontCome
 
 
-class PutOddsAmount(_OddsAmount):
+class PutOddsAmount(_BaseOddsAmount):
+    """Adds Put Odds on specified numbers"""
+
     bet_type = Put
 
 
 class OddsMultiplier(Strategy):
-    """Strategy that takes an AllowsOdds object and places Odds on it given either a multiplier,
-    or a dictionary of points and multipliers."""
+    """Adds Odds for the bet type and desired odds multiplier
+
+    Args:
+        base_type: The bet that odds will be added to.
+        odds_multiplier: If odds_multiplier is a float, adds multiplier * base_bets amount to the odds.
+            If the odds multiplier is a dictionary of floats, looks at the dictionary to
+            determine what odds multiplier to use depending on the given point.
+        always_working (bool): Whether the odds are working when the point is off.
+    """
 
     def __init__(
         self,
@@ -136,18 +166,6 @@ class OddsMultiplier(Strategy):
         odds_multiplier: dict[int, typing.SupportsFloat] | typing.SupportsFloat,
         always_working: bool = False,
     ):
-        """Takes an AllowsOdds item (ex. PassLine, Come, DontPass) and adds a BaseOdds bet
-        (either Odds or LayOdds) based on the odds_multiplier given.
-
-        Parameters
-        ----------
-        base_type
-            The bet that odds will be added to.
-        odds_multiplier
-            If odds_multiplier is a float, adds multiplier * base_bets amount to the odds.
-            If the odds multiplier is a dictionary of floats, looks at the dictionary to
-            determine what odds multiplier to use depending on the given point.
-        """
         self.base_type = base_type
         self.always_working = always_working
         self.odds_multiplier = _expand_multiplier_dict(odds_multiplier)
@@ -210,8 +228,8 @@ class OddsMultiplier(Strategy):
         )
 
 
-class _OddsMultiplier(OddsMultiplier):
-    """Helper class which sets the bet_type for the specific odds multiplier strategies.
+class _BaseOddsMultiplier(OddsMultiplier):
+    """Helper to define OddsMultiplier strategies for each bet type.
 
     Args:
         odds_multiplier: If odds_multiplier is an integer the bet amount is the PassLine bet amount *
@@ -243,50 +261,43 @@ class _OddsMultiplier(OddsMultiplier):
         )
 
 
-class PassLineOddsMultiplier(_OddsMultiplier):
-    """Strategy that adds and Odds bet to the PassLine bet based on the
-    specified multiplier."""
+class PassLineOddsMultiplier(_BaseOddsMultiplier):
+    """Adds PassLine Odds on specified odds multiplier(s)"""
 
     bet_type = PassLine
     default_multiplier = {4: 3.0, 5: 4.0, 6: 5.0, 8: 5.0, 9: 4.0, 10: 3.0}
 
 
-class DontPassOddsMultiplier(_OddsMultiplier):
-    """Strategy that adds and Odds bet to the DontPass bet based on the
-    specified multiplier."""
+class DontPassOddsMultiplier(_BaseOddsMultiplier):
+    """Adds DontPass Odds on specified odds multiplier(s)"""
 
     bet_type = DontPass
     default_multiplier = 6.0
 
 
-class ComeOddsMultiplier(_OddsMultiplier):
-    """Strategy that adds and Odds bet to the Come bet based on the
-    specified multiplier."""
+class ComeOddsMultiplier(_BaseOddsMultiplier):
+    """Adds Come Odds on specified odds multiplier(s)"""
 
     bet_type = Come
     default_multiplier = {4: 3.0, 5: 4.0, 6: 5.0, 8: 5.0, 9: 4.0, 10: 3.0}
 
 
-class DontComeOddsMultiplier(_OddsMultiplier):
-    """Strategy that adds and Odds bet to the DontCome bet based on the
-    specified multiplier."""
+class DontComeOddsMultiplier(_BaseOddsMultiplier):
+    """Adds DontCome Odds on specified odds multiplier(s)"""
 
     bet_type = DontCome
     default_multiplier = 6.0
 
 
-class PutOddsMultiplier(_OddsMultiplier):
-    """Strategy that adds and Odds bet to the Put bet based on the
-    specified multiplier."""
+class PutOddsMultiplier(_BaseOddsMultiplier):
+    """Adds Put Odds on specified odds multiplier(s)"""
 
     bet_type = Put
     default_multiplier = {4: 3.0, 5: 4.0, 6: 5.0, 8: 5.0, 9: 4.0, 10: 3.0}
 
 
 class WinMultiplier(OddsMultiplier):
-    """Strategy that takes an AllowsOdds object and places Odds on it given the
-    multiplier that is desired to win (or a dictionary of numbers and win
-    multipliers).
+    """Adds Odds for the bet type and multiplier desired to win
 
     Args:
         base_type: The bet that odds will be added to.
@@ -346,8 +357,8 @@ class WinMultiplier(OddsMultiplier):
         )
 
 
-class _WinMultiplier(WinMultiplier):
-    """Helper class which sets the bet_type for the specific win multiplier strategies.
+class _BaseWinMultiplier(WinMultiplier):
+    """Helper to define win multiplier strategies for each bet type.
 
     Args:
         win_multiplier: If win_multiplier is a float, adds amount so that
@@ -383,41 +394,36 @@ class _WinMultiplier(WinMultiplier):
         )
 
 
-class PassLineWinMultiplier(_WinMultiplier):
-    """Strategy that adds and Odds bet to the PassLine bet based on the
-    specified win multiplier."""
+class PassLineWinMultiplier(_BaseWinMultiplier):
+    """Adds PassLine Odds to win specified multiplier(s)"""
 
     bet_type = PassLine
     default_multiplier = 6.0
 
 
-class DontPassWinMultiplier(_WinMultiplier):
-    """Strategy that adds and Odds bet to the DontPass bet based on the
-    specified win multiplier."""
+class DontPassWinMultiplier(_BaseWinMultiplier):
+    """Adds DontPass Odds to win specified multiplier(s)"""
 
     bet_type = DontPass
     default_multiplier = {4: 3.0, 5: 4.0, 6: 5.0, 8: 5.0, 9: 4.0, 10: 3.0}
 
 
-class ComeWinMultiplier(_WinMultiplier):
-    """Strategy that adds and Odds bet to the Come bet based on the
-    specified win multiplier."""
+class ComeWinMultiplier(_BaseWinMultiplier):
+    """Adds Come Odds to win specified multiplier(s)"""
 
     bet_type = Come
     default_multiplier = 6.0
 
 
-class DontComeWinMultiplier(_WinMultiplier):
-    """Strategy that adds and Odds bet to the DontCome bet based on the
-    specified win multiplier."""
+class DontComeWinMultiplier(_BaseWinMultiplier):
+    """Adds DontCome Odds to win specified multiplier(s)"""
 
     bet_type = DontCome
     default_multiplier = {4: 3.0, 5: 4.0, 6: 5.0, 8: 5.0, 9: 4.0, 10: 3.0}
 
 
-class PutWinMultiplier(_WinMultiplier):
-    """Strategy that adds and Odds bet to the Put bet based on the
-    specified win multiplier."""
+class PutWinMultiplier(_BaseWinMultiplier):
+    """Adds Put Odds to win specified multiplier(s)"""
 
     bet_type = Put
     default_multiplier = 6.0
