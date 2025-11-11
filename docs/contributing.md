@@ -1,2 +1,2 @@
-```{include} ../CONTRIBUTING
+```{include} ../CONTRIBUTING.md
 ```

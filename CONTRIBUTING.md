@@ -4,8 +4,8 @@
 
 The current top priorities for the package are to improve 
 - Documentation
-- Supported strategies (see [strategy](https://github.com/sphinx-doc/sphinx/issues/4961))
-- Supported bets (see [bet.py](https://github.com/skent259/crapssim/blob/main/crapssim/bet.py), [#38](https://github.com/skent259/crapssim/issues/38))  
+- Supported strategies (see [strategy](https://github.com/sphinx-doc/sphinx/issues/4961)) 
+- Reducing bugs and other [issues](https://github.com/skent259/crapssim/issues/)
 
 ### Do you want to help the documentation?
 
@@ -20,11 +20,6 @@ Craps has so many possible strategies, and it's hard to implement them all. The 
 
 If you saw a strategy online or in a book, and have implemented with "crapssim", then it most likely makes a great addition to the package. Please mention in [a new discussion](https://github.com/skent259/crapssim/discussions/new), file [an issue](https://github.com/skent259/crapssim/issues/new), or open [a pull request](https://github.com/skent259/crapssim/pulls) and we can work together to make sure it fits well.
 
-### Do you want to help expand supported bets?
-
-Bets to implement are currently being tracked in [#38](https://github.com/skent259/crapssim/issues/38). 
-
-This will require detailed knowledge of the package's `bet` module and also of the craps game. Please build out in a forked branch, file a [new pull request](https://github.com/skent259/crapssim/pulls) with your new bet and we can work through the details to make sure it aligns with other bets and standards.
 
 ### Did you find a bug?
 
@@ -33,13 +28,20 @@ This will require detailed knowledge of the package's `bet` module and also of t
 
 ## Contributing — Documentation and Examples
 
-### 1. Function and Type Hinting
+### Conventions
+
+* This project uses [the Black code style](https://black.readthedocs.io/en/stable/the_black_code_style/current_style.html) for formatting, which is easily [installed](https://black.readthedocs.io/en/stable/getting_started.html) or available in most IDEs
+* Code structure is moving towards [Google Python Style Guide](https://google.github.io/styleguide/pyguide.html) unless it conflicts with Black formatting
+* Documentation is moving towards [Google Style Python Docstrings](https://sphinxcontrib-napoleon.readthedocs.io/en/latest/example_google.html) (See also [here](https://google.github.io/styleguide/pyguide.html#38-comments-and-docstrings))
+
+Please double check these conventions if submitting a PR.
+
+### Function and Type Hinting
 
 All internal functions and classes should include:
 
 - A one-line summary docstring describing purpose and domain.
 - Explicit type hints for all parameters and return values.
-- Reference to table or player context if applicable.
 
 Example:
 
@@ -48,38 +50,18 @@ def payout_ratio(number: int) -> float:
     """Return the true odds payout ratio for a given point number."""
 ```
 
-When adding new modules, prefer `typing.Annotated` or `typing.Literal` where
-constraints are known (e.g., specific point numbers, payout categories).
+As above, please use [Google Style Python Docstrings](https://sphinxcontrib-napoleon.readthedocs.io/en/latest/example_google.html) (See also [here](https://google.github.io/styleguide/pyguide.html#38-comments-and-docstrings))
 
-### 3. Descriptive Internal Documentation
-
-When introducing new rules, toggles, or simulation assumptions:
-
-- Explain why the choice exists, not only how it works.
-- Link or cite standard rule variants (e.g., "3-4-5x odds structure",
-  "commission on win vs. on bet").
-- Use consistent, declarative tone — avoid subjective phrasing or casual
-  language.
-
-### 4. Testing Philosophy
+### Testing Philosophy
 
 Tests are expected to cover both numerical and structural correctness. Each
 feature addition should include:
 
 - A unit test verifying direct functional behavior.
 - An integration or stress test demonstrating stable interaction with other
-  bets.
-- Deterministic seeds where possible to ensure reproducibility.
+  modules.
 
-Well-documented test cases are considered part of the public tutorial layer:
-future contributors should be able to learn from them.
-
-By maintaining clarity in examples, precision in type hints, and strong linkage
-between simulation design and domain reasoning, the project can continue to
-serve both as a working simulator and as a reference for formal analysis of
-craps dynamics.
-
-## Running Tests and Gauntlet
+### Running Tests and Gauntlet
 
 To verify correctness locally:
 
