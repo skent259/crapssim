@@ -91,6 +91,7 @@ Sandbox <crapssim_sandbox>
 Installation <installation>
 Contributing <contributing>
 Change Log <changelog>
+Supported Bets <supported-bets>
 ```
 
 
