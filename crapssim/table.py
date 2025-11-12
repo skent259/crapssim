@@ -1,10 +1,9 @@
 import copy
-import typing
-from typing import Generator, Iterable, Literal, TypedDict
+from typing import Generator, Iterable, Literal, SupportsFloat, TypedDict
 
-from crapssim.dice import Dice
+from crapssim.dice import Dice, DicePair
 
-from .bet import Bet, BetResult, DicePair, Odds, Put
+from .bet import Bet, BetResult, Odds, Put
 from .point import Point
 from .strategy import BetPassLine, Strategy
 
@@ -210,7 +209,7 @@ class Table:
 
     def add_player(
         self,
-        bankroll: typing.SupportsFloat = 100,
+        bankroll: SupportsFloat = 100,
         strategy: Strategy = BetPassLine(5),
         name: str | None = None,
     ) -> "Player":
@@ -365,7 +364,7 @@ class Player:
     def __init__(
         self,
         table: Table,
-        bankroll: typing.SupportsFloat,
+        bankroll: SupportsFloat,
         bet_strategy: Strategy = BetPassLine(5),
         name: str = "Player",
     ) -> None:
@@ -431,7 +430,7 @@ class Player:
         return len(self.already_placed_bets(bet)) > 0
 
     def get_bets_by_type(
-        self, bet_type: typing.Type[Bet] | tuple[typing.Type[Bet], ...]
+        self, bet_type: type[Bet] | tuple[type[Bet], ...]
     ) -> list[Bet]:
         """Return bets whose type matches ``bet_type`` (supports tuples).
 
@@ -443,9 +442,7 @@ class Player:
         """
         return [x for x in self.bets if isinstance(x, bet_type)]
 
-    def has_bets(
-        self, bet_type: typing.Type[Bet] | tuple[typing.Type[Bet], ...]
-    ) -> bool:
+    def has_bets(self, bet_type: type[Bet] | tuple[type[Bet], ...]) -> bool:
         """Return True if any bet of ``bet_type`` is currently on the layout.
 
         Args:

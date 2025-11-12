@@ -1,23 +1,11 @@
 import copy
 import math
-import typing
 from abc import ABC, ABCMeta, abstractmethod
 from dataclasses import dataclass
-from typing import Hashable, Literal, Protocol, TypeAlias, TypedDict
+from typing import Hashable, Literal, Protocol, SupportsFloat, TypedDict, cast
 
 from crapssim.dice import Dice
 from crapssim.point import Point
-
-DicePair: TypeAlias = tuple[int, int]
-"""Pair of dice represented as (die_one, die_two)."""
-
-
-class SupportsFloat(Protocol):
-    """Protocol for objects that can be converted to ``float``."""
-
-    def __float__(self) -> float:
-        """Return a float representation."""
-
 
 __all__ = [
     "BetResult",
@@ -212,7 +200,7 @@ class Bet(ABC, metaclass=_MetaBetABC):
         return f"{self.__class__.__name__}(amount={self.amount})"
 
     def __add__(self, other: "Bet") -> "Bet":
-        if isinstance(other, typing.SupportsFloat):
+        if isinstance(other, SupportsFloat):
             amount = self.amount - float(other)
         elif self._placed_key == other._placed_key:
             amount = self.amount + other.amount
@@ -226,7 +214,7 @@ class Bet(ABC, metaclass=_MetaBetABC):
         return self.__add__(other)
 
     def __sub__(self, other: "Bet") -> "Bet":
-        if isinstance(other, typing.SupportsFloat):
+        if isinstance(other, SupportsFloat):
             amount = self.amount - float(other)
         elif self._placed_key == other._placed_key:
             amount = self.amount - other.amount
@@ -377,7 +365,7 @@ class Come(_WinningLosingNumbersBet):
     the point number. Pays 1 to 1.
     """
 
-    def __init__(self, amount: typing.SupportsFloat, number: int | None = None):
+    def __init__(self, amount: SupportsFloat, number: int | None = None):
         super().__init__(amount)
         possible_numbers = (4, 5, 6, 7, 8, 9, 10)
         if number in possible_numbers:
@@ -437,7 +425,7 @@ class Come(_WinningLosingNumbersBet):
         return new_bet
 
     @property
-    def _placed_key(self) -> typing.Hashable:
+    def _placed_key(self) -> Hashable:
         return type(self), self.number
 
     def __repr__(self) -> str:
@@ -497,7 +485,7 @@ class DontCome(_WinningLosingNumbersBet):
     the number is rolled before a 7. Pays 1 to 1.
     """
 
-    def __init__(self, amount: typing.SupportsFloat, number: int | None = None):
+    def __init__(self, amount: SupportsFloat, number: int | None = None):
         super().__init__(amount)
         possible_numbers = (4, 5, 6, 7, 8, 9, 10)
         if number in possible_numbers:
@@ -538,7 +526,7 @@ class DontCome(_WinningLosingNumbersBet):
         return new_bet
 
     @property
-    def _placed_key(self) -> typing.Hashable:
+    def _placed_key(self) -> Hashable:
         return type(self), self.number
 
     def __repr__(self) -> str:
@@ -560,7 +548,7 @@ class Odds(_WinningLosingNumbersBet):
 
     def __init__(
         self,
-        base_type: typing.Type["PassLine | DontPass | Come | DontCome | Put"],
+        base_type: type["PassLine | DontPass | Come | DontCome | Put"],
         number: int,
         amount: float,
         always_working: bool = False,
@@ -655,7 +643,7 @@ class Odds(_WinningLosingNumbersBet):
         )
 
     @property
-    def _placed_key(self) -> typing.Hashable:
+    def _placed_key(self) -> Hashable:
         return type(self), self.base_type, self.number
 
     def __repr__(self):
@@ -706,7 +694,7 @@ class Place(_SimpleBet):
     """Stores the place bet payouts: 9 to 5 on (4, 10), 7 to 5 on (5, 9), and 7 to 6 on (6, 8)."""
     losing_numbers: list[int] = [7]
 
-    def __init__(self, number: int, amount: typing.SupportsFloat):
+    def __init__(self, number: int, amount: SupportsFloat):
         super().__init__(amount)
         self.number = number
         """The placed number, which determines payout ratio"""
@@ -719,7 +707,7 @@ class Place(_SimpleBet):
         return new_bet
 
     @property
-    def _placed_key(self) -> typing.Hashable:
+    def _placed_key(self) -> Hashable:
         return type(self), self.number
 
     def __repr__(self) -> str:
@@ -746,7 +734,7 @@ def _compute_vig(
 
 
 def _vig_policy(
-    settings: "TableSettings",
+    settings: TableSettings,
 ) -> tuple[Literal["ceil_dollar", "nearest_dollar", "none"], float]:
     """Pull table vig rules from TableSettings."""
 
@@ -755,7 +743,7 @@ def _vig_policy(
         rounding = "nearest_dollar"
     floor_value = float(settings.get("vig_floor", 0.0) or 0.0)
     return (
-        typing.cast(Literal["ceil_dollar", "nearest_dollar", "none"], rounding),
+        cast(Literal["ceil_dollar", "nearest_dollar", "none"], rounding),
         floor_value,
     )
 
@@ -1137,7 +1125,7 @@ class HardWay(Bet):
     payout_ratios = {4: 7, 6: 9, 8: 9, 10: 7}
     """Payout ratios vary: 7 to 1 for hard 4 or 10, 9 to 1 for hard 6 or 8."""
 
-    def __init__(self, number: int, amount: typing.SupportsFloat) -> None:
+    def __init__(self, number: int, amount: SupportsFloat) -> None:
         super().__init__(amount)
         self.number: int = number
         self.payout_ratio: float = self.payout_ratios[number]
@@ -1165,7 +1153,7 @@ class HardWay(Bet):
         return new_bet
 
     @property
-    def _placed_key(self) -> typing.Hashable:
+    def _placed_key(self) -> Hashable:
         return type(self), self.number
 
     def __repr__(self) -> str:
@@ -1190,7 +1178,7 @@ class Hop(Bet):
     - Hard hop: higher payout (default 30 to 1)
     """
 
-    def __init__(self, result: tuple[int, int], amount: typing.SupportsFloat) -> None:
+    def __init__(self, result: tuple[int, int], amount: SupportsFloat) -> None:
         super().__init__(amount)
         self.result: tuple[int, int] = tuple(sorted(result))
 
@@ -1224,7 +1212,7 @@ class Hop(Bet):
         return new_bet
 
     @property
-    def _placed_key(self) -> typing.Hashable:
+    def _placed_key(self) -> Hashable:
         return type(self), self.result
 
     def __repr__(self) -> str:
