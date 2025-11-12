@@ -60,3 +60,16 @@ No external services.
 No logic changes—only structured reporting.
 
 **Deliverables:** capability query, error enums, tests, `REPORT_P5.md`.
+
+---
+
+## Phase 2 — Engine Adapter & Snapshot Mapping
+
+**Goal:** Implement a thin adapter that maps current `Table`/`Dice`/`Player` state into `EngineState`, and emit events using `EventBus`.  
+No command routing or networking yet.
+
+**Deliverables**
+- `crapssim/api/adapter.py` — EngineAdapter implementing EngineContract
+- `crapssim/api/hooks.py` — minimal hook emitter
+- `tests/unit/test_api_adapter.py` — deterministic snapshot and event tests
+- `REPORT_P2.md` — verification notes
