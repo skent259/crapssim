@@ -1,10 +1,26 @@
 import math
+
 import numpy as np
 import pytest
 
 import crapssim.bet
-from crapssim.bet import Bet, CAndE, Come, DontCome, Hop, Odds, PassLine
-from crapssim.point import Point
+from crapssim.bet import (
+    Any7,
+    Bet,
+    Boxcars,
+    CAndE,
+    Come,
+    DontCome,
+    Hop,
+    Horn,
+    Odds,
+    PassLine,
+    Three,
+    Two,
+    World,
+    Yo,
+)
+from crapssim.strategy.tools import NullStrategy
 from crapssim.table import Table, TableUpdate
 
 # Check EV of bets on a "per-roll" basis
@@ -38,10 +54,10 @@ from crapssim.table import Table, TableUpdate
         (crapssim.bet.World(1), -0.1333),
         (crapssim.bet.Big6(1), -0.0278),
         (crapssim.bet.Big8(1), -0.0278),
-        (crapssim.bet.Buy(4, 1), -0.0148),
-        (crapssim.bet.Buy(6, 1), -0.0093),
-        (crapssim.bet.Lay(4, 1), -0.0148),
-        (crapssim.bet.Lay(6, 1), -0.0093),
+        (crapssim.bet.Buy(4, 1), 0),
+        (crapssim.bet.Buy(6, 1), 0),
+        (crapssim.bet.Lay(4, 1), 0),
+        (crapssim.bet.Lay(6, 1), 0),
         (crapssim.bet.Put(4, 1), -0.0833),
         (crapssim.bet.Put(5, 1), -0.0556),
         (crapssim.bet.Put(6, 1), -0.0278),
@@ -241,7 +257,7 @@ def test_dont_come_point_inequality():
 
 
 def test_cant_instantiate_bet_object():
-    with pytest.raises(TypeError) as e_info:
+    with pytest.raises(TypeError):
         Bet(400)
 
 
@@ -356,118 +372,54 @@ def test_lay_invalid_number_raises():
         crapssim.bet.Lay(11, 10)
 
 
-def test_buy_commission_modes_and_rounding():
+def test_put_odds_allowed_when_point_on():
     t = Table()
     t.add_player()
     player = t.players[0]
-    player.add_bet(crapssim.bet.Buy(4, 19))
-    t.settings.pop("commission_mode", None)
-    t.settings.pop("commission_rounding", None)
-    t.settings["commission"] = 0.05
-    TableUpdate.roll(t, fixed_outcome=(2, 2))
-    TableUpdate.update_bets(t)
-    assert math.isfinite(player.bankroll)
-
-    t = Table()
-    t.add_player()
-    player = t.players[0]
-    t.settings["commission"] = 0.05
-    t.settings["commission_mode"] = "on_bet"
-    t.settings["commission_rounding"] = "ceil_dollar"
-    player.add_bet(crapssim.bet.Buy(4, 19))
-    TableUpdate.roll(t, fixed_outcome=(2, 2))
-    TableUpdate.update_bets(t)
-    assert math.isfinite(player.bankroll)
-
-
-def test_lay_commission_floor():
-    t = Table()
-    t.add_player()
-    player = t.players[0]
-    t.settings["commission"] = 0.05
-    t.settings["commission_mode"] = "on_win"
-    t.settings["commission_floor"] = 25.0
-    starting_bankroll = player.bankroll
-    player.add_bet(crapssim.bet.Lay(10, 20))
-    TableUpdate.roll(t, fixed_outcome=(4, 3))
-    TableUpdate.update_bets(t)
-    assert player.bankroll == pytest.approx(starting_bankroll + 10.0)
-
-
-def test_put_odds_disallowed_when_toggled_off():
-    t = Table()
-    t.add_player()
-    player = t.players[0]
-    t.settings["allow_put_odds"] = False
     t.point.number = 6
     player.add_bet(crapssim.bet.Put(6, 10))
     player.add_bet(crapssim.bet.Odds(crapssim.bet.Put, 6, 10, True))
-    assert not any(isinstance(b, crapssim.bet.Odds) for b in player.bets)
+    assert any(isinstance(b, crapssim.bet.Odds) for b in player.bets)
 
 
-def test_commission_rounding_ties_buy_nearest_even():
-    # fee target = 2.5 -> nearest even => 2 with Python round
-    from crapssim.table import Table, TableUpdate
+def test_put_only_allowed_when_point_on():
+    t = Table()
+    t.add_player(strategy=NullStrategy())
+    p = t.players[0]
+    starting_bankroll = p.bankroll
 
+    # Come-out roll has point OFF; Put bet should not be accepted.
+    p.add_bet(crapssim.bet.Put(6, 10))
+    assert not any(isinstance(b, crapssim.bet.Put) for b in p.bets)
+    assert p.bankroll == starting_bankroll
+
+    # Establish the point and retry – bet should now be accepted.
+    TableUpdate().run(t, dice_outcome=(3, 3))
+    p.add_bet(crapssim.bet.Put(6, 10))
+    assert any(isinstance(b, crapssim.bet.Put) for b in p.bets)
+
+
+@pytest.mark.parametrize(
+    "bets_1, bets_2",
+    [
+        ([Horn(4)], [Two(1), Three(1), Yo(1), Boxcars(1)]),
+        ([World(5)], [Two(1), Three(1), Yo(1), Boxcars(1), Any7(1)]),
+        ([World(5)], [Horn(4), Any7(1)]),
+    ],
+)
+def test_combined_bet_equality(bets_1, bets_2):
     t = Table()
     t.add_player()
-    p = t.players[0]
-    # Commission 5% on bet: bet=50 => fee=2.5; tie behavior pinned
-    t.settings["commission"] = 0.05
-    t.settings["commission_mode"] = "on_bet"
-    t.settings["commission_rounding"] = "nearest_dollar"
-    p.add_bet(crapssim.bet.Buy(4, 50))
-    # Hit the 4
-    TableUpdate.roll(t, fixed_outcome=(2, 2))
-    TableUpdate.update_bets(t)
-    # No assertion on exact bankroll value; the existence of this test pins tie rounding behavior.
 
+    for bet in [*bets_1, *bets_2]:
+        t.players[0].add_bet(bet)
 
-def test_commission_rounding_ties_lay_ceiling():
-    from crapssim.table import Table, TableUpdate
+    outcomes_1 = []
+    outcomes_2 = []
+    for d1 in range(1, 7):
+        for d2 in range(1, 7):
+            t.dice.fixed_roll([d1, d2])
+            outcomes_1.append(sum(b.get_result(t).bankroll_change for b in bets_1))
+            outcomes_2.append(sum(b.get_result(t).bankroll_change for b in bets_2))
 
-    t = Table()
-    t.add_player()
-    p = t.players[0]
-    # Commission 5% on bet: bet=50 => fee=2.5; ceil => 3
-    t.settings["commission"] = 0.05
-    t.settings["commission_mode"] = "on_bet"
-    t.settings["commission_rounding"] = "ceil_dollar"
-    p.add_bet(crapssim.bet.Lay(10, 50))
-    # Resolve lay with a seven
-    TableUpdate.roll(t, fixed_outcome=(4, 3))
-    TableUpdate.update_bets(t)
-
-
-def test_commission_multiplier_legacy_gate_changes_base():
-    # Prove the gate toggles the base behavior when commission_mode is unset.
-    from crapssim.table import Table, TableUpdate
-
-    # Session A: legacy True (default) -> uses multipliers when mode is unset
-    tA = Table()
-    tA.add_player()
-    pA = tA.players[0]
-    tA.settings["commission"] = 0.05
-    # (no commission_mode set)
-    tA.settings["commission_multiplier_legacy"] = True
-    pA.add_bet(crapssim.bet.Buy(4, 20))
-    preA = pA.bankroll
-    TableUpdate.roll(tA, fixed_outcome=(2, 2))  # hit 4
-    TableUpdate.update_bets(tA)
-    deltaA = pA.bankroll - preA
-
-    # Session B: legacy False -> falls back to explicit helper base without multipliers
-    tB = Table()
-    tB.add_player()
-    pB = tB.players[0]
-    tB.settings["commission"] = 0.05
-    # (no commission_mode set)
-    tB.settings["commission_multiplier_legacy"] = False
-    pB.add_bet(crapssim.bet.Buy(4, 20))
-    preB = pB.bankroll
-    TableUpdate.roll(tB, fixed_outcome=(2, 2))  # hit 4
-    TableUpdate.update_bets(tB)
-    deltaB = pB.bankroll - preB
-
-    # The deltas should differ when the gate is toggled, proving the flag is effective.
-    assert deltaA != deltaB
+    assert outcomes_1 == outcomes_2

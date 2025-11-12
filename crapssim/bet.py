@@ -1,8 +1,9 @@
 import copy
+import math
 import typing
 from abc import ABC, ABCMeta, abstractmethod
 from dataclasses import dataclass
-from typing import Hashable, Iterable, Literal, Protocol, TypedDict, TypeAlias
+from typing import Hashable, Literal, Protocol, TypeAlias, TypedDict
 
 from crapssim.dice import Dice
 from crapssim.point import Point
@@ -10,54 +11,12 @@ from crapssim.point import Point
 DicePair: TypeAlias = tuple[int, int]
 """Pair of dice represented as (die_one, die_two)."""
 
-Currency: TypeAlias = float
-"""Currency amount expressed as float dollars."""
-
 
 class SupportsFloat(Protocol):
     """Protocol for objects that can be converted to ``float``."""
 
     def __float__(self) -> float:
         """Return a float representation."""
-
-
-
-def _compute_commission(
-    table: "Table", *, gross_win: float, bet_amount: float
-) -> float:
-    """Compute commission per table settings.
-
-    Args:
-      table: Policy source.
-      gross_win: The pre-commission win amount.
-      bet_amount: The stake for this bet.
-
-    Returns:
-      Commission fee as a float after applying mode, rounding, and floor.
-    """
-
-    rate = table.settings.get("commission", 0.05)
-    mode = table.settings.get("commission_mode", "on_win")
-    rounding = table.settings.get("commission_rounding", "none")
-    floor = float(table.settings.get("commission_floor", 0.0) or 0.0)
-
-    if bet_amount < floor:
-        base = 0.0
-    else:
-        if mode == "on_bet":
-            base = bet_amount
-        else:
-            base = gross_win
-
-    fee = base * rate
-    if rounding == "ceil_dollar":
-        import math
-
-        fee = math.ceil(fee)
-    elif rounding == "nearest_dollar":
-        fee = round(fee)
-
-    return float(fee)
 
 
 __all__ = [
@@ -105,12 +64,9 @@ class TableSettings(TypedDict, total=False):
     hop_payouts: dict[str, int]
     max_odds: dict[int, int]
     max_dont_odds: dict[int, int]
-    commission: float
-    commission_mode: Literal["on_win", "on_bet"]
-    commission_rounding: Literal["none", "ceil_dollar", "nearest_dollar"]
-    commission_floor: float
-    commission_multiplier_legacy: bool
-    allow_put_odds: bool
+    vig_rounding: Literal["none", "ceil_dollar", "nearest_dollar"]
+    vig_floor: float
+    vig_paid_on_win: bool
 
 
 class Table(Protocol):
@@ -142,8 +98,8 @@ class BetResult:
     remove: bool
     """Flag indicating whether this bet result should be removed from table."""
     bet_amount: float = 0
-    """The monetary value of the original bet size. Needed only for bets that 
-    push and return the wager to the player. Default is zero for quick 
+    """The monetary value of the original bet size. Needed only for bets that
+    push and return the bet back to the player. Default is zero for quick
     results that can define wins and losses by comparing against zero."""
 
     @property
@@ -195,6 +151,10 @@ class Bet(ABC, metaclass=_MetaBetABC):
         BetResult object.
         """
         pass
+
+    def cost(self, table: Table) -> float:
+        """Total bankroll required to put this bet in action on ``table``."""
+        return self.amount
 
     def update_number(self, table: Table):
         """
@@ -600,9 +560,7 @@ class Odds(_WinningLosingNumbersBet):
 
     def __init__(
         self,
-        base_type: typing.Type[
-            "PassLine | DontPass | Come | DontCome | Put"
-        ],
+        base_type: typing.Type["PassLine | DontPass | Come | DontCome | Put"],
         number: int,
         amount: float,
         always_working: bool = False,
@@ -663,12 +621,6 @@ class Odds(_WinningLosingNumbersBet):
         """
         max_bet = self.get_max_odds(player.table) * self.base_amount(player)
         allowed = self.amount <= max_bet
-        try:
-            base_is_put = self.base_type.__name__ == "Put"
-        except Exception:
-            base_is_put = False
-        if base_is_put and player.table.settings.get("allow_put_odds", True) is False:
-            return False
         return allowed
 
     def get_max_odds(self, table: Table) -> float:
@@ -699,7 +651,7 @@ class Odds(_WinningLosingNumbersBet):
     def _get_always_working_repr(self) -> str:
         """Since the default is false, only need to print when True"""
         return (
-            f", always_working={self.always_working})" if self.always_working else f")"
+            f", always_working={self.always_working})" if self.always_working else ")"
         )
 
     @property
@@ -774,15 +726,47 @@ class Place(_SimpleBet):
         return f"Place({self.winning_numbers[0]}, amount={self.amount})"
 
 
+def _compute_vig(
+    bet_amount: float,
+    rounding: Literal["ceil_dollar", "nearest_dollar", "none"] = "nearest_dollar",
+    floor: float = 0.0,
+) -> float:
+    """Return commission in dollars using a fixed 5% rate on ``bet_amount``."""
+
+    vig = bet_amount * 0.05
+
+    if rounding == "ceil_dollar":
+        vig = math.ceil(vig)
+    elif rounding == "nearest_dollar":
+        vig = math.floor(vig + 0.5)
+
+    vig = max(vig, floor)
+
+    return float(vig)
+
+
+def _vig_policy(
+    settings: "TableSettings",
+) -> tuple[Literal["ceil_dollar", "nearest_dollar", "none"], float]:
+    """Pull table vig rules from TableSettings."""
+
+    rounding = settings.get("vig_rounding", "nearest_dollar")
+    if rounding not in {"ceil_dollar", "nearest_dollar", "none"}:
+        rounding = "nearest_dollar"
+    floor_value = float(settings.get("vig_floor", 0.0) or 0.0)
+    return (
+        typing.cast(Literal["ceil_dollar", "nearest_dollar", "none"], rounding),
+        floor_value,
+    )
+
+
 class Buy(_SimpleBet):
-    """True-odds bet on 4/5/6/8/9/10 that charges commission per table policy."""
+    """True-odds bet on 4/5/6/8/9/10 that charges vig per table policy.
+
+    Vig may be taken on the win or upfront based on ``vig_paid_on_win``.
+    """
 
     true_odds = {4: 2.0, 10: 2.0, 5: 1.5, 9: 1.5, 6: 1.2, 8: 1.2}
-    # These multipliers approximate typical house commission baselines
-    # for Buy/Lay bets under common table minimums. They exist solely to
-    # preserve historical simulation parity when commission_mode is unset
-    # and commission_multiplier_legacy=True.
-    commission_multipliers = {4: 3.552, 10: 3.552, 5: 2.169, 9: 2.169, 6: 1.3392, 8: 1.3392}
     losing_numbers: list[int] = [7]
 
     def __init__(self, number: int, amount: SupportsFloat) -> None:
@@ -792,23 +776,25 @@ class Buy(_SimpleBet):
         self.number = number
         self.payout_ratio = self.true_odds[number]
         self.winning_numbers = [number]
+        """Base amount that determines true-odds payouts."""
+
+    def vig(self, table: "Table") -> float:
+        rounding, floor = _vig_policy(table.settings)
+        return _compute_vig(self.amount, rounding=rounding, floor=floor)
+
+    def cost(self, table: "Table") -> float:
+        if table.settings.get("vig_paid_on_win", True):
+            return self.amount
+        return self.amount + self.vig(table)
 
     def get_result(self, table: "Table") -> BetResult:
         if table.dice.total == self.number:
-            gross_win = self.payout_ratio * self.amount
-            commission_base = gross_win
-            use_legacy = table.settings.get("commission_multiplier_legacy", True)
-            if use_legacy and ("commission_mode" not in table.settings):
-                commission_base = (
-                    self.amount * self.commission_multipliers[self.number]
-                )
-            commission = _compute_commission(
-                table, gross_win=commission_base, bet_amount=self.amount
-            )
-            result_amount = gross_win - commission + self.amount
+            result_amount = self.payout_ratio * self.amount + self.amount
+            if table.settings.get("vig_paid_on_win", True):
+                result_amount -= self.vig(table)
             remove = True
         elif table.dice.total == 7:
-            result_amount = -self.amount
+            result_amount = -self.cost(table)
             remove = True
         else:
             result_amount = 0
@@ -816,7 +802,8 @@ class Buy(_SimpleBet):
         return BetResult(result_amount, remove, self.amount)
 
     def copy(self) -> "Buy":
-        return self.__class__(self.number, self.amount)
+        new_bet = self.__class__(self.number, self.amount)
+        return new_bet
 
     @property
     def _placed_key(self) -> Hashable:
@@ -827,21 +814,12 @@ class Buy(_SimpleBet):
 
 
 class Lay(_SimpleBet):
-    """True-odds bet against 4/5/6/8/9/10, paying if 7 arrives first."""
+    """True-odds bet against 4/5/6/8/9/10, paying if 7 arrives first.
+
+    Vig may be taken on the win or upfront based on ``vig_paid_on_win``.
+    """
 
     true_odds = {4: 0.5, 10: 0.5, 5: 2 / 3, 9: 2 / 3, 6: 5 / 6, 8: 5 / 6}
-    # These multipliers approximate typical house commission baselines
-    # for Buy/Lay bets under common table minimums. They exist solely to
-    # preserve historical simulation parity when commission_mode is unset
-    # and commission_multiplier_legacy=True.
-    commission_multipliers = {
-        4: 1.776,
-        10: 1.776,
-        5: 1.446,
-        9: 1.446,
-        6: 1.116,
-        8: 1.116,
-    }
     winning_numbers: list[int] = [7]
 
     def __init__(self, number: int, amount: SupportsFloat) -> None:
@@ -851,23 +829,25 @@ class Lay(_SimpleBet):
         self.number = number
         self.payout_ratio = self.true_odds[number]
         self.losing_numbers = [number]
+        """Base amount risked against the box number."""
+
+    def vig(self, table: "Table") -> float:
+        rounding, floor = _vig_policy(table.settings)
+        return _compute_vig(self.amount, rounding=rounding, floor=floor)
+
+    def cost(self, table: "Table") -> float:
+        if table.settings.get("vig_paid_on_win", True):
+            return self.amount
+        return self.amount + self.vig(table)
 
     def get_result(self, table: "Table") -> BetResult:
         if table.dice.total == 7:
-            gross_win = self.payout_ratio * self.amount
-            commission_base = gross_win
-            use_legacy = table.settings.get("commission_multiplier_legacy", True)
-            if use_legacy and ("commission_mode" not in table.settings):
-                commission_base = (
-                    self.amount * self.commission_multipliers[self.number]
-                )
-            commission = _compute_commission(
-                table, gross_win=commission_base, bet_amount=self.amount
-            )
-            result_amount = gross_win - commission + self.amount
+            result_amount = self.payout_ratio * self.amount + self.amount
+            if table.settings.get("vig_paid_on_win", True):
+                result_amount -= self.vig(table)
             remove = True
         elif table.dice.total == self.number:
-            result_amount = -self.amount
+            result_amount = -self.cost(table)
             remove = True
         else:
             result_amount = 0
@@ -875,7 +855,8 @@ class Lay(_SimpleBet):
         return BetResult(result_amount, remove, self.amount)
 
     def copy(self) -> "Lay":
-        return self.__class__(self.number, self.amount)
+        new_bet = self.__class__(self.number, self.amount)
+        return new_bet
 
     @property
     def _placed_key(self) -> Hashable:
@@ -1057,19 +1038,18 @@ class Horn(_WinningLosingNumbersBet):
         return self.losing_numbers
 
     def get_payout_ratio(self, table: "Table") -> float:
+        """
+        Payout ratios expressed as 'to 1', aligned with single bets and
+        adjusting for the full bet amount returned on a win:
+        - 2/12: (30 - 3) / 4 = 6.75
+        - 3/11: (15 - 3) / 4 = 3.0
+        """
         total = table.dice.total
         if total in (2, 12):
-            return 6.75
+            return (30 - 3) / 4
         if total in (3, 11):
-            return 3.0
+            return (15 - 3) / 4
         raise NotImplementedError
-
-    def copy(self) -> "Horn":
-        return self.__class__(self.amount)
-
-    @property
-    def _placed_key(self) -> Hashable:
-        return type(self)
 
     def __repr__(self) -> str:
         return f"Horn(amount={self.amount})"
@@ -1091,21 +1071,21 @@ class World(_WinningLosingNumbersBet):
         return self.losing_numbers
 
     def get_payout_ratio(self, table: "Table") -> float:
+        """
+        Payout ratios expressed as 'to 1', consistent with simulator and
+        adjusting for the full bet amount returned on a win::
+        - 2/12: (30 - 4) / 5 = 5.2
+        - 3/11: (15 - 4) / 5 = 2.2
+        - 7:    (4  - 4) / 5 = 0.0
+        """
         total = table.dice.total
         if total in (2, 12):
-            return 5.2
+            return (30 - 4) / 5
         if total in (3, 11):
-            return 2.2
+            return (15 - 4) / 5
         if total == 7:
-            return 0.0
+            return (4 - 4) / 5
         raise NotImplementedError
-
-    def copy(self) -> "World":
-        return self.__class__(self.amount)
-
-    @property
-    def _placed_key(self) -> Hashable:
-        return type(self)
 
     def __repr__(self) -> str:
         return f"World(amount={self.amount})"
@@ -1122,13 +1102,6 @@ class Big6(_SimpleBet):
         super().__init__(amount)
         self.number = 6
 
-    def copy(self) -> "Big6":
-        return self.__class__(self.amount)
-
-    @property
-    def _placed_key(self) -> Hashable:
-        return type(self)
-
     def __repr__(self) -> str:
         return f"Big6(amount={self.amount})"
 
@@ -1143,13 +1116,6 @@ class Big8(_SimpleBet):
     def __init__(self, amount: SupportsFloat) -> None:
         super().__init__(amount)
         self.number = 8
-
-    def copy(self) -> "Big8":
-        return self.__class__(self.amount)
-
-    @property
-    def _placed_key(self) -> Hashable:
-        return type(self)
 
     def __repr__(self) -> str:
         return f"Big8(amount={self.amount})"
@@ -1418,4 +1384,3 @@ class Small(_ATSBet):
 
     type: str = "small"
     numbers: list[int] = [2, 3, 4, 5, 6]
-

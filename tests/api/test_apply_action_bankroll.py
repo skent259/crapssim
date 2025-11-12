@@ -1,3 +1,4 @@
+import pytest
 from pytest import raises
 
 from crapssim_api.actions import DEFAULT_START_BANKROLL, SessionBankrolls, get_bankroll
@@ -40,3 +41,14 @@ def test_table_rule_block_error_envelope_consistency():
 def test_default_bankroll_if_unknown_session():
     sid = "newsession"
     assert get_bankroll(sid) == DEFAULT_START_BANKROLL
+
+
+def test_buy_action_includes_vig_in_cost():
+    sid = "buy-vig"
+    SessionBankrolls[sid] = 200.0
+    res = apply_action(_req("buy", {"box": 4, "amount": 20}, sid))
+    effect = res["effect_summary"]
+    assert effect["cash_required"] == pytest.approx(21.0)
+    assert effect["vig"]["amount"] == pytest.approx(1.0)
+    assert effect["vig"]["paid_on_win"] is False
+    assert SessionBankrolls[sid] == pytest.approx(179.0)

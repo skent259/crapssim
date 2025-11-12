@@ -1,4 +1,9 @@
-import os, sys, json, time, platform, pathlib, subprocess
+import sys
+import json
+import time
+import platform
+import pathlib
+import subprocess
 import xml.etree.ElementTree as ET
 
 OUTDIR = pathlib.Path("reports/vxp_stress")
@@ -11,12 +16,27 @@ LOG_STRESS = OUTDIR / "stress.log"
 SUMMARY_MD = OUTDIR / "summary.md"
 SUMMARY_JSON = OUTDIR / "summary.json"
 
+
 def parse_junit(path: pathlib.Path):
     if not path.exists():
-        return {"tests": 0, "errors": 0, "failures": 0, "skipped": 0, "time": 0.0, "suites": []}
+        return {
+            "tests": 0,
+            "errors": 0,
+            "failures": 0,
+            "skipped": 0,
+            "time": 0.0,
+            "suites": [],
+        }
     tree = ET.parse(path)
     root = tree.getroot()
-    agg = {"tests": 0, "errors": 0, "failures": 0, "skipped": 0, "time": 0.0, "suites": []}
+    agg = {
+        "tests": 0,
+        "errors": 0,
+        "failures": 0,
+        "skipped": 0,
+        "time": 0.0,
+        "suites": [],
+    }
     for ts in root.iter("testsuite"):
         suite = {
             "name": ts.attrib.get("name", ""),
@@ -48,23 +68,31 @@ def parse_junit(path: pathlib.Path):
         agg["suites"].append(suite)
     return agg
 
+
 def read_text(path: pathlib.Path, limit=200000):
     try:
         return path.read_text(errors="ignore")[:limit]
     except Exception:
         return ""
 
+
 def get_git_info():
     def cmd(args):
         try:
-            return subprocess.check_output(args, stderr=subprocess.DEVNULL).decode().strip()
+            return (
+                subprocess.check_output(args, stderr=subprocess.DEVNULL)
+                .decode()
+                .strip()
+            )
         except Exception:
             return ""
+
     return {
         "commit": cmd(["git", "rev-parse", "HEAD"]),
         "branch": cmd(["git", "rev-parse", "--abbrev-ref", "HEAD"]),
         "dirty": bool(cmd(["git", "status", "--porcelain"])),
     }
+
 
 def main():
     env = {
@@ -88,7 +116,7 @@ def main():
             "log_stress": str(LOG_STRESS),
             "summary_md": str(SUMMARY_MD),
         },
-        "notes": "Stress includes randomized multi-session torture test over varied commission settings.",
+        "notes": "Stress includes randomized multi-session torture test over varied vig policy settings.",
     }
 
     # Markdown summary
@@ -98,16 +126,24 @@ def main():
     md.append(f"- Python: {env['python']}")
     md.append(f"- Platform: {env['platform']}")
     if env["git"]["commit"]:
-        md.append(f"- Git: {env['git']['branch']} @ {env['git']['commit']}{' (dirty)' if env['git']['dirty'] else ''}")
+        md.append(
+            f"- Git: {env['git']['branch']} @ {env['git']['commit']}{' (dirty)' if env['git']['dirty'] else ''}"
+        )
     md.append("\n## Smoke (default test run)\n")
-    md.append(f"- Tests: {smoke['tests']}  | Failures: {smoke['failures']}  | Errors: {smoke['errors']}  | Skipped: {smoke['skipped']}  | Time: {smoke['time']:.2f}s")
+    md.append(
+        f"- Tests: {smoke['tests']}  | Failures: {smoke['failures']}  | Errors: {smoke['errors']}  | Skipped: {smoke['skipped']}  | Time: {smoke['time']:.2f}s"
+    )
     md.append("\n## Stress (@stress marker)\n")
-    md.append(f"- Tests: {stress['tests']}  | Failures: {stress['failures']}  | Errors: {stress['errors']}  | Skipped: {stress['skipped']}  | Time: {stress['time']:.2f}s")
+    md.append(
+        f"- Tests: {stress['tests']}  | Failures: {stress['failures']}  | Errors: {stress['errors']}  | Skipped: {stress['skipped']}  | Time: {stress['time']:.2f}s"
+    )
     md.append("\n### Slowest Stress Cases (top 15)\n")
     cases = []
     for s in stress["suites"]:
         for c in s["cases"]:
-            cases.append((c["time"], f"{c['classname']}::{c['name']}  —  {c['status']}"))
+            cases.append(
+                (c["time"], f"{c['classname']}::{c['name']}  —  {c['status']}")
+            )
     cases.sort(reverse=True)
     for t, label in cases[:15]:
         md.append(f"- {t:.3f}s  {label}")
@@ -119,6 +155,7 @@ def main():
     OUTDIR.mkdir(parents=True, exist_ok=True)
     SUMMARY_MD.write_text(md_text)
     SUMMARY_JSON.write_text(json.dumps(summary, indent=2))
+
 
 if __name__ == "__main__":
     main()

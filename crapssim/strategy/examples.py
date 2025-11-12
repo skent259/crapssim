@@ -15,7 +15,6 @@ from crapssim.strategy.single_bet import (
     BetBuy,
     BetCome,
     BetDontPass,
-    BetField,
     BetHorn,
     BetLay,
     BetPassLine,
@@ -33,7 +32,6 @@ from crapssim.strategy.tools import (
     CountStrategy,
     Player,
     RemoveByType,
-    RemoveIfTrue,
     Strategy,
     WinProgression,
 )
@@ -771,8 +769,8 @@ class QuickProps(AggregateStrategy):
 
 class BuySampler(AggregateStrategy):
     """
-    Buy the outside numbers (4 and 10). Commission behavior is governed by
-    table settings (commission, mode, rounding, floor).
+    Buy the outside numbers (4 and 10). Commission behavior uses the fixed
+    5% rate with table policy (mode, rounding, floor).
     """
 
     def __init__(self, amount: float = 25.0):
@@ -784,7 +782,8 @@ class BuySampler(AggregateStrategy):
 
 class LaySampler(AggregateStrategy):
     """
-    Lay the inside (5 and 9). Demonstrates dark-side true-odds with commission.
+    Lay the inside (5 and 9). Demonstrates dark-side true-odds with the fixed
+    commission.
     """
 
     def __init__(self, amount: float = 30.0):
@@ -797,7 +796,6 @@ class LaySampler(AggregateStrategy):
 class PutWithOdds(AggregateStrategy):
     """
     When the point is ON, place a Put bet on 6 and take odds behind it.
-    Odds behind Put may be disabled by table.settings['allow_put_odds'] = False.
     """
 
     def __init__(
@@ -818,14 +816,15 @@ class PutWithOdds(AggregateStrategy):
         )
 
 
-class HornShowcase(AggregateStrategy):
-    """
-    Demonstrates Horn and World side-by-side to illustrate net payouts and
-    removal semantics after a single resolving roll.
-    """
+class HornExample(AggregateStrategy):
+    """Demonstrates Horn bet lifecycle and resolution."""
 
-    def __init__(self, horn_amount: float = 5.0, world_amount: float = 5.0):
-        super().__init__(
-            BetHorn(horn_amount),
-            BetWorld(world_amount),
-        )
+    def __init__(self, amount: float = 4.0):
+        super().__init__(BetHorn(amount))
+
+
+class WorldExample(AggregateStrategy):
+    """Demonstrates World bet lifecycle and resolution."""
+
+    def __init__(self, amount: float = 5.0):
+        super().__init__(BetWorld(amount))

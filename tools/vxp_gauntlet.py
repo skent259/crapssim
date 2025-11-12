@@ -1,11 +1,14 @@
 from __future__ import annotations
-import json, csv, time, pathlib
-from dataclasses import dataclass, asdict
 
-from crapssim.table import Table, TableUpdate
-from crapssim.strategy.tools import NullStrategy
+import csv
+import json
+import pathlib
+import time
+from dataclasses import asdict, dataclass
+
 import crapssim.bet as B
-
+from crapssim.strategy.tools import NullStrategy
+from crapssim.table import Table, TableUpdate
 
 # ---------- Utilities ----------
 
@@ -64,9 +67,7 @@ def scenario_horn_world() -> ScenarioResult:
     for i, total in enumerate([2, 3, 7, 11, 12]):
         before = player.bankroll
         roll_fixed(table, total)
-        rolls.append(
-            RollRecord("HornWorld", i + 1, total, before, player.bankroll)
-        )
+        rolls.append(RollRecord("HornWorld", i + 1, total, before, player.bankroll))
 
     return ScenarioResult(
         name="HornWorld",
@@ -83,7 +84,9 @@ def scenario_props_isolated() -> ScenarioResult:
     player = table.add_player(bankroll=1000.0, strategy=NullStrategy())
 
     # Defensive cleanup in case upstream defaults change before strategies run.
-    player.bets = [bet for bet in player.bets if "PassLine" not in bet.__class__.__name__]
+    player.bets = [
+        bet for bet in player.bets if "PassLine" not in bet.__class__.__name__
+    ]
 
     start_bankroll = player.bankroll
     player.add_bet(B.Horn(5))
@@ -93,9 +96,7 @@ def scenario_props_isolated() -> ScenarioResult:
     for i, total in enumerate([2, 3, 7, 11, 12]):
         before = player.bankroll
         roll_fixed(table, total)
-        rolls.append(
-            RollRecord("PropsIsolated", i + 1, total, before, player.bankroll)
-        )
+        rolls.append(RollRecord("PropsIsolated", i + 1, total, before, player.bankroll))
 
     return ScenarioResult(
         name="PropsIsolated",
@@ -119,9 +120,7 @@ def scenario_big6_big8() -> ScenarioResult:
     for i, total in enumerate(sequence):
         before = player.bankroll
         roll_fixed(table, total)
-        rolls.append(
-            RollRecord("Big6Big8", i + 1, total, before, player.bankroll)
-        )
+        rolls.append(RollRecord("Big6Big8", i + 1, total, before, player.bankroll))
 
     return ScenarioResult(
         "Big6Big8",
@@ -138,26 +137,14 @@ def scenario_buy_lay_matrix() -> list[ScenarioResult]:
     matrix = [
         {
             "name": "Default_on_win_none",
-            "settings": {
-                "commission": 0.05,
-                "commission_mode": "on_win",
-                "commission_rounding": "none",
-            },
+            "settings": {"vig_rounding": "none", "vig_paid_on_win": True},
         },
         {
             "name": "On_bet_ceil_floor25",
             "settings": {
-                "commission": 0.05,
-                "commission_mode": "on_bet",
-                "commission_rounding": "ceil_dollar",
-                "commission_floor": 25.0,
-            },
-        },
-        {
-            "name": "Legacy_unset_mode",
-            "settings": {
-                "commission": 0.05,
-                "commission_multiplier_legacy": True,
+                "vig_rounding": "ceil_dollar",
+                "vig_floor": 25.0,
+                "vig_paid_on_win": False,
             },
         },
     ]
@@ -249,38 +236,7 @@ def scenario_put_with_and_without_odds() -> list[ScenarioResult]:
         )
     )
 
-    # B) disallow odds
-    table2 = Table()
-    player2 = table2.add_player(bankroll=1000.0)
-    start_bankroll2 = player2.bankroll
-    table2.settings["allow_put_odds"] = False
-    establish_point(table2, 6)
-    player2.add_bet(B.Put(6, 10))
-    try:
-        player2.add_bet(B.Odds(B.Put, 6, 20, True))
-    except Exception:
-        pass
-
-    sequence2 = [6, 7]
-    rolls2: list[RollRecord] = []
-    for i, total in enumerate(sequence2):
-        before = player2.bankroll
-        roll_fixed(table2, total)
-        rolls2.append(
-            RollRecord("PutOddsDisallowed", i + 1, total, before, player2.bankroll)
-        )
-    output.append(
-        ScenarioResult(
-            "PutOddsDisallowed",
-            dict(table2.settings),
-            start_bankroll2,
-            player2.bankroll,
-            rolls2,
-            [repr(bet) for bet in player2.bets],
-        )
-    )
-
-    # C) illegal Put while point OFF gets stripped pre-roll
+    # B) illegal Put while point OFF gets stripped pre-roll
     table3 = Table()
     player3 = table3.add_player(bankroll=1000.0)
     start_bankroll3 = player3.bankroll
