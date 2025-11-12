@@ -17,6 +17,7 @@ from crapssim.bet import (
     Odds,
     PassLine,
     Place,
+    Put,
 )
 from crapssim.strategy import (
     AddIfNewShooter,
@@ -47,6 +48,7 @@ from crapssim.strategy.odds import (
     DontPassOddsMultiplier,
     OddsAmount,
     OddsMultiplier,
+    WinMultiplier,
 )
 from crapssim.strategy.single_bet import StrategyMode, _BaseSingleBet
 from crapssim.strategy.tools import RemoveByType, RemoveIfPointOff, ReplaceIfTrue
@@ -612,6 +614,51 @@ def test_dontcome_odds_multiplier_always_working_argument_passes_through(player)
     player.add_bet = MagicMock()
     strategy.update_bets(player)
     player.add_bet.assert_called_with(Odds(DontCome, 6, 5, always_working=True))
+
+
+def test_win_multiplier_strategy_dontpass(player):
+    strategy = WinMultiplier(DontPass, 1)
+
+    assert strategy.win_multiplier == {4: 1, 5: 1, 6: 1, 8: 1, 9: 1, 10: 1}
+    assert strategy.odds_multiplier == {4: 2.0, 5: 1.5, 6: 1.2, 8: 1.2, 9: 1.5, 10: 2}
+
+
+def test_win_multiplier_strategy_passline(player):
+    strategy = WinMultiplier(PassLine, 1)
+
+    assert strategy.win_multiplier == {4: 1, 5: 1, 6: 1, 8: 1, 9: 1, 10: 1}
+    assert strategy.odds_multiplier == {
+        4: 0.5,
+        5: 2 / 3,
+        6: 5 / 6,
+        8: 5 / 6,
+        9: 2 / 3,
+        10: 0.5,
+    }
+
+
+def test_win_multiplier_dont_pass_bet_placed(player):
+    strategy = WinMultiplier(DontCome, {6: 2})
+    player.bets = [DontCome(5, 6)]
+    player.add_bet = MagicMock()
+    strategy.update_bets(player)
+    player.add_bet.assert_called_with(Odds(DontCome, 6, 12))
+
+
+def test_win_multiplier_dont_pass_bet_not_placed(player):
+    strategy = WinMultiplier(DontCome, {6: 2})
+    player.bets = [DontCome(5, 8)]
+    player.add_bet = MagicMock()
+    strategy.update_bets(player)
+    player.add_bet.assert_not_called()
+
+
+def test_win_multiplier_pass_line_bet_placed(player):
+    strategy = WinMultiplier(Come, {9: 3})
+    player.bets = [Come(5, 9)]
+    player.add_bet = MagicMock()
+    strategy.update_bets(player)
+    player.add_bet.assert_called_with(Odds(Come, 9, 10))
 
 
 def test_base_single_bet_add_if_non_existent_add(player):
@@ -1399,8 +1446,24 @@ def test_place_68_cpr_update_bets_initial_bets_placed_no_update(player):
             "DontComeOddsAmount(bet_amount=10.0, numbers=(4, 5, 6, 8, 9, 10))",
         ),
         (
+            crapssim.strategy.odds.OddsMultiplier(PassLine, 2.0, False),
+            "OddsMultiplier(base_type=crapssim.bet.PassLine, odds_multiplier=2.0)",
+        ),
+        (
+            crapssim.strategy.odds.OddsMultiplier(PassLine, 2.0, False),
+            "OddsMultiplier(base_type=crapssim.bet.PassLine, odds_multiplier=2.0)",
+        ),
+        (
+            crapssim.strategy.odds.OddsMultiplier(PassLine, 2, True),
+            "OddsMultiplier(base_type=crapssim.bet.PassLine, odds_multiplier=2, always_working=True)",
+        ),
+        (
+            crapssim.strategy.odds.OddsMultiplier(DontPass, 1.0, False),
+            "OddsMultiplier(base_type=crapssim.bet.DontPass, odds_multiplier=1.0)",
+        ),
+        (
             crapssim.strategy.odds.PassLineOddsMultiplier(),
-            "PassLineOddsMultiplier(odds_multiplier={4: 3, 5: 4, 6: 5, 8: 5, 9: 4, 10: 3})",
+            "PassLineOddsMultiplier(odds_multiplier={4: 3.0, 5: 4.0, 6: 5.0, 8: 5.0, 9: 4.0, 10: 3.0})",
         ),
         (
             crapssim.strategy.odds.PassLineOddsMultiplier(2),
@@ -1421,6 +1484,30 @@ def test_place_68_cpr_update_bets_initial_bets_placed_no_update(player):
         (
             crapssim.strategy.odds.DontComeOddsMultiplier(2, always_working=True),
             "DontComeOddsMultiplier(odds_multiplier=2, always_working=True)",
+        ),
+        (
+            crapssim.strategy.odds.WinMultiplier(DontPass, 2),
+            "WinMultiplier(base_type=crapssim.bet.DontPass, win_multiplier=2)",
+        ),
+        (
+            crapssim.strategy.odds.WinMultiplier(PassLine, 1),
+            "WinMultiplier(base_type=crapssim.bet.PassLine, win_multiplier=1)",
+        ),
+        (
+            crapssim.strategy.odds.WinMultiplier(
+                Come, {4: 2, 5: 1, 6: 1, 8: 1, 9: 1, 10: 2}
+            ),
+            "WinMultiplier(base_type=crapssim.bet.Come, win_multiplier={4: 2, 5: 1, 6: 1, 8: 1, 9: 1, 10: 2})",
+        ),
+        (
+            crapssim.strategy.odds.WinMultiplier(
+                PassLine, {x: 6 for x in (4, 5, 6, 8, 9, 10)}
+            ),
+            "WinMultiplier(base_type=crapssim.bet.PassLine, win_multiplier=6)",
+        ),
+        (
+            crapssim.strategy.odds.WinMultiplier(DontCome, {6: 2}),
+            "WinMultiplier(base_type=crapssim.bet.DontCome, win_multiplier={6: 2})",
         ),
     ],
 )

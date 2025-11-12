@@ -20,7 +20,7 @@ This page summarizes the **current** phase plan and status. It is **overwritten*
 
 - **P2·C2 — Capabilities Endpoint & Spec Ingestion**  
   Implement `GET /capabilities` and validate a table **spec** passed at session start.  
-  - Report: bet families; legal increments; odds limits (incl. 3-4-5); Buy/Lay commission policy (mode/rounding/floor); Field pays; prop catalog.  
+  - Report: bet families; legal increments; odds limits (incl. 3-4-5); Buy/Lay vig policy (rounding/floor/timing); Field pays; prop catalog.
   - Include `why_unsupported` for any omitted feature.  
   - Spec accepted by `/start_session` must mirror capability keys.
 

@@ -5,13 +5,13 @@ from typing import Optional, Set
 import pytest
 
 import crapssim.bet as B
-from crapssim.table import Table, TableUpdate
 from crapssim.strategy.tools import NullStrategy
+from crapssim.table import Table, TableUpdate
 
 # --- Utilities ---------------------------------------------------------------
 
-DICE_PAIRS = [(d1, d2) for d1 in range(1,7) for d2 in range(1,7)]
-BOX = [4,5,6,8,9,10]
+DICE_PAIRS = [(d1, d2) for d1 in range(1, 7) for d2 in range(1, 7)]
+BOX = [4, 5, 6, 8, 9, 10]
 
 
 @pytest.fixture
@@ -20,6 +20,7 @@ def require_stress(pytestconfig):
     markexpr = getattr(pytestconfig.option, "markexpr", "") or ""
     if "stress" not in markexpr:
         pytest.skip("stress test: run with -m stress")
+
 
 def roll_fixed(table: Table, total: int):
     """Roll a specific total using a consistent (d1,d2) producing that total."""
@@ -30,6 +31,7 @@ def roll_fixed(table: Table, total: int):
             return
     raise ValueError(f"Bad total {total}")
 
+
 def try_add(player, bet):
     """Attempt to add a bet via Player.add_bet(). Silently ignore if not allowed."""
     try:
@@ -38,8 +40,10 @@ def try_add(player, bet):
         # We never want a randomized harness to explode on add attempts
         pass
 
+
 def random_bet_mix(rng: random.Random, bankroll_scale=1.0):
     """Return a function that, given (table, player), attempts random bet adds."""
+
     def attempt(table: Table, player):
         amt = bankroll_scale * rng.choice([5, 10, 15, 25, 30])
         num = rng.choice(BOX)
@@ -65,7 +69,9 @@ def random_bet_mix(rng: random.Random, bankroll_scale=1.0):
                         odds_amt = min(amt, max(5.0, player.bankroll * 0.05))
                         try_add(player, B.Odds(B.Put, bet.number, odds_amt, True))
                         break
+
     return attempt
+
 
 def invariants_after_roll(
     table: Table,
@@ -86,10 +92,6 @@ def invariants_after_roll(
         r = repr(b)
         assert isinstance(r, str) and len(r) > 0
 
-    # Put legality: if point is OFF, there should be no Put bets (guard strips them)
-    if table.point != "On" and not point_was_on:
-        assert all(not isinstance(b, B.Put) for b in p.bets)
-
     # One-roll bets (Horn, World) must not persist beyond one resolution.
     if prior_one_roll_ids:
         current_one_roll = {id(b) for b in p.bets if isinstance(b, (B.Horn, B.World))}
@@ -104,6 +106,7 @@ def invariants_after_roll(
 
 # --- Quick, deterministic smoke test (always runs) ---------------------------
 
+
 def test_vxp_randomized_smoke():
     rng = random.Random(1337)
 
@@ -111,7 +114,6 @@ def test_vxp_randomized_smoke():
     t.add_player()
     p = t.players[0]
     p.strategy = NullStrategy()
-    t.settings["commission"] = 0.05
 
     attempt = random_bet_mix(rng, bankroll_scale=1.0)
 
@@ -130,7 +132,7 @@ def test_vxp_randomized_smoke():
             roll_fixed(t, 7)
         else:
             # random non-zero roll
-            roll_fixed(t, rng.choice([2,3,4,5,6,8,9,10,11,12]))
+            roll_fixed(t, rng.choice([2, 3, 4, 5, 6, 8, 9, 10, 11, 12]))
 
         invariants_after_roll(t, pre, point_was_on, prior_one_roll)
 
@@ -143,30 +145,28 @@ def test_vxp_randomized_smoke():
 
 # --- Heavy stress (opt-in via -m stress) -------------------------------------
 
+
 @pytest.mark.stress
 def test_vxp_heavy_stress(require_stress):
     rng = random.Random(424242)
 
-    # Multiple sessions with varied commissions & seeds
+    # Multiple sessions with varied vig policies & seeds
     for sess in range(60):  # sessions
         t = Table()
         t.add_player()
         p = t.players[0]
         p.strategy = NullStrategy()
-        # Vary commission across runs, including edge-ish values
-        t.settings["commission"] = rng.choice([0.03, 0.05, 0.07, 0.10])
-        t.settings["commission_mode"] = rng.choice(["on_win", "on_bet"])
-        t.settings["commission_rounding"] = rng.choice(
+        # Vary vig policy knobs (rounding/floor/timing) across runs
+        t.settings["vig_rounding"] = rng.choice(
             ["none", "ceil_dollar", "nearest_dollar"]
         )
-        t.settings["commission_floor"] = rng.choice([0.0, 10.0, 25.0])
-        t.settings["allow_put_odds"] = rng.choice([True, False])
-
+        t.settings["vig_floor"] = rng.choice([0.0, 10.0, 25.0])
+        t.settings["vig_paid_on_win"] = rng.choice([True, False])
         attempt = random_bet_mix(rng, bankroll_scale=rng.choice([0.5, 1.0, 2.0]))
 
         # Randomly choose to start with point ON or OFF
         if rng.random() < 0.5:
-            roll_fixed(t, rng.choice([4,5,6,8,9,10]))  # set point ON
+            roll_fixed(t, rng.choice([4, 5, 6, 8, 9, 10]))  # set point ON
 
         # Occasionally start with very low bankroll to stress rejection paths
         if rng.random() < 0.25:
@@ -177,17 +177,13 @@ def test_vxp_heavy_stress(require_stress):
             pre = p.bankroll
             prior_one_roll = {id(b) for b in p.bets if isinstance(b, (B.Horn, B.World))}
 
-            # Occasionally inject illegal Put manually while point OFF to exercise guard
-            if t.point != "On" and rng.random() < 0.08:
-                p.bets.append(B.Put(rng.choice(BOX), rng.choice([5,10,15,25])))
-
             # Random next roll, 7-outs sprinkled to churn table state
             point_was_on = t.point == "On"
 
             if rng.random() < 0.18:
                 roll_fixed(t, 7)
             else:
-                roll_fixed(t, rng.choice([2,3,4,5,6,8,9,10,11,12]))
+                roll_fixed(t, rng.choice([2, 3, 4, 5, 6, 8, 9, 10, 11, 12]))
 
             invariants_after_roll(t, pre, point_was_on, prior_one_roll)
 

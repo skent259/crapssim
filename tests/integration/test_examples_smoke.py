@@ -1,18 +1,18 @@
-from crapssim.table import Table, TableUpdate
 from crapssim.strategy.examples import (
-    QuickProps,
     BuySampler,
+    HornExample,
     LaySampler,
     PutWithOdds,
-    HornShowcase,
+    QuickProps,
+    WorldExample,
 )
+from crapssim.table import Table, TableUpdate
 
 
 def _run(strategy, rolls):
     table = Table()
     player = table.add_player()
     player.strategy = strategy
-    table.settings.setdefault("commission", 0.05)
     for die_one, die_two in rolls:
         TableUpdate.roll(table, fixed_outcome=(die_one, die_two))
     assert player.bankroll == player.bankroll  # finite; ensures no NaN/inf
@@ -24,4 +24,5 @@ def test_examples_smoke():
     _run(BuySampler(25.0), rolls)
     _run(LaySampler(30.0), rolls)
     _run(PutWithOdds(10.0, 2.0, True), rolls)
-    _run(HornShowcase(5.0, 5.0), rolls)
+    _run(HornExample(4.0), rolls)
+    _run(WorldExample(5.0), rolls)

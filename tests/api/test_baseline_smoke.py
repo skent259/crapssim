@@ -25,7 +25,7 @@ def test_capabilities_contains_core_keys():
     body = json.loads(get_capabilities().body.decode())
     caps = body["capabilities"]
     assert isinstance(caps["schema_version"], int)
-    for key in ["bets", "increments", "commission"]:
+    for key in ["bets", "increments", "vig"]:
         assert key in caps
 
 

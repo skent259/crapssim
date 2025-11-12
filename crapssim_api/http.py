@@ -10,6 +10,8 @@ from fastapi import APIRouter, FastAPI
 from fastapi.responses import Response
 from pydantic import BaseModel, Field, ValidationInfo, field_validator
 
+from crapssim.bet import _compute_vig, _vig_policy
+
 from .actions import VerbRegistry
 from .actions import (
     TableView,
@@ -36,6 +38,13 @@ app = FastAPI(title="CrapsSim API")
 
 router = APIRouter()
 
+DEFAULT_VIG_SETTINGS: Dict[str, Any] = {
+    "vig_rounding": "nearest_dollar",
+    "vig_floor": 0.0,
+    "vig_paid_on_win": False,
+}
+
+
 BASE_CAPABILITIES: Capabilities = {
     "schema_version": CAPABILITIES_SCHEMA_VERSION,
     "bets": {
@@ -51,9 +60,19 @@ BASE_CAPABILITIES: Capabilities = {
         "place": {"4": 5, "5": 5, "6": 6, "8": 6, "9": 5, "10": 5},
     },
     "odds_limits": {"policy": "3-4-5", "max_x": 20},
-    "commission": {
-        "buy": {"mode": "on_win", "rate_bips": 500, "rounding": "nearest_dollar"},
-        "lay": {"mode": "on_win", "rate_bips": 500, "rounding": "nearest_dollar"},
+    "vig": {
+        "buy": {
+            "rate_bips": 500,
+            "rounding": "nearest_dollar",
+            "floor": 0.0,
+            "paid_on_win": False,
+        },
+        "lay": {
+            "rate_bips": 500,
+            "rounding": "nearest_dollar",
+            "floor": 0.0,
+            "paid_on_win": False,
+        },
     },
     "working_flags": {"comeout_odds_work": False, "place_work_comeout": False},
     "why_unsupported": {
@@ -61,6 +80,46 @@ BASE_CAPABILITIES: Capabilities = {
         "small_tall_all": "not implemented in vanilla",
     },
 }
+
+
+def _resolve_vig_settings(spec: TableSpec) -> Dict[str, Any]:
+    settings: Dict[str, Any] = dict(DEFAULT_VIG_SETTINGS)
+    vig_spec = spec.get("vig", {})
+    candidate: Dict[str, Any] | None = None
+    if isinstance(vig_spec, dict):
+        if "buy" in vig_spec and isinstance(vig_spec["buy"], dict):
+            candidate = vig_spec["buy"]
+        elif "lay" in vig_spec and isinstance(vig_spec["lay"], dict):
+            candidate = vig_spec["lay"]
+        else:
+            candidate = vig_spec
+    if candidate:
+        rounding = candidate.get("rounding")
+        if isinstance(rounding, str):
+            settings["vig_rounding"] = rounding
+        floor = candidate.get("floor")
+        if isinstance(floor, (int, float)):
+            settings["vig_floor"] = float(floor)
+        paid = candidate.get("paid_on_win")
+        if isinstance(paid, bool):
+            settings["vig_paid_on_win"] = paid
+    return settings
+
+
+def _apply_vig_settings_to_caps(caps: Dict[str, Any], vig_settings: Dict[str, Any]) -> Dict[str, Any]:
+    if "vig" not in caps:
+        return caps
+    vig_caps = {}
+    for bet_name, rule in caps["vig"].items():
+        if isinstance(rule, dict):
+            updated = dict(rule)
+            updated["rounding"] = vig_settings["vig_rounding"]
+            updated["floor"] = vig_settings["vig_floor"]
+            updated["paid_on_win"] = vig_settings["vig_paid_on_win"]
+            vig_caps[bet_name] = updated
+    caps = dict(caps)
+    caps["vig"] = vig_caps
+    return caps
 
 
 def _json_dumps(value: Any) -> str:
@@ -104,18 +163,24 @@ def start_session(body: StartSessionRequest) -> Response:
     if not isinstance(seed, int):
         raise bad_args("seed must be int")
 
-    caps = dict(BASE_CAPABILITIES)
+    vig_settings = _resolve_vig_settings(spec)
+    caps = _apply_vig_settings_to_caps(dict(BASE_CAPABILITIES), vig_settings)
     if spec.get("enabled_buylay") is False:
         caps = dict(caps)
         caps["bets"] = dict(caps["bets"])
         caps["bets"]["buy"] = []
         caps["bets"]["lay"] = []
+        if "vig" in caps:
+            caps["vig"] = dict(caps["vig"])
+            caps["vig"].pop("buy", None)
+            caps["vig"].pop("lay", None)
         caps["why_unsupported"] = dict(caps["why_unsupported"])
         caps["why_unsupported"]["buy"] = "disabled_by_spec"
         caps["why_unsupported"]["lay"] = "disabled_by_spec"
 
     session_id = str(uuid.uuid4())[:8]
     session_state = SESSION_STORE.ensure(session_id)
+    session_state["settings"] = dict(vig_settings)
     hand = session_state["hand"]
     hand_fields = hand.to_snapshot_fields()
 
@@ -180,14 +245,34 @@ def apply_action(req: dict):
     check_amount(verb, args, place_increments)
     check_limits(verb, args, odds_policy, odds_max_x)
 
+    session_state = SESSION_STORE.ensure(session_id)
+    table_settings = session_state.setdefault("settings", dict(DEFAULT_VIG_SETTINGS))
+
     amt = args.get("amount", 0)
+    required_cash = 0.0
+    vig_info: Dict[str, Any] | None = None
     if isinstance(amt, (int, float)) and amt > 0:
+        amount_value = float(amt)
+        required_cash = amount_value
+        rounding, floor = _vig_policy(table_settings)
+        if verb in ("buy", "lay"):
+            vig_amount = _compute_vig(amount_value, rounding=rounding, floor=floor)
+            vig_info = {
+                "amount": vig_amount,
+                "paid_on_win": bool(table_settings.get("vig_paid_on_win", False)),
+            }
+            if not table_settings.get("vig_paid_on_win", False):
+                required_cash += vig_amount
         # Verify funds and deduct for deterministic ledger tracking
-        check_funds(session_id, amt)
-        apply_bankroll_delta(session_id, -amt)
+        check_funds(session_id, required_cash)
+        apply_bankroll_delta(session_id, -required_cash)
 
     # ----- dispatch (still no-op stub) ---------------------------------------
     result = VerbRegistry[verb](args)
+    if vig_info is not None:
+        result["vig"] = vig_info
+    if required_cash:
+        result["cash_required"] = required_cash
     result_note = result.get("note", "")
     if result_note.startswith("stub:"):
         # clarify that legality passed
