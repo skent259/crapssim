@@ -590,6 +590,42 @@ def test_passline_on_table(
     )
 
 
+@pytest.mark.parametrize(
+    "rolls, correct_bankroll_change, correct_value_change, correct_exists",
+    [
+        ([(6, 6)], 0, 0, False),
+        ([(1, 1)], 10, 10, False),
+        ([(3, 3)], -10, 0, True),
+        ([(3, 4)], -10, -10, False),
+    ],
+)
+# fmt: on
+def test_dontpass_on_table(
+    rolls: list[tuple[int]],
+    correct_bankroll_change: float,
+    correct_value_change: float,
+    correct_exists: bool,
+):
+
+    table = Table()
+    start_bankroll = 100
+    table.add_player(bankroll=start_bankroll, strategy=NullStrategy())
+    player = table.players[0]
+    player.add_bet(DontPass(10))
+
+    table.fixed_run(rolls, verbose=True)
+
+    bankroll_change = player.bankroll - start_bankroll
+    value_change = player.bankroll + player.total_bet_amount - start_bankroll
+    exists = player.has_bets(DontPass)
+
+    assert (bankroll_change, value_change, exists) == (
+        correct_bankroll_change,
+        correct_value_change,
+        correct_exists,
+    )
+
+
 # fmt: off
 @pytest.mark.parametrize('rolls, correct_bankroll_change, correct_value_change, correct_exists', [
     (
