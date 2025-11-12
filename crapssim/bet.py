@@ -252,6 +252,9 @@ class _WinningLosingNumbersBet(Bet, ABC):
         elif table.dice.total in self.get_losing_numbers(table):
             result_amount = -1 * self.amount
             should_remove = True
+        elif table.dice.total in self.get_push_numbers(table):
+            result_amount = self.amount
+            should_remove = True
         else:
             result_amount = 0
             should_remove = False
@@ -267,6 +270,10 @@ class _WinningLosingNumbersBet(Bet, ABC):
     def get_losing_numbers(self, table: Table) -> list[int]:
         """Returns the losing numbers, based on table features"""
         pass
+
+    def get_push_numbers(self, table: Table) -> list[int]:
+        """Returns the push numbers, based on table features"""
+        return []
 
     @abstractmethod
     def get_payout_ratio(self, table: Table) -> float:
@@ -439,8 +446,6 @@ class DontPass(_WinningLosingNumbersBet):
     The opposite of the Pass Line bet. The player wins if the first roll is 2 or 3,
     pushes on 12, and loses if the first roll is 7 or 11. After a point is
     established, the player wins by rolling a 7 before the point number. Bet pays 1 to 1.
-
-    Note that a push will keep the bet active and not result in any change to bankroll.
     """
 
     def get_winning_numbers(self, table: Table) -> list[int]:
@@ -460,6 +465,11 @@ class DontPass(_WinningLosingNumbersBet):
         if table.point.number is None:
             return [7, 11]
         return [table.point.number]
+
+    def get_push_numbers(self, table: "Table") -> list[int]:
+        if table.point.number is None:
+            return [12]
+        return []
 
     def get_payout_ratio(self, table: Table) -> float:
         """Don't pass always pays out 1:1"""
@@ -502,6 +512,11 @@ class DontCome(_WinningLosingNumbersBet):
         if self.number is None:
             return [7, 11]
         return [self.number]
+
+    def get_push_numbers(self, table: "Table") -> list[int]:
+        if self.number is None:
+            return [12]
+        return []
 
     def get_payout_ratio(self, table: Table) -> float:
         """Don't Come always pays out 1:1"""
