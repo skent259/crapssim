@@ -1,25 +1,31 @@
 from __future__ import annotations
 
 import json
+import random
 import uuid
 from typing import Any, Dict
 
-import random
-
 try:
     from fastapi import APIRouter, FastAPI
-except Exception:  # pragma: no cover
-    APIRouter = None
-    FastAPI = None
-
-try:
-    from fastapi.responses import Response
-except Exception:  # pragma: no cover
+    from fastapi.responses import Response as FastAPIResponse
+except ModuleNotFoundError:  # pragma: no cover - environment without fastapi
+    APIRouter = None  # type: ignore[assignment]
+    FastAPI = None  # type: ignore[assignment]
+    FastAPIResponse = None  # type: ignore[assignment]
 
     class Response:  # minimal stub
         def __init__(self, content: str, media_type: str):
             self.body = content.encode()
             self.media_type = media_type
+else:  # pragma: no cover - FastAPI available
+    Response = FastAPIResponse  # type: ignore[assignment]
+
+
+def _ensure_fastapi() -> None:
+    if FastAPI is None or APIRouter is None:
+        raise RuntimeError(
+            "FastAPI is not installed. Install it to use the HTTP API, for example: `pip install fastapi uvicorn`."
+        )
 try:
     from pydantic import BaseModel, Field, ValidationInfo, field_validator
 except ImportError:  # pragma: no cover - pydantic v1 fallback
@@ -45,6 +51,7 @@ from .actions import (
     check_timing,
     get_bankroll,
 )
+from .capabilities import get_capabilities_payload
 from .errors import ApiError, api_error_handler, bad_args, table_rule_block, unsupported_bet
 from .events import (
     build_event,
@@ -57,17 +64,15 @@ from .session_store import SESSION_STORE
 from .types import Capabilities, StartSessionRequest, StartSessionResponse, TableSpec
 from .version import CAPABILITIES_SCHEMA_VERSION, ENGINE_API_VERSION, get_identity
 
-if FastAPI is not None:
-    app = FastAPI(title="CrapsSim API")
-    _stub_app = None
-else:  # pragma: no cover - FastAPI optional
+if FastAPI is None:  # pragma: no cover - FastAPI optional
 
     class _StubApp:  # minimal ASGI fallback
         def __call__(self, scope: Any, receive: Any, send: Any) -> None:  # pragma: no cover
             raise RuntimeError("FastAPI is not installed")
 
-    app = None
     _stub_app = _StubApp()
+else:
+    _stub_app = None
 
 if APIRouter is not None:
     router = APIRouter()
@@ -171,12 +176,21 @@ def _capabilities_dict() -> Dict[str, Any]:
     return json.loads(resp.body.decode())
 
 
-def create_app() -> FastAPI:
-    if app is None:  # pragma: no cover - FastAPI optional
+def create_app(*, strict: bool = False):
+    if FastAPI is None or router is None:  # pragma: no cover - FastAPI optional
+        if strict:
+            _ensure_fastapi()
         assert _stub_app is not None
         return _stub_app  # type: ignore[return-value]
+
+    app = FastAPI(title="CrapsSim API")
     app.add_exception_handler(ApiError, api_error_handler)
+    app.include_router(router)
     return app
+
+
+def health() -> dict[str, str]:
+    return {"status": "ok"}
 
 
 def healthz() -> Response:
@@ -185,20 +199,23 @@ def healthz() -> Response:
     return _json_response(payload)
 
 
-if app is not None:  # pragma: no cover - FastAPI optional
-    app.get("/healthz")(healthz)
-
-
 def get_capabilities() -> Response:
     payload: Dict[str, Any] = {
         "engine_api": {"version": ENGINE_API_VERSION},
         "capabilities": BASE_CAPABILITIES,
+        "summary": get_capabilities_payload(),
     }
     return _json_response(payload)
 
 
-if app is not None:  # pragma: no cover - FastAPI optional
-    app.get("/capabilities")(get_capabilities)
+def _http_capabilities() -> Dict[str, Any]:
+    return get_capabilities_payload()
+
+
+if router is not None:  # pragma: no cover - FastAPI optional
+    router.get("/health")(health)
+    router.get("/healthz")(healthz)
+    router.get("/capabilities")(_http_capabilities)
 
 
 def start_session(body: StartSessionRequest) -> Response:
@@ -250,16 +267,16 @@ def start_session(body: StartSessionRequest) -> Response:
         "snapshot": snapshot,
     }
     return _json_response(response)
-if app is not None:  # pragma: no cover - FastAPI optional
-    app.post("/start_session")(start_session)
+if router is not None:  # pragma: no cover - FastAPI optional
+    router.post("/start_session")(start_session)
 
 
 def end_session():
     return {"report_min": {"hands": 0, "rolls": 0}}
 
 
-if app is not None:  # pragma: no cover - FastAPI optional
-    app.post("/end_session")(end_session)
+if router is not None:  # pragma: no cover - FastAPI optional
+    router.post("/end_session")(end_session)
 
 
 def apply_action(req: dict):
@@ -346,8 +363,8 @@ def apply_action(req: dict):
     }
 
 
-if app is not None:  # pragma: no cover - FastAPI optional
-    app.post("/apply_action")(apply_action)
+if router is not None:  # pragma: no cover - FastAPI optional
+    router.post("/apply_action")(apply_action)
 
 
 class StepRollRequest(BaseModel):
@@ -511,5 +528,7 @@ if router is not None:  # pragma: no cover - FastAPI optional
     router.post("/step_roll")(step_roll)
 
 
-if router is not None and app is not None:  # pragma: no cover - FastAPI optional
-    app.include_router(router)
+try:  # pragma: no cover - FastAPI optional
+    app = create_app(strict=True)
+except RuntimeError:
+    app = None  # type: ignore[assignment]
