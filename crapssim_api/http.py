@@ -6,7 +6,7 @@ import uuid
 from typing import Any, Dict
 
 try:
-    from fastapi import APIRouter, FastAPI
+    from fastapi import APIRouter, FastAPI, Body
     from fastapi.responses import Response as FastAPIResponse
 except ModuleNotFoundError:  # pragma: no cover - environment without fastapi
     APIRouter = None  # type: ignore[assignment]
@@ -549,7 +549,7 @@ if FastAPI is not None:
         return {"ok": True}
 
     @router.post("/session/roll")
-    def roll(dice: list[int] | None = None):
+    def roll(dice: list[int] | None = Body(default=None)):
         if not session:
             return {"ok": False, "error":"NO_SESSION"}
         evt = session.step_roll(dice=dice)
