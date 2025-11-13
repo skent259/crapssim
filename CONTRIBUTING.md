@@ -1,10 +1,10 @@
-# Contributing
+# Contributing 
 
 ## How to contribute to crapssim
 
-The current top priorities for the package are to improve
+The current top priorities for the package are to improve 
 - Documentation
-- Supported strategies (see [strategy](https://github.com/sphinx-doc/sphinx/issues/4961))
+- Supported strategies (see [strategy](https://github.com/sphinx-doc/sphinx/issues/4961)) 
 - Reducing bugs and other [issues](https://github.com/skent259/crapssim/issues/)
 
 ### Do you want to help the documentation?
@@ -16,7 +16,7 @@ There's many ways to improve the documentation for current and future users (inc
 
 ### Do you want to help supported strategies?
 
-Craps has so many possible strategies, and it's hard to implement them all. The ultimate goal of the package is to make building strategies easy for end users, but we also want to have commonly used and well known versions available as in the package as examples.
+Craps has so many possible strategies, and it's hard to implement them all. The ultimate goal of the package is to make building strategies easy for end users, but we also want to have commonly used and well known versions available as in the package as examples. 
 
 If you saw a strategy online or in a book, and have implemented with "crapssim", then it most likely makes a great addition to the package. Please mention in [a new discussion](https://github.com/skent259/crapssim/discussions/new), file [an issue](https://github.com/skent259/crapssim/issues/new), or open [a pull request](https://github.com/skent259/crapssim/pulls) and we can work together to make sure it fits well.
 
@@ -54,10 +54,12 @@ As above, please use [Google Style Python Docstrings](https://sphinxcontrib-napo
 
 ### Testing Philosophy
 
-Tests are expected to cover both numerical and structural correctness. Each feature addition should include:
+Tests are expected to cover both numerical and structural correctness. Each
+feature addition should include:
 
 - A unit test verifying direct functional behavior.
-- An integration or stress test demonstrating stable interaction with other modules.
+- An integration or stress test demonstrating stable interaction with other
+  modules.
 
 ### Running Tests and Gauntlet
 
@@ -76,30 +78,3 @@ bash -lc 'for i in $(seq 1 25); do python tools/vxp_gauntlet.py; sleep 0.2; done
 ```
 
 Artifacts will appear under reports/vxp_gauntlet/<timestamp>/ and include JSON, CSV, and Markdown summaries.
-
----
-
-## API Baseline & Determinism Tests
-
-Before submitting any PR that affects API behavior:
-
-1. Run all tests locally:
-   ```bash
-   pytest -q
-   ```
-
-2. Verify determinism with:
-   ```bash
-   python tools/build_p4_manifest.py
-   cat baselines/phase4/manifest.json
-   ```
-   Expected result:
-   ```
-   "identical_runs": true,
-   "identical_text_hashes": true
-   ```
-
-3. Do not push modified baselines unless all tests pass.
-4. Include the manifest in your PR only if it reflects the current API tag.
-
-Tag: v0.4.0-api-p4

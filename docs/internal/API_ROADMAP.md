@@ -24,7 +24,7 @@ _Add deterministic HTTP API adapter for CrapsSim-Vanilla (v0.1.0-api)._
 **Goal:** Start/end sessions and report truthful capabilities.
 
 - **P2·C1 — `/start_session` + `/end_session`**: accept `{spec, seed}`; return `{session_id, snapshot}`
-- **P2·C2 — `/capabilities`**: bet families, increments/limits, odds policy (3-4-5), vig rounding/floor/timing, field pays, prop catalog
+- **P2·C2 — `/capabilities`**: bet families, increments/limits, odds policy (3-4-5), commission modes/rounding/floors, field pays, prop catalog
 - **P2·C3 — Identity & idempotency**: echo `{spec, seed}`; idempotency key on mutating calls
 - **P2·C4 — Docs**: `docs/API_LIFECYCLE.md`; tag `v0.1.0-api-phase2`
 
@@ -49,7 +49,7 @@ _Add deterministic HTTP API adapter for CrapsSim-Vanilla (v0.1.0-api)._
 **Goal:** Atomic toss resolution with ordered events and single source-of-truth snapshot.
 
 - **P4·C1 — `/step_roll`**: `{"mode":"auto"}` (seed RNG) or `{"mode":"inject","dice":[d1,d2]}`
-- **P4·C2 — Event schema**: `hand_started, puck_on/off, point_set, bet_placed, bet_traveled, bet_resolved{payout,vig}, payment, seven_out, hand_ended`
+- **P4·C2 — Event schema**: `hand_started, puck_on/off, point_set, bet_placed, bet_traveled, bet_resolved{payout,commission}, payment, seven_out, hand_ended`
 - **P4·C3 — Snapshot generator**: stable JSON for puck/point/dice/bankroll/bets/flags/identity
 - **P4·C4 — Tests**: point cycles, seven-outs, event ordering
 - **P4·C5 — Docs**: `docs/API_SNAPSHOT.md`; tag `v0.1.0-api-phase4`
@@ -73,7 +73,7 @@ _Add deterministic HTTP API adapter for CrapsSim-Vanilla (v0.1.0-api)._
 ## Phase 6 — Docs, Conformance Suite, Release Candidate
 **Goal:** Professional docs + self-test battery.
 
-- **P6·C1 — Vig docs**: `GET /docs/vig` with worked examples (paid_on_win vs upfront + ceil + floor)
+- **P6·C1 — Commission docs**: `GET /docs/commission` with worked examples (on_win vs on_bet + ceil + floor)
 - **P6·C2 — Conformance mini-suite**: payouts (Place/Buy/Lay/Odds incl. 3-4-5), field/hardways, timing rejections, rounding ties, replay parity
 - **P6·C3 — Docs polish**: `docs/API_OVERVIEW.md`, endpoint inventory, schema examples
 - **P6·C4 — Tag & PR**: `v0.1.0-api` and submit adapter PR
@@ -99,20 +99,3 @@ _Add deterministic HTTP API adapter for CrapsSim-Vanilla (v0.1.0-api)._
 - `POST /step_roll`  
 - *(Pre-GA)* `GET /export_tape`, `POST /import_tape`
 
-
-# CrapsSim-Vanilla API — Roadmap
-
-## Phase 3 — Actions & Legality Enforcement
-**Goal:** Implement `/apply_action` with timing windows, increments/limits, and machine-readable errors. Keep adapter-only; no game math changes.
-
-### Checkpoints
-- **P3 · C0** — Docs Kickoff & Roadmap Sync (THIS)
-- **P3 · C1** — Action Schema & Dispatch Stub (unified verb & args shape, no side effects)
-- **P3 · C2** — Timing & Legality Core (windows, increments, limits, base/odds dependencies)
-- **P3 · C3** — Error Codes Expansion (ILLEGAL_TIMING, ILLEGAL_AMOUNT, LIMIT_BREACH, INSUFFICIENT_FUNDS)
-- **P3 · C4** — Baseline & Tag (v0.3.0-api.p3)
-
-### Principles
-- Determinism: same spec + seed + tape ⇒ identical outcomes.
-- Truthful capabilities; never over-promise.
-- Adapter-only: enforce legality and timing without duplicating engine math.

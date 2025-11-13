@@ -2,7 +2,7 @@
 is allowed."""
 
 import enum
-import typing
+from typing import SupportsFloat
 
 from crapssim.bet import (
     All,
@@ -42,7 +42,6 @@ from crapssim.strategy.tools import (
     RemoveIfTrue,
     Strategy,
 )
-
 
 __all__ = [
     "StrategyMode",
@@ -139,7 +138,7 @@ class BetSingle(_BaseSingleBet):
 
     def __init__(
         self,
-        bet_amount: typing.SupportsFloat,
+        bet_amount: SupportsFloat,
         mode: StrategyMode = StrategyMode.ADD_IF_NOT_BET,
     ) -> None:
         super().__init__(self.bet_type(bet_amount), mode=mode)
@@ -153,7 +152,7 @@ class BetSingleNumber(_BaseSingleBet):
     def __init__(
         self,
         number: int,
-        bet_amount: typing.SupportsFloat,
+        bet_amount: SupportsFloat,
         mode: StrategyMode = StrategyMode.ADD_IF_NOT_BET,
     ) -> None:
         super().__init__(self.bet_type(number, bet_amount), mode=mode)
@@ -257,7 +256,7 @@ class BetPlace(Strategy):
 class BetPassLine(_BaseSingleBet):
     def __init__(
         self,
-        bet_amount: typing.SupportsFloat,
+        bet_amount: SupportsFloat,
         mode=StrategyMode.ADD_IF_POINT_OFF,
     ):
         super().__init__(PassLine(bet_amount), mode=mode)
@@ -266,7 +265,7 @@ class BetPassLine(_BaseSingleBet):
 class BetDontPass(_BaseSingleBet):
     def __init__(
         self,
-        bet_amount: typing.SupportsFloat,
+        bet_amount: SupportsFloat,
         mode=StrategyMode.ADD_IF_POINT_OFF,
     ):
         super().__init__(DontPass(bet_amount), mode=mode)
@@ -275,7 +274,7 @@ class BetDontPass(_BaseSingleBet):
 class BetCome(_BaseSingleBet):
     def __init__(
         self,
-        bet_amount: typing.SupportsFloat,
+        bet_amount: SupportsFloat,
         mode=StrategyMode.ADD_IF_POINT_ON,
     ):
         super().__init__(Come(bet_amount), mode=mode)
@@ -284,7 +283,7 @@ class BetCome(_BaseSingleBet):
 class BetDontCome(_BaseSingleBet):
     def __init__(
         self,
-        bet_amount: typing.SupportsFloat,
+        bet_amount: SupportsFloat,
         mode=StrategyMode.ADD_IF_POINT_ON,
     ):
         super().__init__(DontCome(bet_amount), mode=mode)
@@ -294,7 +293,7 @@ class BetHardWay(_BaseSingleBet):
     def __init__(
         self,
         number: tuple[int],
-        bet_amount: typing.SupportsFloat,
+        bet_amount: SupportsFloat,
         mode=StrategyMode.ADD_IF_NOT_BET,
     ):
         if number not in [4, 6, 8, 10]:
@@ -313,7 +312,7 @@ class BetHop(_BaseSingleBet):
     def __init__(
         self,
         result: tuple[int, int],
-        bet_amount: typing.SupportsFloat,
+        bet_amount: SupportsFloat,
         mode=StrategyMode.ADD_IF_NOT_BET,
     ):
         if result[0] not in [1, 2, 3, 4, 5, 6] or result[1] not in [1, 2, 3, 4, 5, 6]:
@@ -331,7 +330,7 @@ class BetHop(_BaseSingleBet):
 class BetField(_BaseSingleBet):
     def __init__(
         self,
-        bet_amount: typing.SupportsFloat,
+        bet_amount: SupportsFloat,
         mode=StrategyMode.ADD_IF_NOT_BET,
     ):
         super().__init__(Field(bet_amount), mode=mode)
@@ -340,7 +339,7 @@ class BetField(_BaseSingleBet):
 class BetAny7(_BaseSingleBet):
     def __init__(
         self,
-        bet_amount: typing.SupportsFloat,
+        bet_amount: SupportsFloat,
         mode=StrategyMode.ADD_IF_NOT_BET,
     ):
         super().__init__(Any7(bet_amount), mode=mode)
@@ -375,7 +374,7 @@ class BetTwo(_BaseSingleBet):
 
     def __init__(
         self,
-        bet_amount: typing.SupportsFloat,
+        bet_amount: SupportsFloat,
         mode: StrategyMode = StrategyMode.ADD_IF_NOT_BET,
     ) -> None:
         super().__init__(Two(bet_amount), mode=mode)
@@ -386,7 +385,7 @@ class BetThree(_BaseSingleBet):
 
     def __init__(
         self,
-        bet_amount: typing.SupportsFloat,
+        bet_amount: SupportsFloat,
         mode: StrategyMode = StrategyMode.ADD_IF_NOT_BET,
     ) -> None:
         super().__init__(Three(bet_amount), mode=mode)
@@ -397,7 +396,7 @@ class BetYo(_BaseSingleBet):
 
     def __init__(
         self,
-        bet_amount: typing.SupportsFloat,
+        bet_amount: SupportsFloat,
         mode: StrategyMode = StrategyMode.ADD_IF_NOT_BET,
     ) -> None:
         super().__init__(Yo(bet_amount), mode=mode)
@@ -408,7 +407,7 @@ class BetBoxcars(_BaseSingleBet):
 
     def __init__(
         self,
-        bet_amount: typing.SupportsFloat,
+        bet_amount: SupportsFloat,
         mode: StrategyMode = StrategyMode.ADD_IF_NOT_BET,
     ) -> None:
         super().__init__(Boxcars(bet_amount), mode=mode)

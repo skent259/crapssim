@@ -1,1 +1,0 @@
-API tests now call pytest.importorskip for FastAPI and Pydantic so they skip cleanly when those packages are absent. The /session/roll endpoint reads dice from the JSON body via a RollRequest model. `PYTHONPATH=. pytest -q` passes with API tests skipped when FastAPI/Pydantic are unavailable.

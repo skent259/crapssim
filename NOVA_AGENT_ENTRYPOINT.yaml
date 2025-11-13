@@ -1,6 +1,0 @@
-current_phase: 3
-current_checkpoint: 0
-checkpoint_title: Docs Kickoff & Roadmap Sync
-allow_behavior_change: false
-notes: |
-  Phase 3 is documentation-only at C0. Do not modify runtime or endpoint behavior in this checkpoint.

@@ -150,13 +150,13 @@ def test_vxp_randomized_smoke():
 def test_vxp_heavy_stress(require_stress):
     rng = random.Random(424242)
 
-    # Multiple sessions with varied vig policies & seeds
+    # Multiple sessions with varied commission policies & seeds
     for sess in range(60):  # sessions
         t = Table()
         t.add_player()
         p = t.players[0]
         p.strategy = NullStrategy()
-        # Vary vig policy knobs (rounding/floor/timing) across runs
+        # Vary commission policy knobs (mode/rounding/floor) across runs
         t.settings["vig_rounding"] = rng.choice(
             ["none", "ceil_dollar", "nearest_dollar"]
         )

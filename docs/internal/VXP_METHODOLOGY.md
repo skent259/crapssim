@@ -9,7 +9,7 @@ It is meant to be a maintainer-facing record rather than a user guide.
 - **Horn** (net-modeled equal split across 2/3/11/12)  
 - **World (Whirl)** (Horn + Any 7 break-even; net-modeled)  
 - **Big6 / Big8** (even-money; persistent)  
-- **Buy / Lay** (true-odds with vig policy knobs)
+- **Buy / Lay** (true-odds with commission policy knobs)  
 - **Put** (legal only with point ON)
 
 ### Policy toggles (Table.settings)
@@ -25,8 +25,8 @@ It is meant to be a maintainer-facing record rather than a user guide.
 
 ## Design choices (brief rationale)
 
-- **Net-modeled Horn/World:**
-  We model equal-split books as a single net bet to keep payouts transparent and avoid sub-bet bookkeeping. This is documented and tested with EV pins.
+- **Net-modeled Horn/World:**  
+  We model equal-split books as a single net wager to keep payouts transparent and avoid sub-bet bookkeeping. This is documented and tested with EV pins.
 
 - **Commission policy as first-class settings:**
   Houses vary on “on-win vs on-bet,” rounding, and floors. The rate is fixed at 5%, but we exposed the remaining variants as settings and kept **defaults backward compatible**.
@@ -43,7 +43,7 @@ It is meant to be a maintainer-facing record rather than a user guide.
 
 2. **Stress tests**
    - Randomized harness (`@pytest.mark.stress`) varying:
-     - vig rounding/floor/timing
+     - commission mode/rounding/floor
      - bankroll size (including small)
      - injected illegal Put (guard check)
    - Invariants: no NaN/inf, no lingering one-roll props, Put absent when point OFF.

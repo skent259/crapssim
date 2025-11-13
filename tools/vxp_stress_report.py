@@ -116,7 +116,7 @@ def main():
             "log_stress": str(LOG_STRESS),
             "summary_md": str(SUMMARY_MD),
         },
-        "notes": "Stress includes randomized multi-session torture test over varied vig policy settings.",
+        "notes": "Stress includes randomized multi-session torture test over varied commission policy settings.",
     }
 
     # Markdown summary

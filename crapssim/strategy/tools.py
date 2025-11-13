@@ -2,9 +2,8 @@
 strategies with the intended usage. Each of the strategies included in this package are intended
 to be used as building blocks when creating strategies."""
 
-import typing
 from abc import ABC, abstractmethod
-from typing import Protocol
+from typing import Callable, Protocol, SupportsFloat
 
 from crapssim.bet import Bet, HardWay, Hop, Place
 from crapssim.dice import Dice
@@ -49,9 +48,7 @@ class Player(Protocol):
 
     def already_placed(self, bet: Bet) -> bool: ...
 
-    def get_bets_by_type(
-        self, bet_type: typing.Type[Bet] | tuple[typing.Type[Bet], ...]
-    ): ...
+    def get_bets_by_type(self, bet_type: type[Bet] | tuple[type[Bet], ...]): ...
 
     def remove_bet(self, bet: Bet) -> None: ...
 
@@ -167,7 +164,7 @@ class NullStrategy(Strategy):
 class AddIfTrue(Strategy):
     """Strategy that places a bet if a given key taking Player as a parameter is True."""
 
-    def __init__(self, bet: Bet, key: typing.Callable[[Player], bool]):
+    def __init__(self, bet: Bet, key: Callable[[Player], bool]):
         """The strategy will place the given bet if the given key is True.
 
         Parameters
@@ -225,7 +222,7 @@ class RemoveIfTrue(Strategy):
     """Strategy that removes all bets that are True for a given key. The key takes the Bet and the
     Player as parameters."""
 
-    def __init__(self, key: typing.Callable[["Bet", Player], bool]):
+    def __init__(self, key: Callable[["Bet", Player], bool]):
         """The strategy will remove all bets that are true for the given key.
 
         Parameters
@@ -274,7 +271,7 @@ class ReplaceIfTrue(Strategy):
     """Strategy that iterates through the bets on the table and if the given key is true, replaces
     the bet with the given bet."""
 
-    def __init__(self, bet: Bet, key: typing.Callable[[Bet, Player], bool]):
+    def __init__(self, bet: Bet, key: Callable[[Bet, Player], bool]):
         self.key = key
         self.bet = bet
 
@@ -398,7 +395,7 @@ class CountStrategy(AddIfTrue):
 
     def __init__(
         self,
-        bet_type: typing.Type[Bet] | tuple[typing.Type[Bet], ...],
+        bet_type: type[Bet] | tuple[type[Bet], ...],
         count: int,
         bet: Bet,
     ) -> None:
@@ -475,9 +472,7 @@ class RemoveIfPointOff(RemoveIfTrue):
 class RemoveByType(RemoveIfTrue):
     """Remove any bets that are of the given type(s)."""
 
-    def __init__(
-        self, bet_type: typing.Type[Bet] | tuple[typing.Type[Bet], ...]
-    ) -> None:
+    def __init__(self, bet_type: type[Bet] | tuple[type[Bet], ...]) -> None:
         """Remove all bets matching ``bet_type``."""
         super().__init__(lambda b, p: isinstance(b, bet_type))
 
@@ -486,7 +481,7 @@ class WinProgression(Strategy):
     """Strategy that every time a bet is won, moves to the next amount in the progression and
     places a Field bet for that amount."""
 
-    def __init__(self, first_bet: Bet, multipliers: list[typing.SupportsFloat]) -> None:
+    def __init__(self, first_bet: Bet, multipliers: list[SupportsFloat]) -> None:
         """Configure the baseline bet and multiplier progression.
 
         Args:
