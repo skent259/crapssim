@@ -2,12 +2,12 @@
 
 ## Intro
 
-`crapssim_api` is an optional, lightweight HTTP wrapper around the core CrapsSim
-engine. You can run every simulation entirely locally without it; the API only
-exists to expose simple "handles" for tools such as CSC automations, Node-RED
-flows, or custom dashboards. By design the server stays low-bloat—there is no
-extra analytics layer, no background schedulers, and no new game logic—just
-straightforward request/response I/O around the simulator state.
+`crapssim_api` is an optional, lightweight HTTP wrapper around the core
+CrapsSim engine. You can run every simulation entirely locally without it; the
+API only exists to expose simple "handles" for tools such as CSC automations,
+Node-RED flows, or custom dashboards. By design the server stays low-bloat—there
+is no extra analytics layer, no background schedulers, and no new game
+logic—just straightforward request/response I/O around the simulator state.
 
 ## Installation / Extras
 
@@ -16,22 +16,25 @@ surface and its tests you need the optional FastAPI stack. Install the published
 extras together with a lightweight ASGI server:
 
 ```bash
-pip install "crapssim[testing]" uvicorn
+pip install "crapssim[api]"
 ```
 
-The `[testing]` extra currently bundles the API dependencies (FastAPI,
-httpx/pydantic). You may also install the individual packages manually if you
-prefer. Without these extras the core engine continues to work, but the HTTP app
-and its tests are unavailable.
+The `[api]` extra bundles the API dependencies (FastAPI, pydantic, uvicorn). You
+may also install the individual packages manually if you prefer. Without these
+extras the core engine continues to work, but the HTTP app and its tests are
+unavailable.
 
 ## Starting the Server
 
-The HTTP application is exposed via the `create_app()` factory in
-`crapssim_api.http`. Launch it with any ASGI server that supports the FastAPI
-interface. A typical development command using `uvicorn` is:
+The HTTP application is exposed via an app factory. Launch it with any ASGI
+server that supports FastAPI. Typical development commands:
 
 ```bash
-uvicorn crapssim_api.http:create_app --factory --reload
+uvicorn crapssim_api.fastapi_app:create_app --factory --reload
+
+# or
+
+python -m crapssim_api.fastapi_app
 ```
 
 Unless you pass different parameters, uvicorn binds to `http://127.0.0.1:8000`.
@@ -103,7 +106,7 @@ try:
     from fastapi.testclient import TestClient
 except ImportError as exc:  # pragma: no cover - FastAPI optional
     raise SystemExit(
-        "Install the optional API extras to run this snippet: pip install \"crapssim[testing]\""
+        "Install the optional API extras to run this snippet: pip install \"crapssim[api]\""
     ) from exc
 
 from crapssim_api.http import create_app
