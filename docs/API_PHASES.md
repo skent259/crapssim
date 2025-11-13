@@ -73,3 +73,14 @@ No command routing or networking yet.
 - `crapssim/api/hooks.py` — minimal hook emitter
 - `tests/unit/test_api_adapter.py` — deterministic snapshot and event tests
 - `REPORT_P2.md` — verification notes
+
+## Phase 3 — Command Routing & Legality Gate (in-process)
+
+**What:** A minimal router that accepts structured commands, validates legality/timing/funds using vanilla logic, applies them, and returns a fresh snapshot.  
+**No networking. No new services.**
+
+**Verbs (v1):** `add_bet`, `remove_bet`, `press_bet`, `regress_bet` (may be UNSUPPORTED), `set_dice` (debug only), `roll`, `clear_all` (test convenience).
+
+**Result:** Each command returns `{ success, error?, state }`. Errors use stable codes: `ILLEGAL_BET`, `BAD_INCREMENT`, `INSUFFICIENT_FUNDS`, `NOT_FOUND`, `FORBIDDEN`, `UNSUPPORTED`, `BAD_ARGUMENTS`, `INTERNAL`.
+
+**Guarantees:** No changes to bet math; the router delegates to existing Table/Player/Bet behaviors. Fixed-dice is gated behind `debug.allow_fixed_dice`.

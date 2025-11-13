@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any, Protocol, TypedDict, Dict, Tuple, Optional
+from typing import Any, Dict, Literal, NotRequired, Optional, Protocol, Tuple, TypedDict, TYPE_CHECKING
+
+Verb = Literal["add_bet", "remove_bet", "press_bet", "regress_bet", "set_dice", "roll", "clear_all"]
 
 
 @dataclass(frozen=True)
@@ -20,24 +22,52 @@ class EngineState:
     timestamp: float              # seconds since epoch (float)
 
 
-class EngineCommand(TypedDict):
-    """
-    Generic command envelope. Future phases may define stricter shapes,
-    but Phase 1 keeps this simple and typed.
-    """
-    name: str                   # "roll", "bet", "remove", "clear", etc.
-    args: Dict[str, Any]        # e.g., {"type":"Place","number":6,"amount":30}
+class EngineCommand(TypedDict, total=False):
+    """Structured command sent to the engine router."""
+
+    # Phase 3 verbs ---------------------------------------------------------
+    verb: Verb
+    type: NotRequired[str]
+    number: NotRequired[int]
+    amount: NotRequired[float]
+    d1: NotRequired[int]
+    d2: NotRequired[int]
+
+    # Phase 1 legacy envelope ----------------------------------------------
+    name: NotRequired[str]
+    args: NotRequired[Dict[str, Any]]
 
 
-@dataclass(frozen=True)
-class EngineResult:
-    """
-    Result from applying a command. Phase 1 does not enforce legality
-    here—this is just the contract type. Later phases may add codes.
-    """
-    success: bool
-    reason: Optional[str]
-    new_state: EngineState
+class EngineError(TypedDict, total=False):
+    code: str
+    reason: str
+    details: NotRequired[Dict[str, Any]]
+
+
+if TYPE_CHECKING:
+    class EngineResult(TypedDict, total=False):
+        """Result payload returned by the command router."""
+
+        success: bool
+        error: NotRequired[EngineError]
+        state: Dict[str, Any]
+        reason: NotRequired[Optional[str]]  # legacy alias
+        new_state: NotRequired[EngineState]  # legacy alias
+else:
+
+    @dataclass
+    class EngineResult:
+        """Runtime representation retained for Phase 1 compatibility."""
+
+        success: bool
+        state: Optional[Dict[str, Any] | EngineState] = None
+        error: Optional[EngineError] = None
+        reason: Optional[str] = None
+        new_state: Optional[EngineState] = None
+
+        def __post_init__(self) -> None:  # pragma: no cover - defensive
+            if self.state is None and self.new_state is not None:
+                self.state = self.new_state
 
 
 class EngineContract(Protocol):
@@ -53,5 +83,6 @@ __all__ = [
     "EngineState",
     "EngineCommand",
     "EngineResult",
+    "EngineError",
     "EngineContract",
 ]

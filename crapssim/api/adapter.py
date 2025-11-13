@@ -4,6 +4,7 @@ import time
 from typing import Any, Dict
 
 from crapssim.api.contract import EngineCommand, EngineResult, EngineState
+from crapssim.api.router import route
 
 
 class EngineAdapter:
@@ -14,6 +15,7 @@ class EngineAdapter:
         self._roll_id = 0
         self._hand_id = 0
         self._last_resolved: Dict[str, float] = {}
+        setattr(self.table, "adapter", self)
 
     # ------------------------------------------------------------------
     def snapshot(self) -> EngineState:
@@ -50,8 +52,8 @@ class EngineAdapter:
 
     # ------------------------------------------------------------------
     def apply(self, command: EngineCommand) -> EngineResult:
-        """Phase 2 placeholder — always returns success with a snapshot."""
-        return EngineResult(success=True, reason=None, new_state=self.snapshot())
+        """Validate and apply a command via the in-process router."""
+        return route(self, self.table, command)
 
     # ------------------------------------------------------------------
     def register_resolution(self, bet_label: str, delta: float) -> None:
