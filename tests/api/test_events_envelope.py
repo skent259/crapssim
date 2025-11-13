@@ -1,5 +1,8 @@
 import pytest
 
+pytest.importorskip("fastapi")
+pytest.importorskip("pydantic")
+
 try:
     from fastapi import FastAPI
 except Exception:  # pragma: no cover

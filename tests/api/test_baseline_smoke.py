@@ -5,6 +5,9 @@ from subprocess import run
 
 import pytest
 
+pytest.importorskip("fastapi")
+pytest.importorskip("pydantic")
+
 try:
     from fastapi.testclient import TestClient
 except ModuleNotFoundError:  # pragma: no cover - optional fastapi

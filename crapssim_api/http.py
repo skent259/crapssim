@@ -28,18 +28,41 @@ def _ensure_fastapi() -> None:
         )
 try:
     from pydantic import BaseModel, Field, ValidationInfo, field_validator
-except ImportError:  # pragma: no cover - pydantic v1 fallback
-    from pydantic import BaseModel, Field, validator
+except ImportError:  # pragma: no cover - pydantic optional or v1 fallback
+    try:
+        from pydantic import BaseModel, Field, validator
 
-    ValidationInfo = Dict[str, Any]  # type: ignore[assignment]
+        ValidationInfo = Dict[str, Any]  # type: ignore[assignment]
 
-    def field_validator(field_name: str, *field_args: Any, **field_kwargs: Any):  # type: ignore[override]
-        def decorator(func):
-            return validator(field_name, *field_args, **field_kwargs)(func)
+        def field_validator(field_name: str, *field_args: Any, **field_kwargs: Any):  # type: ignore[override]
+            def decorator(func):
+                return validator(field_name, *field_args, **field_kwargs)(func)
 
-        return decorator
+            return decorator
+
+    except ImportError:  # pragma: no cover - no pydantic available
+
+        class BaseModel:  # type: ignore[override]
+            def __init__(self, **data: Any) -> None:
+                for key, value in data.items():
+                    setattr(self, key, value)
+
+        def Field(default: Any = ..., **kwargs: Any) -> Any:  # type: ignore[override]
+            return default
+
+        ValidationInfo = Dict[str, Any]  # type: ignore[assignment]
+
+        def field_validator(field_name: str, *field_args: Any, **field_kwargs: Any):  # type: ignore[override]
+            def decorator(func):
+                return func
+
+            return decorator
 
 from crapssim.bet import _compute_vig, _vig_policy
+
+
+class RollRequest(BaseModel):
+    dice: list[int] | None = None
 
 from .actions import VerbRegistry
 from .actions import (
@@ -549,9 +572,10 @@ if FastAPI is not None:
         return {"ok": True}
 
     @router.post("/session/roll")
-    def roll(dice: list[int] | None = Body(default=None)):
+    def roll(payload: RollRequest | None = Body(default=None)):
         if not session:
             return {"ok": False, "error":"NO_SESSION"}
+        dice = payload.dice if payload is not None else None
         evt = session.step_roll(dice=dice)
         return {"ok": True, "event": evt}
 
