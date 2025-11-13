@@ -1,10 +1,23 @@
-from fastapi import FastAPI
-from fastapi.testclient import TestClient
+import pytest
+
+try:
+    from fastapi import FastAPI
+except Exception:  # pragma: no cover
+    FastAPI = None
+
+try:
+    from fastapi.testclient import TestClient
+except Exception:  # pragma: no cover
+    TestClient = None
 
 from crapssim_api.http import router
 
+if TestClient is None or FastAPI is None:
+    pytest.skip("fastapi not installed", allow_module_level=True)
+
 app = FastAPI()
-app.include_router(router)
+if router is not None:
+    app.include_router(router)
 client = TestClient(app)
 
 

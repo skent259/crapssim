@@ -6,9 +6,32 @@ from typing import Any, Dict
 
 import random
 
-from fastapi import APIRouter, FastAPI
-from fastapi.responses import Response
-from pydantic import BaseModel, Field, ValidationInfo, field_validator
+try:
+    from fastapi import APIRouter, FastAPI
+except Exception:  # pragma: no cover
+    APIRouter = None
+    FastAPI = None
+
+try:
+    from fastapi.responses import Response
+except Exception:  # pragma: no cover
+
+    class Response:  # minimal stub
+        def __init__(self, content: str, media_type: str):
+            self.body = content.encode()
+            self.media_type = media_type
+try:
+    from pydantic import BaseModel, Field, ValidationInfo, field_validator
+except ImportError:  # pragma: no cover - pydantic v1 fallback
+    from pydantic import BaseModel, Field, validator
+
+    ValidationInfo = Dict[str, Any]  # type: ignore[assignment]
+
+    def field_validator(field_name: str, *field_args: Any, **field_kwargs: Any):  # type: ignore[override]
+        def decorator(func):
+            return validator(field_name, *field_args, **field_kwargs)(func)
+
+        return decorator
 
 from crapssim.bet import _compute_vig, _vig_policy
 
@@ -34,9 +57,22 @@ from .session_store import SESSION_STORE
 from .types import Capabilities, StartSessionRequest, StartSessionResponse, TableSpec
 from .version import CAPABILITIES_SCHEMA_VERSION, ENGINE_API_VERSION, get_identity
 
-app = FastAPI(title="CrapsSim API")
+if FastAPI is not None:
+    app = FastAPI(title="CrapsSim API")
+    _stub_app = None
+else:  # pragma: no cover - FastAPI optional
 
-router = APIRouter()
+    class _StubApp:  # minimal ASGI fallback
+        def __call__(self, scope: Any, receive: Any, send: Any) -> None:  # pragma: no cover
+            raise RuntimeError("FastAPI is not installed")
+
+    app = None
+    _stub_app = _StubApp()
+
+if APIRouter is not None:
+    router = APIRouter()
+else:  # pragma: no cover - FastAPI optional
+    router = None
 
 DEFAULT_VIG_SETTINGS: Dict[str, Any] = {
     "vig_rounding": "nearest_dollar",
@@ -136,18 +172,23 @@ def _capabilities_dict() -> Dict[str, Any]:
 
 
 def create_app() -> FastAPI:
+    if app is None:  # pragma: no cover - FastAPI optional
+        assert _stub_app is not None
+        return _stub_app  # type: ignore[return-value]
     app.add_exception_handler(ApiError, api_error_handler)
     return app
 
 
-@app.get("/healthz")
 def healthz() -> Response:
     identity = get_identity()
     payload = {"status": "ok", **identity}
     return _json_response(payload)
 
 
-@app.get("/capabilities")
+if app is not None:  # pragma: no cover - FastAPI optional
+    app.get("/healthz")(healthz)
+
+
 def get_capabilities() -> Response:
     payload: Dict[str, Any] = {
         "engine_api": {"version": ENGINE_API_VERSION},
@@ -156,7 +197,10 @@ def get_capabilities() -> Response:
     return _json_response(payload)
 
 
-@app.post("/start_session")
+if app is not None:  # pragma: no cover - FastAPI optional
+    app.get("/capabilities")(get_capabilities)
+
+
 def start_session(body: StartSessionRequest) -> Response:
     spec: TableSpec = body.get("spec", {})
     seed = body.get("seed", 0)
@@ -206,14 +250,18 @@ def start_session(body: StartSessionRequest) -> Response:
         "snapshot": snapshot,
     }
     return _json_response(response)
+if app is not None:  # pragma: no cover - FastAPI optional
+    app.post("/start_session")(start_session)
 
 
-@app.post("/end_session")
 def end_session():
     return {"report_min": {"hands": 0, "rolls": 0}}
 
 
-@app.post("/apply_action")
+if app is not None:  # pragma: no cover - FastAPI optional
+    app.post("/end_session")(end_session)
+
+
 def apply_action(req: dict):
     verb = req.get("verb")
     args = req.get("args", {})
@@ -298,6 +346,10 @@ def apply_action(req: dict):
     }
 
 
+if app is not None:  # pragma: no cover - FastAPI optional
+    app.post("/apply_action")(apply_action)
+
+
 class StepRollRequest(BaseModel):
     session_id: str
     mode: str = Field(..., description="auto or inject")
@@ -313,7 +365,12 @@ class StepRollRequest(BaseModel):
     @field_validator("dice")
     @classmethod
     def validate_dice(cls, v: list[int] | None, values: ValidationInfo):
-        if values.data.get("mode") == "inject":
+        mode_value = None
+        if hasattr(values, "data"):
+            mode_value = values.data.get("mode")  # type: ignore[attr-defined]
+        elif isinstance(values, dict):
+            mode_value = values.get("mode")
+        if mode_value == "inject":
             if not isinstance(v, list) or len(v) != 2:
                 raise ValueError("dice must be [d1,d2]")
             if not all(isinstance(d, int) and 1 <= d <= 6 for d in v):
@@ -321,7 +378,6 @@ class StepRollRequest(BaseModel):
         return v
 
 
-@router.post("/step_roll")
 def step_roll(req: StepRollRequest):
     session_id = req.session_id
     sess = SESSION_STORE.ensure(session_id)
@@ -451,4 +507,9 @@ def step_roll(req: StepRollRequest):
     return snapshot
 
 
-app.include_router(router)
+if router is not None:  # pragma: no cover - FastAPI optional
+    router.post("/step_roll")(step_roll)
+
+
+if router is not None and app is not None:  # pragma: no cover - FastAPI optional
+    app.include_router(router)
