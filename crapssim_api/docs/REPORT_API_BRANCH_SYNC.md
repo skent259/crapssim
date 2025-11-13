@@ -7,7 +7,7 @@
 - Ensured only the following areas differ from `main`:
   - `crapssim_api/**`
   - `tests/api/**`
-  - `docs/API_ROADMAP_V2.md`
+  - `crapssim_api/docs/API_ROADMAP_V2.md`
   - API-related report files.
 
 ## Tests
