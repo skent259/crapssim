@@ -1,8 +1,23 @@
+import json
 from enum import Enum
 from typing import Any, Dict, Optional
 
-from fastapi import Request
-from fastapi.responses import JSONResponse
+try:
+    from fastapi import Request
+except Exception:  # pragma: no cover
+
+    class Request:  # minimal stub
+        pass
+
+try:
+    from fastapi.responses import JSONResponse
+except Exception:  # pragma: no cover
+
+    class JSONResponse:  # minimal stub
+        def __init__(self, *, status_code: int, content: Dict[str, Any]):
+            self.status_code = status_code
+            self.content = content
+            self.body = json.dumps(content).encode()
 
 
 class ApiErrorCode(str, Enum):

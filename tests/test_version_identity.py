@@ -1,3 +1,10 @@
+import pytest
+
+try:
+    from fastapi.testclient import TestClient
+except Exception:  # pragma: no cover
+    TestClient = None
+
 from crapssim_api.version import ENGINE_API_VERSION, CAPABILITIES_SCHEMA_VERSION, get_identity
 from crapssim_api.http import create_app
 
@@ -13,7 +20,8 @@ def test_constants_types():
 def test_healthz_reports_identity():
     app = create_app()
     if hasattr(app, "openapi_url"):  # FastAPI path
-        from fastapi.testclient import TestClient
+        if TestClient is None:
+            pytest.skip("fastapi testclient unavailable")
         client = TestClient(app)
         r = client.get("/healthz")
         assert r.status_code == 200
