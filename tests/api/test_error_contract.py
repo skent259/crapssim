@@ -2,6 +2,9 @@ import json
 
 import pytest
 
+pytest.importorskip("fastapi")
+pytest.importorskip("pydantic")
+
 from crapssim_api.errors import ApiError
 from crapssim_api.http import start_session
 

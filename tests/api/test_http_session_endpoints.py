@@ -1,5 +1,8 @@
 import pytest
 
+pytest.importorskip("fastapi")
+pytest.importorskip("pydantic")
+
 try:
     from crapssim_api.http import app
     from fastapi.testclient import TestClient

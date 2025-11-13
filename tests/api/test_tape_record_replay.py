@@ -1,3 +1,8 @@
+import pytest
+
+pytest.importorskip("fastapi")
+pytest.importorskip("pydantic")
+
 from crapssim_api.tape import TapeWriter, TapeReader
 from crapssim_api.session import Session
 

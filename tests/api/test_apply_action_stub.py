@@ -1,3 +1,8 @@
+import pytest
+
+pytest.importorskip("fastapi")
+pytest.importorskip("pydantic")
+
 from pytest import raises
 
 from crapssim_api.errors import ApiError, ApiErrorCode
