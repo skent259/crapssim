@@ -81,8 +81,13 @@ simulator objects for external tooling. It adds a thin control-and-state surface
 that plays nicely with CSC workflows, dashboards, or automation scripts without
 changing how the core engine behaves. No additional runtime dependencies are
 introduced unless you install the optional extras (for example via
-`pip install "crapssim[testing]" uvicorn`). Full setup and endpoint details live
-in [docs/API_OVERVIEW.md](docs/API_OVERVIEW.md).
+`pip install "crapssim[api]"`).
+
+For the optional FastAPI addon, see:
+
+- [docs/API_OVERVIEW.md](docs/API_OVERVIEW.md) — quickstart commands and curl examples.
+- [docs/API_ROADMAP_V2.md](docs/API_ROADMAP_V2.md) — roadmap and long-term intent.
+- [docs/API_DESIGN_INTENT.md](docs/API_DESIGN_INTENT.md) — philosophy and maintenance posture.
 
 ## Results
 

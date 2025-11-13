@@ -18,4 +18,8 @@ markers = [
 ]
 
 [project.optional-dependencies]
-api = ["fastapi", "uvicorn"]
+api = [
+  "fastapi",
+  "pydantic",
+  "uvicorn",
+]
