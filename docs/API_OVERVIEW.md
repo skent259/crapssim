@@ -50,7 +50,7 @@ usual unless you launch the server yourself.
 | GET | `/capabilities` | Exposes the engine capability payload used by clients to discover supported bets and limits. | none |
 | POST | `/start_session` | Creates a deterministic session snapshot and returns a `session_id` plus table state and capability data. | none |
 | POST | `/end_session` | Stub session end hook that currently reports `{"hands": 0, "rolls": 0}`. | none |
-| POST | `/apply_action` | Validates a betting verb/arguments pair against table rules and echoes the effect summary (no actual bankroll math yet). | none |
+| POST | `/apply_action` | Validates a betting verb/arguments pair against table rules and echoes the effect summary, including deterministic bankroll/vig bookkeeping. | none |
 | POST | `/step_roll` | Advances a session by one roll in `auto` or `inject` mode and streams the resulting events/snapshot. | none |
 | POST | `/session/start` | Starts the simplified in-memory `Session` helper used by the `/session/*` testing routes. | none |
 | POST | `/session/roll` | Performs a roll on the helper session, optionally with injected dice, and returns the resulting event. | none |

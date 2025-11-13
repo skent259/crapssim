@@ -24,7 +24,8 @@ else:  # pragma: no cover - FastAPI available
 def _ensure_fastapi() -> None:
     if FastAPI is None or APIRouter is None:
         raise RuntimeError(
-            "FastAPI is not installed. Install it to use the HTTP API, for example: `pip install fastapi uvicorn`."
+            "FastAPI is not installed. Install the optional extras with "
+            "`pip install \"crapssim[api]\"` to enable the HTTP API."
         )
 try:
     from pydantic import BaseModel, Field, ValidationInfo, field_validator
