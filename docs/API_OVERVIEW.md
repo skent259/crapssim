@@ -1,72 +1,136 @@
-# CrapsSim-Vanilla HTTP API Overview
+# Optional CrapsSim HTTP API Overview
 
-This document is a quick-start guide to the optional HTTP API that wraps
-CrapsSim-Vanilla. The API lives in the `crapssim_api` package and is designed
-to be a thin, opt-in layer on top of the core engine.
+## Intro
 
-## 1. Installation
+`crapssim_api` is an optional, lightweight HTTP wrapper around the core CrapsSim
+engine. You can run every simulation entirely locally without it; the API only
+exists to expose simple "handles" for tools such as CSC automations, Node-RED
+flows, or custom dashboards. By design the server stays low-bloat—there is no
+extra analytics layer, no background schedulers, and no new game logic—just
+straightforward request/response I/O around the simulator state.
 
-The core library does **not** require any HTTP dependencies.
+## Installation / Extras
 
-To use the HTTP API, install FastAPI and a simple ASGI server (for example,
-`uvicorn`):
+The base `crapssim` package installs only the core engine. To enable the HTTP
+surface and its tests you need the optional FastAPI stack. Install the published
+extras together with a lightweight ASGI server:
 
 ```bash
-pip install fastapi uvicorn
+pip install "crapssim[testing]" uvicorn
+```
 
-You can install these into the same environment where crapssim is installed.
+The `[testing]` extra currently bundles the API dependencies (FastAPI,
+httpx/pydantic). You may also install the individual packages manually if you
+prefer. Without these extras the core engine continues to work, but the HTTP app
+and its tests are unavailable.
 
-2. Starting the API
+## Starting the Server
 
-The crapssim_api.http module exposes a small FastAPI application. A minimal
-uvicorn launch command might look like:
+The HTTP application is exposed via the `create_app()` factory in
+`crapssim_api.http`. Launch it with any ASGI server that supports the FastAPI
+interface. A typical development command using `uvicorn` is:
 
+```bash
 uvicorn crapssim_api.http:create_app --factory --reload
+```
 
-This will start a development server on http://127.0.0.1:8000 by default.
+Unless you pass different parameters, uvicorn binds to `http://127.0.0.1:8000`.
+The API is opt-in: nothing starts automatically, and the core simulator runs as
+usual unless you launch the server yourself.
 
-3. Core Endpoints
+## Endpoint Overview
 
-GET /health
+| Method | Path | Purpose | Auth |
+| --- | --- | --- | --- |
+| GET | `/health` | Basic liveness probe that returns `{ "status": "ok" }`. | none |
+| GET | `/healthz` | Liveness plus identity metadata from `crapssim_api.version.get_identity()`. | none |
+| GET | `/capabilities` | Exposes the engine capability payload used by clients to discover supported bets and limits. | none |
+| POST | `/start_session` | Creates a deterministic session snapshot and returns a `session_id` plus table state and capability data. | none |
+| POST | `/end_session` | Stub session end hook that currently reports `{"hands": 0, "rolls": 0}`. | none |
+| POST | `/apply_action` | Validates a betting verb/arguments pair against table rules and echoes the effect summary (no actual bankroll math yet). | none |
+| POST | `/step_roll` | Advances a session by one roll in `auto` or `inject` mode and streams the resulting events/snapshot. | none |
+| POST | `/session/start` | Starts the simplified in-memory `Session` helper used by the `/session/*` testing routes. | none |
+| POST | `/session/roll` | Performs a roll on the helper session, optionally with injected dice, and returns the resulting event. | none |
+| GET | `/session/state` | Returns the helper session snapshot produced by `Session.snapshot()`. | none |
+| POST | `/session/stop` | Stops the helper session and releases its resources. | none |
 
-Returns a simple status payload:
+## Example Usage (curl)
 
-{
-  "status": "ok"
-}
+Check that the server is up:
 
-Use this to verify that the API is running.
+```bash
+curl http://127.0.0.1:8000/health
+```
 
-GET /capabilities
+Start a deterministic session and capture the returned `session_id`:
 
-Returns a JSON object describing what the current build of CrapsSim-Vanilla
-supports. A typical response might look like:
+```bash
+curl -X POST http://127.0.0.1:8000/start_session \
+  -H "content-type: application/json" \
+  -d '{"spec": {"table_profile": "vanilla-default"}, "seed": 42}'
+```
 
-{
-  "bets": {
-    "supported": ["Buy", "DontPass", "Odds", "PassLine", "Place", "Put", "World", "Horn"]
-  },
-  "table": {
-    "buy_vig_on_win": true,
-    "vig_rounding": "nearest_dollar",
-    "vig_floor": 0.0
-  }
-}
+Advance the session once with automatic dice, then inject a specific roll:
 
-Clients can use this to discover which bet types and basic vig/table settings
-are available.
+```bash
+curl -X POST http://127.0.0.1:8000/step_roll \
+  -H "content-type: application/json" \
+  -d '{"session_id": "<session_id>", "mode": "auto"}'
 
-4. Design Notes
-•The API exposes raw facts; it does not compute statistics such as ROI,
-drawdown, or streaks.
-•The HTTP layer does not change the behavior of the core engine. If you do not
-start the server, nothing in your existing workflows changes.
-•More advanced orchestration, analytics, and UI layers are expected to live in
-external tools (for example, CSC or custom clients).
+curl -X POST http://127.0.0.1:8000/step_roll \
+  -H "content-type: application/json" \
+  -d '{"session_id": "<session_id>", "mode": "inject", "dice": [3, 4]}'
+```
 
-5. Example Client
+Fetch the lightweight capability summary for client-side introspection:
 
-See examples/api_client_min.py for a very small script that calls /health
-and /capabilities against a running API instance.
+```bash
+curl http://127.0.0.1:8000/capabilities
+```
 
----
+For the helper session routes, first create an in-memory session and then poll
+its state:
+
+```bash
+curl -X POST http://127.0.0.1:8000/session/start
+curl http://127.0.0.1:8000/session/state
+```
+
+## Python Client Example (TestClient)
+
+```python
+try:
+    from fastapi.testclient import TestClient
+except ImportError as exc:  # pragma: no cover - FastAPI optional
+    raise SystemExit(
+        "Install the optional API extras to run this snippet: pip install \"crapssim[testing]\""
+    ) from exc
+
+from crapssim_api.http import create_app
+
+app = create_app()
+client = TestClient(app)
+
+health = client.get("/health").json()
+print(health)
+
+start = client.post("/start_session", json={"spec": {}, "seed": 0}).json()
+print(start["session_id"])
+
+roll = client.post(
+    "/step_roll",
+    json={"session_id": start["session_id"], "mode": "auto"},
+).json()
+print(roll["dice"], roll["events"][-1])
+```
+
+## Design Philosophy / Constraints
+
+The optional HTTP layer never mutates the underlying CrapsSim engine—it wraps
+existing objects and exposes their state. The API does not calculate analytics
+such as ROI, drawdown, or streaks; callers remain responsible for higher-level
+statistics. Keeping the surface area "dumb" ensures that external tools own
+presentation and analysis while the simulator stays the single source of truth
+for craps rules and hand evolution. The routes aim to be stable enough for
+automation, yet thin enough that all substantive game logic continues to live in
+`crapssim` proper.

@@ -74,6 +74,16 @@ pip install crapssim
 
 Development installation instructions are [also available](./docs/installation.md).
 
+## Optional Local API
+
+The project ships with an opt-in HTTP API that simply wraps the existing
+simulator objects for external tooling. It adds a thin control-and-state surface
+that plays nicely with CSC workflows, dashboards, or automation scripts without
+changing how the core engine behaves. No additional runtime dependencies are
+introduced unless you install the optional extras (for example via
+`pip install "crapssim[testing]" uvicorn`). Full setup and endpoint details live
+in [docs/API_OVERVIEW.md](docs/API_OVERVIEW.md).
+
 ## Results
 
 Some results from this simulator have been posted to http://pages.stat.wisc.edu/~kent/blog:
