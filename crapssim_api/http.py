@@ -61,6 +61,7 @@ from .events import (
     build_seven_out,
 )
 from .session_store import SESSION_STORE
+from .session import Session
 from .types import Capabilities, StartSessionRequest, StartSessionResponse, TableSpec
 from .version import CAPABILITIES_SCHEMA_VERSION, ENGINE_API_VERSION, get_identity
 
@@ -526,6 +527,39 @@ def step_roll(req: StepRollRequest):
 
 if router is not None:  # pragma: no cover - FastAPI optional
     router.post("/step_roll")(step_roll)
+
+
+# Optional FastAPI-based session endpoints
+
+session = None
+
+if FastAPI is not None:
+
+    @router.post("/session/start")
+    def start_session():
+        global session
+        session = Session()
+        session.start()
+        return {"ok": True}
+
+    @router.post("/session/stop")
+    def stop_session():
+        if session:
+            session.stop()
+        return {"ok": True}
+
+    @router.post("/session/roll")
+    def roll(dice: list[int] | None = None):
+        if not session:
+            return {"ok": False, "error":"NO_SESSION"}
+        evt = session.step_roll(dice=dice)
+        return {"ok": True, "event": evt}
+
+    @router.get("/session/state")
+    def state():
+        if not session:
+            return {"ok": False, "error":"NO_SESSION"}
+        return {"ok": True, "state": session.snapshot()}
 
 
 try:  # pragma: no cover - FastAPI optional

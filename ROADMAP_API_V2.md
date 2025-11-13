@@ -21,8 +21,19 @@ Design tenets:
 | P2    | Session & Point-Cycle Scaffolding        | ✅ Done    | Session, step-roll, and point-cycle utilities in place.   |
 | P3    | HTTP Surface (FastAPI, Optional Import)  | ✅ Done    | Basic HTTP app created; FastAPI remains optional.         |
 | P4    | DX & Capabilities Polish                 | ✅ Done    | `/health`, `/capabilities`, docs, and example client.     |
-| P5    | Extended Orchestration & Tape Hooks      | Planned    | Optional helpers for orchestration and replay.            |
+| P5    | Extended Orchestration & Tape Hooks      | ✅ Done    | Optional helpers for orchestration and replay.            |
 | P6    | Docs, Examples, and Long-Term Support    | Planned    | Final polish, docs hardening, and maintenance guidance.   |
+
+---
+
+## Phase 5 — Extended Orchestration & Tape Hooks
+Status: Complete
+
+Adds:
+- Session wrapper (start/stop/roll/apply_command)
+- Tape record/replay utilities
+- Minimal JSON event schema
+- Optional HTTP session endpoints
 
 ---
 

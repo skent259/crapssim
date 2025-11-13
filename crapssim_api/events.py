@@ -106,3 +106,26 @@ def build_hand_ended(
         bankroll_after,
         {"end_reason": end_reason},
     )
+
+
+def roll_event(roll_id: int, dice: list[int], before: dict, after: dict) -> dict:
+    return {
+        "type": "roll",
+        "roll_id": roll_id,
+        "dice": dice,
+        "before": before,
+        "after": after,
+    }
+
+
+def bet_event(kind: str, payload: dict) -> dict:
+    return {
+        "type": kind,
+        **payload
+    }
+
+
+def run_event(kind: str) -> dict:
+    return {"type": kind}
+
+
