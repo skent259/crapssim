@@ -13,6 +13,7 @@
 PYTHONPATH=. pytest -q
 3944 passed, 9 skipped in 5.29s
 ```
+- Fixed `/session/roll` to parse `dice` from JSON body using FastAPI `Body(...)`, so tests posting `{"dice":[4,3]}` now see deterministic dice.
 
 ## Samples
 ```json
