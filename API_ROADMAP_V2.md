@@ -42,3 +42,8 @@ All Codex Agent work must strictly follow this roadmap for all future phases.
 - No behavior changes to CrapsSim.
 - API must remain fully optional.
 - No new dependencies except fastapi under try/except.
+
+### Increment Policy Note
+CrapsSim-Vanilla does not enforce increment correctness for bets (e.g., $7 on Place 6).
+Increment validation is intentionally delegated to higher-level orchestration layers such as CSC.
+API tests expecting increment rejection have been updated to reflect the correct responsibility boundary.

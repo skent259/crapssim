@@ -52,23 +52,15 @@ def check_amount(verb: str, args: Dict[str, Any], place_increments: Dict[str, in
     amt = args.get("amount")
     if not isinstance(amt, (int, float)) or amt <= 0:
         raise ApiError(ApiErrorCode.ILLEGAL_AMOUNT, "bet amount must be a positive number")
-    # For box-addressed verbs, validate increment by box number (string keys in caps)
+    # For box-addressed verbs, ensure target box exists but defer increment policy.
     if verb in ("place", "buy", "lay", "put"):
         box = str(args.get("box"))
-        inc = place_increments.get(box, None)
-        if inc is None:
+        if box not in place_increments:
             # If box missing or unsupported, treat as bad args amount shape
             raise ApiError(ApiErrorCode.ILLEGAL_AMOUNT, f"missing/unsupported box '{box}' for {verb}")
-        # Amount must be multiple of increment
-        # Use integer math to avoid float modulo surprises
         if int(amt) != amt:
             # For simplicity in P3·C2, require whole-dollar chips
             raise ApiError(ApiErrorCode.ILLEGAL_AMOUNT, "amount must be whole dollars at this table")
-        if int(amt) % int(inc) != 0:
-            raise ApiError(
-                ApiErrorCode.ILLEGAL_AMOUNT,
-                f"amount ${int(amt)} not in valid increment of ${int(inc)} for box {box}",
-            )
 
 
 def check_limits(verb: str, args: Dict[str, Any], odds_policy: str, odds_max_x: int) -> None:
