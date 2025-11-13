@@ -3,11 +3,33 @@ from __future__ import annotations
 import json
 from subprocess import run
 
+import pytest
+
+try:
+    from fastapi.testclient import TestClient
+except ModuleNotFoundError:  # pragma: no cover - optional fastapi
+    TestClient = None  # type: ignore[assignment]
+
 from crapssim_api.http import get_capabilities, start_session
+
+
+@pytest.mark.skipif(TestClient is None, reason="fastapi not installed")
+def test_api_smoke() -> None:
+    from crapssim_api.http import create_app
+
+    app = create_app()
+    client = TestClient(app)
+
+    r_health = client.get("/health")
+    assert r_health.status_code == 200
+
+    r_caps = client.get("/capabilities")
+    assert r_caps.status_code == 200
 
 
 def test_engine_version_tag():
     from crapssim_api import version as version
+
     v = version.ENGINE_API_VERSION
     # Accept both Phase 2 and Phase 3 tags for cross-compatibility
     suffixes = (
