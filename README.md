@@ -74,21 +74,6 @@ pip install crapssim
 
 Development installation instructions are [also available](./docs/installation.md).
 
-## Optional Local API
-
-The project ships with an opt-in HTTP API that simply wraps the existing
-simulator objects for external tooling. It adds a thin control-and-state surface
-that plays nicely with CSC workflows, dashboards, or automation scripts without
-changing how the core engine behaves. No additional runtime dependencies are
-introduced unless you install the optional extras (for example via
-`pip install "crapssim[api]"`).
-
-For the optional FastAPI addon, see:
-
-- [docs/API_OVERVIEW.md](docs/API_OVERVIEW.md) — quickstart commands and curl examples.
-- [docs/API_ROADMAP_V2.md](docs/API_ROADMAP_V2.md) — roadmap and long-term intent.
-- [docs/API_DESIGN_INTENT.md](docs/API_DESIGN_INTENT.md) — philosophy and maintenance posture.
-
 ## Results
 
 Some results from this simulator have been posted to http://pages.stat.wisc.edu/~kent/blog:

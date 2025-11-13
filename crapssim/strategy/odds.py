@@ -1,25 +1,30 @@
-import typing
+from typing import SupportsFloat, TypeAlias
 
 from crapssim.bet import Bet, Come, DontCome, DontPass, Odds, PassLine, Put
 from crapssim.strategy.tools import Player, Strategy, Table
 
+MultiplierDict: TypeAlias = dict[int, SupportsFloat]
+""" For odds multipliers keyed by point number (4/5/6/8/9/10)"""
 
-def _expand_multiplier_dict(multiplier):
+
+def _expand_multiplier_dict(
+    multiplier: SupportsFloat | MultiplierDict,
+) -> MultiplierDict:
     """Helper to expand multiplier dictionary if it's only a float.
 
     Args:
         multiplier: A dictionary of point numbers and their associated
             multipliers or a float to be applied to all point numbers.
     """
-    if isinstance(multiplier, typing.SupportsFloat):
+    if isinstance(multiplier, SupportsFloat):
         return {x: multiplier for x in (4, 5, 6, 8, 9, 10)}
     else:
         return multiplier
 
 
 def _condense_multiplier_dict(
-    multiplier: dict[int, typing.SupportsFloat],
-) -> typing.SupportsFloat | dict[int, typing.SupportsFloat]:
+    multiplier: MultiplierDict,
+) -> SupportsFloat | MultiplierDict:
     """Helper to condense multiplier dictionary if all are the same
 
     Args:
@@ -46,8 +51,8 @@ class OddsAmount(Strategy):
 
     def __init__(
         self,
-        base_type: typing.Type[PassLine | DontPass | Come | DontCome | Put],
-        odds_amounts: dict[int, typing.SupportsFloat],
+        base_type: type[PassLine | DontPass | Come | DontCome | Put],
+        odds_amounts: SupportsFloat | MultiplierDict,
         always_working: bool = False,
     ):
         self.base_type = base_type
@@ -102,7 +107,7 @@ class _BaseOddsAmount(OddsAmount):
 
     def __init__(
         self,
-        bet_amount: typing.SupportsFloat,
+        bet_amount: SupportsFloat,
         numbers: tuple[int] = (4, 5, 6, 8, 9, 10),
         always_working: bool = False,
     ):
@@ -162,8 +167,8 @@ class OddsMultiplier(Strategy):
 
     def __init__(
         self,
-        base_type: typing.Type[PassLine | DontPass | Come | DontCome | Put],
-        odds_multiplier: dict[int, typing.SupportsFloat] | typing.SupportsFloat,
+        base_type: type[PassLine | DontPass | Come | DontCome | Put],
+        odds_multiplier: MultiplierDict | SupportsFloat,
         always_working: bool = False,
     ):
         self.base_type = base_type
@@ -239,13 +244,11 @@ class _BaseOddsMultiplier(OddsMultiplier):
     """
 
     bet_type: type[PassLine | DontPass | Come | DontCome | Put]
-    default_multiplier: dict[int, typing.SupportsFloat] | typing.SupportsFloat
+    default_multiplier: MultiplierDict | SupportsFloat
 
     def __init__(
         self,
-        odds_multiplier: (
-            dict[int, typing.SupportsFloat] | typing.SupportsFloat | None
-        ) = None,
+        odds_multiplier: MultiplierDict | SupportsFloat | None = None,
         always_working: bool = False,
     ):
 
@@ -311,8 +314,8 @@ class WinMultiplier(OddsMultiplier):
 
     def __init__(
         self,
-        base_type: typing.Type[PassLine | DontPass | Come | DontCome | Put],
-        win_multiplier: dict[int, typing.SupportsFloat] | typing.SupportsFloat,
+        base_type: type[PassLine | DontPass | Come | DontCome | Put],
+        win_multiplier: MultiplierDict | SupportsFloat,
         always_working: bool = False,
     ):
         self.win_multiplier = _expand_multiplier_dict(win_multiplier)
@@ -326,9 +329,9 @@ class WinMultiplier(OddsMultiplier):
 
     def _convert_win_to_odds_mult(
         self,
-        win_multiplier: dict[int, typing.SupportsFloat],
-        base_type: typing.Type[PassLine | DontPass | Come | DontCome | Put],
-    ):
+        win_multiplier: MultiplierDict,
+        base_type: type[PassLine | DontPass | Come | DontCome | Put],
+    ) -> MultiplierDict:
         """
         Converts a win multiplier to an odds multiplier
 
@@ -371,14 +374,12 @@ class _BaseWinMultiplier(WinMultiplier):
 
     bet_type: type[PassLine | DontPass | Come | DontCome | Put]
     """The bet that odds will be added to."""
-    default_multiplier: dict[int, typing.SupportsFloat] | typing.SupportsFloat
+    default_multiplier: MultiplierDict | SupportsFloat
     """Win multiplier to use if none is specified."""
 
     def __init__(
         self,
-        win_multiplier: (
-            dict[int, typing.SupportsFloat] | typing.SupportsFloat | None
-        ) = None,
+        win_multiplier: MultiplierDict | SupportsFloat | None = None,
         always_working: bool = False,
     ):
 

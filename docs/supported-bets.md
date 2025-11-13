@@ -45,18 +45,18 @@ in the payout. Commonly, the field pays 2x on 2/12 and 1x on everything else (5.
 This can be specified with the `"field_payouts"` option of the TableSettings, which expects a dictionary with all of the numbers and the payout ratio. The default is 
 `{2: 2, 3: 1, 4: 1, 9: 1, 10: 1, 11: 1, 12: 2}`, which pays 2x on 2/12. For example, to have a 3x payout on the 2 instead, use `{2: 3, 3: 1, 4: 1, 9: 1, 10: 1, 11: 1, 12: 2}`.
 
-### Buy/Lay bets and the vig
+### Buy/Lay bets and the vig (commission)
 
-This simulator uses a fixed 5% vig for applicable bets (e.g., Buy/Lay) to match common table practice.
+This simulator uses a fixed 5% commission for applicable bets (e.g., Buy/Lay) to match common table practice. 
 
 The `vig` is added to the bet `amount` to equal the bet's `cost`. 
 
-**Buy/Lay vig policy in {py:class}`~crapssim.table.TableSettings`:**
+**Buy/Lay commission policy in {py:class}`~crapssim.table.TableSettings`:**
 - `vig_rounding` (`"none"`, `"ceil_dollar"`, `"nearest_dollar"` default)
 - `vig_floor` (float dollars, default `0.0`)
 - `vig_paid_on_win` (bool, default `False`)
 
-**Rounding semantics in `vig_rounding`**
+**Rounding semantics in `vig_floor`**
 - `"none"` will do no rounding, mimicking a bubble craps style. 
 - `"ceil_dollar"` always rounds up to the next whole dollar (e.g. 1.25 rounds to 2).
 - `"nearest_dollar"` rounds to the nearest dollar, and rounds up when the decimal is 0.5 (e.g. 2.5 rounds to 3).

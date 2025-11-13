@@ -1,7 +1,7 @@
 """The strategies included in this module are completed strategies that are runnable by the player
 in order to do the intended"""
 
-import typing
+from typing import SupportsFloat
 
 from crapssim.bet import Come, DontCome, DontPass, Field, PassLine, Place, Put
 from crapssim.strategy.odds import (
@@ -107,7 +107,7 @@ class PlaceInside(AggregateStrategy):
     """Strategy to have Place bets on all the inside (5, 6, 8, 9) numbers.
     Equivalent to BetPlace({5: x, 6: 6/5*x, 8: 6/5*x, 9: x})"""
 
-    def __init__(self, bet_amount: typing.SupportsFloat | dict[int, float]) -> None:
+    def __init__(self, bet_amount: SupportsFloat | dict[int, float]) -> None:
         """Creates a Strategy to have Place bets on all the inside (5, 6, 8, 9) numbers.
 
         Parameters
@@ -117,7 +117,7 @@ class PlaceInside(AggregateStrategy):
             or a number that supports float. If its a number that supports float, the six and eight
             amounts will be the number * (6 / 5) to make the payout a whole number.
         """
-        if isinstance(bet_amount, typing.SupportsFloat):
+        if isinstance(bet_amount, SupportsFloat):
             self.bet_amount = float(bet_amount)
             six_eight_amount = bet_amount * (6 / 5)
             amount_dict = {
@@ -581,7 +581,7 @@ class Knockout(AggregateStrategy):
     PassLineOddsMultiplier({4: 3, 5: 4, 6: 5, 8: 5, 9: 4, 10: 3})
     """
 
-    def __init__(self, base_amount: typing.SupportsFloat) -> None:
+    def __init__(self, base_amount: SupportsFloat) -> None:
         self.base_amount = float(base_amount)
         super().__init__(
             BetPassLine(base_amount),

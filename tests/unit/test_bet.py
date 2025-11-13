@@ -423,3 +423,31 @@ def test_combined_bet_equality(bets_1, bets_2):
             outcomes_2.append(sum(b.get_result(t).bankroll_change for b in bets_2))
 
     assert outcomes_1 == outcomes_2
+
+
+def test_dont_pass_bet_pushes_on_comeout_12():
+    table = Table()
+    table.add_player()
+    dont_pass_bet = crapssim.bet.DontPass(10)
+    table.players[0].add_bet(dont_pass_bet)
+
+    # Roll a 12 on the come-out roll
+    table.dice.fixed_roll((6, 6))
+    result = dont_pass_bet.get_result(table)
+
+    assert result.pushed
+    assert result.bankroll_change == dont_pass_bet.amount
+
+
+def test_dont_come_bet_pushes_on_12():
+    table = Table()
+    table.add_player()
+    dont_come_bet = DontCome(10)
+    table.players[0].add_bet(dont_come_bet)
+
+    # Roll a 12 on the come-out roll
+    table.dice.fixed_roll((6, 6))
+    result = dont_come_bet.get_result(table)
+
+    assert result.pushed
+    assert result.bankroll_change == dont_come_bet.amount

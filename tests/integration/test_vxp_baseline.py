@@ -31,11 +31,11 @@ def test_vxp_full_integration():
     do_roll((3, 3))  # total = 6 → Big6 wins
     do_roll((4, 4))  # total = 8 → Big8 wins
 
-    # --- Buy / Lay (vig check) ---
+    # --- Buy / Lay (commission check) ---
     player.add_bet(crapssim.bet.Buy(4, 20))
     player.add_bet(crapssim.bet.Lay(10, 20))
-    do_roll((2, 2))  # 4 → Buy hit (vig applied)
-    do_roll((4, 3))  # 7 → Lay hit (vig applied)
+    do_roll((2, 2))  # 4 → Buy hit (commission applied)
+    do_roll((4, 3))  # 7 → Lay hit (commission applied)
 
     # --- Put (point ON only) ---
     # Establish point ON at 6 then Put and resolve.
