@@ -16,3 +16,6 @@ testpaths = ["tests"]
 markers = [
   "stress: long-running stress tests (excluded from default CI)",
 ]
+
+[project.optional-dependencies]
+api = ["fastapi", "uvicorn"]
