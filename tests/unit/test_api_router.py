@@ -40,9 +40,12 @@ def test_insufficient_funds():
 
 def test_bad_increment():
     table, adapter = new_adapter()
+    # CrapsSim-Vanilla intentionally does not enforce increment policy.
+    # Higher-level tools (CSC, CLI, UI) are responsible for increment correctness.
     result = adapter.apply({"verb": "add_bet", "type": "Place", "number": 6, "amount": 1.0})
-    assert result["success"] is False
-    assert result["error"]["code"] in {"BAD_INCREMENT", "ILLEGAL_BET"}
+    assert result["success"] is True
+    state = snapshot(adapter)
+    assert state.active_bets.get("Place6") == 1.0
 
 
 def test_not_found_on_remove():

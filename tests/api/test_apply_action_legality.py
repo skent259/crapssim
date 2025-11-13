@@ -22,11 +22,12 @@ def test_place_legal_when_puck_on_with_increment_ok():
 
 
 def test_increment_violation_on_place6():
-    # 6 requires multiples of 6; 7 should fail
-    with raises(ApiError) as e:
-        # Call endpoint path to exercise envelope
-        apply_action(_req("place", {"box": 6, "amount": 7}, puck="ON", point=6))
-    assert e.value.code is ApiErrorCode.ILLEGAL_AMOUNT
+    # CrapsSim-Vanilla intentionally does not enforce increment policy.
+    # Higher-level tools (CSC, CLI, UI) are responsible for increment correctness.
+    res = apply_action(_req("place", {"box": 6, "amount": 7}, puck="ON", point=6))
+    eff = res["effect_summary"]
+    assert eff["applied"] is True
+    assert eff["bankroll_delta"] == 0.0
 
 
 def test_table_cap_limit_breach():
