@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import json
-import random
 import uuid
 from typing import Any, Dict
 
@@ -63,7 +62,26 @@ from crapssim.bet import _compute_vig, _vig_policy
 
 
 class RollRequest(BaseModel):
+    session_id: str
     dice: list[int] | None = None
+
+    @field_validator("session_id")
+    @classmethod
+    def validate_session_id(cls, v: str) -> str:
+        if not isinstance(v, str) or not v.strip():
+            raise ValueError("session_id must be a non-empty string")
+        return v
+
+    @field_validator("dice")
+    @classmethod
+    def validate_dice(cls, v: list[int] | None):
+        if v is None:
+            return v
+        if not isinstance(v, list) or len(v) != 2:
+            raise ValueError("dice must be [d1,d2]")
+        if not all(isinstance(d, int) and 1 <= d <= 6 for d in v):
+            raise ValueError("each die must be 1–6")
+        return v
 
 from .actions import VerbRegistry
 from .actions import (
@@ -85,7 +103,6 @@ from .events import (
     build_seven_out,
 )
 from .session_store import SESSION_STORE
-from .session import Session
 from .types import Capabilities, StartSessionRequest, StartSessionResponse, TableSpec
 from .version import CAPABILITIES_SCHEMA_VERSION, ENGINE_API_VERSION, get_identity
 
@@ -263,6 +280,27 @@ def _coerce_start_session_payload(
     raise bad_args("start_session payload must be a mapping")
 
 
+def _coerce_roll_payload(
+    payload: RollRequest | BaseModel | Dict[str, Any] | None
+) -> Dict[str, Any]:
+    if payload is None:
+        raise bad_args("roll payload must be provided")
+
+    if isinstance(payload, BaseModel):  # pragma: no branch - pydantic model
+        if hasattr(payload, "model_dump"):
+            data = payload.model_dump()  # type: ignore[assignment]
+        elif hasattr(payload, "dict"):
+            data = payload.dict()  # type: ignore[assignment]
+        else:  # pragma: no cover - defensive fallback
+            data = dict(payload.__dict__)
+        return dict(data)
+
+    if isinstance(payload, dict):
+        return dict(payload)
+
+    raise bad_args("roll payload must be a mapping")
+
+
 class StartSessionResult(dict):
     """Dictionary-like result that retains a JSON encoded body for legacy callers."""
 
@@ -287,8 +325,6 @@ def start_session(payload: StartSessionRequest | BaseModel | Dict[str, Any]) -> 
         raise bad_args("seed must be int")
     seed = seed_value
 
-    random.seed(seed)
-
     vig_settings = _resolve_vig_settings(spec)
     caps = _apply_vig_settings_to_caps(dict(BASE_CAPABILITIES), vig_settings)
     if spec.get("enabled_buylay") is False:
@@ -305,7 +341,7 @@ def start_session(payload: StartSessionRequest | BaseModel | Dict[str, Any]) -> 
         caps["why_unsupported"]["lay"] = "disabled_by_spec"
 
     session_id = str(uuid.uuid4())[:8]
-    session_state = SESSION_STORE.ensure(session_id)
+    session_state = SESSION_STORE.create(session_id, seed=seed)
     session_state["settings"] = dict(vig_settings)
     hand = session_state["hand"]
     hand_fields = hand.to_snapshot_fields()
@@ -334,6 +370,31 @@ def start_session(payload: StartSessionRequest | BaseModel | Dict[str, Any]) -> 
     return StartSessionResult(response)
 
 
+def roll(payload: RollRequest | BaseModel | Dict[str, Any] | None = None) -> Dict[str, Any]:
+    data = _coerce_roll_payload(payload)
+
+    session_id_value = data.get("session_id")
+    if not isinstance(session_id_value, str) or not session_id_value.strip():
+        raise bad_args("session_id must be non-empty string")
+    session_id = session_id_value
+
+    dice_value = data.get("dice")
+    dice: list[int] | None
+    if dice_value is None:
+        dice = None
+    else:
+        if not isinstance(dice_value, list) or len(dice_value) != 2:
+            raise bad_args("dice must be [d1,d2]")
+        dice = [int(dice_value[0]), int(dice_value[1])]
+        if not all(1 <= d <= 6 for d in dice):
+            raise bad_args("dice must be between 1 and 6")
+
+    mode = "inject" if dice is not None else "auto"
+    step_req = StepRollRequest(session_id=session_id, mode=mode, dice=dice)
+    snapshot = step_roll(step_req)
+    return {"snapshot": snapshot}
+
+
 if router is not None:  # pragma: no cover - FastAPI optional
 
     def _start_session_http(body: StartSessionRequest = Body(...)) -> Response:
@@ -341,6 +402,11 @@ if router is not None:  # pragma: no cover - FastAPI optional
 
     router.post("/session/start")(_start_session_http)
     router.post("/start_session")(_start_session_http)
+
+    def _roll_http(body: RollRequest = Body(...)) -> Response:
+        return _json_response(roll(body))
+
+    router.post("/session/roll")(_roll_http)
 
 
 def end_session():
@@ -471,21 +537,22 @@ def step_roll(req: StepRollRequest):
     session_id = req.session_id
     sess = SESSION_STORE.ensure(session_id)
     hand = sess["hand"]
+    table = sess.get("table")
+    if table is None:  # pragma: no cover - defensive fallback
+        table = SESSION_STORE.ensure(session_id)["table"]
     roll_seq = sess["roll_seq"] + 1
     sess["roll_seq"] = roll_seq
     hand_id = hand.hand_id
 
-    # deterministic RNG seed
-    rng_seed = hash(session_id) & 0xFFFFFFFF
-    rnd = random.Random(rng_seed + roll_seq)
     if req.mode == "inject":
         assert req.dice is not None
         d1, d2 = req.dice
-    elif sess.get("last_dice"):
-        d1, d2 = sess["last_dice"]
+        table.dice.fixed_roll((d1, d2))
     else:
-        d1, d2 = rnd.randint(1, 6), rnd.randint(1, 6)
+        table.dice.roll()
+        d1, d2 = table.dice.result
 
+    d1, d2 = int(d1), int(d2)
     sess["last_dice"] = (d1, d2)
 
     bankroll_before = "1000.00"
@@ -598,40 +665,6 @@ def step_roll(req: StepRollRequest):
 
 if router is not None:  # pragma: no cover - FastAPI optional
     router.post("/step_roll")(step_roll)
-
-
-# Optional FastAPI-based session endpoints
-
-session = None
-
-if FastAPI is not None:
-
-    @router.post("/session/start")
-    def start_session():
-        global session
-        session = Session()
-        session.start()
-        return {"ok": True}
-
-    @router.post("/session/stop")
-    def stop_session():
-        if session:
-            session.stop()
-        return {"ok": True}
-
-    @router.post("/session/roll")
-    def roll(payload: RollRequest | None = Body(default=None)):
-        if not session:
-            return {"ok": False, "error":"NO_SESSION"}
-        dice = payload.dice if payload is not None else None
-        evt = session.step_roll(dice=dice)
-        return {"ok": True, "event": evt}
-
-    @router.get("/session/state")
-    def state():
-        if not session:
-            return {"ok": False, "error":"NO_SESSION"}
-        return {"ok": True, "state": session.snapshot()}
 
 
 try:  # pragma: no cover - FastAPI optional

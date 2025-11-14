@@ -39,12 +39,15 @@ def test_inject_rejects_out_of_range():
     assert r.status_code == 422
 
 
-def test_auto_determinism_same_seed():
+def test_auto_roll_advances_rng():
     body = {"session_id": "seedtest", "mode": "auto"}
-    res1 = client.post("/step_roll", json=body).json()
-    res2 = client.post("/step_roll", json=body).json()
-    assert res1["dice"] == res2["dice"]
-    assert res1["roll_seq"] + 1 == res2["roll_seq"]
+    rolls = []
+    for _ in range(5):
+        rolls.append(client.post("/step_roll", json=body).json())
+
+    seq_values = [tuple(r["dice"]) for r in rolls]
+    assert len(set(seq_values)) > 1, f"expected varied dice, got {seq_values}"
+    assert [r["roll_seq"] for r in rolls] == list(range(1, 6))
 
 
 def test_no_state_mutations_yet():
