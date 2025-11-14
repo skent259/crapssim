@@ -1,103 +1,86 @@
 import pytest
-
-pytest.importorskip("fastapi")
-pytest.importorskip("pydantic")
-
 from pytest import raises
 
-from crapssim_api.actions import DEFAULT_START_BANKROLL, SessionBankrolls, get_bankroll
 from crapssim_api.errors import ApiError, ApiErrorCode
 from crapssim_api.http import apply_action, roll, start_session
 from crapssim_api.session_store import SESSION_STORE
 
 
-def _place_setup(seed: int = 314) -> tuple[str, dict[str, object]]:
-    start = start_session({"seed": seed})
-    session_id = start["session_id"]
-    # Establish a point so box bets become legal
-    snap = roll({"session_id": session_id, "dice": [3, 3]})["snapshot"]
-    state = {"puck": snap["puck"], "point": snap["point"]}
-    return session_id, state
+def _start_session(seed: int = 314) -> str:
+    return start_session({"seed": seed})["session_id"]
 
 
-def test_insufficient_funds_rejected():
-    sid, state = _place_setup()
-    sess = SESSION_STORE.ensure(sid)
+def _establish_point(session_id: str, dice: tuple[int, int] = (3, 3)) -> None:
+    roll({"session_id": session_id, "dice": [dice[0], dice[1]]})
+
+
+def test_insufficient_funds_rejected() -> None:
+    session_id = _start_session()
+    sess = SESSION_STORE.ensure(session_id)
     player = sess["session"].player()
     assert player is not None
     player.bankroll = 5.0
-    SessionBankrolls[sid] = 5.0
-    with raises(ApiError) as e:
+
+    with raises(ApiError) as exc:
         apply_action(
-            {
-                "verb": "place",
-                "args": {"box": 6, "amount": 12},
-                "session_id": sid,
-                "state": state,
-            }
+            {"verb": "pass_line", "args": {"amount": 10}, "session_id": session_id}
         )
-    err = e.value
-    assert err.code == ApiErrorCode.INSUFFICIENT_FUNDS
+
+    err = exc.value
+    assert err.code is ApiErrorCode.INSUFFICIENT_FUNDS
     assert "bankroll" in err.hint
+    assert player.bankroll == pytest.approx(5.0)
 
 
-def test_bankroll_deducts_deterministically():
-    sid, state = _place_setup(seed=2718)
-    sess = SESSION_STORE.ensure(sid)
+def test_bankroll_snapshot_matches_engine() -> None:
+    session_id = _start_session(seed=2718)
+    sess = SESSION_STORE.ensure(session_id)
     player = sess["session"].player()
     assert player is not None
-    player.bankroll = 100.0
-    SessionBankrolls[sid] = 100.0
-    res = apply_action(
-        {
-            "verb": "place",
-            "args": {"box": 6, "amount": 12},
-            "session_id": sid,
-            "state": state,
-        }
+
+    result = apply_action(
+        {"verb": "pass_line", "args": {"amount": 10}, "session_id": session_id}
     )
-    after = float(res["snapshot"]["bankroll_after"])
-    assert pytest.approx(after, rel=0, abs=1e-9) == 88.0
-    assert pytest.approx(SessionBankrolls[sid]) == 88.0
-    assert pytest.approx(player.bankroll) == 88.0
+
+    snapshot = result["snapshot"]
+    assert snapshot["bankroll_after"] == f"{player.bankroll:.2f}"
+    assert any(bet["type"] == "PassLine" for bet in snapshot["bets"])
+    assert player.bankroll == pytest.approx(990.0)
 
 
-def test_table_rule_block_error_envelope_consistency():
-    try:
-        raise ApiError(
-            ApiErrorCode.TABLE_RULE_BLOCK,
-            "test block",
-            {"session_id": "x", "hand_id": None, "roll_seq": None},
-        )
-    except ApiError as e:
-        assert e.code == ApiErrorCode.TABLE_RULE_BLOCK
-        assert isinstance(e.hint, str)
-        assert "session_id" in e.at_state
-
-
-def test_default_bankroll_if_unknown_session():
-    sid = "newsession"
-    assert get_bankroll(sid) == DEFAULT_START_BANKROLL
-
-
-def test_buy_action_includes_vig_in_cost():
-    sid, state = _place_setup(seed=1618)
-    sess = SESSION_STORE.ensure(sid)
+def test_buy_action_includes_vig_in_cost() -> None:
+    session_id = _start_session(seed=1618)
+    _establish_point(session_id)
+    sess = SESSION_STORE.ensure(session_id)
     player = sess["session"].player()
     assert player is not None
     player.bankroll = 200.0
-    SessionBankrolls[sid] = 200.0
-    res = apply_action(
-        {
-            "verb": "buy",
-            "args": {"box": 4, "amount": 20},
-            "session_id": sid,
-            "state": state,
-        }
+
+    result = apply_action(
+        {"verb": "buy", "args": {"box": 4, "amount": 20}, "session_id": session_id}
     )
-    effect = res["effect_summary"]
+
+    effect = result["effect_summary"]
     assert effect["cash_required"] == pytest.approx(21.0)
     assert effect["vig"]["amount"] == pytest.approx(1.0)
     assert effect["vig"]["paid_on_win"] is False
-    assert SessionBankrolls[sid] == pytest.approx(179.0)
-    assert pytest.approx(player.bankroll) == pytest.approx(179.0)
+    assert player.bankroll == pytest.approx(179.0)
+    assert result["snapshot"]["bankroll_after"] == f"{player.bankroll:.2f}"
+
+
+def test_table_rule_block_error_includes_state() -> None:
+    session_id = _start_session(seed=2024)
+    apply_action(
+        {"verb": "pass_line", "args": {"amount": 10}, "session_id": session_id}
+    )
+    _establish_point(session_id)
+
+    with raises(ApiError) as exc:
+        apply_action(
+            {"verb": "pass_line", "args": {"amount": 5}, "session_id": session_id}
+        )
+
+    err = exc.value
+    assert err.code is ApiErrorCode.TABLE_RULE_BLOCK
+    assert err.at_state["session_id"] == session_id
+    assert err.at_state["hand_id"] is not None

@@ -82,40 +82,47 @@ See API_SEEDS_AND_SESSIONS.md for more detail on how seeds behave.
 
 4. Place a simple bet
 
-To place one or more actions against a session, call the apply-action endpoint. The exact schema is defined in the API’s request models; a simple pattern is:
+To place an action against a session, call the apply-action endpoint. Each request
+specifies a single verb that maps to an engine bet:
 
+```
 curl -X POST http://127.0.0.1:8000/session/apply_action \
   -H "Content-Type: application/json" \
   -d '{
     "session_id": "session-uuid-or-token",
-    "actions": [
-      {
-        "type": "place_bet",
-        "bet": "PassLine",
-        "amount": 10,
-        "player_id": 0
-      }
-    ]
+    "verb": "pass_line",
+    "args": {"amount": 10}
   }'
+```
 
 Typical response shape:
 
+```
 {
-  "session_id": "session-uuid-or-token",
-  "effects": [
-    {
-      "type": "place_bet",
-      "status": "ok",
-      "bet": {
-        "bet_type": "PassLine",
-        "amount": 10
-      }
-    }
-  ],
-  "errors": []
+  "effect_summary": {
+    "verb": "pass_line",
+    "args": {"amount": 10},
+    "applied": true,
+    "bankroll_delta": -10.0,
+    "note": "applied via engine"
+  },
+  "snapshot": {
+    "session_id": "session-uuid-or-token",
+    "bankroll_after": "990.00",
+    "bets": [
+      {"id": 0, "type": "PassLine", "amount": 10.0}
+    ],
+    "puck": "OFF",
+    "point": null
+  }
 }
+```
 
-If the bet is illegal (bad increment, wrong timing, insufficient funds, etc.), the response will include error entries. See API_ERRORS_AND_CONTRACT.md for details on error codes and meanings.
+The bankroll reported in the snapshot is read directly from the session player inside the
+engine, ensuring a single source of truth. If the engine rejects the verb (for example,
+placing a Come bet before the point is on), the API raises a structured error with the
+engine’s decision. See `API_VERBS.md` and `API_ERRORS_AND_CONTRACT.md` for the full verb
+catalog and error semantics.
 
 ⸻
 
