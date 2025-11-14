@@ -527,6 +527,9 @@ class Risk12(Strategy):
         """
         budget_left = player.bankroll - self.min_bankroll
 
+        # Clear any place bets that shouldn't be working
+        RemoveByType(Place).update_bets(player)
+
         bets = [PassLine(self.base_amount), Field(self.base_amount)]
         for bet in bets:
             if budget_left >= bet.amount:
