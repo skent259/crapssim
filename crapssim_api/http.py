@@ -16,6 +16,7 @@ except ModuleNotFoundError:  # pragma: no cover - environment without fastapi
         def __init__(self, content: str, media_type: str):
             self.body = content.encode()
             self.media_type = media_type
+
 else:  # pragma: no cover - FastAPI available
     Response = FastAPIResponse  # type: ignore[assignment]
 
@@ -24,8 +25,10 @@ def _ensure_fastapi() -> None:
     if FastAPI is None or APIRouter is None:
         raise RuntimeError(
             "FastAPI is not installed. Install the optional extras with "
-            "`pip install \"crapssim[api]\"` to enable the HTTP API."
+            '`pip install "crapssim[api]"` to enable the HTTP API.'
         )
+
+
 try:
     from pydantic import BaseModel, Field, ValidationInfo, field_validator
 except ImportError:  # pragma: no cover - pydantic optional or v1 fallback
@@ -58,6 +61,7 @@ except ImportError:  # pragma: no cover - pydantic optional or v1 fallback
 
             return decorator
 
+
 from crapssim.bet import _compute_vig, _vig_policy
 
 
@@ -83,8 +87,10 @@ class RollRequest(BaseModel):
             raise ValueError("each die must be 1–6")
         return v
 
+
 from .actions import VerbRegistry
 from .actions import (
+    SessionBankrolls,
     TableView,
     apply_bankroll_delta,
     check_amount,
@@ -94,7 +100,13 @@ from .actions import (
     get_bankroll,
 )
 from .capabilities import get_capabilities_payload
-from .errors import ApiError, api_error_handler, bad_args, table_rule_block, unsupported_bet
+from .errors import (
+    ApiError,
+    api_error_handler,
+    bad_args,
+    table_rule_block,
+    unsupported_bet,
+)
 from .events import (
     build_event,
     build_hand_ended,
@@ -103,13 +115,16 @@ from .events import (
     build_seven_out,
 )
 from .session_store import SESSION_STORE
+from .session import Session
 from .types import Capabilities, StartSessionRequest, StartSessionResponse, TableSpec
 from .version import CAPABILITIES_SCHEMA_VERSION, ENGINE_API_VERSION, get_identity
 
 if FastAPI is None:  # pragma: no cover - FastAPI optional
 
     class _StubApp:  # minimal ASGI fallback
-        def __call__(self, scope: Any, receive: Any, send: Any) -> None:  # pragma: no cover
+        def __call__(
+            self, scope: Any, receive: Any, send: Any
+        ) -> None:  # pragma: no cover
             raise RuntimeError("FastAPI is not installed")
 
     _stub_app = _StubApp()
@@ -165,6 +180,47 @@ BASE_CAPABILITIES: Capabilities = {
 }
 
 
+def _map_verb_to_command(verb: str, args: Dict[str, Any]) -> Dict[str, Any] | None:
+    amount_value = args.get("amount")
+    if amount_value is None:
+        return None
+    try:
+        amount = float(amount_value)
+    except (TypeError, ValueError):
+        raise bad_args("amount must be numeric")
+
+    if verb == "pass_line":
+        return {"type": "place_bet", "bet": "PassLine", "args": {"amount": amount}}
+    if verb == "dont_pass":
+        return {"type": "place_bet", "bet": "DontPass", "args": {"amount": amount}}
+    if verb == "come":
+        return {"type": "place_bet", "bet": "Come", "args": {"amount": amount}}
+    if verb == "dont_come":
+        return {"type": "place_bet", "bet": "DontCome", "args": {"amount": amount}}
+
+    if verb in {"place", "buy", "lay", "put"}:
+        bet_name = {
+            "place": "Place",
+            "buy": "Buy",
+            "lay": "Lay",
+            "put": "Put",
+        }[verb]
+        number_value = args.get("box", args.get("number"))
+        if number_value is None:
+            raise bad_args("box/number is required for this bet")
+        try:
+            number = int(number_value)
+        except (TypeError, ValueError):
+            raise bad_args("box/number must be an integer")
+        return {
+            "type": "place_bet",
+            "bet": bet_name,
+            "args": {"number": number, "amount": amount},
+        }
+
+    return None
+
+
 def _resolve_vig_settings(spec: TableSpec) -> Dict[str, Any]:
     settings: Dict[str, Any] = dict(DEFAULT_VIG_SETTINGS)
     vig_spec = spec.get("vig", {})
@@ -189,7 +245,9 @@ def _resolve_vig_settings(spec: TableSpec) -> Dict[str, Any]:
     return settings
 
 
-def _apply_vig_settings_to_caps(caps: Dict[str, Any], vig_settings: Dict[str, Any]) -> Dict[str, Any]:
+def _apply_vig_settings_to_caps(
+    caps: Dict[str, Any], vig_settings: Dict[str, Any]
+) -> Dict[str, Any]:
     if "vig" not in caps:
         return caps
     vig_caps = {}
@@ -261,7 +319,7 @@ if router is not None:  # pragma: no cover - FastAPI optional
 
 
 def _coerce_start_session_payload(
-    payload: StartSessionRequest | BaseModel | Dict[str, Any]
+    payload: StartSessionRequest | BaseModel | Dict[str, Any],
 ) -> Dict[str, Any]:
     """Return a plain mapping for the start session request."""
 
@@ -281,7 +339,7 @@ def _coerce_start_session_payload(
 
 
 def _coerce_roll_payload(
-    payload: RollRequest | BaseModel | Dict[str, Any] | None
+    payload: RollRequest | BaseModel | Dict[str, Any] | None,
 ) -> Dict[str, Any]:
     if payload is None:
         raise bad_args("roll payload must be provided")
@@ -311,7 +369,9 @@ class StartSessionResult(dict):
         self.body = _json_dumps(payload).encode()
 
 
-def start_session(payload: StartSessionRequest | BaseModel | Dict[str, Any]) -> StartSessionResult:
+def start_session(
+    payload: StartSessionRequest | BaseModel | Dict[str, Any],
+) -> StartSessionResult:
     """Core callable used by tests and the FastAPI layer."""
 
     request_data = _coerce_start_session_payload(payload)
@@ -345,6 +405,10 @@ def start_session(payload: StartSessionRequest | BaseModel | Dict[str, Any]) -> 
     session_state["settings"] = dict(vig_settings)
     hand = session_state["hand"]
     hand_fields = hand.to_snapshot_fields()
+    session_obj = session_state["session"]
+    snapshot_state = session_obj.snapshot()
+    bankroll_after = float(snapshot_state.get("bankroll", 0.0))
+    SessionBankrolls[session_id] = bankroll_after
 
     snapshot: Dict[str, Any] = {
         "identity": {
@@ -359,8 +423,9 @@ def start_session(payload: StartSessionRequest | BaseModel | Dict[str, Any]) -> 
         **hand_fields,
         "roll_seq": session_state["roll_seq"],
         "dice": session_state["last_dice"],
-        "bankroll_after": "1000.00",
+        "bankroll_after": f"{bankroll_after:.2f}",
         "events": [],
+        "bets": snapshot_state.get("bets", []),
     }
 
     response: StartSessionResponse = {
@@ -370,7 +435,9 @@ def start_session(payload: StartSessionRequest | BaseModel | Dict[str, Any]) -> 
     return StartSessionResult(response)
 
 
-def roll(payload: RollRequest | BaseModel | Dict[str, Any] | None = None) -> Dict[str, Any]:
+def roll(
+    payload: RollRequest | BaseModel | Dict[str, Any] | None = None,
+) -> Dict[str, Any]:
     data = _coerce_roll_payload(payload)
 
     session_id_value = data.get("session_id")
@@ -397,7 +464,7 @@ def roll(payload: RollRequest | BaseModel | Dict[str, Any] | None = None) -> Dic
 
 if router is not None:  # pragma: no cover - FastAPI optional
 
-    def _start_session_http(body: StartSessionRequest = Body(...)) -> Response:
+    def _start_session_http(body: Dict[str, Any] = Body(...)) -> Response:
         return _json_response(start_session(body))
 
     router.post("/session/start")(_start_session_http)
@@ -420,6 +487,7 @@ if router is not None:  # pragma: no cover - FastAPI optional
 def apply_action(req: dict):
     verb = req.get("verb")
     args = req.get("args", {})
+    session_provided = "session_id" in req
     session_id = req.get("session_id", "stub-session")
 
     if not isinstance(verb, str) or not verb:
@@ -431,7 +499,9 @@ def apply_action(req: dict):
 
     # ----- legality context ---------------------------------------------------
     caps = _capabilities_dict()["capabilities"]
-    place_increments = {str(k): int(v) for k, v in caps.get("increments", {}).get("place", {}).items()}
+    place_increments = {
+        str(k): int(v) for k, v in caps.get("increments", {}).get("place", {}).items()
+    }
     odds_limits = caps.get("odds_limits", {"policy": "3-4-5", "max_x": 20})
     odds_policy = str(odds_limits.get("policy", "3-4-5"))
     odds_max_x = int(odds_limits.get("max_x", 20))
@@ -441,15 +511,54 @@ def apply_action(req: dict):
     state = req.get("state", {})
     puck = state.get("puck", "OFF")
     point = state.get("point", None)
-    table = TableView(puck=puck, point=point)
+    table_view = TableView(puck=puck, point=point)
 
     # ----- legality checks ----------------------------------------------------
-    check_timing(verb, table)
+    check_timing(verb, table_view)
     check_amount(verb, args, place_increments)
     check_limits(verb, args, odds_policy, odds_max_x)
 
-    session_state = SESSION_STORE.ensure(session_id)
-    table_settings = session_state.setdefault("settings", dict(DEFAULT_VIG_SETTINGS))
+    session_obj: Session | None = None
+    table = None
+    player = None
+    session_state: Dict[str, Any] | None = None
+    bankroll_before = 0.0
+    if session_provided:
+        session_state = SESSION_STORE.ensure(session_id)
+        table_settings = session_state.setdefault(
+            "settings", dict(DEFAULT_VIG_SETTINGS)
+        )
+        session_obj = session_state.get("session")
+        table = session_state.get("table")
+        if session_obj is None:
+            if table is None:
+                table = SESSION_STORE.ensure(session_id)["table"]
+            session_obj = Session(table=table)
+            session_state["session"] = session_obj
+        assert session_obj is not None
+        if table is None:
+            table = session_obj.table
+            session_state["table"] = table
+
+        vig_rounding = table_settings.get("vig_rounding")
+        if isinstance(vig_rounding, str):
+            table.settings["vig_rounding"] = vig_rounding
+        vig_floor = table_settings.get("vig_floor")
+        if isinstance(vig_floor, (int, float)):
+            table.settings["vig_floor"] = float(vig_floor)
+        vig_paid_on_win = table_settings.get("vig_paid_on_win")
+        if isinstance(vig_paid_on_win, bool):
+            table.settings["vig_paid_on_win"] = vig_paid_on_win
+
+        player = session_obj.player()
+        if player is None:
+            table.add_player(bankroll=1000, strategy=None, name="API Player")
+            player = session_obj.player()
+
+        bankroll_before = float(getattr(player, "bankroll", 0.0)) if player else 0.0
+        SessionBankrolls[session_id] = bankroll_before
+    else:
+        table_settings = dict(DEFAULT_VIG_SETTINGS)
 
     amt = args.get("amount", 0)
     required_cash = 0.0
@@ -466,20 +575,50 @@ def apply_action(req: dict):
             }
             if not table_settings.get("vig_paid_on_win", False):
                 required_cash += vig_amount
-        # Verify funds and deduct for deterministic ledger tracking
-        check_funds(session_id, required_cash)
-        apply_bankroll_delta(session_id, -required_cash)
+        if session_provided:
+            check_funds(session_id, required_cash)
 
-    # ----- dispatch (still no-op stub) ---------------------------------------
-    result = VerbRegistry[verb](args)
+    command = _map_verb_to_command(verb, args) if session_provided else None
+    result: Dict[str, Any]
+    if command is not None and player is not None:
+        if required_cash:
+            apply_bankroll_delta(session_id, -required_cash)
+        engine_result = session_obj.apply_command(command)
+        applied = bool(engine_result.get("ok"))
+        bankroll_after = float(player.bankroll)
+        SessionBankrolls[session_id] = bankroll_after
+        bankroll_delta = bankroll_after - bankroll_before
+        note = "applied via engine" if applied else "engine rejected action"
+        result = {
+            "applied": applied,
+            "bankroll_delta": bankroll_delta,
+            "note": note,
+        }
+    else:
+        result = VerbRegistry[verb](args)
+        bankroll_after = bankroll_before + float(result.get("bankroll_delta", 0.0))
+        SessionBankrolls[session_id] = bankroll_after
+        result_note = result.get("note", "")
+        if result_note.startswith("stub:"):
+            result["note"] = "validated (legal, stub execution)"
+
     if vig_info is not None:
         result["vig"] = vig_info
     if required_cash:
         result["cash_required"] = required_cash
-    result_note = result.get("note", "")
-    if result_note.startswith("stub:"):
-        # clarify that legality passed
-        result["note"] = "validated (legal, stub execution)"
+
+    snapshot_state = session_obj.snapshot() if session_obj is not None else {"bets": []}
+
+    if session_provided:
+        puck_value = "ON" if table.point.status == "On" else "OFF"
+        point_value = table.point.number
+        bets_value = snapshot_state.get("bets", [])
+        bankroll_value = f"{get_bankroll(session_id):.2f}"
+    else:
+        puck_value = table_view.puck
+        point_value = table_view.point
+        bets_value = []
+        bankroll_value = f"{get_bankroll(session_id):.2f}"
 
     return {
         "effect_summary": {
@@ -489,14 +628,15 @@ def apply_action(req: dict):
         },
         "snapshot": {
             "session_id": session_id,
-            "bankroll_after": get_bankroll(session_id),
+            "bankroll_after": bankroll_value,
             "identity": {
                 "engine_api_version": ENGINE_API_VERSION,
                 "capabilities_schema_version": CAPABILITIES_SCHEMA_VERSION,
             },
             # expose minimal table view echo for client tracing
-            "puck": table.puck,
-            "point": table.point,
+            "puck": puck_value,
+            "point": point_value,
+            "bets": bets_value,
         },
     }
 
@@ -537,26 +677,29 @@ def step_roll(req: StepRollRequest):
     session_id = req.session_id
     sess = SESSION_STORE.ensure(session_id)
     hand = sess["hand"]
-    table = sess.get("table")
-    if table is None:  # pragma: no cover - defensive fallback
-        table = SESSION_STORE.ensure(session_id)["table"]
+    session_obj: Session = sess["session"]
+    table = session_obj.table
+    sess["table"] = table
     roll_seq = sess["roll_seq"] + 1
     sess["roll_seq"] = roll_seq
     hand_id = hand.hand_id
 
+    dice_override: list[int] | None
     if req.mode == "inject":
         assert req.dice is not None
-        d1, d2 = req.dice
-        table.dice.fixed_roll((d1, d2))
+        dice_override = [int(req.dice[0]), int(req.dice[1])]
     else:
-        table.dice.roll()
-        d1, d2 = table.dice.result
+        dice_override = None
 
-    d1, d2 = int(d1), int(d2)
-    sess["last_dice"] = (d1, d2)
+    event = session_obj.step_roll(dice_override)
+    dice_values = [int(v) for v in event.get("dice", (0, 0))]
+    sess["last_dice"] = tuple(dice_values)
 
-    bankroll_before = "1000.00"
-    bankroll_after = bankroll_before
+    before_snapshot = event.get("before", {})
+    after_snapshot = event.get("after", {})
+    bankroll_before = f"{float(before_snapshot.get('bankroll', 0.0)):.2f}"
+    bankroll_after = f"{float(after_snapshot.get('bankroll', 0.0)):.2f}"
+    SessionBankrolls[session_id] = float(after_snapshot.get("bankroll", 0.0))
 
     events = []
     if roll_seq == 1:
@@ -591,12 +734,12 @@ def step_roll(req: StepRollRequest):
             "roll_completed",
             bankroll_before,
             bankroll_after,
-            {"dice": [d1, d2]},
+            {"dice": dice_values},
         )
     )
 
     pre_hand_id = hand_id
-    state_evs = hand.on_roll((d1, d2))
+    state_evs = hand.on_roll((dice_values[0], dice_values[1]))
 
     for ev in state_evs:
         et = ev["type"]
@@ -650,7 +793,7 @@ def step_roll(req: StepRollRequest):
         "session_id": session_id,
         "hand_id": snap_state["hand_id"],
         "roll_seq": roll_seq,
-        "dice": [d1, d2],
+        "dice": dice_values,
         "puck": snap_state["puck"],
         "point": snap_state["point"],
         "bankroll_after": bankroll_after,
@@ -659,6 +802,7 @@ def step_roll(req: StepRollRequest):
             "engine_api_version": ENGINE_API_VERSION,
             "capabilities_schema_version": CAPABILITIES_SCHEMA_VERSION,
         },
+        "bets": after_snapshot.get("bets", []),
     }
     return snapshot
 

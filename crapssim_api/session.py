@@ -4,6 +4,7 @@ from typing import Callable, Optional, Any
 
 from crapssim.table import Table, TableUpdate
 
+
 class Session:
     """
     Lightweight wrapper around a CrapsSim Table.
@@ -11,7 +12,12 @@ class Session:
     Does not change engine behavior.
     """
 
-    def __init__(self, table: Optional[Table] = None, *, record_callback: Callable[[dict], None] | None = None):
+    def __init__(
+        self,
+        table: Optional[Table] = None,
+        *,
+        record_callback: Callable[[dict], None] | None = None,
+    ):
         self._table = table or Table()
         self._ensure_player()
         self._record = record_callback
@@ -45,7 +51,9 @@ class Session:
             bet_name = command["bet"]
             bet_args = command.get("args", {}) or {}
             ok = self._place_bet(bet_name, bet_args)
-            self._emit({"type": "bet_placed", "bet": bet_name, "args": bet_args, "ok": ok})
+            self._emit(
+                {"type": "bet_placed", "bet": bet_name, "args": bet_args, "ok": ok}
+            )
             return {"ok": ok}
 
         if ctype == "remove_bet":
@@ -152,6 +160,17 @@ class Session:
                 )
         return sig
 
+    @property
+    def table(self) -> Table:
+        """Expose the underlying table for integration layers."""
+
+        return self._table
+
+    def player(self):
+        """Return the primary session player if available."""
+
+        return self._first_player()
+
     def _place_bet(self, bet_name: str, bet_args: dict) -> bool:
         try:
             bet_module = importlib.import_module("crapssim.bet")
@@ -224,5 +243,3 @@ class Session:
         after = self._bet_signature()
         bankroll_after = float(player.bankroll)
         return after != before or abs(bankroll_after - bankroll_before) > 1e-9
-
-
