@@ -88,7 +88,15 @@ class RollRequest(BaseModel):
         return v
 
 
-from .actions import SUPPORTED_VERBS, build_bet, compute_required_cash, describe_vig
+from .actions import (
+    SUPPORTED_VERBS,
+    apply_bet_management,
+    build_bet,
+    compute_required_cash,
+    describe_vig,
+    is_bet_management_verb,
+    is_bet_placement_verb,
+)
 from .capabilities import get_capabilities_payload
 from .errors import ApiError, ApiErrorCode, api_error_handler, bad_args, unsupported_bet
 from .events import (
@@ -513,46 +521,83 @@ def apply_action(req: dict):
         )
 
     bankroll_before = float(player.bankroll)
-    signature_before = _player_signature(player)
 
-    bet = build_bet(verb, args, table=table, player=player)
-    required_cash = compute_required_cash(player, bet)
+    if is_bet_placement_verb(verb):
+        signature_before = _player_signature(player)
 
-    if required_cash > bankroll_before + 1e-9:
+        bet = build_bet(verb, args, table=table, player=player)
+        required_cash = compute_required_cash(player, bet)
+
+        if required_cash > bankroll_before + 1e-9:
+            raise ApiError(
+                ApiErrorCode.INSUFFICIENT_FUNDS,
+                f"bankroll ${bankroll_before:.2f} < required ${required_cash:.2f}",
+                at_state=_at_state(session_id, session_state),
+            )
+
+        player.add_bet(bet)
+
+        bankroll_after = float(player.bankroll)
+        signature_after = _player_signature(player)
+
+        applied = (
+            bankroll_after != bankroll_before or signature_after != signature_before
+        )
+        if not applied:
+            raise ApiError(
+                ApiErrorCode.TABLE_RULE_BLOCK,
+                "engine rejected action",
+                at_state=_at_state(session_id, session_state),
+            )
+
+        bankroll_delta = bankroll_after - bankroll_before
+        vig_info = describe_vig(bet, table)
+
+        effect_summary: Dict[str, Any] = {
+            "verb": verb,
+            "args": args,
+            "applied": True,
+            "bankroll_delta": bankroll_delta,
+            "note": "applied via engine",
+        }
+
+        if vig_info is not None:
+            effect_summary["vig"] = vig_info
+        if required_cash > 0:
+            effect_summary["cash_required"] = required_cash
+
+    elif is_bet_management_verb(verb):
+        mgmt_result = apply_bet_management(session_obj, verb, args)
+        if mgmt_result.get("result") != "ok":
+            error_code_value = (
+                mgmt_result.get("error_code") or ApiErrorCode.BAD_ARGS.value
+            )
+            hint = mgmt_result.get("error_hint", "bet management action failed")
+            try:
+                error_code = ApiErrorCode(error_code_value)  # type: ignore[arg-type]
+            except ValueError:  # pragma: no cover - defensive
+                error_code = ApiErrorCode.BAD_ARGS
+            raise ApiError(
+                error_code, hint, at_state=_at_state(session_id, session_state)
+            )
+
+        bankroll_after = float(mgmt_result["bankroll_after"])
+        bankroll_delta = bankroll_after - float(mgmt_result["bankroll_before"])
+        effect_summary = {
+            "verb": verb,
+            "args": args,
+            "applied": bool(mgmt_result.get("changed")),
+            "bankroll_delta": bankroll_delta,
+            "note": "applied via bet management",
+            "bets_before": mgmt_result["bets_before"],
+            "bets_after": mgmt_result["bets_after"],
+        }
+    else:  # pragma: no cover - defensive
         raise ApiError(
-            ApiErrorCode.INSUFFICIENT_FUNDS,
-            f"bankroll ${bankroll_before:.2f} < required ${required_cash:.2f}",
+            ApiErrorCode.UNSUPPORTED_BET,
+            f"verb '{verb}' not recognized",
             at_state=_at_state(session_id, session_state),
         )
-
-    player.add_bet(bet)
-
-    bankroll_after = float(player.bankroll)
-    signature_after = _player_signature(player)
-
-    applied = bankroll_after != bankroll_before or signature_after != signature_before
-    if not applied:
-        raise ApiError(
-            ApiErrorCode.TABLE_RULE_BLOCK,
-            "engine rejected action",
-            at_state=_at_state(session_id, session_state),
-        )
-
-    bankroll_delta = bankroll_after - bankroll_before
-    vig_info = describe_vig(bet, table)
-
-    effect_summary: Dict[str, Any] = {
-        "verb": verb,
-        "args": args,
-        "applied": True,
-        "bankroll_delta": bankroll_delta,
-        "note": "applied via engine",
-    }
-
-    if vig_info is not None:
-        effect_summary["vig"] = vig_info
-    if required_cash > 0:
-        effect_summary["cash_required"] = required_cash
 
     snapshot_state = session_obj.snapshot()
     bankroll_value = f"{float(snapshot_state.get('bankroll', bankroll_after)):.2f}"
