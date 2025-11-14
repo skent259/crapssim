@@ -1529,19 +1529,13 @@ def test_risk12_integration(
     strategy.min_bankroll = bankroll - 12
 
     if table.point.number in (4, 9, 10):
-        # strategy.pre_point_winnings = 10
         winnings = 10
-        # strategy.min_bankroll =
     elif strat_info is not None and "winnings" in strat_info:
-        # strategy.min_bankroll = bankroll - 12
-        # strategy.pre_point_winnings = strat_info["winnings"]
         winnings = strat_info["winnings"]
     else:
         winnings = 10
 
-    table.add_player(
-        bankroll=bankroll + winnings, strategy=strategy
-    )  # ADD STRATEGY HERE
+    table.add_player(bankroll=bankroll + winnings, strategy=strategy)
     table.players[0].bets = copy.copy(bets_before)
     table.dice.result = dice_result
     TableUpdate().run_strategies(table)
