@@ -1,0 +1,69 @@
+crapssim.point
+==============
+
+.. py:module:: crapssim.point
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   crapssim.point.Point
+
+
+Module Contents
+---------------
+
+.. py:class:: Point(number: int | None = None)
+
+   The point on a craps table.
+
+   .. attribute:: number
+
+      The point number (in [4, 5, 6, 8, 9, 10]) is status == 'On'
+
+      :type: int
+
+
+   .. py:attribute:: number
+      :type:  int | None
+      :value: None
+
+
+
+   .. py:property:: status
+      :type: str
+
+
+
+   .. py:method:: __hash__() -> int
+
+
+   .. py:method:: __repr__()
+
+
+   .. py:method:: __eq__(other: object) -> bool
+
+
+   .. py:method:: __gt__(other: object) -> bool
+
+
+   .. py:method:: __lt__(other: object) -> bool
+
+
+   .. py:method:: __ge__(other: object) -> bool
+
+
+   .. py:method:: __le__(other: object) -> bool
+
+
+   .. py:method:: update(dice_object: crapssim.Dice) -> None
+
+      Given a Dice object update the points status and number.
+
+      :param dice_object: The Dice you want to update the point with
+      :type dice_object: Dice
+
+
+

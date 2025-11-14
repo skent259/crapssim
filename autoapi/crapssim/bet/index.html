@@ -1,0 +1,1776 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>crapssim.bet &mdash; crapssim 0.3.2 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=71d9d8e6"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="crapssim.dice" href="../dice/index.html" />
+    <link rel="prev" title="crapssim" href="../index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            crapssim
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Examples and Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial-strategy-01.html">Strategy Tutorial 1: Starting off</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../crapssim_sandbox.html">Sandbox</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">Change Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../supported-bets.html">Supported Bets</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html">crapssim</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../index.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l4 current"><a class="current reference internal" href="#">crapssim.bet</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../dice/index.html">crapssim.dice</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../point/index.html">crapssim.point</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../strategy/index.html">crapssim.strategy</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../table/index.html">crapssim.table</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../index.html#package-contents">Package Contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">crapssim</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">API Reference</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">crapssim</a></li>
+      <li class="breadcrumb-item active">crapssim.bet</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../_sources/autoapi/crapssim/bet/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-crapssim.bet">
+<span id="crapssim-bet"></span><h1>crapssim.bet<a class="headerlink" href="#module-crapssim.bet" title="Link to this heading"></a></h1>
+<section id="classes">
+<h2>Classes<a class="headerlink" href="#classes" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#crapssim.bet.BetResult" title="crapssim.bet.BetResult"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BetResult</span></code></a></p></td>
+<td><p>Represents the outcome of a bet</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#crapssim.bet.Bet" title="crapssim.bet.Bet"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Bet</span></code></a></p></td>
+<td><p>A generic bet for the craps table.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#crapssim.bet._WinningLosingNumbersBet" title="crapssim.bet._WinningLosingNumbersBet"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_WinningLosingNumbersBet</span></code></a></p></td>
+<td><p>A bet that has winning numbers, losing numbers, and payout ratios</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#crapssim.bet._SimpleBet" title="crapssim.bet._SimpleBet"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_SimpleBet</span></code></a></p></td>
+<td><p>A bet that has fixed winning and losing numbers and payout ratio</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#crapssim.bet.PassLine" title="crapssim.bet.PassLine"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PassLine</span></code></a></p></td>
+<td><p>Pass Line bet in craps.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#crapssim.bet.Come" title="crapssim.bet.Come"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Come</span></code></a></p></td>
+<td><p>Come bet in craps.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#crapssim.bet.DontPass" title="crapssim.bet.DontPass"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DontPass</span></code></a></p></td>
+<td><p>Don't Pass bet in craps.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#crapssim.bet.DontCome" title="crapssim.bet.DontCome"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DontCome</span></code></a></p></td>
+<td><p>Don't Come bet in craps.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#crapssim.bet.Odds" title="crapssim.bet.Odds"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Odds</span></code></a></p></td>
+<td><p>Odds bet (for PassLine, DontPass, Come, or Dontcome) in craps.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#crapssim.bet.Put" title="crapssim.bet.Put"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Put</span></code></a></p></td>
+<td><p>Flat line bet on a box number; point must be ON and odds obey table policy.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#crapssim.bet.Place" title="crapssim.bet.Place"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Place</span></code></a></p></td>
+<td><p>Place bet (on 4, 5, 6, 8, 9, or 10) in craps.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#crapssim.bet.Buy" title="crapssim.bet.Buy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Buy</span></code></a></p></td>
+<td><p>True-odds bet on 4/5/6/8/9/10 that charges vig per table policy.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#crapssim.bet.Lay" title="crapssim.bet.Lay"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Lay</span></code></a></p></td>
+<td><p>True-odds bet against 4/5/6/8/9/10, paying if 7 arrives first.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#crapssim.bet.Field" title="crapssim.bet.Field"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Field</span></code></a></p></td>
+<td><p>Field bet in craps.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#crapssim.bet.CAndE" title="crapssim.bet.CAndE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CAndE</span></code></a></p></td>
+<td><p>Craps and Eleven (C &amp; E) bet in craps.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#crapssim.bet.Any7" title="crapssim.bet.Any7"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Any7</span></code></a></p></td>
+<td><p>Any 7 bet (also known as Big Red) in craps.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#crapssim.bet.Two" title="crapssim.bet.Two"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Two</span></code></a></p></td>
+<td><p>Two (Snake Eyes) bet in craps.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#crapssim.bet.Three" title="crapssim.bet.Three"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Three</span></code></a></p></td>
+<td><p>Three bet in craps.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#crapssim.bet.Yo" title="crapssim.bet.Yo"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Yo</span></code></a></p></td>
+<td><p>Yo (Eleven) bet in craps.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#crapssim.bet.Boxcars" title="crapssim.bet.Boxcars"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Boxcars</span></code></a></p></td>
+<td><p>Boxcars (Midnight) bet in craps.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#crapssim.bet.AnyCraps" title="crapssim.bet.AnyCraps"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AnyCraps</span></code></a></p></td>
+<td><p>Any Craps bet in craps.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#crapssim.bet.Horn" title="crapssim.bet.Horn"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Horn</span></code></a></p></td>
+<td><p>One-roll bet split across 2, 3, 11, and 12; loses on all other totals.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#crapssim.bet.World" title="crapssim.bet.World"><code class="xref py py-obj docutils literal notranslate"><span class="pre">World</span></code></a></p></td>
+<td><p>One-roll bet covering Horn numbers plus 7; pays break-even on 7.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#crapssim.bet.Big6" title="crapssim.bet.Big6"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Big6</span></code></a></p></td>
+<td><p>Even-money bet that wins on 6 before 7.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#crapssim.bet.Big8" title="crapssim.bet.Big8"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Big8</span></code></a></p></td>
+<td><p>Even-money bet that wins on 8 before 7.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#crapssim.bet.HardWay" title="crapssim.bet.HardWay"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HardWay</span></code></a></p></td>
+<td><p>Hard Way bet (on 4, 6, 8, or 10) in craps.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#crapssim.bet.Hop" title="crapssim.bet.Hop"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Hop</span></code></a></p></td>
+<td><p>Hop bet in craps.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#crapssim.bet.Fire" title="crapssim.bet.Fire"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Fire</span></code></a></p></td>
+<td><p>Fire bet in craps.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#crapssim.bet.All" title="crapssim.bet.All"><code class="xref py py-obj docutils literal notranslate"><span class="pre">All</span></code></a></p></td>
+<td><p>All bet (part of All/Tall/Small bets) in craps.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#crapssim.bet.Tall" title="crapssim.bet.Tall"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Tall</span></code></a></p></td>
+<td><p>Tall bet (part of All/Tall/Small bets) in craps.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#crapssim.bet.Small" title="crapssim.bet.Small"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Small</span></code></a></p></td>
+<td><p>Small bet (part of All/Tall/Small bets) in craps.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.bet.BetResult">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.bet.</span></span><span class="sig-name descname"><span class="pre">BetResult</span></span><a class="headerlink" href="#crapssim.bet.BetResult" title="Link to this definition"></a></dt>
+<dd><p>Represents the outcome of a bet</p>
+<p>This class is used by all Bets for consistency in determining whether the
+bet won, lost or pushed. It provides properties to analyze the bet outcome
+and its impact on a bankroll.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.bet.BetResult.amount">
+<span class="sig-name descname"><span class="pre">amount</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#crapssim.bet.BetResult.amount" title="Link to this definition"></a></dt>
+<dd><p>The monetary value representing the bet outcome.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.bet.BetResult.remove">
+<span class="sig-name descname"><span class="pre">remove</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#crapssim.bet.BetResult.remove" title="Link to this definition"></a></dt>
+<dd><p>Flag indicating whether this bet result should be removed from table.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.bet.BetResult.bet_amount">
+<span class="sig-name descname"><span class="pre">bet_amount</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#crapssim.bet.BetResult.bet_amount" title="Link to this definition"></a></dt>
+<dd><p>The monetary value of the original bet size. Needed only for bets that
+push and return the wager to the player. Default is zero for quick
+results that can define wins and losses by comparing against zero.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="crapssim.bet.BetResult.won">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">won</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#crapssim.bet.BetResult.won" title="Link to this definition"></a></dt>
+<dd><p>Returns True if the bet won (amount more than initial bet).</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="crapssim.bet.BetResult.lost">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">lost</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#crapssim.bet.BetResult.lost" title="Link to this definition"></a></dt>
+<dd><p>Returns True if the bet lost (negative amount).</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="crapssim.bet.BetResult.pushed">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pushed</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#crapssim.bet.BetResult.pushed" title="Link to this definition"></a></dt>
+<dd><p>Returns True if the bet tied (zero amount).</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="crapssim.bet.BetResult.bankroll_change">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">bankroll_change</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#crapssim.bet.BetResult.bankroll_change" title="Link to this definition"></a></dt>
+<dd><p>Calculates the change to the bankroll (amount if bet won, zero otherwise).</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.bet.Bet">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.bet.</span></span><span class="sig-name descname"><span class="pre">Bet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsFloat</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.bet.Bet" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
+<p>A generic bet for the craps table.</p>
+<p>The high-level class that defines most of the core bet methods.
+All bets will be a subclass of this.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.bet.Bet.amount">
+<span class="sig-name descname"><span class="pre">amount</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#crapssim.bet.Bet.amount" title="Link to this definition"></a></dt>
+<dd><p>Wagered amount for the bet.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.bet.Bet.get_result">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_result</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#crapssim.Table" title="crapssim.Table"><span class="pre">Table</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#crapssim.bet.BetResult" title="crapssim.bet.BetResult"><span class="pre">BetResult</span></a></span></span><a class="headerlink" href="#crapssim.bet.Bet.get_result" title="Link to this definition"></a></dt>
+<dd><p>Core bet logic that determines the result.</p>
+<p>This determines the ultimate amount and whether the
+bet needs to be removed, which is indicated with a
+BetResult object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.bet.Bet.cost">
+<span class="sig-name descname"><span class="pre">cost</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#crapssim.Table" title="crapssim.Table"><span class="pre">Table</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#crapssim.bet.Bet.cost" title="Link to this definition"></a></dt>
+<dd><p>Total bankroll required to put this bet in action on <code class="docutils literal notranslate"><span class="pre">table</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.bet.Bet.update_number">
+<span class="sig-name descname"><span class="pre">update_number</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#crapssim.Table" title="crapssim.Table"><span class="pre">Table</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.bet.Bet.update_number" title="Link to this definition"></a></dt>
+<dd><p>Update the bet’s number, if applicable</p>
+<p>This method is required by Come and DontCome bets to
+update their number after the first roll. Since this
+method is used by the Table, it defaults to doing nothing
+for a generic bet.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.bet.Bet.is_removable">
+<span class="sig-name descname"><span class="pre">is_removable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#crapssim.Table" title="crapssim.Table"><span class="pre">Table</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#crapssim.bet.Bet.is_removable" title="Link to this definition"></a></dt>
+<dd><p>Checks whether the bet is removable. May depend on the
+table conditions (e.g. if point is On).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True if the bet is removable, otherwise false.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.bet.Bet.is_allowed">
+<span class="sig-name descname"><span class="pre">is_allowed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#crapssim.Player" title="crapssim.Player"><span class="pre">Player</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#crapssim.bet.Bet.is_allowed" title="Link to this definition"></a></dt>
+<dd><p>Checks whether the bet is allowed to be placed on the given table.
+May depend on the player’s bets also (e.g. for odds bets).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True if the bet is allowed, otherwise false.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.bet.Bet.copy">
+<span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#crapssim.bet.Bet" title="crapssim.bet.Bet"><span class="pre">Bet</span></a></span></span><a class="headerlink" href="#crapssim.bet.Bet.copy" title="Link to this definition"></a></dt>
+<dd><p>Create a fresh copy of this bet</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="crapssim.bet.Bet._placed_key">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_placed_key</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Hashable</span></em><a class="headerlink" href="#crapssim.bet.Bet._placed_key" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="crapssim.bet.Bet._hash_key">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_hash_key</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Hashable</span></em><a class="headerlink" href="#crapssim.bet.Bet._hash_key" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.bet.Bet.__eq__">
+<span class="sig-name descname"><span class="pre">__eq__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#crapssim.bet.Bet.__eq__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.bet.Bet.__hash__">
+<span class="sig-name descname"><span class="pre">__hash__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#crapssim.bet.Bet.__hash__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.bet.Bet.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#crapssim.bet.Bet.__repr__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.bet.Bet.__add__">
+<span class="sig-name descname"><span class="pre">__add__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#crapssim.bet.Bet" title="crapssim.bet.Bet"><span class="pre">Bet</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#crapssim.bet.Bet" title="crapssim.bet.Bet"><span class="pre">Bet</span></a></span></span><a class="headerlink" href="#crapssim.bet.Bet.__add__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.bet.Bet.__radd__">
+<span class="sig-name descname"><span class="pre">__radd__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.bet.Bet.__radd__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.bet.Bet.__sub__">
+<span class="sig-name descname"><span class="pre">__sub__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#crapssim.bet.Bet" title="crapssim.bet.Bet"><span class="pre">Bet</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#crapssim.bet.Bet" title="crapssim.bet.Bet"><span class="pre">Bet</span></a></span></span><a class="headerlink" href="#crapssim.bet.Bet.__sub__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.bet.Bet.__rsub__">
+<span class="sig-name descname"><span class="pre">__rsub__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.bet.Bet.__rsub__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.bet._WinningLosingNumbersBet">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.bet.</span></span><span class="sig-name descname"><span class="pre">_WinningLosingNumbersBet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsFloat</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.bet._WinningLosingNumbersBet" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#crapssim.bet.Bet" title="crapssim.bet.Bet"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Bet</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
+<p>A bet that has winning numbers, losing numbers, and payout ratios</p>
+<p>These values (possibly depending on the table) are used to
+calculate the result.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.bet._WinningLosingNumbersBet.get_result">
+<span class="sig-name descname"><span class="pre">get_result</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#crapssim.Table" title="crapssim.Table"><span class="pre">Table</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#crapssim.bet.BetResult" title="crapssim.bet.BetResult"><span class="pre">BetResult</span></a></span></span><a class="headerlink" href="#crapssim.bet._WinningLosingNumbersBet.get_result" title="Link to this definition"></a></dt>
+<dd><p>Core bet logic that determines the result.</p>
+<p>Wins are based on having dice total in the winning numbers
+(which may depend on the table), which will pay the payout_ratio
+times the bet amount plus the original bet amount back. Losses
+happen when dice total is in the losing numbers, which result
+in a loss of the original bet amount. Otherwise the bet stays
+on the table.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.bet._WinningLosingNumbersBet.get_winning_numbers">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_winning_numbers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#crapssim.Table" title="crapssim.Table"><span class="pre">Table</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#crapssim.bet._WinningLosingNumbersBet.get_winning_numbers" title="Link to this definition"></a></dt>
+<dd><p>Returns the winnings numbers, based on table features</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.bet._WinningLosingNumbersBet.get_losing_numbers">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_losing_numbers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#crapssim.Table" title="crapssim.Table"><span class="pre">Table</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#crapssim.bet._WinningLosingNumbersBet.get_losing_numbers" title="Link to this definition"></a></dt>
+<dd><p>Returns the losing numbers, based on table features</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.bet._WinningLosingNumbersBet.get_push_numbers">
+<span class="sig-name descname"><span class="pre">get_push_numbers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#crapssim.Table" title="crapssim.Table"><span class="pre">Table</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#crapssim.bet._WinningLosingNumbersBet.get_push_numbers" title="Link to this definition"></a></dt>
+<dd><p>Returns the push numbers, based on table features</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.bet._WinningLosingNumbersBet.get_payout_ratio">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_payout_ratio</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#crapssim.Table" title="crapssim.Table"><span class="pre">Table</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#crapssim.bet._WinningLosingNumbersBet.get_payout_ratio" title="Link to this definition"></a></dt>
+<dd><p>Returns the payout ratio (X to 1), based on table features</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.bet._SimpleBet">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.bet.</span></span><span class="sig-name descname"><span class="pre">_SimpleBet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsFloat</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.bet._SimpleBet" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#crapssim.bet._WinningLosingNumbersBet" title="crapssim.bet._WinningLosingNumbersBet"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_WinningLosingNumbersBet</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
+<p>A bet that has fixed winning and losing numbers and payout ratio</p>
+<p>Essentially, the numbers and payout ratio can be known
+at instantiation and don’t depend on the table.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.bet._SimpleBet.winning_numbers">
+<span class="sig-name descname"><span class="pre">winning_numbers</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#crapssim.bet._SimpleBet.winning_numbers" title="Link to this definition"></a></dt>
+<dd><p>Winning numbers for the bet</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.bet._SimpleBet.losing_numbers">
+<span class="sig-name descname"><span class="pre">losing_numbers</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#crapssim.bet._SimpleBet.losing_numbers" title="Link to this definition"></a></dt>
+<dd><p>Losing numbers for the bet</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.bet._SimpleBet.payout_ratio">
+<span class="sig-name descname"><span class="pre">payout_ratio</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#crapssim.bet._SimpleBet.payout_ratio" title="Link to this definition"></a></dt>
+<dd><p>Payout ratio for the bet</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.bet._SimpleBet.get_winning_numbers">
+<span class="sig-name descname"><span class="pre">get_winning_numbers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#crapssim.Table" title="crapssim.Table"><span class="pre">Table</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#crapssim.bet._SimpleBet.get_winning_numbers" title="Link to this definition"></a></dt>
+<dd><p>Returns the winning numbers (table not used here)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.bet._SimpleBet.get_losing_numbers">
+<span class="sig-name descname"><span class="pre">get_losing_numbers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#crapssim.Table" title="crapssim.Table"><span class="pre">Table</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#crapssim.bet._SimpleBet.get_losing_numbers" title="Link to this definition"></a></dt>
+<dd><p>Returns the losing numbers (table not used here)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.bet._SimpleBet.get_payout_ratio">
+<span class="sig-name descname"><span class="pre">get_payout_ratio</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#crapssim.Table" title="crapssim.Table"><span class="pre">Table</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#crapssim.bet._SimpleBet.get_payout_ratio" title="Link to this definition"></a></dt>
+<dd><p>Returns the payout ratio (table not used here)</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.bet.PassLine">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.bet.</span></span><span class="sig-name descname"><span class="pre">PassLine</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsFloat</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.bet.PassLine" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#crapssim.bet._WinningLosingNumbersBet" title="crapssim.bet._WinningLosingNumbersBet"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_WinningLosingNumbersBet</span></code></a></p>
+<p>Pass Line bet in craps.</p>
+<p>A bet where the player wins if the first roll is 7 or 11,
+loses if the first roll is 2, 3, or 12, and establishes a point number
+for subsequent rolls. Once a point is set, the player wins by rolling
+the point number again before rolling a 7. Pays 1 to 1.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.bet.PassLine.get_winning_numbers">
+<span class="sig-name descname"><span class="pre">get_winning_numbers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#crapssim.Table" title="crapssim.Table"><span class="pre">Table</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#crapssim.bet.PassLine.get_winning_numbers" title="Link to this definition"></a></dt>
+<dd><p>Winnings numbers are 7, 11 before point is set,
+and the point number after point is set. Uses table
+to determine the point number and status.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.bet.PassLine.get_losing_numbers">
+<span class="sig-name descname"><span class="pre">get_losing_numbers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#crapssim.Table" title="crapssim.Table"><span class="pre">Table</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#crapssim.bet.PassLine.get_losing_numbers" title="Link to this definition"></a></dt>
+<dd><p>Losing numbers are 2, 3, 12 before point is set,
+and 7 after point is set. Uses table to determine the
+point number and status.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.bet.PassLine.get_payout_ratio">
+<span class="sig-name descname"><span class="pre">get_payout_ratio</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#crapssim.Table" title="crapssim.Table"><span class="pre">Table</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#crapssim.bet.PassLine.get_payout_ratio" title="Link to this definition"></a></dt>
+<dd><p>PassLine always pays out 1:1</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.bet.PassLine.is_removable">
+<span class="sig-name descname"><span class="pre">is_removable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#crapssim.Table" title="crapssim.Table"><span class="pre">Table</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#crapssim.bet.PassLine.is_removable" title="Link to this definition"></a></dt>
+<dd><p>PassLine is removable if the point is off</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True if the bet is removable, otherwise false.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.bet.PassLine.is_allowed">
+<span class="sig-name descname"><span class="pre">is_allowed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#crapssim.Player" title="crapssim.Player"><span class="pre">Player</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#crapssim.bet.PassLine.is_allowed" title="Link to this definition"></a></dt>
+<dd><p>PassLine is allowed if the point if off</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True if the bet is allowed, otherwise false.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.bet.Come">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.bet.</span></span><span class="sig-name descname"><span class="pre">Come</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsFloat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">number</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.bet.Come" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#crapssim.bet._WinningLosingNumbersBet" title="crapssim.bet._WinningLosingNumbersBet"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_WinningLosingNumbersBet</span></code></a></p>
+<p>Come bet in craps.</p>
+<p>Similar to the Pass Line bet, but can be placed after a point is established.
+The first roll determines the Come bet’s point number, but also wins on 7, 11
+and loses on 2, 3, 12. The bet wins in subsequent rolls if the
+point number is rolled before a 7, and loses if a 7 is rolled before
+the point number. Pays 1 to 1.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.bet.Come.get_winning_numbers">
+<span class="sig-name descname"><span class="pre">get_winning_numbers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#crapssim.Table" title="crapssim.Table"><span class="pre">Table</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#crapssim.bet.Come.get_winning_numbers" title="Link to this definition"></a></dt>
+<dd><p>Winnings numbers are 7, 11 before the number is set,
+and the number after it is set. Number is stored within
+the bet.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.bet.Come.get_losing_numbers">
+<span class="sig-name descname"><span class="pre">get_losing_numbers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#crapssim.Table" title="crapssim.Table"><span class="pre">Table</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#crapssim.bet.Come.get_losing_numbers" title="Link to this definition"></a></dt>
+<dd><p>Losing numbers are 2, 3, 12 before the number is set,
+and 7 after it is set. Number is stored within
+the bet.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.bet.Come.get_payout_ratio">
+<span class="sig-name descname"><span class="pre">get_payout_ratio</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#crapssim.Table" title="crapssim.Table"><span class="pre">Table</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#crapssim.bet.Come.get_payout_ratio" title="Link to this definition"></a></dt>
+<dd><p>Come always pays out 1:1</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.bet.Come.update_number">
+<span class="sig-name descname"><span class="pre">update_number</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#crapssim.Table" title="crapssim.Table"><span class="pre">Table</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.bet.Come.update_number" title="Link to this definition"></a></dt>
+<dd><p>Update the bet’s number to the first number rolled if it’s in (4, 5, 6, 8, 9, 10).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.bet.Come.is_removable">
+<span class="sig-name descname"><span class="pre">is_removable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#crapssim.Table" title="crapssim.Table"><span class="pre">Table</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#crapssim.bet.Come.is_removable" title="Link to this definition"></a></dt>
+<dd><p>Come bet is removable is it’s number has not been established yet (first roll).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True if the bet is removable, otherwise false.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.bet.Come.is_allowed">
+<span class="sig-name descname"><span class="pre">is_allowed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#crapssim.Player" title="crapssim.Player"><span class="pre">Player</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#crapssim.bet.Come.is_allowed" title="Link to this definition"></a></dt>
+<dd><p>Come bet is only allowed if the table’s point is on (accessed via player).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True if the bet is allowed, otherwise false.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.bet.Come.copy">
+<span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#crapssim.bet.Bet" title="crapssim.bet.Bet"><span class="pre">Bet</span></a></span></span><a class="headerlink" href="#crapssim.bet.Come.copy" title="Link to this definition"></a></dt>
+<dd><p>Create a fresh copy of this bet with no number</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="crapssim.bet.Come._placed_key">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_placed_key</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Hashable</span></em><a class="headerlink" href="#crapssim.bet.Come._placed_key" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.bet.Come.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#crapssim.bet.Come.__repr__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.bet.DontPass">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.bet.</span></span><span class="sig-name descname"><span class="pre">DontPass</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsFloat</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.bet.DontPass" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#crapssim.bet._WinningLosingNumbersBet" title="crapssim.bet._WinningLosingNumbersBet"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_WinningLosingNumbersBet</span></code></a></p>
+<p>Don’t Pass bet in craps.</p>
+<p>The opposite of the Pass Line bet. The player wins if the first roll is 2 or 3,
+pushes on 12, and loses if the first roll is 7 or 11. After a point is
+established, the player wins by rolling a 7 before the point number. Bet pays 1 to 1.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.bet.DontPass.get_winning_numbers">
+<span class="sig-name descname"><span class="pre">get_winning_numbers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#crapssim.Table" title="crapssim.Table"><span class="pre">Table</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#crapssim.bet.DontPass.get_winning_numbers" title="Link to this definition"></a></dt>
+<dd><p>Winnings numbers are 2 or 3 before point is set,
+and 7 after point is set. Uses table to determine the point
+number and status.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.bet.DontPass.get_losing_numbers">
+<span class="sig-name descname"><span class="pre">get_losing_numbers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#crapssim.Table" title="crapssim.Table"><span class="pre">Table</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#crapssim.bet.DontPass.get_losing_numbers" title="Link to this definition"></a></dt>
+<dd><p>Losing numbers are 7 or 11 before point is set,
+and table point number after point is set. Uses table to determine the
+point number and status.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.bet.DontPass.get_push_numbers">
+<span class="sig-name descname"><span class="pre">get_push_numbers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#crapssim.Table" title="crapssim.Table"><span class="pre">Table</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#crapssim.bet.DontPass.get_push_numbers" title="Link to this definition"></a></dt>
+<dd><p>Returns the push numbers, based on table features</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.bet.DontPass.get_payout_ratio">
+<span class="sig-name descname"><span class="pre">get_payout_ratio</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#crapssim.Table" title="crapssim.Table"><span class="pre">Table</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#crapssim.bet.DontPass.get_payout_ratio" title="Link to this definition"></a></dt>
+<dd><p>Don’t pass always pays out 1:1</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.bet.DontPass.is_allowed">
+<span class="sig-name descname"><span class="pre">is_allowed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#crapssim.Player" title="crapssim.Player"><span class="pre">Player</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#crapssim.bet.DontPass.is_allowed" title="Link to this definition"></a></dt>
+<dd><p>Don’t Pass is allowed if the point if off.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True if the bet is allowed, otherwise false.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.bet.DontCome">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.bet.</span></span><span class="sig-name descname"><span class="pre">DontCome</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsFloat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">number</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.bet.DontCome" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#crapssim.bet._WinningLosingNumbersBet" title="crapssim.bet._WinningLosingNumbersBet"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_WinningLosingNumbersBet</span></code></a></p>
+<p>Don’t Come bet in craps.</p>
+<p>Similar to the Don’t Pass bet, but can be placed after a point is
+established, but also wins on 2, 3, pushes on 12, and loses on 7 or 11.
+The first roll determines the Don’t Come bet’s number. The bet wins in
+subsequent rolls if a 7 is rolled before the point number, and loses if
+the number is rolled before a 7. Pays 1 to 1.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.bet.DontCome.get_winning_numbers">
+<span class="sig-name descname"><span class="pre">get_winning_numbers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#crapssim.Table" title="crapssim.Table"><span class="pre">Table</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#crapssim.bet.DontCome.get_winning_numbers" title="Link to this definition"></a></dt>
+<dd><p>Returns the winnings numbers, based on table features</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.bet.DontCome.get_losing_numbers">
+<span class="sig-name descname"><span class="pre">get_losing_numbers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#crapssim.Table" title="crapssim.Table"><span class="pre">Table</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#crapssim.bet.DontCome.get_losing_numbers" title="Link to this definition"></a></dt>
+<dd><p>Returns the losing numbers, based on table features</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.bet.DontCome.get_push_numbers">
+<span class="sig-name descname"><span class="pre">get_push_numbers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#crapssim.Table" title="crapssim.Table"><span class="pre">Table</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#crapssim.bet.DontCome.get_push_numbers" title="Link to this definition"></a></dt>
+<dd><p>Returns the push numbers, based on table features</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.bet.DontCome.get_payout_ratio">
+<span class="sig-name descname"><span class="pre">get_payout_ratio</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#crapssim.Table" title="crapssim.Table"><span class="pre">Table</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#crapssim.bet.DontCome.get_payout_ratio" title="Link to this definition"></a></dt>
+<dd><p>Don’t Come always pays out 1:1</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.bet.DontCome.update_number">
+<span class="sig-name descname"><span class="pre">update_number</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#crapssim.Table" title="crapssim.Table"><span class="pre">Table</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.bet.DontCome.update_number" title="Link to this definition"></a></dt>
+<dd><p>Update the bet’s number, if applicable</p>
+<p>This method is required by Come and DontCome bets to
+update their number after the first roll. Since this
+method is used by the Table, it defaults to doing nothing
+for a generic bet.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.bet.DontCome.is_allowed">
+<span class="sig-name descname"><span class="pre">is_allowed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#crapssim.Player" title="crapssim.Player"><span class="pre">Player</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#crapssim.bet.DontCome.is_allowed" title="Link to this definition"></a></dt>
+<dd><p>Don’t Come is only allowed if the table’s point is on (accessed via player).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True if the bet is allowed, otherwise false.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.bet.DontCome.copy">
+<span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#crapssim.bet.Bet" title="crapssim.bet.Bet"><span class="pre">Bet</span></a></span></span><a class="headerlink" href="#crapssim.bet.DontCome.copy" title="Link to this definition"></a></dt>
+<dd><p>Create a fresh copy of this bet, with no number</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="crapssim.bet.DontCome._placed_key">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_placed_key</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Hashable</span></em><a class="headerlink" href="#crapssim.bet.DontCome._placed_key" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.bet.DontCome.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#crapssim.bet.DontCome.__repr__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.bet.Odds">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.bet.</span></span><span class="sig-name descname"><span class="pre">Odds</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">type</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#crapssim.bet.PassLine" title="crapssim.bet.PassLine"><span class="pre">PassLine</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#crapssim.bet.DontPass" title="crapssim.bet.DontPass"><span class="pre">DontPass</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#crapssim.bet.Come" title="crapssim.bet.Come"><span class="pre">Come</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#crapssim.bet.DontCome" title="crapssim.bet.DontCome"><span class="pre">DontCome</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#crapssim.bet.Put" title="crapssim.bet.Put"><span class="pre">Put</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">number</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">always_working</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.bet.Odds" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#crapssim.bet._WinningLosingNumbersBet" title="crapssim.bet._WinningLosingNumbersBet"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_WinningLosingNumbersBet</span></code></a></p>
+<p>Odds bet (for PassLine, DontPass, Come, or Dontcome) in craps.</p>
+<p>A supplementary bet placed behind Pass Line, Don’t Pass, Come, or Don’t Come bets.
+Offers true odds payouts, meaning the house has no edge. The payout varies
+depending on the point number and whether it’s a “light side” (Pass/Come)
+or “dark side” (Don’t Pass/Don’t Come) bet.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.bet.Odds.base_type">
+<span class="sig-name descname"><span class="pre">base_type</span></span><a class="headerlink" href="#crapssim.bet.Odds.base_type" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.bet.Odds.number">
+<span class="sig-name descname"><span class="pre">number</span></span><a class="headerlink" href="#crapssim.bet.Odds.number" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.bet.Odds.always_working">
+<span class="sig-name descname"><span class="pre">always_working</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#crapssim.bet.Odds.always_working" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="crapssim.bet.Odds.light_side">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">light_side</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#crapssim.bet.Odds.light_side" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="crapssim.bet.Odds.dark_side">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dark_side</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#crapssim.bet.Odds.dark_side" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.bet.Odds.get_result">
+<span class="sig-name descname"><span class="pre">get_result</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#crapssim.Table" title="crapssim.Table"><span class="pre">Table</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#crapssim.bet.BetResult" title="crapssim.bet.BetResult"><span class="pre">BetResult</span></a></span></span><a class="headerlink" href="#crapssim.bet.Odds.get_result" title="Link to this definition"></a></dt>
+<dd><p>Core bet logic that determines the result.</p>
+<p>Wins are based on having dice total in the winning numbers
+(which may depend on the table), which will pay the payout_ratio
+times the bet amount plus the original bet amount back. Losses
+happen when dice total is in the losing numbers, which result
+in a loss of the original bet amount. Otherwise the bet stays
+on the table.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.bet.Odds.get_winning_numbers">
+<span class="sig-name descname"><span class="pre">get_winning_numbers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#crapssim.Table" title="crapssim.Table"><span class="pre">Table</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#crapssim.bet.Odds.get_winning_numbers" title="Link to this definition"></a></dt>
+<dd><p>Returns the winnings numbers, based on table features</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.bet.Odds.get_losing_numbers">
+<span class="sig-name descname"><span class="pre">get_losing_numbers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#crapssim.Table" title="crapssim.Table"><span class="pre">Table</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#crapssim.bet.Odds.get_losing_numbers" title="Link to this definition"></a></dt>
+<dd><p>Returns the losing numbers, based on table features</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.bet.Odds.get_payout_ratio">
+<span class="sig-name descname"><span class="pre">get_payout_ratio</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#crapssim.Table" title="crapssim.Table"><span class="pre">Table</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#crapssim.bet.Odds.get_payout_ratio" title="Link to this definition"></a></dt>
+<dd><p>Returns the payout ratio (X to 1), based on table features</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.bet.Odds.is_allowed">
+<span class="sig-name descname"><span class="pre">is_allowed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#crapssim.Player" title="crapssim.Player"><span class="pre">Player</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#crapssim.bet.Odds.is_allowed" title="Link to this definition"></a></dt>
+<dd><p>Odds are allowed if they do not exceed the table maximums.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True if the bet is allowed, otherwise false.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.bet.Odds.get_max_odds">
+<span class="sig-name descname"><span class="pre">get_max_odds</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#crapssim.Table" title="crapssim.Table"><span class="pre">Table</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#crapssim.bet.Odds.get_max_odds" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.bet.Odds.base_amount">
+<span class="sig-name descname"><span class="pre">base_amount</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#crapssim.Player" title="crapssim.Player"><span class="pre">Player</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.bet.Odds.base_amount" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.bet.Odds.copy">
+<span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#crapssim.bet.Bet" title="crapssim.bet.Bet"><span class="pre">Bet</span></a></span></span><a class="headerlink" href="#crapssim.bet.Odds.copy" title="Link to this definition"></a></dt>
+<dd><p>Create a fresh copy of this bet</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.bet.Odds._get_always_working_repr">
+<span class="sig-name descname"><span class="pre">_get_always_working_repr</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#crapssim.bet.Odds._get_always_working_repr" title="Link to this definition"></a></dt>
+<dd><p>Since the default is false, only need to print when True</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="crapssim.bet.Odds._placed_key">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_placed_key</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Hashable</span></em><a class="headerlink" href="#crapssim.bet.Odds._placed_key" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.bet.Odds.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.bet.Odds.__repr__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.bet.Put">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.bet.</span></span><span class="sig-name descname"><span class="pre">Put</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">number</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsFloat</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.bet.Put" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#crapssim.bet._SimpleBet" title="crapssim.bet._SimpleBet"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_SimpleBet</span></code></a></p>
+<p>Flat line bet on a box number; point must be ON and odds obey table policy.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.bet.Put.losing_numbers">
+<span class="sig-name descname"><span class="pre">losing_numbers</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[7]</span></em><a class="headerlink" href="#crapssim.bet.Put.losing_numbers" title="Link to this definition"></a></dt>
+<dd><p>Losing numbers for the bet</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.bet.Put.number">
+<span class="sig-name descname"><span class="pre">number</span></span><a class="headerlink" href="#crapssim.bet.Put.number" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.bet.Put.winning_numbers">
+<span class="sig-name descname"><span class="pre">winning_numbers</span></span><a class="headerlink" href="#crapssim.bet.Put.winning_numbers" title="Link to this definition"></a></dt>
+<dd><p>Winning numbers for the bet</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.bet.Put.payout_ratio">
+<span class="sig-name descname"><span class="pre">payout_ratio</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1.0</span></em><a class="headerlink" href="#crapssim.bet.Put.payout_ratio" title="Link to this definition"></a></dt>
+<dd><p>Payout ratio for the bet</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.bet.Put.is_allowed">
+<span class="sig-name descname"><span class="pre">is_allowed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#crapssim.Player" title="crapssim.Player"><span class="pre">Player</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#crapssim.bet.Put.is_allowed" title="Link to this definition"></a></dt>
+<dd><p>Checks whether the bet is allowed to be placed on the given table.
+May depend on the player’s bets also (e.g. for odds bets).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True if the bet is allowed, otherwise false.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.bet.Put.copy">
+<span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#crapssim.bet.Put" title="crapssim.bet.Put"><span class="pre">Put</span></a></span></span><a class="headerlink" href="#crapssim.bet.Put.copy" title="Link to this definition"></a></dt>
+<dd><p>Create a fresh copy of this bet</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="crapssim.bet.Put._placed_key">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_placed_key</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Hashable</span></em><a class="headerlink" href="#crapssim.bet.Put._placed_key" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.bet.Put.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#crapssim.bet.Put.__repr__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.bet.Place">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.bet.</span></span><span class="sig-name descname"><span class="pre">Place</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">number</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsFloat</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.bet.Place" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#crapssim.bet._SimpleBet" title="crapssim.bet._SimpleBet"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_SimpleBet</span></code></a></p>
+<p>Place bet (on 4, 5, 6, 8, 9, or 10) in craps.</p>
+<p>A bet on a specific number (4, 5, 6, 8, 9, or 10) being rolled before a 7.
+Each number has a different payout ratio reflecting its probability of being rolled.
+Remains active until the number or a 7 is rolled.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.bet.Place.payout_ratios">
+<span class="sig-name descname"><span class="pre">payout_ratios</span></span><a class="headerlink" href="#crapssim.bet.Place.payout_ratios" title="Link to this definition"></a></dt>
+<dd><p>9 to 5 on (4, 10), 7 to 5 on (5, 9), and 7 to 6 on (6, 8).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Stores the place bet payouts</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.bet.Place.losing_numbers">
+<span class="sig-name descname"><span class="pre">losing_numbers</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[7]</span></em><a class="headerlink" href="#crapssim.bet.Place.losing_numbers" title="Link to this definition"></a></dt>
+<dd><p>Losing numbers for the bet</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.bet.Place.number">
+<span class="sig-name descname"><span class="pre">number</span></span><a class="headerlink" href="#crapssim.bet.Place.number" title="Link to this definition"></a></dt>
+<dd><p>The placed number, which determines payout ratio</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.bet.Place.payout_ratio">
+<span class="sig-name descname"><span class="pre">payout_ratio</span></span><a class="headerlink" href="#crapssim.bet.Place.payout_ratio" title="Link to this definition"></a></dt>
+<dd><p>Payout ratio for the bet</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.bet.Place.winning_numbers">
+<span class="sig-name descname"><span class="pre">winning_numbers</span></span><a class="headerlink" href="#crapssim.bet.Place.winning_numbers" title="Link to this definition"></a></dt>
+<dd><p>Winning numbers for the bet</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.bet.Place.copy">
+<span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#crapssim.bet.Bet" title="crapssim.bet.Bet"><span class="pre">Bet</span></a></span></span><a class="headerlink" href="#crapssim.bet.Place.copy" title="Link to this definition"></a></dt>
+<dd><p>Create a fresh copy of this bet</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="crapssim.bet.Place._placed_key">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_placed_key</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Hashable</span></em><a class="headerlink" href="#crapssim.bet.Place._placed_key" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.bet.Place.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#crapssim.bet.Place.__repr__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.bet.Buy">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.bet.</span></span><span class="sig-name descname"><span class="pre">Buy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">number</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsFloat</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.bet.Buy" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#crapssim.bet._SimpleBet" title="crapssim.bet._SimpleBet"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_SimpleBet</span></code></a></p>
+<p>True-odds bet on 4/5/6/8/9/10 that charges vig per table policy.</p>
+<p>Vig (commission) may be taken on the win or upfront based on <code class="docutils literal notranslate"><span class="pre">vig_paid_on_win</span></code>.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.bet.Buy.true_odds">
+<span class="sig-name descname"><span class="pre">true_odds</span></span><a class="headerlink" href="#crapssim.bet.Buy.true_odds" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.bet.Buy.losing_numbers">
+<span class="sig-name descname"><span class="pre">losing_numbers</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[7]</span></em><a class="headerlink" href="#crapssim.bet.Buy.losing_numbers" title="Link to this definition"></a></dt>
+<dd><p>Losing numbers for the bet</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.bet.Buy.number">
+<span class="sig-name descname"><span class="pre">number</span></span><a class="headerlink" href="#crapssim.bet.Buy.number" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.bet.Buy.payout_ratio">
+<span class="sig-name descname"><span class="pre">payout_ratio</span></span><a class="headerlink" href="#crapssim.bet.Buy.payout_ratio" title="Link to this definition"></a></dt>
+<dd><p>Payout ratio for the bet</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.bet.Buy.winning_numbers">
+<span class="sig-name descname"><span class="pre">winning_numbers</span></span><a class="headerlink" href="#crapssim.bet.Buy.winning_numbers" title="Link to this definition"></a></dt>
+<dd><p>Base amount that determines true-odds payouts.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.bet.Buy.vig">
+<span class="sig-name descname"><span class="pre">vig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#crapssim.Table" title="crapssim.Table"><span class="pre">Table</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#crapssim.bet.Buy.vig" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.bet.Buy.cost">
+<span class="sig-name descname"><span class="pre">cost</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#crapssim.Table" title="crapssim.Table"><span class="pre">Table</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#crapssim.bet.Buy.cost" title="Link to this definition"></a></dt>
+<dd><p>Total bankroll required to put this bet in action on <code class="docutils literal notranslate"><span class="pre">table</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.bet.Buy.get_result">
+<span class="sig-name descname"><span class="pre">get_result</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#crapssim.Table" title="crapssim.Table"><span class="pre">Table</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#crapssim.bet.BetResult" title="crapssim.bet.BetResult"><span class="pre">BetResult</span></a></span></span><a class="headerlink" href="#crapssim.bet.Buy.get_result" title="Link to this definition"></a></dt>
+<dd><p>Core bet logic that determines the result.</p>
+<p>Wins are based on having dice total in the winning numbers
+(which may depend on the table), which will pay the payout_ratio
+times the bet amount plus the original bet amount back. Losses
+happen when dice total is in the losing numbers, which result
+in a loss of the original bet amount. Otherwise the bet stays
+on the table.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.bet.Buy.copy">
+<span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#crapssim.bet.Buy" title="crapssim.bet.Buy"><span class="pre">Buy</span></a></span></span><a class="headerlink" href="#crapssim.bet.Buy.copy" title="Link to this definition"></a></dt>
+<dd><p>Create a fresh copy of this bet</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="crapssim.bet.Buy._placed_key">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_placed_key</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Hashable</span></em><a class="headerlink" href="#crapssim.bet.Buy._placed_key" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.bet.Buy.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#crapssim.bet.Buy.__repr__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.bet.Lay">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.bet.</span></span><span class="sig-name descname"><span class="pre">Lay</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">number</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsFloat</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.bet.Lay" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#crapssim.bet._SimpleBet" title="crapssim.bet._SimpleBet"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_SimpleBet</span></code></a></p>
+<p>True-odds bet against 4/5/6/8/9/10, paying if 7 arrives first.</p>
+<p>Commission may be taken on the win or upfront based on <code class="docutils literal notranslate"><span class="pre">vig_paid_on_win</span></code>.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.bet.Lay.true_odds">
+<span class="sig-name descname"><span class="pre">true_odds</span></span><a class="headerlink" href="#crapssim.bet.Lay.true_odds" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.bet.Lay.winning_numbers">
+<span class="sig-name descname"><span class="pre">winning_numbers</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[7]</span></em><a class="headerlink" href="#crapssim.bet.Lay.winning_numbers" title="Link to this definition"></a></dt>
+<dd><p>Winning numbers for the bet</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.bet.Lay.number">
+<span class="sig-name descname"><span class="pre">number</span></span><a class="headerlink" href="#crapssim.bet.Lay.number" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.bet.Lay.payout_ratio">
+<span class="sig-name descname"><span class="pre">payout_ratio</span></span><a class="headerlink" href="#crapssim.bet.Lay.payout_ratio" title="Link to this definition"></a></dt>
+<dd><p>Payout ratio for the bet</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.bet.Lay.losing_numbers">
+<span class="sig-name descname"><span class="pre">losing_numbers</span></span><a class="headerlink" href="#crapssim.bet.Lay.losing_numbers" title="Link to this definition"></a></dt>
+<dd><p>Base amount risked against the box number.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.bet.Lay.vig">
+<span class="sig-name descname"><span class="pre">vig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#crapssim.Table" title="crapssim.Table"><span class="pre">Table</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#crapssim.bet.Lay.vig" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.bet.Lay.cost">
+<span class="sig-name descname"><span class="pre">cost</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#crapssim.Table" title="crapssim.Table"><span class="pre">Table</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#crapssim.bet.Lay.cost" title="Link to this definition"></a></dt>
+<dd><p>Total bankroll required to put this bet in action on <code class="docutils literal notranslate"><span class="pre">table</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.bet.Lay.get_result">
+<span class="sig-name descname"><span class="pre">get_result</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#crapssim.Table" title="crapssim.Table"><span class="pre">Table</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#crapssim.bet.BetResult" title="crapssim.bet.BetResult"><span class="pre">BetResult</span></a></span></span><a class="headerlink" href="#crapssim.bet.Lay.get_result" title="Link to this definition"></a></dt>
+<dd><p>Core bet logic that determines the result.</p>
+<p>Wins are based on having dice total in the winning numbers
+(which may depend on the table), which will pay the payout_ratio
+times the bet amount plus the original bet amount back. Losses
+happen when dice total is in the losing numbers, which result
+in a loss of the original bet amount. Otherwise the bet stays
+on the table.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.bet.Lay.copy">
+<span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#crapssim.bet.Lay" title="crapssim.bet.Lay"><span class="pre">Lay</span></a></span></span><a class="headerlink" href="#crapssim.bet.Lay.copy" title="Link to this definition"></a></dt>
+<dd><p>Create a fresh copy of this bet</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="crapssim.bet.Lay._placed_key">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_placed_key</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Hashable</span></em><a class="headerlink" href="#crapssim.bet.Lay._placed_key" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.bet.Lay.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#crapssim.bet.Lay.__repr__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.bet.Field">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.bet.</span></span><span class="sig-name descname"><span class="pre">Field</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsFloat</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.bet.Field" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#crapssim.bet._WinningLosingNumbersBet" title="crapssim.bet._WinningLosingNumbersBet"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_WinningLosingNumbersBet</span></code></a></p>
+<p>Field bet in craps.</p>
+<p>A one-roll bet that wins if the next roll is 2, 3, 4, 9, 10, 11, or 12.
+Loses if 5, 6, 7, or 8 are rolled. Offers variable payouts for specific numbers
+as defined in the table settings (<a class="reference internal" href="../table/index.html#crapssim.table.TableSettings" title="crapssim.table.TableSettings"><code class="xref py py-func docutils literal notranslate"><span class="pre">TableSettings()</span></code></a>,
+“field_payouts”:, which default to 2 to 1 for (2, 12) and 1 to 1 otherwise.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.bet.Field.winning_numbers">
+<span class="sig-name descname"><span class="pre">winning_numbers</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[2,</span> <span class="pre">3,</span> <span class="pre">4,</span> <span class="pre">9,</span> <span class="pre">10,</span> <span class="pre">11,</span> <span class="pre">12]</span></em><a class="headerlink" href="#crapssim.bet.Field.winning_numbers" title="Link to this definition"></a></dt>
+<dd><p>Field wins on 2, 3, 4, 9, 10, 11, or 12</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.bet.Field.losing_numbers">
+<span class="sig-name descname"><span class="pre">losing_numbers</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[5,</span> <span class="pre">6,</span> <span class="pre">7,</span> <span class="pre">8]</span></em><a class="headerlink" href="#crapssim.bet.Field.losing_numbers" title="Link to this definition"></a></dt>
+<dd><p>Field loses on 5, 6, 7, or 8</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.bet.Field.get_winning_numbers">
+<span class="sig-name descname"><span class="pre">get_winning_numbers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#crapssim.Table" title="crapssim.Table"><span class="pre">Table</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#crapssim.bet.Field.get_winning_numbers" title="Link to this definition"></a></dt>
+<dd><p>Returns the winning numbers (table not used here)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.bet.Field.get_losing_numbers">
+<span class="sig-name descname"><span class="pre">get_losing_numbers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#crapssim.Table" title="crapssim.Table"><span class="pre">Table</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#crapssim.bet.Field.get_losing_numbers" title="Link to this definition"></a></dt>
+<dd><p>Returns the losing numbers (table not used here)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.bet.Field.get_payout_ratio">
+<span class="sig-name descname"><span class="pre">get_payout_ratio</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#crapssim.Table" title="crapssim.Table"><span class="pre">Table</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#crapssim.bet.Field.get_payout_ratio" title="Link to this definition"></a></dt>
+<dd><p>Returns the payout ratio (X to 1) based on table settings
+(<a class="reference internal" href="../table/index.html#crapssim.table.TableSettings" title="crapssim.table.TableSettings"><code class="xref py py-func docutils literal notranslate"><span class="pre">TableSettings()</span></code></a>, “field_payouts”:</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.bet.CAndE">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.bet.</span></span><span class="sig-name descname"><span class="pre">CAndE</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsFloat</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.bet.CAndE" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#crapssim.bet._WinningLosingNumbersBet" title="crapssim.bet._WinningLosingNumbersBet"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_WinningLosingNumbersBet</span></code></a></p>
+<p>Craps and Eleven (C &amp; E) bet in craps.</p>
+<p>A one-roll bet that wins if the next roll is 2, 3, 11, or 12.
+Offers different payout ratios for different winning numbers:
+- 3 to 1 for 2, 3, and 12
+- 7 to 1 for 11
+Loses on all other numbers.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.bet.CAndE.winning_numbers">
+<span class="sig-name descname"><span class="pre">winning_numbers</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[2,</span> <span class="pre">3,</span> <span class="pre">11,</span> <span class="pre">12]</span></em><a class="headerlink" href="#crapssim.bet.CAndE.winning_numbers" title="Link to this definition"></a></dt>
+<dd><p>Winning numbers are (2, 3, 11, 12).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.bet.CAndE.losing_numbers">
+<span class="sig-name descname"><span class="pre">losing_numbers</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#crapssim.bet.CAndE.losing_numbers" title="Link to this definition"></a></dt>
+<dd><p>Losing numbers are anything besides (2, 3, 11, 12).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.bet.CAndE.get_winning_numbers">
+<span class="sig-name descname"><span class="pre">get_winning_numbers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#crapssim.Table" title="crapssim.Table"><span class="pre">Table</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#crapssim.bet.CAndE.get_winning_numbers" title="Link to this definition"></a></dt>
+<dd><p>Returns the winning numbers (table not used here)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.bet.CAndE.get_losing_numbers">
+<span class="sig-name descname"><span class="pre">get_losing_numbers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#crapssim.Table" title="crapssim.Table"><span class="pre">Table</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#crapssim.bet.CAndE.get_losing_numbers" title="Link to this definition"></a></dt>
+<dd><p>Returns the losing numbers (table not used here)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.bet.CAndE.get_payout_ratio">
+<span class="sig-name descname"><span class="pre">get_payout_ratio</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#crapssim.Table" title="crapssim.Table"><span class="pre">Table</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#crapssim.bet.CAndE.get_payout_ratio" title="Link to this definition"></a></dt>
+<dd><p>C &amp; E pays out 3 to 1 for (2, 3, 12) and 7 to 1 for (11).</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.bet.Any7">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.bet.</span></span><span class="sig-name descname"><span class="pre">Any7</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsFloat</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.bet.Any7" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#crapssim.bet._SimpleBet" title="crapssim.bet._SimpleBet"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_SimpleBet</span></code></a></p>
+<p>Any 7 bet (also known as Big Red) in craps.</p>
+<p>A one-roll bet that wins only if the next roll is 7.
+Offers a 4 to 1 payout and loses on all other numbers.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.bet.Any7.winning_numbers">
+<span class="sig-name descname"><span class="pre">winning_numbers</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[7]</span></em><a class="headerlink" href="#crapssim.bet.Any7.winning_numbers" title="Link to this definition"></a></dt>
+<dd><p>Winning numbers for the bet</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.bet.Any7.losing_numbers">
+<span class="sig-name descname"><span class="pre">losing_numbers</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#crapssim.bet.Any7.losing_numbers" title="Link to this definition"></a></dt>
+<dd><p>Losing number is anything except 7.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.bet.Any7.payout_ratio">
+<span class="sig-name descname"><span class="pre">payout_ratio</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">4</span></em><a class="headerlink" href="#crapssim.bet.Any7.payout_ratio" title="Link to this definition"></a></dt>
+<dd><p>Payout ratio for the bet</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.bet.Two">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.bet.</span></span><span class="sig-name descname"><span class="pre">Two</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsFloat</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.bet.Two" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#crapssim.bet._SimpleBet" title="crapssim.bet._SimpleBet"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_SimpleBet</span></code></a></p>
+<p>Two (Snake Eyes) bet in craps.</p>
+<p>A one-roll bet that wins only if the next roll is 2.
+Offers a 30 to 1 payout and loses on all other numbers.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.bet.Two.winning_numbers">
+<span class="sig-name descname"><span class="pre">winning_numbers</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[2]</span></em><a class="headerlink" href="#crapssim.bet.Two.winning_numbers" title="Link to this definition"></a></dt>
+<dd><p>Winning numbers for the bet</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.bet.Two.losing_numbers">
+<span class="sig-name descname"><span class="pre">losing_numbers</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#crapssim.bet.Two.losing_numbers" title="Link to this definition"></a></dt>
+<dd><p>Losing number is anything except 2.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.bet.Two.payout_ratio">
+<span class="sig-name descname"><span class="pre">payout_ratio</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">30</span></em><a class="headerlink" href="#crapssim.bet.Two.payout_ratio" title="Link to this definition"></a></dt>
+<dd><p>Payout ratio for the bet</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.bet.Three">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.bet.</span></span><span class="sig-name descname"><span class="pre">Three</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsFloat</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.bet.Three" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#crapssim.bet._SimpleBet" title="crapssim.bet._SimpleBet"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_SimpleBet</span></code></a></p>
+<p>Three bet in craps.</p>
+<p>A one-roll bet that wins only if the next roll is 3.
+Offers a 15 to 1 payout and loses on all other numbers.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.bet.Three.winning_numbers">
+<span class="sig-name descname"><span class="pre">winning_numbers</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[3]</span></em><a class="headerlink" href="#crapssim.bet.Three.winning_numbers" title="Link to this definition"></a></dt>
+<dd><p>Winning numbers for the bet</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.bet.Three.losing_numbers">
+<span class="sig-name descname"><span class="pre">losing_numbers</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#crapssim.bet.Three.losing_numbers" title="Link to this definition"></a></dt>
+<dd><p>Losing number is anything except 3.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.bet.Three.payout_ratio">
+<span class="sig-name descname"><span class="pre">payout_ratio</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">15</span></em><a class="headerlink" href="#crapssim.bet.Three.payout_ratio" title="Link to this definition"></a></dt>
+<dd><p>Payout ratio for the bet</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.bet.Yo">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.bet.</span></span><span class="sig-name descname"><span class="pre">Yo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsFloat</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.bet.Yo" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#crapssim.bet._SimpleBet" title="crapssim.bet._SimpleBet"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_SimpleBet</span></code></a></p>
+<p>Yo (Eleven) bet in craps.</p>
+<p>A one-roll bet that wins only if the next roll is 11.
+Offers a 15 to 1 payout and loses on all other numbers.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.bet.Yo.winning_numbers">
+<span class="sig-name descname"><span class="pre">winning_numbers</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[11]</span></em><a class="headerlink" href="#crapssim.bet.Yo.winning_numbers" title="Link to this definition"></a></dt>
+<dd><p>Winning numbers for the bet</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.bet.Yo.losing_numbers">
+<span class="sig-name descname"><span class="pre">losing_numbers</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#crapssim.bet.Yo.losing_numbers" title="Link to this definition"></a></dt>
+<dd><p>Losing number is anything except 11.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.bet.Yo.payout_ratio">
+<span class="sig-name descname"><span class="pre">payout_ratio</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">15</span></em><a class="headerlink" href="#crapssim.bet.Yo.payout_ratio" title="Link to this definition"></a></dt>
+<dd><p>Payout ratio for the bet</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.bet.Boxcars">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.bet.</span></span><span class="sig-name descname"><span class="pre">Boxcars</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsFloat</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.bet.Boxcars" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#crapssim.bet._SimpleBet" title="crapssim.bet._SimpleBet"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_SimpleBet</span></code></a></p>
+<p>Boxcars (Midnight) bet in craps.</p>
+<p>A one-roll bet that wins only if the next roll is 12.
+Offers a 30 to 1 payout and loses on all other numbers.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.bet.Boxcars.winning_numbers">
+<span class="sig-name descname"><span class="pre">winning_numbers</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[12]</span></em><a class="headerlink" href="#crapssim.bet.Boxcars.winning_numbers" title="Link to this definition"></a></dt>
+<dd><p>Winning numbers for the bet</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.bet.Boxcars.losing_numbers">
+<span class="sig-name descname"><span class="pre">losing_numbers</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#crapssim.bet.Boxcars.losing_numbers" title="Link to this definition"></a></dt>
+<dd><p>Losing number is anything except 12.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.bet.Boxcars.payout_ratio">
+<span class="sig-name descname"><span class="pre">payout_ratio</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">30</span></em><a class="headerlink" href="#crapssim.bet.Boxcars.payout_ratio" title="Link to this definition"></a></dt>
+<dd><p>Payout ratio for the bet</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.bet.AnyCraps">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.bet.</span></span><span class="sig-name descname"><span class="pre">AnyCraps</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsFloat</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.bet.AnyCraps" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#crapssim.bet._SimpleBet" title="crapssim.bet._SimpleBet"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_SimpleBet</span></code></a></p>
+<p>Any Craps bet in craps.</p>
+<p>A one-roll bet that wins if the next roll is 2, 3, or 12.
+Offers a 7 to 1 payout and loses on all other numbers.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.bet.AnyCraps.winning_numbers">
+<span class="sig-name descname"><span class="pre">winning_numbers</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[2,</span> <span class="pre">3,</span> <span class="pre">12]</span></em><a class="headerlink" href="#crapssim.bet.AnyCraps.winning_numbers" title="Link to this definition"></a></dt>
+<dd><p>Winning numbers for the bet</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.bet.AnyCraps.losing_numbers">
+<span class="sig-name descname"><span class="pre">losing_numbers</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#crapssim.bet.AnyCraps.losing_numbers" title="Link to this definition"></a></dt>
+<dd><p>Losing number is anything except (2, 3, 12).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.bet.AnyCraps.payout_ratio">
+<span class="sig-name descname"><span class="pre">payout_ratio</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">7</span></em><a class="headerlink" href="#crapssim.bet.AnyCraps.payout_ratio" title="Link to this definition"></a></dt>
+<dd><p>Payout ratio for the bet</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.bet.Horn">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.bet.</span></span><span class="sig-name descname"><span class="pre">Horn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsFloat</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.bet.Horn" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#crapssim.bet._WinningLosingNumbersBet" title="crapssim.bet._WinningLosingNumbersBet"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_WinningLosingNumbersBet</span></code></a></p>
+<p>One-roll bet split across 2, 3, 11, and 12; loses on all other totals.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.bet.Horn.winning_numbers">
+<span class="sig-name descname"><span class="pre">winning_numbers</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[2,</span> <span class="pre">3,</span> <span class="pre">11,</span> <span class="pre">12]</span></em><a class="headerlink" href="#crapssim.bet.Horn.winning_numbers" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.bet.Horn.losing_numbers">
+<span class="sig-name descname"><span class="pre">losing_numbers</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#crapssim.bet.Horn.losing_numbers" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.bet.Horn.get_winning_numbers">
+<span class="sig-name descname"><span class="pre">get_winning_numbers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#crapssim.Table" title="crapssim.Table"><span class="pre">Table</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#crapssim.bet.Horn.get_winning_numbers" title="Link to this definition"></a></dt>
+<dd><p>Returns the winnings numbers, based on table features</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.bet.Horn.get_losing_numbers">
+<span class="sig-name descname"><span class="pre">get_losing_numbers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#crapssim.Table" title="crapssim.Table"><span class="pre">Table</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#crapssim.bet.Horn.get_losing_numbers" title="Link to this definition"></a></dt>
+<dd><p>Returns the losing numbers, based on table features</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.bet.Horn.get_payout_ratio">
+<span class="sig-name descname"><span class="pre">get_payout_ratio</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#crapssim.Table" title="crapssim.Table"><span class="pre">Table</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#crapssim.bet.Horn.get_payout_ratio" title="Link to this definition"></a></dt>
+<dd><p>Payout ratios expressed as ‘to 1’, aligned with single bets and
+adjusting for the full bet amount returned on a win:
+- 2/12: (30 - 3) / 4 = 6.75
+- 3/11: (15 - 3) / 4 = 3.0</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.bet.Horn.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#crapssim.bet.Horn.__repr__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.bet.World">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.bet.</span></span><span class="sig-name descname"><span class="pre">World</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsFloat</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.bet.World" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#crapssim.bet._WinningLosingNumbersBet" title="crapssim.bet._WinningLosingNumbersBet"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_WinningLosingNumbersBet</span></code></a></p>
+<p>One-roll bet covering Horn numbers plus 7; pays break-even on 7.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.bet.World.winning_numbers">
+<span class="sig-name descname"><span class="pre">winning_numbers</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[2,</span> <span class="pre">3,</span> <span class="pre">7,</span> <span class="pre">11,</span> <span class="pre">12]</span></em><a class="headerlink" href="#crapssim.bet.World.winning_numbers" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.bet.World.losing_numbers">
+<span class="sig-name descname"><span class="pre">losing_numbers</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#crapssim.bet.World.losing_numbers" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.bet.World.get_winning_numbers">
+<span class="sig-name descname"><span class="pre">get_winning_numbers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#crapssim.Table" title="crapssim.Table"><span class="pre">Table</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#crapssim.bet.World.get_winning_numbers" title="Link to this definition"></a></dt>
+<dd><p>Returns the winnings numbers, based on table features</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.bet.World.get_losing_numbers">
+<span class="sig-name descname"><span class="pre">get_losing_numbers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#crapssim.Table" title="crapssim.Table"><span class="pre">Table</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#crapssim.bet.World.get_losing_numbers" title="Link to this definition"></a></dt>
+<dd><p>Returns the losing numbers, based on table features</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.bet.World.get_payout_ratio">
+<span class="sig-name descname"><span class="pre">get_payout_ratio</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#crapssim.Table" title="crapssim.Table"><span class="pre">Table</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#crapssim.bet.World.get_payout_ratio" title="Link to this definition"></a></dt>
+<dd><p>Payout ratios expressed as ‘to 1’, consistent with simulator and
+adjusting for the full bet amount returned on a win::
+- 2/12: (30 - 4) / 5 = 5.2
+- 3/11: (15 - 4) / 5 = 2.2
+- 7:    (4  - 4) / 5 = 0.0</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.bet.World.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#crapssim.bet.World.__repr__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.bet.Big6">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.bet.</span></span><span class="sig-name descname"><span class="pre">Big6</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsFloat</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.bet.Big6" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#crapssim.bet._SimpleBet" title="crapssim.bet._SimpleBet"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_SimpleBet</span></code></a></p>
+<p>Even-money bet that wins on 6 before 7.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.bet.Big6.winning_numbers">
+<span class="sig-name descname"><span class="pre">winning_numbers</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[6]</span></em><a class="headerlink" href="#crapssim.bet.Big6.winning_numbers" title="Link to this definition"></a></dt>
+<dd><p>Winning numbers for the bet</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.bet.Big6.losing_numbers">
+<span class="sig-name descname"><span class="pre">losing_numbers</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[7]</span></em><a class="headerlink" href="#crapssim.bet.Big6.losing_numbers" title="Link to this definition"></a></dt>
+<dd><p>Losing numbers for the bet</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.bet.Big6.payout_ratio">
+<span class="sig-name descname"><span class="pre">payout_ratio</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1.0</span></em><a class="headerlink" href="#crapssim.bet.Big6.payout_ratio" title="Link to this definition"></a></dt>
+<dd><p>Payout ratio for the bet</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.bet.Big6.number">
+<span class="sig-name descname"><span class="pre">number</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">6</span></em><a class="headerlink" href="#crapssim.bet.Big6.number" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.bet.Big6.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#crapssim.bet.Big6.__repr__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.bet.Big8">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.bet.</span></span><span class="sig-name descname"><span class="pre">Big8</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsFloat</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.bet.Big8" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#crapssim.bet._SimpleBet" title="crapssim.bet._SimpleBet"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_SimpleBet</span></code></a></p>
+<p>Even-money bet that wins on 8 before 7.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.bet.Big8.winning_numbers">
+<span class="sig-name descname"><span class="pre">winning_numbers</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[8]</span></em><a class="headerlink" href="#crapssim.bet.Big8.winning_numbers" title="Link to this definition"></a></dt>
+<dd><p>Winning numbers for the bet</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.bet.Big8.losing_numbers">
+<span class="sig-name descname"><span class="pre">losing_numbers</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[7]</span></em><a class="headerlink" href="#crapssim.bet.Big8.losing_numbers" title="Link to this definition"></a></dt>
+<dd><p>Losing numbers for the bet</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.bet.Big8.payout_ratio">
+<span class="sig-name descname"><span class="pre">payout_ratio</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1.0</span></em><a class="headerlink" href="#crapssim.bet.Big8.payout_ratio" title="Link to this definition"></a></dt>
+<dd><p>Payout ratio for the bet</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.bet.Big8.number">
+<span class="sig-name descname"><span class="pre">number</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">8</span></em><a class="headerlink" href="#crapssim.bet.Big8.number" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.bet.Big8.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#crapssim.bet.Big8.__repr__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.bet.HardWay">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.bet.</span></span><span class="sig-name descname"><span class="pre">HardWay</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">number</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsFloat</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.bet.HardWay" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#crapssim.bet.Bet" title="crapssim.bet.Bet"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Bet</span></code></a></p>
+<p>Hard Way bet (on 4, 6, 8, or 10) in craps.</p>
+<p>A bet on rolling a specific even number (4, 6, 8, or 10)
+with both dice showing the same value (e.g., two 2s for a hard 4).
+Wins if the number is rolled in a “hard” way before either a 7 or
+the number is rolled in a “soft” way.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.bet.HardWay.payout_ratios">
+<span class="sig-name descname"><span class="pre">payout_ratios</span></span><a class="headerlink" href="#crapssim.bet.HardWay.payout_ratios" title="Link to this definition"></a></dt>
+<dd><p>7 to 1 for hard 4 or 10, 9 to 1 for hard 6 or 8.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Payout ratios vary</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.bet.HardWay.number">
+<span class="sig-name descname"><span class="pre">number</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#crapssim.bet.HardWay.number" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.bet.HardWay.payout_ratio">
+<span class="sig-name descname"><span class="pre">payout_ratio</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#crapssim.bet.HardWay.payout_ratio" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.bet.HardWay.get_result">
+<span class="sig-name descname"><span class="pre">get_result</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#crapssim.Table" title="crapssim.Table"><span class="pre">Table</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#crapssim.bet.BetResult" title="crapssim.bet.BetResult"><span class="pre">BetResult</span></a></span></span><a class="headerlink" href="#crapssim.bet.HardWay.get_result" title="Link to this definition"></a></dt>
+<dd><p>Core bet logic that determines the result.</p>
+<p>This determines the ultimate amount and whether the
+bet needs to be removed, which is indicated with a
+BetResult object.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="crapssim.bet.HardWay.winning_result">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">winning_result</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#crapssim.bet.HardWay.winning_result" title="Link to this definition"></a></dt>
+<dd><p>Returns the dice result that wins, e.g. (2, 2) for Hard 4.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.bet.HardWay.copy">
+<span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#crapssim.bet.Bet" title="crapssim.bet.Bet"><span class="pre">Bet</span></a></span></span><a class="headerlink" href="#crapssim.bet.HardWay.copy" title="Link to this definition"></a></dt>
+<dd><p>Create a fresh copy of this bet</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="crapssim.bet.HardWay._placed_key">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_placed_key</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Hashable</span></em><a class="headerlink" href="#crapssim.bet.HardWay._placed_key" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.bet.HardWay.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#crapssim.bet.HardWay.__repr__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.bet.Hop">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.bet.</span></span><span class="sig-name descname"><span class="pre">Hop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">result</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsFloat</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.bet.Hop" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#crapssim.bet.Bet" title="crapssim.bet.Bet"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Bet</span></code></a></p>
+<p>Hop bet in craps.</p>
+<p>A one-roll bet on a specific dice combination.
+Can be an “easy” hop (different values on each die) or a “hard” hop
+(same value on both dice).</p>
+<p>Payouts differ based on whether the hop is easy or hard, and are
+set in the table settings (<a class="reference internal" href="../table/index.html#crapssim.table.TableSettings" title="crapssim.table.TableSettings"><code class="xref py py-func docutils literal notranslate"><span class="pre">TableSettings()</span></code></a>,
+“hop_payouts”)
+- Easy hop: standard payout (default 15 to 1)
+- Hard hop: higher payout (default 30 to 1)</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.bet.Hop.result">
+<span class="sig-name descname"><span class="pre">result</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#crapssim.bet.Hop.result" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.bet.Hop.get_result">
+<span class="sig-name descname"><span class="pre">get_result</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#crapssim.Table" title="crapssim.Table"><span class="pre">Table</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#crapssim.bet.BetResult" title="crapssim.bet.BetResult"><span class="pre">BetResult</span></a></span></span><a class="headerlink" href="#crapssim.bet.Hop.get_result" title="Link to this definition"></a></dt>
+<dd><p>Core bet logic that determines the result.</p>
+<p>This determines the ultimate amount and whether the
+bet needs to be removed, which is indicated with a
+BetResult object.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="crapssim.bet.Hop.is_easy">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_easy</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#crapssim.bet.Hop.is_easy" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="crapssim.bet.Hop.winning_results">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">winning_results</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#crapssim.bet.Hop.winning_results" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.bet.Hop.payout_ratio">
+<span class="sig-name descname"><span class="pre">payout_ratio</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#crapssim.Table" title="crapssim.Table"><span class="pre">Table</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#crapssim.bet.Hop.payout_ratio" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.bet.Hop.copy">
+<span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#crapssim.bet.Bet" title="crapssim.bet.Bet"><span class="pre">Bet</span></a></span></span><a class="headerlink" href="#crapssim.bet.Hop.copy" title="Link to this definition"></a></dt>
+<dd><p>Create a fresh copy of this bet</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="crapssim.bet.Hop._placed_key">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_placed_key</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Hashable</span></em><a class="headerlink" href="#crapssim.bet.Hop._placed_key" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.bet.Hop.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#crapssim.bet.Hop.__repr__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.bet.Fire">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.bet.</span></span><span class="sig-name descname"><span class="pre">Fire</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.bet.Fire" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#crapssim.bet.Bet" title="crapssim.bet.Bet"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Bet</span></code></a></p>
+<p>Fire bet in craps.</p>
+<p>A progressive bet that tracks points made during a shooter’s turn.
+Wins with increasing payouts based on the number of unique point
+numbers made before a 7 is rolled.</p>
+<p>Payout escalates as more points are made:
+- Specific payout ratios depend on table settings (<a class="reference internal" href="../table/index.html#crapssim.table.TableSettings" title="crapssim.table.TableSettings"><code class="xref py py-func docutils literal notranslate"><span class="pre">TableSettings()</span></code></a>,
+“fire_payouts”), default is 24 to 1 for four points, 249 to 1 for five points, and
+999 to 1 for all six points.
+- Automatically ends when all 6 points are made or a 7 is rolled while the point is On.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.bet.Fire.points_made">
+<span class="sig-name descname"><span class="pre">points_made</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">set</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#crapssim.bet.Fire.points_made" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.bet.Fire.ended">
+<span class="sig-name descname"><span class="pre">ended</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#crapssim.bet.Fire.ended" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.bet.Fire.get_result">
+<span class="sig-name descname"><span class="pre">get_result</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#crapssim.Table" title="crapssim.Table"><span class="pre">Table</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#crapssim.bet.BetResult" title="crapssim.bet.BetResult"><span class="pre">BetResult</span></a></span></span><a class="headerlink" href="#crapssim.bet.Fire.get_result" title="Link to this definition"></a></dt>
+<dd><p>Core bet logic that determines the result.</p>
+<p>This determines the ultimate amount and whether the
+bet needs to be removed, which is indicated with a
+BetResult object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.bet.Fire.is_removable">
+<span class="sig-name descname"><span class="pre">is_removable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#crapssim.Table" title="crapssim.Table"><span class="pre">Table</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#crapssim.bet.Fire.is_removable" title="Link to this definition"></a></dt>
+<dd><p>Fire bet is removable only if there is a new shooter.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True if the bet is removable, otherwise false.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.bet.Fire.is_allowed">
+<span class="sig-name descname"><span class="pre">is_allowed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#crapssim.Player" title="crapssim.Player"><span class="pre">Player</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#crapssim.bet.Fire.is_allowed" title="Link to this definition"></a></dt>
+<dd><p>Fire bet is allowed if there is a new shooter.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True if the bet is allowed, otherwise false.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.bet.All">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.bet.</span></span><span class="sig-name descname"><span class="pre">All</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.bet.All" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">_ATSBet</span></code></p>
+<p>All bet (part of All/Tall/Small bets) in craps.</p>
+<p>Wins when 2, 3, 4, 5, 6, 8, 9, 10, 11, and 12 all roll
+before a 7 rolls. Loses immediately if a 7 is rolled (including come-out
+sevens). Payout ratios are determined by the <a class="reference internal" href="../table/index.html#crapssim.table.TableSettings" title="crapssim.table.TableSettings"><code class="xref py py-func docutils literal notranslate"><span class="pre">TableSettings()</span></code></a>
+([“ATS_payouts”][“all”]), which defaults to 150 to 1.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.bet.All.type">
+<span class="sig-name descname"><span class="pre">type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'all'</span></em><a class="headerlink" href="#crapssim.bet.All.type" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.bet.All.numbers">
+<span class="sig-name descname"><span class="pre">numbers</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[2,</span> <span class="pre">3,</span> <span class="pre">4,</span> <span class="pre">5,</span> <span class="pre">6,</span> <span class="pre">8,</span> <span class="pre">9,</span> <span class="pre">10,</span> <span class="pre">11,</span> <span class="pre">12]</span></em><a class="headerlink" href="#crapssim.bet.All.numbers" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.bet.Tall">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.bet.</span></span><span class="sig-name descname"><span class="pre">Tall</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.bet.Tall" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">_ATSBet</span></code></p>
+<p>Tall bet (part of All/Tall/Small bets) in craps.</p>
+<p>Wins when 8, 9, 10, 11, and 12 all roll
+before a 7 rolls. Loses immediately if a 7 is rolled (including come-out
+sevens). Payout ratios are determined by the <a class="reference internal" href="../table/index.html#crapssim.table.TableSettings" title="crapssim.table.TableSettings"><code class="xref py py-func docutils literal notranslate"><span class="pre">TableSettings()</span></code></a>
+([“ATS_payouts”][“tall”]), which defaults to 30 to 1.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.bet.Tall.type">
+<span class="sig-name descname"><span class="pre">type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'tall'</span></em><a class="headerlink" href="#crapssim.bet.Tall.type" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.bet.Tall.numbers">
+<span class="sig-name descname"><span class="pre">numbers</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[8,</span> <span class="pre">9,</span> <span class="pre">10,</span> <span class="pre">11,</span> <span class="pre">12]</span></em><a class="headerlink" href="#crapssim.bet.Tall.numbers" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.bet.Small">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.bet.</span></span><span class="sig-name descname"><span class="pre">Small</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.bet.Small" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">_ATSBet</span></code></p>
+<p>Small bet (part of All/Tall/Small bets) in craps.</p>
+<p>Wins when 2, 3, 4, 5, and 6 all roll
+before a 7 rolls. Loses immediately if a 7 is rolled (including come-out
+sevens). Payout ratios are determined by the <a class="reference internal" href="../table/index.html#crapssim.table.TableSettings" title="crapssim.table.TableSettings"><code class="xref py py-func docutils literal notranslate"><span class="pre">TableSettings()</span></code></a>
+([“ATS_payouts”][“small”]), which defaults to 30.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.bet.Small.type">
+<span class="sig-name descname"><span class="pre">type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'small'</span></em><a class="headerlink" href="#crapssim.bet.Small.type" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.bet.Small.numbers">
+<span class="sig-name descname"><span class="pre">numbers</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[2,</span> <span class="pre">3,</span> <span class="pre">4,</span> <span class="pre">5,</span> <span class="pre">6]</span></em><a class="headerlink" href="#crapssim.bet.Small.numbers" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../index.html" class="btn btn-neutral float-left" title="crapssim" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../dice/index.html" class="btn btn-neutral float-right" title="crapssim.dice" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Sean Kent.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

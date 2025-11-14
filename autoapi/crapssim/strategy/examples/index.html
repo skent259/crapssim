@@ -1,0 +1,811 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>crapssim.strategy.examples &mdash; crapssim 0.3.2 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../_static/documentation_options.js?v=71d9d8e6"></script>
+      <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="crapssim.strategy.odds" href="../odds/index.html" />
+    <link rel="prev" title="crapssim.strategy" href="../index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            crapssim
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Examples and Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorial-strategy-01.html">Strategy Tutorial 1: Starting off</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../crapssim_sandbox.html">Sandbox</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../changelog.html">Change Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../supported-bets.html">Supported Bets</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html">crapssim</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../../index.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../../bet/index.html">crapssim.bet</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../dice/index.html">crapssim.dice</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../point/index.html">crapssim.point</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../index.html">crapssim.strategy</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../table/index.html">crapssim.table</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../index.html#package-contents">Package Contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">crapssim</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">API Reference</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">crapssim</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">crapssim.strategy</a></li>
+      <li class="breadcrumb-item active">crapssim.strategy.examples</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../../_sources/autoapi/crapssim/strategy/examples/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-crapssim.strategy.examples">
+<span id="crapssim-strategy-examples"></span><h1>crapssim.strategy.examples<a class="headerlink" href="#module-crapssim.strategy.examples" title="Link to this heading"></a></h1>
+<p>The strategies included in this module are completed strategies that are runnable by the player
+in order to do the intended</p>
+<section id="classes">
+<h2>Classes<a class="headerlink" href="#classes" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#crapssim.strategy.examples.Pass2Come" title="crapssim.strategy.examples.Pass2Come"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Pass2Come</span></code></a></p></td>
+<td><p>Places a PassLine bet and two Come bets. Equivalent to BetPassLine(amount) +</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#crapssim.strategy.examples.PassLinePlace68" title="crapssim.strategy.examples.PassLinePlace68"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PassLinePlace68</span></code></a></p></td>
+<td><p>Bet the PassLine and Place the 6 and the 8. Equivalent to: BetPassLine(pass_line_amount) +</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#crapssim.strategy.examples.PlaceInside" title="crapssim.strategy.examples.PlaceInside"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PlaceInside</span></code></a></p></td>
+<td><p>Strategy to have Place bets on all the inside (5, 6, 8, 9) numbers.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#crapssim.strategy.examples.Place68Move59" title="crapssim.strategy.examples.Place68Move59"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Place68Move59</span></code></a></p></td>
+<td><p>Strategy that makes place bets on the six and eight, and then if a PassLine or Come bet with</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#crapssim.strategy.examples.PassLinePlace68Move59" title="crapssim.strategy.examples.PassLinePlace68Move59"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PassLinePlace68Move59</span></code></a></p></td>
+<td><p>Strategy that makes a PassLine bet, makes Place bets on the six and eight, and then moves</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#crapssim.strategy.examples.Place682Come" title="crapssim.strategy.examples.Place682Come"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Place682Come</span></code></a></p></td>
+<td><p>Strategy that bets the PassLine if the point is off and there are less than 4 bets on the</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#crapssim.strategy.examples.IronCross" title="crapssim.strategy.examples.IronCross"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IronCross</span></code></a></p></td>
+<td><p>Strategy that bets the PassLine, bets the PassLine Odds, and bets Place on the 5, 6, and 8.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#crapssim.strategy.examples.HammerLock" title="crapssim.strategy.examples.HammerLock"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HammerLock</span></code></a></p></td>
+<td><p>Strategy that makes a PassLine bet and a DontPass bet when the point is off. Once the point</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#crapssim.strategy.examples.Risk12" title="crapssim.strategy.examples.Risk12"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Risk12</span></code></a></p></td>
+<td><p>Strategy that makes a PassLine and Field bet before the point is established. Once the point</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#crapssim.strategy.examples.Knockout" title="crapssim.strategy.examples.Knockout"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Knockout</span></code></a></p></td>
+<td><p>PassLine and Don't bet prior to point, 345x PassLine Odds after point.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#crapssim.strategy.examples.DiceDoctor" title="crapssim.strategy.examples.DiceDoctor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DiceDoctor</span></code></a></p></td>
+<td><p>Field progression strategy with progressive increases and decreases. Equivalent to:</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#crapssim.strategy.examples.Place68PR" title="crapssim.strategy.examples.Place68PR"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Place68PR</span></code></a></p></td>
+<td><p>Place 6 and 8 with a &quot;Press and Regress&quot; approach. Strategy that places the 6 and 8.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#crapssim.strategy.examples.Place68DontCome2Odds" title="crapssim.strategy.examples.Place68DontCome2Odds"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Place68DontCome2Odds</span></code></a></p></td>
+<td><p>Strategy that adds a DontCome bet when the point is Off, places the 6 and 8 when the point</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#crapssim.strategy.examples.QuickProps" title="crapssim.strategy.examples.QuickProps"><code class="xref py py-obj docutils literal notranslate"><span class="pre">QuickProps</span></code></a></p></td>
+<td><p>Keep a World bet up each roll (demonstrates one-roll behavior) and</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#crapssim.strategy.examples.BuySampler" title="crapssim.strategy.examples.BuySampler"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BuySampler</span></code></a></p></td>
+<td><p>Buy the outside numbers (4 and 10). Commission behavior uses the fixed</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#crapssim.strategy.examples.LaySampler" title="crapssim.strategy.examples.LaySampler"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LaySampler</span></code></a></p></td>
+<td><p>Lay the inside (5 and 9). Demonstrates dark-side true-odds with the fixed</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#crapssim.strategy.examples.PutWithOdds" title="crapssim.strategy.examples.PutWithOdds"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PutWithOdds</span></code></a></p></td>
+<td><p>When the point is ON, place a Put bet on 6 and take odds behind it.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#crapssim.strategy.examples.HornExample" title="crapssim.strategy.examples.HornExample"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HornExample</span></code></a></p></td>
+<td><p>Demonstrates Horn bet lifecycle and resolution.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#crapssim.strategy.examples.WorldExample" title="crapssim.strategy.examples.WorldExample"><code class="xref py py-obj docutils literal notranslate"><span class="pre">WorldExample</span></code></a></p></td>
+<td><p>Demonstrates World bet lifecycle and resolution.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.strategy.examples.Pass2Come">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.strategy.examples.</span></span><span class="sig-name descname"><span class="pre">Pass2Come</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bet_amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.strategy.examples.Pass2Come" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="../tools/index.html#crapssim.strategy.tools.AggregateStrategy" title="crapssim.strategy.tools.AggregateStrategy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">crapssim.strategy.tools.AggregateStrategy</span></code></a></p>
+<p>Places a PassLine bet and two Come bets. Equivalent to BetPassLine(amount) +
+CountStrategy(Come, 2, Come(amount))</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.examples.Pass2Come.bet_amount">
+<span class="sig-name descname"><span class="pre">bet_amount</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#crapssim.strategy.examples.Pass2Come.bet_amount" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.strategy.examples.Pass2Come.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#crapssim.strategy.examples.Pass2Come.__repr__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.strategy.examples.PassLinePlace68">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.strategy.examples.</span></span><span class="sig-name descname"><span class="pre">PassLinePlace68</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pass_line_amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">six_amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">6</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eight_amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">6</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skip_point</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.strategy.examples.PassLinePlace68" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="../tools/index.html#crapssim.strategy.tools.AggregateStrategy" title="crapssim.strategy.tools.AggregateStrategy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">crapssim.strategy.tools.AggregateStrategy</span></code></a></p>
+<p>Bet the PassLine and Place the 6 and the 8. Equivalent to: BetPassLine(pass_line_amount) +
+BetPlace({6: six_amount, 8: eight_amount}, skip_point=skip_point)</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.examples.PassLinePlace68.pass_line_amount">
+<span class="sig-name descname"><span class="pre">pass_line_amount</span></span><a class="headerlink" href="#crapssim.strategy.examples.PassLinePlace68.pass_line_amount" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.examples.PassLinePlace68.six_amount">
+<span class="sig-name descname"><span class="pre">six_amount</span></span><a class="headerlink" href="#crapssim.strategy.examples.PassLinePlace68.six_amount" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.examples.PassLinePlace68.eight_amount">
+<span class="sig-name descname"><span class="pre">eight_amount</span></span><a class="headerlink" href="#crapssim.strategy.examples.PassLinePlace68.eight_amount" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.examples.PassLinePlace68.skip_point">
+<span class="sig-name descname"><span class="pre">skip_point</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#crapssim.strategy.examples.PassLinePlace68.skip_point" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.strategy.examples.PassLinePlace68.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#crapssim.strategy.examples.PassLinePlace68.__repr__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.strategy.examples.PlaceInside">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.strategy.examples.</span></span><span class="sig-name descname"><span class="pre">PlaceInside</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bet_amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsFloat</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.strategy.examples.PlaceInside" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="../tools/index.html#crapssim.strategy.tools.AggregateStrategy" title="crapssim.strategy.tools.AggregateStrategy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">crapssim.strategy.tools.AggregateStrategy</span></code></a></p>
+<p>Strategy to have Place bets on all the inside (5, 6, 8, 9) numbers.
+Equivalent to BetPlace({5: x, 6: 6/5*x, 8: 6/5*x, 9: x})</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.strategy.examples.PlaceInside.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#crapssim.strategy.examples.PlaceInside.__repr__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.strategy.examples.Place68Move59">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.strategy.examples.</span></span><span class="sig-name descname"><span class="pre">Place68Move59</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pass_come_amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">six_eight_amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">6</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">five_nine_amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.strategy.examples.Place68Move59" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="../tools/index.html#crapssim.strategy.tools.Strategy" title="crapssim.strategy.tools.Strategy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">crapssim.strategy.tools.Strategy</span></code></a></p>
+<p>Strategy that makes place bets on the six and eight, and then if a PassLine or Come bet with
+that point comes up, moves the place bet to 5 or 9.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.examples.Place68Move59.pass_come_amount">
+<span class="sig-name descname"><span class="pre">pass_come_amount</span></span><a class="headerlink" href="#crapssim.strategy.examples.Place68Move59.pass_come_amount" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.examples.Place68Move59.six_eight_amount">
+<span class="sig-name descname"><span class="pre">six_eight_amount</span></span><a class="headerlink" href="#crapssim.strategy.examples.Place68Move59.six_eight_amount" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.examples.Place68Move59.five_nine_amount">
+<span class="sig-name descname"><span class="pre">five_nine_amount</span></span><a class="headerlink" href="#crapssim.strategy.examples.Place68Move59.five_nine_amount" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.strategy.examples.Place68Move59.completed">
+<span class="sig-name descname"><span class="pre">completed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">crapssim.strategy.tools.Player</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#crapssim.strategy.examples.Place68Move59.completed" title="Link to this definition"></a></dt>
+<dd><p>The strategy is completed if the player has no bets on the table, and the players
+bankroll is too low to make any of the other bets.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>player</strong> – The Player whose bankroll and bets to check.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if the strategy can’t continue, otherwise False.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.strategy.examples.Place68Move59.get_pass_line_come_points">
+<span class="sig-name descname"><span class="pre">get_pass_line_come_points</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">crapssim.strategy.tools.Player</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#crapssim.strategy.examples.Place68Move59.get_pass_line_come_points" title="Link to this definition"></a></dt>
+<dd><p>Get the point number (or the table point number in the case of PassLine) for any PassLine
+or Come bets on the table.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>player</strong> – The player to check the bets for.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list of integers of the points for the PassLine and Come bets.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.strategy.examples.Place68Move59.update_bets">
+<span class="sig-name descname"><span class="pre">update_bets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">crapssim.strategy.tools.Player</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#crapssim.strategy.examples.Place68Move59.update_bets" title="Link to this definition"></a></dt>
+<dd><p>Do nothing if the point status is Off, otherwise go through the numbers 6, 8, 5 and 9.
+If the player has both a PassLine or Come bet for that number and a Place bet, remove the
+Place bet, otherwise move on to the next number. If the player doesn’t have a PassLine or
+Come bet for that number, and the place bet for that number isn’t already on the table,
+make a Place bet for that number.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>player</strong> – The player to check on bets and add bets for.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.strategy.examples.Place68Move59.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#crapssim.strategy.examples.Place68Move59.__repr__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.strategy.examples.PassLinePlace68Move59">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.strategy.examples.</span></span><span class="sig-name descname"><span class="pre">PassLinePlace68Move59</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pass_line_amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">six_eight_amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">6</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">five_nine_amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.strategy.examples.PassLinePlace68Move59" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="../tools/index.html#crapssim.strategy.tools.AggregateStrategy" title="crapssim.strategy.tools.AggregateStrategy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">crapssim.strategy.tools.AggregateStrategy</span></code></a></p>
+<p>Strategy that makes a PassLine bet, makes Place bets on the six and eight, and then moves
+them back to the 5 and 9 if the point for the PassLine (also the tables point) is six or
+eight. Equivalent to BetPassLine(pass_line_amount) + Place68Move59(pass_line_amount,
+six_eight_amount, five_nine_amount).</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.examples.PassLinePlace68Move59.pass_line_amount">
+<span class="sig-name descname"><span class="pre">pass_line_amount</span></span><a class="headerlink" href="#crapssim.strategy.examples.PassLinePlace68Move59.pass_line_amount" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.examples.PassLinePlace68Move59.six_eight_amount">
+<span class="sig-name descname"><span class="pre">six_eight_amount</span></span><a class="headerlink" href="#crapssim.strategy.examples.PassLinePlace68Move59.six_eight_amount" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.examples.PassLinePlace68Move59.five_nine_amount">
+<span class="sig-name descname"><span class="pre">five_nine_amount</span></span><a class="headerlink" href="#crapssim.strategy.examples.PassLinePlace68Move59.five_nine_amount" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.strategy.examples.PassLinePlace68Move59.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#crapssim.strategy.examples.PassLinePlace68Move59.__repr__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.strategy.examples.Place682Come">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.strategy.examples.</span></span><span class="sig-name descname"><span class="pre">Place682Come</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pass_come_amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">six_eight_amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">6</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">five_nine_amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">strategies</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../tools/index.html#crapssim.strategy.tools.Strategy" title="crapssim.strategy.tools.Strategy"><span class="pre">crapssim.strategy.tools.Strategy</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.strategy.examples.Place682Come" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="../tools/index.html#crapssim.strategy.tools.AggregateStrategy" title="crapssim.strategy.tools.AggregateStrategy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">crapssim.strategy.tools.AggregateStrategy</span></code></a></p>
+<p>Strategy that bets the PassLine if the point is off and there are less than 4 bets on the
+table. If the point is On, places the 6 and 8 and if there are less than 2 Come bets on the
+table and less than 4 bets overall places a Come bet.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.examples.Place682Come.pass_come_amount">
+<span class="sig-name descname"><span class="pre">pass_come_amount</span></span><a class="headerlink" href="#crapssim.strategy.examples.Place682Come.pass_come_amount" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.examples.Place682Come.six_eight_amount">
+<span class="sig-name descname"><span class="pre">six_eight_amount</span></span><a class="headerlink" href="#crapssim.strategy.examples.Place682Come.six_eight_amount" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.examples.Place682Come.five_nine_amount">
+<span class="sig-name descname"><span class="pre">five_nine_amount</span></span><a class="headerlink" href="#crapssim.strategy.examples.Place682Come.five_nine_amount" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.strategy.examples.Place682Come.update_bets">
+<span class="sig-name descname"><span class="pre">update_bets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">crapssim.strategy.tools.Player</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#crapssim.strategy.examples.Place682Come.update_bets" title="Link to this definition"></a></dt>
+<dd><p>If the player has less than 2 PassLine and Come bets, make the bet (depending on whether
+the point is on or off.) If the point is on, place the 6 and 8 unless there is a PassLine or
+Come bet with those then move them to the 5 or 9.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>player</strong> – The player to check on and make the bets for.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.strategy.examples.Place682Come.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#crapssim.strategy.examples.Place682Come.__repr__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.strategy.examples.IronCross">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.strategy.examples.</span></span><span class="sig-name descname"><span class="pre">IronCross</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.strategy.examples.IronCross" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="../tools/index.html#crapssim.strategy.tools.AggregateStrategy" title="crapssim.strategy.tools.AggregateStrategy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">crapssim.strategy.tools.AggregateStrategy</span></code></a></p>
+<p>Strategy that bets the PassLine, bets the PassLine Odds, and bets Place on the 5, 6, and 8.
+If the point is on and there is no bet on the field, place a bet on the field. Equivalent to:
+BetPassLine(…) + PassLineOddsMultiplier(2), + BetPlace({…}) + AddIfPointOn(Field(…))</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.examples.IronCross.base_amount">
+<span class="sig-name descname"><span class="pre">base_amount</span></span><a class="headerlink" href="#crapssim.strategy.examples.IronCross.base_amount" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.strategy.examples.IronCross.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#crapssim.strategy.examples.IronCross.__repr__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.strategy.examples.HammerLock">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.strategy.examples.</span></span><span class="sig-name descname"><span class="pre">HammerLock</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.strategy.examples.HammerLock" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="../tools/index.html#crapssim.strategy.tools.Strategy" title="crapssim.strategy.tools.Strategy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">crapssim.strategy.tools.Strategy</span></code></a></p>
+<p>Strategy that makes a PassLine bet and a DontPass bet when the point is off. Once the point
+is on, adds LayOdds to the DontPass bet, and Places the 6 and 8. If either of those place bets
+win, shifts the bets outside to the 5, 6, 8, and 9. If one of those wins, all place bets get
+taken down.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.examples.HammerLock.base_amount">
+<span class="sig-name descname"><span class="pre">base_amount</span></span><a class="headerlink" href="#crapssim.strategy.examples.HammerLock.base_amount" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.examples.HammerLock.start_six_eight_amount">
+<span class="sig-name descname"><span class="pre">start_six_eight_amount</span></span><a class="headerlink" href="#crapssim.strategy.examples.HammerLock.start_six_eight_amount" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.examples.HammerLock.end_six_eight_amount">
+<span class="sig-name descname"><span class="pre">end_six_eight_amount</span></span><a class="headerlink" href="#crapssim.strategy.examples.HammerLock.end_six_eight_amount" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.examples.HammerLock.five_nine_amount">
+<span class="sig-name descname"><span class="pre">five_nine_amount</span></span><a class="headerlink" href="#crapssim.strategy.examples.HammerLock.five_nine_amount" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.examples.HammerLock.odds_multiplier">
+<span class="sig-name descname"><span class="pre">odds_multiplier</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">6</span></em><a class="headerlink" href="#crapssim.strategy.examples.HammerLock.odds_multiplier" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.examples.HammerLock.place_win_count">
+<span class="sig-name descname"><span class="pre">place_win_count</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#crapssim.strategy.examples.HammerLock.place_win_count" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.strategy.examples.HammerLock.completed">
+<span class="sig-name descname"><span class="pre">completed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">crapssim.strategy.tools.Player</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#crapssim.strategy.examples.HammerLock.completed" title="Link to this definition"></a></dt>
+<dd><p>The strategy is completed if the player can no longer make the initial PassLine bet
+because their bankroll is too low, and they have no more bets on the table.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>player</strong></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.strategy.examples.HammerLock.after_roll">
+<span class="sig-name descname"><span class="pre">after_roll</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">crapssim.strategy.tools.Player</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#crapssim.strategy.examples.HammerLock.after_roll" title="Link to this definition"></a></dt>
+<dd><p>Update the place_win_count based on how many Place bets are won. If table.point.status is
+On and the dice total is 7 (meaning the shooter sevens out) reset place_win_count to 0.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>player</strong></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.strategy.examples.HammerLock.update_bets">
+<span class="sig-name descname"><span class="pre">update_bets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">crapssim.strategy.tools.Player</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#crapssim.strategy.examples.HammerLock.update_bets" title="Link to this definition"></a></dt>
+<dd><p>If the point is off bet the PassLine and DontPass line. If the point is on bet the
+Place6 and Place8 until one wins, then bet the Place 5, 6, 8, and 9. LayOdds whenever
+possible.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>player</strong> – Player to place the bets for.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.strategy.examples.HammerLock.pass_and_dontpass">
+<span class="sig-name descname"><span class="pre">pass_and_dontpass</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">crapssim.strategy.tools.Player</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#crapssim.strategy.examples.HammerLock.pass_and_dontpass" title="Link to this definition"></a></dt>
+<dd><p>Update bets when point is Off: add a PassLine and a DontPass bet if they don’t already exist.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.strategy.examples.HammerLock.place68">
+<span class="sig-name descname"><span class="pre">place68</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">crapssim.strategy.tools.Player</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#crapssim.strategy.examples.HammerLock.place68" title="Link to this definition"></a></dt>
+<dd><p>Update bets to Place the 6 and 8 (regardless of the point) and then lay odds on DontPass bets.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.strategy.examples.HammerLock.place5689">
+<span class="sig-name descname"><span class="pre">place5689</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">crapssim.strategy.tools.Player</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#crapssim.strategy.examples.HammerLock.place5689" title="Link to this definition"></a></dt>
+<dd><p>Update bets to Place the 5, 6, 8 and 9.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.strategy.examples.HammerLock.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#crapssim.strategy.examples.HammerLock.__repr__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.strategy.examples.Risk12">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.strategy.examples.</span></span><span class="sig-name descname"><span class="pre">Risk12</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.strategy.examples.Risk12" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="../tools/index.html#crapssim.strategy.tools.Strategy" title="crapssim.strategy.tools.Strategy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">crapssim.strategy.tools.Strategy</span></code></a></p>
+<p>Strategy that makes a PassLine and Field bet before the point is established. Once the point
+is established, places either the 6 the 8, or both depending on if the player won enough
+pre-point to cover those bets.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.examples.Risk12.base_amount">
+<span class="sig-name descname"><span class="pre">base_amount</span></span><a class="headerlink" href="#crapssim.strategy.examples.Risk12.base_amount" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.strategy.examples.Risk12.completed">
+<span class="sig-name descname"><span class="pre">completed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">crapssim.strategy.tools.Player</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#crapssim.strategy.examples.Risk12.completed" title="Link to this definition"></a></dt>
+<dd><p>The strategy is completed if the Player can no longer make the initial PassLine bet, and
+the player has no bets on the table.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>player</strong> – The player to check the bets and bankroll for.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if the player can no longer continue the strategy, otherwise False.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.strategy.examples.Risk12.point_off">
+<span class="sig-name descname"><span class="pre">point_off</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">crapssim.strategy.tools.Player</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#crapssim.strategy.examples.Risk12.point_off" title="Link to this definition"></a></dt>
+<dd><p>Place a PassLine and Field bet for 5.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>player</strong> – The player to check the bets for.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.strategy.examples.Risk12.point_on">
+<span class="sig-name descname"><span class="pre">point_on</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">crapssim.strategy.tools.Player</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#crapssim.strategy.examples.Risk12.point_on" title="Link to this definition"></a></dt>
+<dd><p>If your winnings were enough to cover the place bets (throwing in another dollar for
+each) make the place bets.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>player</strong> – The player to place the bets for.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.strategy.examples.Risk12.update_bets">
+<span class="sig-name descname"><span class="pre">update_bets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">crapssim.strategy.tools.Player</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#crapssim.strategy.examples.Risk12.update_bets" title="Link to this definition"></a></dt>
+<dd><p>If the point is off make a Field and PassLine bet. If the point is on
+Place the 6 and 8 if you made enough pre-point to cover the bets.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>player</strong> – The player to make the bets for.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.strategy.examples.Knockout">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.strategy.examples.</span></span><span class="sig-name descname"><span class="pre">Knockout</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsFloat</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.strategy.examples.Knockout" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="../tools/index.html#crapssim.strategy.tools.AggregateStrategy" title="crapssim.strategy.tools.AggregateStrategy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">crapssim.strategy.tools.AggregateStrategy</span></code></a></p>
+<p>PassLine and Don’t bet prior to point, 345x PassLine Odds after point.</p>
+<p>Equivalent to:
+BetPassLine(amount) + AddIfPointOff(DontPass(amount)) +
+PassLineOddsMultiplier({4: 3, 5: 4, 6: 5, 8: 5, 9: 4, 10: 3})</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.examples.Knockout.base_amount">
+<span class="sig-name descname"><span class="pre">base_amount</span></span><a class="headerlink" href="#crapssim.strategy.examples.Knockout.base_amount" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.strategy.examples.Knockout.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#crapssim.strategy.examples.Knockout.__repr__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.strategy.examples.DiceDoctor">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.strategy.examples.</span></span><span class="sig-name descname"><span class="pre">DiceDoctor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.strategy.examples.DiceDoctor" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="../tools/index.html#crapssim.strategy.tools.WinProgression" title="crapssim.strategy.tools.WinProgression"><code class="xref py py-obj docutils literal notranslate"><span class="pre">crapssim.strategy.tools.WinProgression</span></code></a></p>
+<p>Field progression strategy with progressive increases and decreases. Equivalent to:
+FieldWinProgression([10, 20, 15, 30, 25, 50, 35, 70, 50, 100, 75, 150])</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.examples.DiceDoctor.base_amount">
+<span class="sig-name descname"><span class="pre">base_amount</span></span><a class="headerlink" href="#crapssim.strategy.examples.DiceDoctor.base_amount" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.strategy.examples.DiceDoctor.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#crapssim.strategy.examples.DiceDoctor.__repr__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.strategy.examples.Place68PR">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.strategy.examples.</span></span><span class="sig-name descname"><span class="pre">Place68PR</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">6</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.strategy.examples.Place68PR" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="../tools/index.html#crapssim.strategy.tools.Strategy" title="crapssim.strategy.tools.Strategy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">crapssim.strategy.tools.Strategy</span></code></a></p>
+<p>Place 6 and 8 with a “Press and Regress” approach. Strategy that places the 6 and 8.
+If either of those bets win, the bet is pressed to 2 * the bet amount. If the bet is won again,
+it is reduced to the original bet amount.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.examples.Place68PR.base_amount">
+<span class="sig-name descname"><span class="pre">base_amount</span></span><a class="headerlink" href="#crapssim.strategy.examples.Place68PR.base_amount" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.examples.Place68PR.starting_amount">
+<span class="sig-name descname"><span class="pre">starting_amount</span></span><a class="headerlink" href="#crapssim.strategy.examples.Place68PR.starting_amount" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.examples.Place68PR.press_amount">
+<span class="sig-name descname"><span class="pre">press_amount</span></span><a class="headerlink" href="#crapssim.strategy.examples.Place68PR.press_amount" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.examples.Place68PR.win_one_amount">
+<span class="sig-name descname"><span class="pre">win_one_amount</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">7.0</span></em><a class="headerlink" href="#crapssim.strategy.examples.Place68PR.win_one_amount" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.examples.Place68PR.win_two_amount">
+<span class="sig-name descname"><span class="pre">win_two_amount</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">14.0</span></em><a class="headerlink" href="#crapssim.strategy.examples.Place68PR.win_two_amount" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.examples.Place68PR.six_winnings">
+<span class="sig-name descname"><span class="pre">six_winnings</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.0</span></em><a class="headerlink" href="#crapssim.strategy.examples.Place68PR.six_winnings" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.examples.Place68PR.eight_winnings">
+<span class="sig-name descname"><span class="pre">eight_winnings</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.0</span></em><a class="headerlink" href="#crapssim.strategy.examples.Place68PR.eight_winnings" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.strategy.examples.Place68PR.completed">
+<span class="sig-name descname"><span class="pre">completed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">crapssim.strategy.tools.Player</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#crapssim.strategy.examples.Place68PR.completed" title="Link to this definition"></a></dt>
+<dd><p>Returns True if the players bankroll is below the bet amount and the player no longer
+has bets on the table.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>player</strong></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.strategy.examples.Place68PR.after_roll">
+<span class="sig-name descname"><span class="pre">after_roll</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">crapssim.strategy.tools.Player</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#crapssim.strategy.examples.Place68PR.after_roll" title="Link to this definition"></a></dt>
+<dd><p>Get the winnings on the Place 6 and 8 bets to determine whether to press or regress.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>player</strong> – The player to check the bets for.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.strategy.examples.Place68PR.ensure_bets_exist">
+<span class="sig-name descname"><span class="pre">ensure_bets_exist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">crapssim.strategy.tools.Player</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#crapssim.strategy.examples.Place68PR.ensure_bets_exist" title="Link to this definition"></a></dt>
+<dd><p>Ensure that there is always a place 6 or place 8 bet if the point is On.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>player</strong> – The player to place the bets for.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.strategy.examples.Place68PR.press">
+<span class="sig-name descname"><span class="pre">press</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">crapssim.strategy.tools.Player</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#crapssim.strategy.examples.Place68PR.press" title="Link to this definition"></a></dt>
+<dd><p>Double the bet amount of the place bets.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>player</strong> – The player to make the bets for.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.strategy.examples.Place68PR.update_bets">
+<span class="sig-name descname"><span class="pre">update_bets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">crapssim.strategy.tools.Player</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#crapssim.strategy.examples.Place68PR.update_bets" title="Link to this definition"></a></dt>
+<dd><p>Ensure that a Place6 and Place8 bet always exist for the player of base amount.
+Press the bet if you win and haven’t pressed the bet yet.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>player</strong> – The player to place the bets for.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.strategy.examples.Place68PR.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#crapssim.strategy.examples.Place68PR.__repr__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.strategy.examples.Place68DontCome2Odds">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.strategy.examples.</span></span><span class="sig-name descname"><span class="pre">Place68DontCome2Odds</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">six_eight_amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">6</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dont_come_amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.strategy.examples.Place68DontCome2Odds" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="../tools/index.html#crapssim.strategy.tools.AggregateStrategy" title="crapssim.strategy.tools.AggregateStrategy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">crapssim.strategy.tools.AggregateStrategy</span></code></a></p>
+<p>Strategy that adds a DontCome bet when the point is Off, places the 6 and 8 when the point
+is On and adds 2x Odds to the DontCome bet.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.examples.Place68DontCome2Odds.six_eight_amount">
+<span class="sig-name descname"><span class="pre">six_eight_amount</span></span><a class="headerlink" href="#crapssim.strategy.examples.Place68DontCome2Odds.six_eight_amount" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.examples.Place68DontCome2Odds.dont_come_amount">
+<span class="sig-name descname"><span class="pre">dont_come_amount</span></span><a class="headerlink" href="#crapssim.strategy.examples.Place68DontCome2Odds.dont_come_amount" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.strategy.examples.Place68DontCome2Odds.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#crapssim.strategy.examples.Place68DontCome2Odds.__repr__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.strategy.examples.QuickProps">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.strategy.examples.</span></span><span class="sig-name descname"><span class="pre">QuickProps</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">world_amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">big_amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.strategy.examples.QuickProps" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="../tools/index.html#crapssim.strategy.tools.AggregateStrategy" title="crapssim.strategy.tools.AggregateStrategy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">crapssim.strategy.tools.AggregateStrategy</span></code></a></p>
+<p>Keep a World bet up each roll (demonstrates one-roll behavior) and
+carry Big6/Big8 for simple even-money resolutions.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.strategy.examples.BuySampler">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.strategy.examples.</span></span><span class="sig-name descname"><span class="pre">BuySampler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">25.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.strategy.examples.BuySampler" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="../tools/index.html#crapssim.strategy.tools.AggregateStrategy" title="crapssim.strategy.tools.AggregateStrategy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">crapssim.strategy.tools.AggregateStrategy</span></code></a></p>
+<p>Buy the outside numbers (4 and 10). Commission behavior uses the fixed
+5% rate with table policy (mode, rounding, floor).</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.strategy.examples.LaySampler">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.strategy.examples.</span></span><span class="sig-name descname"><span class="pre">LaySampler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">30.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.strategy.examples.LaySampler" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="../tools/index.html#crapssim.strategy.tools.AggregateStrategy" title="crapssim.strategy.tools.AggregateStrategy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">crapssim.strategy.tools.AggregateStrategy</span></code></a></p>
+<p>Lay the inside (5 and 9). Demonstrates dark-side true-odds with the fixed
+commission.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.strategy.examples.PutWithOdds">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.strategy.examples.</span></span><span class="sig-name descname"><span class="pre">PutWithOdds</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flat_amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">odds_multiple</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">always_working</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.strategy.examples.PutWithOdds" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="../tools/index.html#crapssim.strategy.tools.AggregateStrategy" title="crapssim.strategy.tools.AggregateStrategy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">crapssim.strategy.tools.AggregateStrategy</span></code></a></p>
+<p>When the point is ON, place a Put bet on 6 and take odds behind it.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.strategy.examples.HornExample">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.strategy.examples.</span></span><span class="sig-name descname"><span class="pre">HornExample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">4.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.strategy.examples.HornExample" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="../tools/index.html#crapssim.strategy.tools.AggregateStrategy" title="crapssim.strategy.tools.AggregateStrategy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">crapssim.strategy.tools.AggregateStrategy</span></code></a></p>
+<p>Demonstrates Horn bet lifecycle and resolution.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.strategy.examples.WorldExample">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.strategy.examples.</span></span><span class="sig-name descname"><span class="pre">WorldExample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.strategy.examples.WorldExample" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="../tools/index.html#crapssim.strategy.tools.AggregateStrategy" title="crapssim.strategy.tools.AggregateStrategy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">crapssim.strategy.tools.AggregateStrategy</span></code></a></p>
+<p>Demonstrates World bet lifecycle and resolution.</p>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../index.html" class="btn btn-neutral float-left" title="crapssim.strategy" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../odds/index.html" class="btn btn-neutral float-right" title="crapssim.strategy.odds" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Sean Kent.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

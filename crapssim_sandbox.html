@@ -1,0 +1,449 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Welcome to the crapssim sandbox! &mdash; crapssim 0.3.2 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
+      <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=71d9d8e6"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Installation" href="installation.html" />
+    <link rel="prev" title="Tutorial 1: Starting off with strategies" href="tutorial-strategy-01.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            crapssim
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Examples and Tutorials</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="tutorial-strategy-01.html">Strategy Tutorial 1: Starting off</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Sandbox</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#setup">Setup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pick-your-favorite-strategy">Pick your favorite strategy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#test-your-strategy">Test your strategy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#simulate-many-sessions">Simulate many sessions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#visualize-results">Visualize results</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Change Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="supported-bets.html">Supported Bets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="autoapi/index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">crapssim</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Welcome to the crapssim sandbox!</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/crapssim_sandbox.ipynb.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <p><a href="https://colab.research.google.com/github/skent259/crapssim/blob/main/docs/crapssim_sandbox.ipynb" target="_parent"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/></a></p>
+<section id="welcome-to-the-crapssim-sandbox">
+<h1>Welcome to the crapssim sandbox!<a class="headerlink" href="#welcome-to-the-crapssim-sandbox" title="Link to this heading"></a></h1>
+<p>This is a quick attempt to allow people to run the crapssim Python package without requiring a detailed python installation.  Some sample code is set up to get you started on running craps simulations quickly.</p>
+<section id="setup">
+<h2>Setup<a class="headerlink" href="#setup" title="Link to this heading"></a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>pip<span class="w"> </span>install<span class="w"> </span>crapssim
+<span class="kn">import</span> <span class="nn">crapssim</span> <span class="k">as</span> <span class="nn">craps</span>
+<span class="kn">from</span> <span class="nn">crapssim.strategy</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">crapssim.strategy.examples</span> <span class="kn">import</span> <span class="n">PlaceInside</span><span class="p">,</span> <span class="n">IronCross</span><span class="p">,</span> <span class="n">HammerLock</span><span class="p">,</span> <span class="n">Risk12</span><span class="p">,</span> <span class="n">Knockout</span><span class="p">,</span> <span class="n">DiceDoctor</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">plotnine</span> <span class="kn">import</span> <span class="o">*</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Defaulting to user installation because normal site-packages is not writeable
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Collecting crapssim
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>  Downloading crapssim-0.3.2-py3-none-any.whl.metadata (5.1 kB)
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Collecting numpy&gt;=1.18.0 (from crapssim)
+  Downloading numpy-2.3.4-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (62 kB)
+?25l     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ <span class=" -Color -Color-Green">0.0/62.1 kB</span> <span class=" -Color -Color-Red">?</span> eta <span class=" -Color -Color-Cyan">-:--:--</span>
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ <span class=" -Color -Color-Green">62.1/62.1 kB</span> <span class=" -Color -Color-Red">6.9 MB/s</span> eta <span class=" -Color -Color-Cyan">0:00:00</span>
+?25h
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Downloading crapssim-0.3.2-py3-none-any.whl (72 kB)
+?25l   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ <span class=" -Color -Color-Green">0.0/72.0 kB</span> <span class=" -Color -Color-Red">?</span> eta <span class=" -Color -Color-Cyan">-:--:--</span>
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ <span class=" -Color -Color-Green">72.0/72.0 kB</span> <span class=" -Color -Color-Red">25.8 MB/s</span> eta <span class=" -Color -Color-Cyan">0:00:00</span>
+?25hDownloading numpy-2.3.4-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (16.6 MB)
+?25l   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ <span class=" -Color -Color-Green">0.0/16.6 MB</span> <span class=" -Color -Color-Red">?</span> eta <span class=" -Color -Color-Cyan">-:--:--</span>
+   ━━━━━━━━━━━━━━━━━━━━╺━━━━━━━━━━━━━━━━━━━ <span class=" -Color -Color-Green">8.4/16.6 MB</span> <span class=" -Color -Color-Red">253.3 MB/s</span> eta <span class=" -Color -Color-Cyan">0:00:01</span>
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╸ <span class=" -Color -Color-Green">16.6/16.6 MB</span> <span class=" -Color -Color-Red">265.9 MB/s</span> eta <span class=" -Color -Color-Cyan">0:00:01</span>
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ <span class=" -Color -Color-Green">16.6/16.6 MB</span> <span class=" -Color -Color-Red">166.2 MB/s</span> eta <span class=" -Color -Color-Cyan">0:00:00</span>
+?25h
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Installing collected packages: numpy, crapssim
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Successfully installed crapssim-0.3.2 numpy-2.3.4
+</pre></div>
+</div>
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">ModuleNotFoundError</span><span class="g g-Whitespace">                       </span>Traceback (most recent call last)
+<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">line</span> <span class="mi">7</span>
+<span class="g g-Whitespace">      </span><span class="mi">4</span> <span class="kn">from</span> <span class="nn">crapssim.strategy.examples</span> <span class="kn">import</span> <span class="n">PlaceInside</span><span class="p">,</span> <span class="n">IronCross</span><span class="p">,</span> <span class="n">HammerLock</span><span class="p">,</span> <span class="n">Risk12</span><span class="p">,</span> <span class="n">Knockout</span><span class="p">,</span> <span class="n">DiceDoctor</span>
+<span class="g g-Whitespace">      </span><span class="mi">6</span> <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="ne">----&gt; </span><span class="mi">7</span> <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="g g-Whitespace">      </span><span class="mi">8</span> <span class="kn">from</span> <span class="nn">plotnine</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="ne">ModuleNotFoundError</span>: No module named &#39;pandas&#39;
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="pick-your-favorite-strategy">
+<h2>Pick your favorite strategy<a class="headerlink" href="#pick-your-favorite-strategy" title="Link to this heading"></a></h2>
+<p>Either select from the list of available strategies, or write your own.  The file <a class="reference external" href="https://github.com/skent259/crapssim/blob/main/crapssim/strategy/examples.py">strategy/examples.py</a> has examples of full strategies, but you can check out the detailed tutorial for making your own.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#@title  { run: &quot;auto&quot;, display-mode: &quot;form&quot; }</span>
+<span class="n">mode</span> <span class="o">=</span> <span class="s2">&quot;write strategy&quot;</span> <span class="c1">#@param [&quot;pick strategy&quot;, &quot;write strategy&quot;]</span>
+
+<span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;pick strategy&#39;</span><span class="p">:</span>
+
+  <span class="n">strategy</span> <span class="o">=</span> <span class="n">DiceDoctor</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span> <span class="c1"># @param [&quot;BetPassLine(10)&quot;,&quot;BetDontPass(10)&quot;,&quot;BetPassLine(10) + PassLineOddsMultiplier(2)&quot;,&quot;PlaceInside(10)&quot;,&quot;BetPlace({6: 12, 8: 12}, skip_point=False)&quot;,&quot;IronCross(10)&quot;,&quot;HammerLock(10)&quot;,&quot;Risk12()&quot;,&quot;Knockout(10)&quot;,&quot;DiceDoctor(10)&quot;] {&quot;type&quot;:&quot;raw&quot;,&quot;allow-input&quot;:true}</span>
+
+<span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;write strategy&#39;</span><span class="p">:</span>
+
+  <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Write your strategy in code above (click &#39;show code&#39;):&quot;</span><span class="p">)</span>
+
+  <span class="c1">## Write your strategy below</span>
+  <span class="n">strategy</span> <span class="o">=</span> <span class="n">BetPassLine</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span> <span class="o">+</span> <span class="n">PassLineOddsMultiplier</span><span class="p">(</span><span class="n">odds_multiplier</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="n">BetPlace</span><span class="p">({</span><span class="mi">6</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">8</span><span class="p">:</span> <span class="mi">12</span><span class="p">})</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Write your strategy in code above (click &#39;show code&#39;):
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="test-your-strategy">
+<h2>Test your strategy<a class="headerlink" href="#test-your-strategy" title="Link to this heading"></a></h2>
+<p>Make sure everything is working right, especially if you write a custom strategy. (This is usually the time consuming process for me.)  You can adjust the number of rolls and bankroll accordingly.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Adjust bankroll or rolls here</span>
+<span class="n">bankroll</span> <span class="o">=</span> <span class="mi">200</span>
+<span class="n">max_rolls</span> <span class="o">=</span> <span class="mi">20</span>
+
+<span class="n">table</span> <span class="o">=</span> <span class="n">craps</span><span class="o">.</span><span class="n">Table</span><span class="p">()</span>
+<span class="n">table</span><span class="o">.</span><span class="n">add_player</span><span class="p">(</span><span class="n">bankroll</span><span class="p">,</span> <span class="n">strategy</span><span class="p">)</span>
+<span class="n">table</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">max_rolls</span><span class="o">=</span><span class="n">max_rolls</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Welcome to the Craps Table!
+Initial players: [&#39;Player 0&#39;]
+
+Dice out!
+Shooter rolled 5 (4, 1)
+Point is On (5)
+Total Player Cash is $200.0
+
+Dice out!
+Shooter rolled 6 (5, 1)
+Player 0 won $14.0 on Place(6, amount=12.0)!
+Point is On (5)
+Total Player Cash is $214.0
+
+Dice out!
+Shooter rolled 5 (1, 4)
+Point is Off (None)
+Total Player Cash is $214.0
+
+Dice out!
+Shooter rolled 9 (3, 6)
+Point is On (9)
+Total Player Cash is $214.0
+
+Dice out!
+Shooter rolled 9 (4, 5)
+Point is Off (None)
+Total Player Cash is $214.0
+
+Dice out!
+Shooter rolled 9 (5, 4)
+Point is On (9)
+Total Player Cash is $214.0
+
+Dice out!
+Shooter rolled 11 (5, 6)
+Point is On (9)
+Total Player Cash is $214.0
+
+Dice out!
+Shooter rolled 9 (3, 6)
+Point is Off (None)
+Total Player Cash is $214.0
+
+Dice out!
+Shooter rolled 4 (2, 2)
+Point is On (4)
+Total Player Cash is $214.0
+
+Dice out!
+Shooter rolled 7 (6, 1)
+Player 0 lost $12.0 on Place(8, amount=12.0).
+Player 0 lost $12.0 on Place(6, amount=12.0).
+Point is Off (None)
+Total Player Cash is $190.0
+
+Dice out!
+Shooter rolled 7 (3, 4)
+Point is Off (None)
+Total Player Cash is $190.0
+
+Dice out!
+Shooter rolled 5 (4, 1)
+Point is On (5)
+Total Player Cash is $190.0
+
+Dice out!
+Shooter rolled 3 (1, 2)
+Point is On (5)
+Total Player Cash is $190.0
+
+Dice out!
+Shooter rolled 7 (6, 1)
+Player 0 lost $12.0 on Place(6, amount=12.0).
+Player 0 lost $12.0 on Place(8, amount=12.0).
+Point is Off (None)
+Total Player Cash is $166.0
+
+Dice out!
+Shooter rolled 8 (2, 6)
+Point is On (8)
+Total Player Cash is $166.0
+
+Dice out!
+Shooter rolled 10 (5, 5)
+Point is On (8)
+Total Player Cash is $166.0
+
+Dice out!
+Shooter rolled 7 (1, 6)
+Player 0 lost $12.0 on Place(6, amount=12.0).
+Player 0 lost $12.0 on Place(8, amount=12.0).
+Point is Off (None)
+Total Player Cash is $142.0
+
+Dice out!
+Shooter rolled 7 (5, 2)
+Point is Off (None)
+Total Player Cash is $142.0
+
+Dice out!
+Shooter rolled 8 (4, 4)
+Point is On (8)
+Total Player Cash is $142.0
+
+Dice out!
+Shooter rolled 4 (2, 2)
+Point is On (8)
+Total Player Cash is $142.0
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="simulate-many-sessions">
+<h2>Simulate many sessions<a class="headerlink" href="#simulate-many-sessions" title="Link to this heading"></a></h2>
+<p>Use this code to simulate your chosen strategy many times and get a sense for what you might expect at the craps table.  For a reliable outcome, I recommend at least 100,000 simulations (which will take a few minutes)</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#@title Simulation parameters</span>
+<span class="n">n_sim</span> <span class="o">=</span> <span class="mi">10000</span> <span class="c1">#@param {type:&quot;integer&quot;}</span>
+<span class="n">bankroll</span> <span class="o">=</span> <span class="mi">1000</span> <span class="c1">#@param {type:&quot;number&quot;}</span>
+<span class="n">max_rolls</span> <span class="o">=</span>  <span class="mi">144</span> <span class="c1">#@param {type:&quot;raw&quot;}</span>
+<span class="n">max_shooter</span> <span class="o">=</span>  <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;inf&quot;</span><span class="p">)</span> <span class="c1">#@param {type:&quot;raw&quot;}</span>
+
+<span class="n">print_every</span> <span class="o">=</span> <span class="mi">1000</span> <span class="c1">#@param {type:&quot;integer&quot;}</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;[sim, final, initial, n_rolls]&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_sim</span><span class="p">):</span>
+  <span class="n">table</span> <span class="o">=</span> <span class="n">craps</span><span class="o">.</span><span class="n">Table</span><span class="p">()</span>
+  <span class="n">table</span><span class="o">.</span><span class="n">add_player</span><span class="p">(</span><span class="n">bankroll</span><span class="p">,</span> <span class="n">strategy</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+  <span class="n">table</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">max_rolls</span><span class="p">,</span> <span class="n">max_shooter</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+
+  <span class="n">row</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">table</span><span class="o">.</span><span class="n">players</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">bankroll</span><span class="p">,</span> <span class="n">bankroll</span><span class="p">,</span> <span class="n">table</span><span class="o">.</span><span class="n">dice</span><span class="o">.</span><span class="n">n_rolls</span><span class="p">]</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">i</span> <span class="o">%</span> <span class="n">print_every</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+  <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+
+<span class="c1"># Create dataframe of results</span>
+<span class="n">results</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;sim&#39;</span><span class="p">,</span> <span class="s1">&#39;final&#39;</span><span class="p">,</span> <span class="s1">&#39;initial&#39;</span><span class="p">,</span> <span class="s1">&#39;n_rolls&#39;</span><span class="p">])</span>
+<span class="n">results</span><span class="p">[</span><span class="s1">&#39;winnings&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="s1">&#39;final&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">results</span><span class="p">[</span><span class="s1">&#39;initial&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[sim, final, initial, n_rolls]
+[0, 1030.0, 1000, 144]
+[1000, 890.0, 1000, 144]
+[2000, 960.0, 1000, 144]
+[3000, 970.0, 1000, 144]
+[4000, 1040.0, 1000, 144]
+[5000, 970.0, 1000, 144]
+[6000, 1060.0, 1000, 144]
+[7000, 960.0, 1000, 144]
+[8000, 930.0, 1000, 144]
+[9000, 1040.0, 1000, 144]
+</pre></div>
+</div>
+</div>
+</div>
+<section id="visualize-results">
+<h3>Visualize results<a class="headerlink" href="#visualize-results" title="Link to this heading"></a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Density plot</span>
+<span class="p">(</span><span class="n">ggplot</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="n">aes</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s1">&#39;winnings&#39;</span><span class="p">))</span> <span class="o">+</span>
+ <span class="n">geom_vline</span><span class="p">(</span><span class="n">xintercept</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">color</span> <span class="o">=</span> <span class="s1">&#39;grey&#39;</span><span class="p">)</span> <span class="o">+</span>
+ <span class="n">geom_density</span><span class="p">()</span> <span class="o">+</span>
+ <span class="n">theme_minimal</span><span class="p">()</span> <span class="o">+</span>
+ <span class="n">labs</span><span class="p">(</span><span class="n">x</span> <span class="o">=</span> <span class="s2">&quot;Winnings&quot;</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="s2">&quot;Relative chance of outcome&quot;</span><span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<a class="reference internal image-reference" href="_images/1635e7d41bbfc4acb1f72bb1028d9f025804fef9b5aab986835c1fa87fe59d84.png"><img alt="_images/1635e7d41bbfc4acb1f72bb1028d9f025804fef9b5aab986835c1fa87fe59d84.png" src="_images/1635e7d41bbfc4acb1f72bb1028d9f025804fef9b5aab986835c1fa87fe59d84.png" style="width: 640px; height: 480px;" />
+</a>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Boxplot</span>
+<span class="p">(</span><span class="n">ggplot</span><span class="p">(</span><span class="n">results</span><span class="p">,</span><span class="n">aes</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="s1">&#39;winnings&#39;</span><span class="p">,</span><span class="n">x</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span> <span class="o">+</span>
+ <span class="n">geom_hline</span><span class="p">(</span><span class="n">yintercept</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">color</span> <span class="o">=</span> <span class="s1">&#39;grey&#39;</span><span class="p">)</span> <span class="o">+</span>
+ <span class="n">geom_boxplot</span><span class="p">(</span><span class="n">width</span> <span class="o">=</span> <span class="mf">0.4</span><span class="p">)</span> <span class="o">+</span>
+ <span class="n">xlim</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span>
+ <span class="n">coord_flip</span><span class="p">()</span> <span class="o">+</span>
+ <span class="n">theme_minimal</span><span class="p">()</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<a class="reference internal image-reference" href="_images/d6500e4316b31d6cd2ea53b6426c331926544ddd23081cfa4b0ccfb763b8892f.png"><img alt="_images/d6500e4316b31d6cd2ea53b6426c331926544ddd23081cfa4b0ccfb763b8892f.png" src="_images/d6500e4316b31d6cd2ea53b6426c331926544ddd23081cfa4b0ccfb763b8892f.png" style="width: 640px; height: 480px;" />
+</a>
+</div>
+</div>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="tutorial-strategy-01.html" class="btn btn-neutral float-left" title="Tutorial 1: Starting off with strategies" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="installation.html" class="btn btn-neutral float-right" title="Installation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Sean Kent.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

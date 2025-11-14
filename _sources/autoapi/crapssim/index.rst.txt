@@ -1,0 +1,318 @@
+crapssim
+========
+
+.. py:module:: crapssim
+
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /autoapi/crapssim/bet/index
+   /autoapi/crapssim/dice/index
+   /autoapi/crapssim/point/index
+   /autoapi/crapssim/strategy/index
+   /autoapi/crapssim/table/index
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   crapssim.Player
+   crapssim.Table
+
+
+Package Contents
+----------------
+
+.. py:class:: Player(table: Table, bankroll: SupportsFloat, bet_strategy: crapssim.strategy.Strategy = BetPassLine(5), name: str = 'Player')
+
+   Active participant at a :class:`Table` with a bankroll and bets.
+
+
+   .. py:attribute:: bankroll
+      :type:  float
+
+
+   .. py:attribute:: strategy
+      :type:  crapssim.strategy.Strategy
+
+
+   .. py:attribute:: name
+      :type:  str
+      :value: 'Player'
+
+
+
+   .. py:attribute:: bets
+      :type:  list[crapssim.bet.Bet]
+      :value: []
+
+
+
+   .. py:attribute:: _table
+      :type:  Table
+
+
+   .. py:property:: total_bet_amount
+      :type: float
+
+
+      Total amount currently wagered on the layout (plus any recoverable vigs).
+
+
+   .. py:property:: total_player_cash
+      :type: float
+
+
+      Bankroll plus outstanding bet amounts and vigs.
+
+
+   .. py:property:: table
+      :type: Table
+
+
+      Table the player is seated at.
+
+
+   .. py:method:: add_bet(bet: crapssim.bet.Bet) -> None
+
+      Attempt to place a bet while respecting bankroll and bet stacking rules.
+
+      :returns: Always returns ``None``.
+      :rtype: None
+
+
+
+   .. py:method:: already_placed_bets(bet: crapssim.bet.Bet) -> list[crapssim.bet.Bet]
+
+      Return existing bets with the same placement key as ``bet``.
+
+      :param bet: Bet candidate being compared to current layout bets.
+
+      :returns: Bets already placed with the same key.
+      :rtype: list[Bet]
+
+
+
+   .. py:method:: already_placed(bet: crapssim.bet.Bet) -> bool
+
+      Check whether a bet with the same placement key already exists.
+
+      :param bet: Bet candidate being evaluated.
+
+      :returns: True if a matching bet already exists.
+      :rtype: bool
+
+
+
+   .. py:method:: get_bets_by_type(bet_type: type[crapssim.bet.Bet] | tuple[type[crapssim.bet.Bet], Ellipsis]) -> list[crapssim.bet.Bet]
+
+      Return bets whose type matches ``bet_type`` (supports tuples).
+
+      :param bet_type: Bet type or tuple of bet types to match.
+
+      :returns: Bets whose type matches ``bet_type``.
+      :rtype: list[Bet]
+
+
+
+   .. py:method:: has_bets(bet_type: type[crapssim.bet.Bet] | tuple[type[crapssim.bet.Bet], Ellipsis]) -> bool
+
+      Return True if any bet of ``bet_type`` is currently on the layout.
+
+      :param bet_type: Bet type or tuple of bet types to check for.
+
+      :returns: True if any matching bet exists on the layout.
+      :rtype: bool
+
+
+
+   .. py:method:: remove_bet(bet: crapssim.bet.Bet) -> None
+
+      Remove a bet if it is present and removable.
+
+      :returns: Always returns ``None``.
+      :rtype: None
+
+
+
+   .. py:method:: add_strategy_bets() -> None
+
+      Apply the configured strategy to place new bets.
+
+      :returns: Always returns ``None``.
+      :rtype: None
+
+
+
+   .. py:method:: update_bet(verbose: bool = False) -> None
+
+      Resolve outstanding bets against the latest roll.
+
+      :returns: Always returns ``None``.
+      :rtype: None
+
+
+
+   .. py:method:: print_bet_update(bet: crapssim.bet.Bet, result: crapssim.bet.BetResult) -> None
+
+      Emit verbose logging for a bet resolution.
+
+      :returns: Always returns ``None``.
+      :rtype: None
+
+
+
+.. py:class:: Table(seed: int | None = None)
+
+   Runtime state for a craps table simulation.
+
+
+   .. py:attribute:: players
+      :type:  list[Player]
+      :value: []
+
+
+
+   .. py:attribute:: point
+      :type:  crapssim.point.Point
+
+
+   .. py:attribute:: seed
+      :value: None
+
+
+
+   .. py:attribute:: dice
+      :type:  crapssim.dice.Dice
+
+
+   .. py:attribute:: settings
+      :type:  TableSettings
+
+
+   .. py:attribute:: pass_rolls
+      :type:  int
+      :value: 0
+
+
+
+   .. py:attribute:: last_roll
+      :type:  int | None
+      :value: None
+
+
+
+   .. py:attribute:: n_shooters
+      :type:  int
+      :value: 1
+
+
+
+   .. py:attribute:: new_shooter
+      :type:  bool
+      :value: True
+
+
+
+   .. py:method:: yield_player_bets() -> Generator[tuple[Player, crapssim.bet.Bet], None, None]
+
+
+   .. py:method:: add_player(bankroll: SupportsFloat = 100, strategy: crapssim.strategy.Strategy = BetPassLine(5), name: str | None = None) -> Player
+
+      Create and register a new player at this table.
+
+      :param bankroll: Starting bankroll for the player.
+      :param strategy: Strategy assigned to the player.
+      :param name: Optional explicit player name; defaults to ``"Player {n}"``.
+
+      :returns: The created :class:`Player` instance.
+      :rtype: Player
+
+
+
+   .. py:method:: _setup_run(verbose: bool) -> None
+
+      Ensure the table has at least one player and emit greetings if verbose.
+
+      :returns: Always returns ``None``.
+      :rtype: None
+
+
+
+   .. py:method:: run(max_rolls: int, max_shooter: float | int = float('inf'), verbose: bool = True, runout: bool = False) -> None
+
+      Simulate the table until shooter/roll limits or strategies finish.
+
+      :param max_rolls: Maximum number of rolls to process.
+      :param max_shooter: Maximum number of shooters to process.
+      :param verbose: If True, print updates during execution.
+      :param runout: If True, continue resolving remaining bets after hitting limits.
+
+      :returns: Always returns ``None``.
+      :rtype: None
+
+
+
+   .. py:method:: fixed_run(dice_outcomes: Iterable[crapssim.dice.DicePair], verbose: bool = False) -> None
+
+      Run the table using a predetermined dice outcome sequence.
+
+      :param dice_outcomes: Iterable of dice value pairs to apply sequentially.
+      :param verbose: If True, print updates during execution.
+
+      :returns: Always returns ``None``.
+      :rtype: None
+
+
+
+   .. py:method:: is_run_complete(max_rolls: float | int, max_shooter: float | int) -> bool
+
+      Return True when roll or shooter limits have been met.
+
+      :param max_rolls: Maximum number of rolls to run for.
+      :param max_shooter: Maximum number of shooters to run for.
+
+      :returns: True if the run met limits or all strategies report completion.
+
+
+
+   .. py:method:: should_keep_rolling(run_complete: bool, runout: bool) -> bool
+
+      Return True if the simulation loop should continue.
+
+      :param run_complete: Whether roll/shooter limits and strategies finished.
+      :param runout: If True, continue until all player bets are resolved.
+
+      :returns: True to continue the run, False to stop.
+
+
+
+   .. py:method:: ensure_one_player() -> None
+
+      Ensure there is at least one player registered on the table.
+
+      :returns: Always returns ``None``.
+      :rtype: None
+
+
+
+   .. py:property:: player_has_bets
+      :type: bool
+
+
+      Whether any player currently has active bets.
+
+
+   .. py:property:: total_player_cash
+      :type: float
+
+
+      Total bankroll plus outstanding bet amounts across all players.
+
+

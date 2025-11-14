@@ -1,0 +1,395 @@
+crapssim.strategy.single_bet
+============================
+
+.. py:module:: crapssim.strategy.single_bet
+
+.. autoapi-nested-parse::
+
+   Strategies that place a given bet if that bet of that type isn't currently placed and the bet
+   is allowed.
+
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   crapssim.strategy.single_bet.StrategyMode
+   crapssim.strategy.single_bet.BetPlace
+   crapssim.strategy.single_bet.BetPassLine
+   crapssim.strategy.single_bet.BetDontPass
+   crapssim.strategy.single_bet.BetCome
+   crapssim.strategy.single_bet.BetDontCome
+   crapssim.strategy.single_bet.BetHardWay
+   crapssim.strategy.single_bet.BetHop
+   crapssim.strategy.single_bet.BetField
+   crapssim.strategy.single_bet.BetAny7
+   crapssim.strategy.single_bet.BetHorn
+   crapssim.strategy.single_bet.BetWorld
+   crapssim.strategy.single_bet.BetBig6
+   crapssim.strategy.single_bet.BetBig8
+   crapssim.strategy.single_bet.BetTwo
+   crapssim.strategy.single_bet.BetThree
+   crapssim.strategy.single_bet.BetYo
+   crapssim.strategy.single_bet.BetBoxcars
+   crapssim.strategy.single_bet.BetBuy
+   crapssim.strategy.single_bet.BetLay
+   crapssim.strategy.single_bet.BetPut
+   crapssim.strategy.single_bet.BetFire
+   crapssim.strategy.single_bet.BetAll
+   crapssim.strategy.single_bet.BetTall
+   crapssim.strategy.single_bet.BetSmall
+
+
+Module Contents
+---------------
+
+.. py:class:: StrategyMode(*args, **kwds)
+
+   Bases: :py:obj:`enum.Enum`
+
+
+   Create a collection of name/value pairs.
+
+   Example enumeration:
+
+   >>> class Color(Enum):
+   ...     RED = 1
+   ...     BLUE = 2
+   ...     GREEN = 3
+
+   Access them by:
+
+   - attribute access:
+
+     >>> Color.RED
+     <Color.RED: 1>
+
+   - value lookup:
+
+     >>> Color(1)
+     <Color.RED: 1>
+
+   - name lookup:
+
+     >>> Color['RED']
+     <Color.RED: 1>
+
+   Enumerations can be iterated over, and know how many members they have:
+
+   >>> len(Color)
+   3
+
+   >>> list(Color)
+   [<Color.RED: 1>, <Color.BLUE: 2>, <Color.GREEN: 3>]
+
+   Methods can be added to enumerations, and members can have their own
+   attributes -- see the documentation for details.
+
+
+   .. py:attribute:: ADD_IF_NOT_BET
+
+
+   .. py:attribute:: ADD_IF_POINT_OFF
+
+
+   .. py:attribute:: ADD_IF_POINT_ON
+
+
+   .. py:attribute:: ADD_IF_NEW_SHOOTER
+
+
+   .. py:attribute:: ADD_OR_INCREASE
+
+
+   .. py:attribute:: BET_IF_POINT_ON
+
+
+   .. py:attribute:: REPLACE
+
+
+.. py:class:: BetPlace(place_bet_amounts: dict[int, float], mode: StrategyMode = StrategyMode.BET_IF_POINT_ON, skip_point: bool = True, skip_come: bool = False)
+
+   Bases: :py:obj:`crapssim.strategy.tools.Strategy`
+
+
+   Strategy that makes multiple Place bets of given amounts. It can also skip making the bet
+   if the point is the same as the given bet number.
+
+
+   .. py:attribute:: place_bet_amounts
+
+
+   .. py:attribute:: mode
+
+
+   .. py:attribute:: skip_point
+      :value: True
+
+
+
+   .. py:attribute:: skip_come
+      :value: False
+
+
+
+   .. py:method:: completed(player: crapssim.strategy.tools.Player) -> bool
+
+      The strategy is completed if the player can no longer make any of the place bets in the
+      place_bet_amounts dictionary and there are no Place bets on the table.
+
+      :param player: The player to check the bankroll for
+
+      :returns: * *True if there are no Place bets on the table and the player can't make any more Place bets*
+                * *because their bankroll is too low.*
+
+
+
+   .. py:method:: update_bets(player: crapssim.strategy.tools.Player) -> None
+
+      Add the place bets on the numbers and amounts defined by place_bet_amounts.
+
+      :param player: The player to add the place bets to.
+
+
+
+   .. py:method:: remove_point_bet(player: crapssim.strategy.tools.Player) -> None
+      :staticmethod:
+
+
+      If skip_point is true and the player has a place bet for the table point number,
+      remove the Place bet.
+
+      :param player: The player to check and see if they have the given bet.
+
+
+
+   .. py:method:: __repr__() -> str
+
+
+.. py:class:: BetPassLine(bet_amount: SupportsFloat, mode=StrategyMode.ADD_IF_POINT_OFF)
+
+   Bases: :py:obj:`_BaseSingleBet`
+
+
+   Base helper for wrapping a single :class:`Bet` in a strategy.
+
+
+.. py:class:: BetDontPass(bet_amount: SupportsFloat, mode=StrategyMode.ADD_IF_POINT_OFF)
+
+   Bases: :py:obj:`_BaseSingleBet`
+
+
+   Base helper for wrapping a single :class:`Bet` in a strategy.
+
+
+.. py:class:: BetCome(bet_amount: SupportsFloat, mode=StrategyMode.ADD_IF_POINT_ON)
+
+   Bases: :py:obj:`_BaseSingleBet`
+
+
+   Base helper for wrapping a single :class:`Bet` in a strategy.
+
+
+.. py:class:: BetDontCome(bet_amount: SupportsFloat, mode=StrategyMode.ADD_IF_POINT_ON)
+
+   Bases: :py:obj:`_BaseSingleBet`
+
+
+   Base helper for wrapping a single :class:`Bet` in a strategy.
+
+
+.. py:class:: BetHardWay(number: tuple[int], bet_amount: SupportsFloat, mode=StrategyMode.ADD_IF_NOT_BET)
+
+   Bases: :py:obj:`_BaseSingleBet`
+
+
+   Base helper for wrapping a single :class:`Bet` in a strategy.
+
+
+   .. py:attribute:: number
+
+
+   .. py:method:: __repr__() -> str
+
+
+.. py:class:: BetHop(result: tuple[int, int], bet_amount: SupportsFloat, mode=StrategyMode.ADD_IF_NOT_BET)
+
+   Bases: :py:obj:`_BaseSingleBet`
+
+
+   Base helper for wrapping a single :class:`Bet` in a strategy.
+
+
+   .. py:attribute:: result
+      :type:  tuple[int, int]
+
+
+   .. py:method:: __repr__() -> str
+
+
+.. py:class:: BetField(bet_amount: SupportsFloat, mode=StrategyMode.ADD_IF_NOT_BET)
+
+   Bases: :py:obj:`_BaseSingleBet`
+
+
+   Base helper for wrapping a single :class:`Bet` in a strategy.
+
+
+.. py:class:: BetAny7(bet_amount: SupportsFloat, mode=StrategyMode.ADD_IF_NOT_BET)
+
+   Bases: :py:obj:`_BaseSingleBet`
+
+
+   Base helper for wrapping a single :class:`Bet` in a strategy.
+
+
+.. py:class:: BetHorn(bet_amount: SupportsFloat, mode: StrategyMode = StrategyMode.ADD_IF_NOT_BET)
+
+   Bases: :py:obj:`BetSingle`
+
+
+   Place a Horn bet if none currently placed.
+
+
+   .. py:attribute:: bet_type
+      :type:  type[crapssim.bet.Bet]
+
+
+.. py:class:: BetWorld(bet_amount: SupportsFloat, mode: StrategyMode = StrategyMode.ADD_IF_NOT_BET)
+
+   Bases: :py:obj:`BetSingle`
+
+
+   Place a World (Whirl) bet if none currently placed.
+
+
+   .. py:attribute:: bet_type
+      :type:  type[crapssim.bet.Bet]
+
+
+.. py:class:: BetBig6(bet_amount: SupportsFloat, mode: StrategyMode = StrategyMode.ADD_IF_NOT_BET)
+
+   Bases: :py:obj:`BetSingle`
+
+
+   Place a Big6 bet if none currently placed.
+
+
+   .. py:attribute:: bet_type
+      :type:  type[crapssim.bet.Bet]
+
+
+.. py:class:: BetBig8(bet_amount: SupportsFloat, mode: StrategyMode = StrategyMode.ADD_IF_NOT_BET)
+
+   Bases: :py:obj:`BetSingle`
+
+
+   Place a Big8 bet if none currently placed.
+
+
+   .. py:attribute:: bet_type
+      :type:  type[crapssim.bet.Bet]
+
+
+.. py:class:: BetTwo(bet_amount: SupportsFloat, mode: StrategyMode = StrategyMode.ADD_IF_NOT_BET)
+
+   Bases: :py:obj:`_BaseSingleBet`
+
+
+   Place a Two (snake eyes) bet when not already active.
+
+
+.. py:class:: BetThree(bet_amount: SupportsFloat, mode: StrategyMode = StrategyMode.ADD_IF_NOT_BET)
+
+   Bases: :py:obj:`_BaseSingleBet`
+
+
+   Place a Three (ace deuce) bet when not already active.
+
+
+.. py:class:: BetYo(bet_amount: SupportsFloat, mode: StrategyMode = StrategyMode.ADD_IF_NOT_BET)
+
+   Bases: :py:obj:`_BaseSingleBet`
+
+
+   Place a Yo (11) bet when not already active.
+
+
+.. py:class:: BetBoxcars(bet_amount: SupportsFloat, mode: StrategyMode = StrategyMode.ADD_IF_NOT_BET)
+
+   Bases: :py:obj:`_BaseSingleBet`
+
+
+   Place a Boxcars (12) bet when not already active.
+
+
+.. py:class:: BetBuy(number: int, bet_amount: SupportsFloat, mode: StrategyMode = StrategyMode.ADD_IF_NOT_BET)
+
+   Bases: :py:obj:`BetSingleNumber`
+
+
+   Place a Buy bet on a specific number if none currently placed.
+
+
+   .. py:attribute:: bet_type
+      :type:  type[crapssim.bet.Bet]
+
+
+.. py:class:: BetLay(number: int, bet_amount: SupportsFloat, mode: StrategyMode = StrategyMode.ADD_IF_NOT_BET)
+
+   Bases: :py:obj:`BetSingleNumber`
+
+
+   Place a Lay bet against a specific number if none currently placed.
+
+
+   .. py:attribute:: bet_type
+      :type:  type[crapssim.bet.Bet]
+
+
+.. py:class:: BetPut(number: int, bet_amount: SupportsFloat, mode: StrategyMode = StrategyMode.ADD_IF_NOT_BET)
+
+   Bases: :py:obj:`BetSingleNumber`
+
+
+   Place a Put bet on a specific number (allowed only when point is ON).
+
+
+   .. py:attribute:: bet_type
+      :type:  type[crapssim.bet.Bet]
+
+
+.. py:class:: BetFire(bet_amount: float, mode: StrategyMode = StrategyMode.ADD_IF_NOT_BET)
+
+   Bases: :py:obj:`_BaseSingleBet`
+
+
+   Place a Fire bet if not currently in action.
+
+
+.. py:class:: BetAll(bet_amount: float, mode: StrategyMode = StrategyMode.ADD_IF_NOT_BET)
+
+   Bases: :py:obj:`_BaseSingleBet`
+
+
+   Place an All bet if not currently in action.
+
+
+.. py:class:: BetTall(bet_amount: float, mode: StrategyMode = StrategyMode.ADD_IF_NOT_BET)
+
+   Bases: :py:obj:`_BaseSingleBet`
+
+
+   Place a Tall bet if not currently in action.
+
+
+.. py:class:: BetSmall(bet_amount: float, mode: StrategyMode = StrategyMode.ADD_IF_NOT_BET)
+
+   Bases: :py:obj:`_BaseSingleBet`
+
+
+   Place a Small bet if not currently in action.
+
+

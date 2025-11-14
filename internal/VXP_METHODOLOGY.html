@@ -1,0 +1,239 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vanilla Expansion Project (VXP) — Methods &amp; Evidence &mdash; crapssim 0.3.2 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=71d9d8e6"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            crapssim
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Examples and Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial-strategy-01.html">Strategy Tutorial 1: Starting off</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../crapssim_sandbox.html">Sandbox</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Change Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../supported-bets.html">Supported Bets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../autoapi/index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">crapssim</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Vanilla Expansion Project (VXP) — Methods &amp; Evidence</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/internal/VXP_METHODOLOGY.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="vanilla-expansion-project-vxp-methods-evidence">
+<h1>Vanilla Expansion Project (VXP) — Methods &amp; Evidence<a class="headerlink" href="#vanilla-expansion-project-vxp-methods-evidence" title="Link to this heading"></a></h1>
+<p>This document summarizes what changed, why it changed, and how we validated it.
+It is meant to be a maintainer-facing record rather than a user guide.</p>
+<section id="scope">
+<h2>Scope<a class="headerlink" href="#scope" title="Link to this heading"></a></h2>
+<section id="new-bet-types">
+<h3>New bet types<a class="headerlink" href="#new-bet-types" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Horn</strong> (net-modeled equal split across 2/3/11/12)</p></li>
+<li><p><strong>World (Whirl)</strong> (Horn + Any 7 break-even; net-modeled)</p></li>
+<li><p><strong>Big6 / Big8</strong> (even-money; persistent)</p></li>
+<li><p><strong>Buy / Lay</strong> (true-odds with commission policy knobs)</p></li>
+<li><p><strong>Put</strong> (legal only with point ON)</p></li>
+</ul>
+</section>
+<section id="policy-toggles-table-settings">
+<h3>Policy toggles (Table.settings)<a class="headerlink" href="#policy-toggles-table-settings" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">vig_rounding</span></code>: <code class="docutils literal notranslate"><span class="pre">&quot;none&quot;</span></code> (default) | <code class="docutils literal notranslate"><span class="pre">&quot;ceil_dollar&quot;</span></code> | <code class="docutils literal notranslate"><span class="pre">&quot;nearest_dollar&quot;</span></code> (banker’s rounding)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">vig_floor</span></code> (float dollars, default <code class="docutils literal notranslate"><span class="pre">0.0</span></code>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">vig_paid_on_win</span></code>: (bool, default <code class="docutils literal notranslate"><span class="pre">False</span></code>)</p></li>
+</ul>
+</section>
+<section id="guards">
+<h3>Guards<a class="headerlink" href="#guards" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Put</strong> bets automatically stripped pre-roll when point is OFF.</p></li>
+<li><p><strong>One-roll props</strong> (Horn/World) cannot persist post-resolution.</p></li>
+</ul>
+</section>
+</section>
+<hr class="docutils" />
+<section id="design-choices-brief-rationale">
+<h2>Design choices (brief rationale)<a class="headerlink" href="#design-choices-brief-rationale" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>Net-modeled Horn/World:</strong><br />
+We model equal-split books as a single net wager to keep payouts transparent and avoid sub-bet bookkeeping. This is documented and tested with EV pins.</p></li>
+<li><p><strong>Commission policy as first-class settings:</strong>
+Houses vary on “on-win vs on-bet,” rounding, and floors. The rate is fixed at 5%, but we exposed the remaining variants as settings and kept <strong>defaults backward compatible</strong>.</p></li>
+</ul>
+</section>
+<hr class="docutils" />
+<section id="validation-methodology">
+<h2>Validation methodology<a class="headerlink" href="#validation-methodology" title="Link to this heading"></a></h2>
+<ol class="arabic simple">
+<li><p><strong>Unit tests</strong></p>
+<ul class="simple">
+<li><p>EV and <code class="docutils literal notranslate"><span class="pre">repr</span></code> tests for new bets.</p></li>
+<li><p>Input validation: Buy/Lay only on {4,5,6,8,9,10}.</p></li>
+<li><p>Commission variants: <code class="docutils literal notranslate"><span class="pre">on_win</span></code>, <code class="docutils literal notranslate"><span class="pre">on_bet</span></code>, rounding, floor.</p></li>
+<li><p>Put odds allowed when point is ON.</p></li>
+</ul>
+</li>
+<li><p><strong>Stress tests</strong></p>
+<ul class="simple">
+<li><p>Randomized harness (<code class="docutils literal notranslate"><span class="pre">&#64;pytest.mark.stress</span></code>) varying:</p>
+<ul>
+<li><p>commission mode/rounding/floor</p></li>
+<li><p>bankroll size (including small)</p></li>
+<li><p>injected illegal Put (guard check)</p></li>
+</ul>
+</li>
+<li><p>Invariants: no NaN/inf, no lingering one-roll props, Put absent when point OFF.</p></li>
+</ul>
+</li>
+<li><p><strong>Gauntlet runs</strong></p>
+<ul class="simple">
+<li><p>Deterministic end-to-end scenarios:</p>
+<ul>
+<li><p>Horn/World with PL present,</p></li>
+<li><p><strong>PropsIsolated</strong> (PL suppressed) to show <strong>pure net</strong>,</p></li>
+<li><p>Big6/Big8 resolves,</p></li>
+<li><p>Buy/Lay matrix with policy permutations,</p></li>
+<li><p>Put with odds and illegal Put guard.</p></li>
+</ul>
+</li>
+<li><p>Artifacts per run: <code class="docutils literal notranslate"><span class="pre">gauntlet.json</span></code>, <code class="docutils literal notranslate"><span class="pre">gauntlet_rolls.csv</span></code> (with Δ), <code class="docutils literal notranslate"><span class="pre">summary.md</span></code>.</p></li>
+<li><p>Batch evidence: 25 repeated runs, collated summaries retained.</p></li>
+</ul>
+</li>
+<li><p><strong>Semantic diff auditing</strong></p>
+<ul class="simple">
+<li><p>AST-based normalization verifies C6–C10 are <strong>non-behavioral</strong> (annotations/docstrings/comments only).</p></li>
+<li><p>Numeric literal sets in <code class="docutils literal notranslate"><span class="pre">bet.py</span></code>/<code class="docutils literal notranslate"><span class="pre">table.py</span></code> unchanged across doc passes.</p></li>
+</ul>
+</li>
+</ol>
+</section>
+<hr class="docutils" />
+<section id="how-to-reproduce-the-evidence-developer-quickstart">
+<h2>How to reproduce the evidence (developer quickstart)<a class="headerlink" href="#how-to-reproduce-the-evidence-developer-quickstart" title="Link to this heading"></a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Install</span>
+python<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>.venv
+.<span class="w"> </span>.venv/bin/activate
+pip<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="w"> </span>pip<span class="w"> </span>wheel
+pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.
+pip<span class="w"> </span>install<span class="w"> </span>pytest
+
+<span class="c1"># Default tests</span>
+pytest<span class="w"> </span>-q
+
+<span class="c1"># Stress (opt-in)</span>
+pytest<span class="w"> </span>-q<span class="w"> </span>-m<span class="w"> </span>stress
+
+<span class="c1"># Gauntlet (single run)</span>
+python<span class="w"> </span>tools/vxp_gauntlet.py
+
+<span class="c1"># Batch (20–30 runs)</span>
+bash<span class="w"> </span>-lc<span class="w"> </span><span class="s1">&#39;for i in $(seq 1 25); do python tools/vxp_gauntlet.py; sleep 0.2; done&#39;</span>
+
+Artifacts<span class="w"> </span>live<span class="w"> </span>under<span class="w"> </span>reports/vxp_stress/<span class="w"> </span>and<span class="w"> </span>reports/vxp_gauntlet/.
+The<span class="w"> </span>gauntlet<span class="w"> </span>summary.md<span class="w"> </span>explicitly<span class="w"> </span>notes<span class="w"> </span>that<span class="w"> </span>Δ<span class="w"> </span>includes<span class="w"> </span>stake<span class="w"> </span>returns<span class="w"> </span>and<span class="w"> </span>whether<span class="w"> </span>the<span class="w"> </span><span class="nv">$5</span><span class="w"> </span>Pass<span class="w"> </span>Line<span class="w"> </span>is<span class="w"> </span>present.
+</pre></div>
+</div>
+</section>
+<hr class="docutils" />
+<section id="non-goals">
+<h2>Non-goals<a class="headerlink" href="#non-goals" title="Link to this heading"></a></h2>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>•	No core behavior changes outside the documented toggles.
+•	No opinionated house defaults beyond configurable settings.
+•	No extension API yet (planned as a separate proposal).
+</pre></div>
+</div>
+<hr class="docutils" />
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Sean Kent.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

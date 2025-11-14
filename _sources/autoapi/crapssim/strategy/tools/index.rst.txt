@@ -1,0 +1,400 @@
+crapssim.strategy.tools
+=======================
+
+.. py:module:: crapssim.strategy.tools
+
+.. autoapi-nested-parse::
+
+   Core strategies are strategies that can be either subclassed, or initialized to create other
+   strategies with the intended usage. Each of the strategies included in this package are intended
+   to be used as building blocks when creating strategies.
+
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   crapssim.strategy.tools.Strategy
+   crapssim.strategy.tools.AggregateStrategy
+   crapssim.strategy.tools.NullStrategy
+   crapssim.strategy.tools.AddIfTrue
+   crapssim.strategy.tools.RemoveIfTrue
+   crapssim.strategy.tools.ReplaceIfTrue
+   crapssim.strategy.tools.AddIfNotBet
+   crapssim.strategy.tools.AddIfPointOff
+   crapssim.strategy.tools.AddIfPointOn
+   crapssim.strategy.tools.AddIfNewShooter
+   crapssim.strategy.tools.CountStrategy
+   crapssim.strategy.tools.RemoveIfPointOff
+   crapssim.strategy.tools.RemoveByType
+   crapssim.strategy.tools.WinProgression
+
+
+Module Contents
+---------------
+
+.. py:class:: Strategy
+
+   Bases: :py:obj:`abc.ABC`
+
+
+   A Strategy is assigned to a player and determines what bets the player
+   is going to make, remove, or change.
+
+
+   .. py:method:: after_roll(player: Player) -> None
+
+      Update the Strategy after the dice are rolled but before the bets and the table are updated.
+
+      For example, if you wanted to know whether the
+      point changed from on to off you could do `self.point_lost = table.point.status = "On" and
+      table.dice.roll.total == 7`. You could not do this in :func:`Strategy`'s :func:`update_bets`
+      method, since the table has already been updated setting the point's status to Off. Other examples
+      include counting the number of place bets that had won after the roll, counting total winnings
+      for certain bets, or recording the starting bankroll upon a new shooter (to later have logic
+      based on winnings of that shooter).
+
+      :param player: The Player to check for bets, etc.
+
+
+
+   .. py:method:: completed(player: Player) -> bool
+      :abstractmethod:
+
+
+      If True, the Strategy is completed and the Player stops playing. If False, the Player
+      keeps playing the Strategy.
+
+
+
+   .. py:method:: update_bets(player: Player) -> None
+      :abstractmethod:
+
+
+      Add, remove, or change the bets on the table.
+
+      This method is applied after the dice are rolled, the bets are updated,
+      and the table is updated. It triggers in :py:meth:`.table.TableUpdate.run_strategies`.
+
+
+
+   .. py:method:: __add__(other: Strategy) -> AggregateStrategy
+
+
+   .. py:method:: __eq__(other: object) -> bool
+
+
+   .. py:method:: __repr__() -> str
+
+
+.. py:class:: AggregateStrategy(*strategies: Strategy)
+
+   Bases: :py:obj:`Strategy`
+
+
+   A combination of multiple strategies.
+
+
+   .. py:attribute:: strategies
+      :value: ()
+
+
+
+   .. py:method:: update_bets(player: Player) -> None
+
+      Go through each of the strategies and run its update_bets method if the strategy has
+      not been completed.
+
+      :param player: The player to update the bets for.
+
+
+
+   .. py:method:: completed(player: Player) -> bool
+
+      Returns True if all the strategies in the AggregateStrategy are completed.
+
+      :param player: The Player to check the strategy for.
+
+      :rtype: A boolean representing whether the given strategy
+
+
+
+   .. py:method:: __repr__() -> str
+
+
+.. py:class:: NullStrategy
+
+   Bases: :py:obj:`Strategy`
+
+
+   Strategy that bets nothing.
+
+
+   .. py:method:: update_bets(player: Player) -> None
+
+      Add, remove, or change the bets on the table.
+
+      This method is applied after the dice are rolled, the bets are updated,
+      and the table is updated. It triggers in :py:meth:`.table.TableUpdate.run_strategies`.
+
+
+
+   .. py:method:: completed(player: Player) -> bool
+
+      If True, the Strategy is completed and the Player stops playing. If False, the Player
+      keeps playing the Strategy.
+
+
+
+   .. py:method:: __repr__() -> str
+
+
+.. py:class:: AddIfTrue(bet: crapssim.bet.Bet, key: Callable[[Player], bool])
+
+   Bases: :py:obj:`Strategy`
+
+
+   Strategy that places a bet if a given key taking Player as a parameter is True.
+
+
+   .. py:attribute:: bet
+
+
+   .. py:attribute:: key
+
+
+   .. py:method:: update_bets(player: Player) -> None
+
+      If the key is True add the bet to the player and table.
+
+      :param player: The Player to add the bet for.
+
+
+
+   .. py:method:: completed(player: Player) -> bool
+
+      The strategy is completed when the player  can't make a bet because their bankroll is too
+       low and the player doesn't have any bets left on the table.
+
+      :param player: The player to check whether the
+
+      :rtype: True if the Player can't continue the strategy, otherwise False.
+
+
+
+   .. py:method:: __repr__() -> str
+
+
+   .. py:method:: __eq__(other: object) -> bool
+
+
+.. py:class:: RemoveIfTrue(key: Callable[[crapssim.bet.Bet, Player], bool])
+
+   Bases: :py:obj:`Strategy`
+
+
+   Strategy that removes all bets that are True for a given key. The key takes the Bet and the
+   Player as parameters.
+
+
+   .. py:attribute:: key
+
+
+   .. py:method:: update_bets(player: Player) -> None
+
+      For each of the players bets if the key is True remove the bet from the table.
+
+      :param player: The Player to remove the bets for.
+
+
+
+   .. py:method:: completed(player: Player) -> bool
+
+      The strategy is completed when the player doesn't have any bets left on the table.
+
+      :param player: The player to check whether the
+
+      :rtype: True if the Player can't continue the strategy, otherwise False.
+
+
+
+   .. py:method:: __repr__() -> str
+
+
+.. py:class:: ReplaceIfTrue(bet: crapssim.bet.Bet, key: Callable[[crapssim.bet.Bet, Player], bool])
+
+   Bases: :py:obj:`Strategy`
+
+
+   Strategy that iterates through the bets on the table and if the given key is true, replaces
+   the bet with the given bet.
+
+
+   .. py:attribute:: key
+
+
+   .. py:attribute:: bet
+
+
+   .. py:method:: update_bets(player: Player) -> None
+
+      Iterate through each bet for the player and if the self.key(bet, player) is True, remove
+      the bet and replace it with self.bet.
+
+      :param player: The player to check the bets for.
+
+
+
+   .. py:method:: completed(player: Player) -> bool
+
+      The strategy is completed when the player  can't make a bet because their bankroll is too
+       low and the player doesn't have any bets left on the table.
+
+      :param player: The player to check whether the
+
+      :rtype: True if the Player can't continue the strategy, otherwise False.
+
+
+
+.. py:class:: AddIfNotBet(bet: crapssim.bet.Bet)
+
+   Bases: :py:obj:`AddIfTrue`
+
+
+   Strategy that adds a bet if it isn't on the table for that player. Equivalent of
+   AddIfTrue(bet, lambda p: bet not in p.bets)
+
+
+   .. py:method:: __repr__() -> str
+
+
+.. py:class:: AddIfPointOff(bet: crapssim.bet.Bet)
+
+   Bases: :py:obj:`AddIfTrue`
+
+
+   Strategy that adds a bet if the table point is Off, and the Player doesn't have a bet on the
+   table. Equivalent to AddIfTrue(bet, lambda p: p.table.point.status == "Off"
+                                       and bet not in p.bets)
+
+
+   .. py:method:: __repr__() -> str
+
+
+.. py:class:: AddIfPointOn(bet: crapssim.bet.Bet)
+
+   Bases: :py:obj:`AddIfTrue`
+
+
+   Strategy that adds a bet if the table point is On, and the Player doesn't have a bet on the
+   table. Equivalent to AddIfTrue(bet, lambda p: p.table.point.status == "On"
+                                       and bet not in p.bets)
+
+
+   .. py:method:: __repr__() -> str
+
+
+.. py:class:: AddIfNewShooter(bet: crapssim.bet.Bet)
+
+   Bases: :py:obj:`AddIfTrue`
+
+
+   Strategy that adds a bet if there is a new shooter at the table, and the Player doesn't have a bet on the
+   table. Equivalent to AddIfTrue(bet, lambda p: p.table.new_shooter and bet not in p.bets)
+
+
+   .. py:method:: __repr__() -> str
+
+
+.. py:class:: CountStrategy(bet_type: type[crapssim.bet.Bet] | tuple[type[crapssim.bet.Bet], Ellipsis], count: int, bet: crapssim.bet.Bet)
+
+   Bases: :py:obj:`AddIfTrue`
+
+
+   Strategy that checks how many bets exist of a certain type. If the number of bets of that
+   type is less than the given count, it places the bet (if the bet isn't already on the table.)
+
+
+   .. py:attribute:: bet_type
+
+
+   .. py:attribute:: count
+
+
+   .. py:method:: key(player: Player) -> bool
+
+      Return True when the player is below the threshold for ``bet_type``.
+
+
+
+   .. py:method:: __repr__() -> str
+
+
+.. py:class:: RemoveIfPointOff(bet: crapssim.bet.Bet)
+
+   Bases: :py:obj:`RemoveIfTrue`
+
+
+   Strategy that removes a bet if the table point is Off
+
+   This will match bets based on type, and number for Place and Hardway bets.
+   It will not consider bet amounts when matching.
+
+
+   .. py:attribute:: bet
+
+
+   .. py:method:: __repr__() -> str
+
+
+.. py:class:: RemoveByType(bet_type: type[crapssim.bet.Bet] | tuple[type[crapssim.bet.Bet], Ellipsis])
+
+   Bases: :py:obj:`RemoveIfTrue`
+
+
+   Remove any bets that are of the given type(s).
+
+
+.. py:class:: WinProgression(first_bet: crapssim.bet.Bet, multipliers: list[SupportsFloat])
+
+   Bases: :py:obj:`Strategy`
+
+
+   Strategy that every time a bet is won, moves to the next amount in the progression and
+   places a Field bet for that amount.
+
+
+   .. py:attribute:: bet
+
+
+   .. py:attribute:: multipliers
+
+
+   .. py:attribute:: current_progression
+      :value: 0
+
+
+
+   .. py:method:: completed(player: Player) -> bool
+
+      Return True when bankroll is below minimum multiplier and no bets remain.
+
+
+
+   .. py:method:: after_roll(player: Player) -> None
+
+      Advance or reset the progression based on whether the bet won.
+
+
+
+   .. py:method:: update_bets(player: Player) -> None
+
+      Ensure a bet exists scaled by the current progression step.
+
+
+
+   .. py:method:: __repr__() -> str
+
+

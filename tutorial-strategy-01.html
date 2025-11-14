@@ -1,0 +1,1097 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tutorial 1: Starting off with strategies &mdash; crapssim 0.3.2 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
+      <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=71d9d8e6"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Welcome to the crapssim sandbox!" href="crapssim_sandbox.html" />
+    <link rel="prev" title="crapssim" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            crapssim
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Examples and Tutorials</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Strategy Tutorial 1: Starting off</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#simple-example-to-get-started">Simple example to get started</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#list-of-all-single-bet-strategies">List of all single bet strategies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#how-to-use-strategy-modes">How to use strategy modes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#extra-arguments-for-single-bet-strategies">Extra arguments for single bet strategies</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#betplace">BetPlace()</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#bethardway">BetHardway()</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#exercise-1">Exercise 1</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#detailed-example-strategies">Detailed example strategies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#list-of-all-example-strategies">List of all example strategies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#conclusion">Conclusion</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="crapssim_sandbox.html">Sandbox</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Change Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="supported-bets.html">Supported Bets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="autoapi/index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">crapssim</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Tutorial 1: Starting off with strategies</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/tutorial-strategy-01.ipynb.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="tutorial-1-starting-off-with-strategies">
+<h1>Tutorial 1: Starting off with strategies<a class="headerlink" href="#tutorial-1-starting-off-with-strategies" title="Link to this heading"></a></h1>
+<p>In the crapssim package, a strategy is just a set of rules to describe exactly how a player will bet under any table situation. Put another way, the strategies are the primary way that a <code class="docutils literal notranslate"><span class="pre">Player</span></code> object (with their bankroll and bets) interacts with the <code class="docutils literal notranslate"><span class="pre">Table</span></code> object (with the dice, point, and other table features). We can simulate how one or many sessions would play out with the selected strategy, to understand if it fits out playing style, objectives, and compares favorably to other strategies.</p>
+<p>In this first tutorial, the goal is to show how to use the pre-built strategies to easily simulate some realistic casino scenarios. The next tutorials will build on this by showing how to combine strategies, use available tools to define simple logical strategies, and finally how to write your own custom strategy that can handle any situation you can dream up.</p>
+<section id="simple-example-to-get-started">
+<h2>Simple example to get started<a class="headerlink" href="#simple-example-to-get-started" title="Link to this heading"></a></h2>
+<p>To show the basic interface, we use a strategy that bets the pass line (when the point is off, as usual). In this example, we create a <code class="docutils literal notranslate"><span class="pre">Table</span></code> that will keep track of the dice rolling, turning point on/off, and other measurements. Then we add a player to the table with the <code class="docutils literal notranslate"><span class="pre">BetPassLine</span></code> strategy, with a $10 bet. Then we run the table for 20 rolls to see how the bet will play out.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">crapssim</span> <span class="k">as</span> <span class="nn">craps</span>
+<span class="kn">from</span> <span class="nn">crapssim.strategy</span> <span class="kn">import</span> <span class="n">BetPassLine</span>
+
+<span class="n">table</span> <span class="o">=</span> <span class="n">craps</span><span class="o">.</span><span class="n">Table</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="mi">1234</span><span class="p">)</span>
+
+<span class="n">your_strat</span> <span class="o">=</span> <span class="n">BetPassLine</span><span class="p">(</span><span class="n">bet_amount</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">table</span><span class="o">.</span><span class="n">add_player</span><span class="p">(</span><span class="n">strategy</span><span class="o">=</span><span class="n">your_strat</span><span class="p">)</span>
+
+<span class="n">table</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">max_rolls</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Welcome to the Craps Table!
+Player 0: Strategy=BetPassLine(bet_amount=10.0, mode=StrategyMode.ADD_IF_POINT_OFF), Bankroll=100.0
+
+
+Player 0: Bankroll=90.0, Bet amount=10.0, Bets=[PassLine(amount=10.0)]
+
+Dice out! (roll 1, shooter 1)
+Shooter rolled 12 (6, 6)
+Player 0 lost $10.0 on PassLine(amount=10.0).
+Point is Off (None)
+Player 0: Bankroll=80.0, Bet amount=10.0, Bets=[PassLine(amount=10.0)]
+
+Dice out! (roll 2, shooter 1)
+Shooter rolled 9 (6, 3)
+Point is On (9)
+Player 0: Bankroll=80.0, Bet amount=10.0, Bets=[PassLine(amount=10.0)]
+
+Dice out! (roll 3, shooter 1)
+Shooter rolled 8 (2, 6)
+Point is On (9)
+Player 0: Bankroll=80.0, Bet amount=10.0, Bets=[PassLine(amount=10.0)]
+
+Dice out! (roll 4, shooter 1)
+Shooter rolled 3 (1, 2)
+Point is On (9)
+Player 0: Bankroll=80.0, Bet amount=10.0, Bets=[PassLine(amount=10.0)]
+
+Dice out! (roll 5, shooter 1)
+Shooter rolled 3 (1, 2)
+Point is On (9)
+Player 0: Bankroll=80.0, Bet amount=10.0, Bets=[PassLine(amount=10.0)]
+
+Dice out! (roll 6, shooter 1)
+Shooter rolled 5 (4, 1)
+Point is On (9)
+Player 0: Bankroll=80.0, Bet amount=10.0, Bets=[PassLine(amount=10.0)]
+
+Dice out! (roll 7, shooter 1)
+Shooter rolled 7 (5, 2)
+Player 0 lost $10.0 on PassLine(amount=10.0).
+Point is Off (None)
+Player 0: Bankroll=70.0, Bet amount=10.0, Bets=[PassLine(amount=10.0)]
+
+Dice out! (roll 8, shooter 2)
+Shooter rolled 7 (5, 2)
+Player 0 won $10.0 on PassLine(amount=10.0)!
+Point is Off (None)
+Player 0: Bankroll=80.0, Bet amount=10.0, Bets=[PassLine(amount=10.0)]
+
+Dice out! (roll 9, shooter 2)
+Shooter rolled 11 (5, 6)
+Player 0 won $10.0 on PassLine(amount=10.0)!
+Point is Off (None)
+Player 0: Bankroll=90.0, Bet amount=10.0, Bets=[PassLine(amount=10.0)]
+
+Dice out! (roll 10, shooter 2)
+Shooter rolled 8 (6, 2)
+Point is On (8)
+Player 0: Bankroll=90.0, Bet amount=10.0, Bets=[PassLine(amount=10.0)]
+
+Dice out! (roll 11, shooter 2)
+Shooter rolled 7 (4, 3)
+Player 0 lost $10.0 on PassLine(amount=10.0).
+Point is Off (None)
+Player 0: Bankroll=80.0, Bet amount=10.0, Bets=[PassLine(amount=10.0)]
+
+Dice out! (roll 12, shooter 3)
+Shooter rolled 6 (2, 4)
+Point is On (6)
+Player 0: Bankroll=80.0, Bet amount=10.0, Bets=[PassLine(amount=10.0)]
+
+Dice out! (roll 13, shooter 3)
+Shooter rolled 12 (6, 6)
+Point is On (6)
+Player 0: Bankroll=80.0, Bet amount=10.0, Bets=[PassLine(amount=10.0)]
+
+Dice out! (roll 14, shooter 3)
+Shooter rolled 10 (4, 6)
+Point is On (6)
+Player 0: Bankroll=80.0, Bet amount=10.0, Bets=[PassLine(amount=10.0)]
+
+Dice out! (roll 15, shooter 3)
+Shooter rolled 9 (4, 5)
+Point is On (6)
+Player 0: Bankroll=80.0, Bet amount=10.0, Bets=[PassLine(amount=10.0)]
+
+Dice out! (roll 16, shooter 3)
+Shooter rolled 10 (6, 4)
+Point is On (6)
+Player 0: Bankroll=80.0, Bet amount=10.0, Bets=[PassLine(amount=10.0)]
+
+Dice out! (roll 17, shooter 3)
+Shooter rolled 6 (1, 5)
+Player 0 won $10.0 on PassLine(amount=10.0)!
+Point is Off (None)
+Player 0: Bankroll=90.0, Bet amount=10.0, Bets=[PassLine(amount=10.0)]
+
+Dice out! (roll 18, shooter 3)
+Shooter rolled 7 (5, 2)
+Player 0 won $10.0 on PassLine(amount=10.0)!
+Point is Off (None)
+Player 0: Bankroll=100.0, Bet amount=10.0, Bets=[PassLine(amount=10.0)]
+
+Dice out! (roll 19, shooter 3)
+Shooter rolled 8 (6, 2)
+Point is On (8)
+Player 0: Bankroll=100.0, Bet amount=10.0, Bets=[PassLine(amount=10.0)]
+
+Dice out! (roll 20, shooter 3)
+Shooter rolled 11 (5, 6)
+Point is On (8)
+Player 0: Bankroll=100.0, Bet amount=10.0, Bets=[PassLine(amount=10.0)]
+</pre></div>
+</div>
+</div>
+</div>
+<p>We can see that the player lost the first pass line bet with an unlucky 12 roll, but after a few naturals and yo’s, in addition to a win when the point was 6, they ended up ahead with $110. The pass line bet is always active throughout, as we can tell by the rolls and payouts.</p>
+<p>Note: We set a seed for the table with <code class="docutils literal notranslate"><span class="pre">craps.Table(seed=1234)</span></code> to ensure the same rolls happen each time. Try changing this number to see how another 20 rolls would work out!</p>
+</section>
+<section id="list-of-all-single-bet-strategies">
+<h2>List of all single bet strategies<a class="headerlink" href="#list-of-all-single-bet-strategies" title="Link to this heading"></a></h2>
+<p>Now what if we want to use a different bet than the pass line? The crapssim package has strategies to implement any single bet, which you can easily swap out in the above code. They all start with <code class="docutils literal notranslate"><span class="pre">Bet</span></code> followed by the bet that the strategy uses. The table below shows these strategies and their location for importing. We can ignore the last two columns for now and come back to them later in the tutorial.</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Location</p></th>
+<th class="head"><p>Default mode</p></th>
+<th class="head"><p>Extra arguments</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">BetPassLine()</span></code></p></td>
+<td><p>crapssim.strategy</p></td>
+<td><p>ADD_IF_POINT_OFF</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">BetDontPass()</span></code></p></td>
+<td><p>crapssim.strategy</p></td>
+<td><p>ADD_IF_POINT_OFF</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">BetCome()</span></code></p></td>
+<td><p>crapssim.strategy.single_bet</p></td>
+<td><p>ADD_IF_POINT_ON</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">BetDontCome()</span></code></p></td>
+<td><p>crapssim.strategy.single_bet</p></td>
+<td><p>ADD_IF_POINT_ON</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">BetPlace()</span></code></p></td>
+<td><p>crapssim.strategy</p></td>
+<td><p>BET_IF_POINT_ON</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">place_bet_amounts</span></code>; <code class="docutils literal notranslate"><span class="pre">skip_point</span></code>; <code class="docutils literal notranslate"><span class="pre">skip_come</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">BetHardWay()</span></code></p></td>
+<td><p>crapssim.strategy.single_bet</p></td>
+<td><p>ADD_IF_NON_EXISTENT</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">number</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">BetField()</span></code></p></td>
+<td><p>crapssim.strategy.single_bet</p></td>
+<td><p>ADD_IF_NON_EXISTENT</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">BetAny7()</span></code></p></td>
+<td><p>crapssim.strategy.single_bet</p></td>
+<td><p>ADD_IF_NON_EXISTENT</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">BetTwo()</span></code></p></td>
+<td><p>crapssim.strategy.single_bet</p></td>
+<td><p>ADD_IF_NON_EXISTENT</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">BetThree()</span></code></p></td>
+<td><p>crapssim.strategy.single_bet</p></td>
+<td><p>ADD_IF_NON_EXISTENT</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">BetYo()</span></code></p></td>
+<td><p>crapssim.strategy.single_bet</p></td>
+<td><p>ADD_IF_NON_EXISTENT</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">BetBoxcars()</span></code></p></td>
+<td><p>crapssim.strategy.single_bet</p></td>
+<td><p>ADD_IF_NON_EXISTENT</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">BetFire()</span></code></p></td>
+<td><p>crapssim.strategy.single_bet</p></td>
+<td><p>ADD_IF_NON_EXISTENT</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">BetAll()</span></code></p></td>
+<td><p>crapssim.strategy.single_bet</p></td>
+<td><p>ADD_IF_NON_EXISTENT</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">BetTall()</span></code></p></td>
+<td><p>crapssim.strategy.single_bet</p></td>
+<td><p>ADD_IF_NON_EXISTENT</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">BetSmall()</span></code></p></td>
+<td><p>crapssim.strategy.single_bet</p></td>
+<td><p>ADD_IF_NON_EXISTENT</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<p>For example, if we want to switch out our <code class="docutils literal notranslate"><span class="pre">BetPassLine()</span></code> for a <code class="docutils literal notranslate"><span class="pre">BetCome()</span></code> approach, we can change the above example as follows. This strategy will add one come bet every round as long as the point is on.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">crapssim.strategy.single_bet</span> <span class="kn">import</span> <span class="n">BetCome</span>
+
+<span class="n">table</span> <span class="o">=</span> <span class="n">craps</span><span class="o">.</span><span class="n">Table</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="mi">1234</span><span class="p">)</span>
+
+<span class="n">your_strat</span> <span class="o">=</span> <span class="n">BetCome</span><span class="p">(</span><span class="n">bet_amount</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">table</span><span class="o">.</span><span class="n">add_player</span><span class="p">(</span><span class="n">strategy</span><span class="o">=</span><span class="n">your_strat</span><span class="p">)</span>
+
+<span class="n">table</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">max_rolls</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Welcome to the Craps Table!
+Player 0: Strategy=BetCome(bet_amount=10.0, mode=StrategyMode.ADD_IF_POINT_ON), Bankroll=100.0
+
+
+Player 0: Bankroll=100.0, Bet amount=0, Bets=[]
+
+Dice out! (roll 1, shooter 1)
+Shooter rolled 12 (6, 6)
+Point is Off (None)
+Player 0: Bankroll=100.0, Bet amount=0, Bets=[]
+
+Dice out! (roll 2, shooter 1)
+Shooter rolled 9 (6, 3)
+Point is On (9)
+Player 0: Bankroll=90.0, Bet amount=10.0, Bets=[Come(amount=10.0, number=None)]
+
+Dice out! (roll 3, shooter 1)
+Shooter rolled 8 (2, 6)
+Point is On (9)
+Player 0: Bankroll=80.0, Bet amount=20.0, Bets=[Come(amount=10.0, number=8), Come(amount=10.0, number=None)]
+
+Dice out! (roll 4, shooter 1)
+Shooter rolled 3 (1, 2)
+Player 0 lost $10.0 on Come(amount=10.0, number=None).
+Point is On (9)
+Player 0: Bankroll=70.0, Bet amount=20.0, Bets=[Come(amount=10.0, number=8), Come(amount=10.0, number=None)]
+
+Dice out! (roll 5, shooter 1)
+Shooter rolled 3 (1, 2)
+Player 0 lost $10.0 on Come(amount=10.0, number=None).
+Point is On (9)
+Player 0: Bankroll=60.0, Bet amount=20.0, Bets=[Come(amount=10.0, number=8), Come(amount=10.0, number=None)]
+
+Dice out! (roll 6, shooter 1)
+Shooter rolled 5 (4, 1)
+Point is On (9)
+Player 0: Bankroll=50.0, Bet amount=30.0, Bets=[Come(amount=10.0, number=8), Come(amount=10.0, number=5), Come(amount=10.0, number=None)]
+
+Dice out! (roll 7, shooter 1)
+Shooter rolled 7 (5, 2)
+Player 0 lost $10.0 on Come(amount=10.0, number=8).
+Player 0 lost $10.0 on Come(amount=10.0, number=5).
+Player 0 won $10.0 on Come(amount=10.0, number=None)!
+Point is Off (None)
+Player 0: Bankroll=70.0, Bet amount=0, Bets=[]
+
+Dice out! (roll 8, shooter 2)
+Shooter rolled 7 (5, 2)
+Point is Off (None)
+Player 0: Bankroll=70.0, Bet amount=0, Bets=[]
+
+Dice out! (roll 9, shooter 2)
+Shooter rolled 11 (5, 6)
+Point is Off (None)
+Player 0: Bankroll=70.0, Bet amount=0, Bets=[]
+
+Dice out! (roll 10, shooter 2)
+Shooter rolled 8 (6, 2)
+Point is On (8)
+Player 0: Bankroll=60.0, Bet amount=10.0, Bets=[Come(amount=10.0, number=None)]
+
+Dice out! (roll 11, shooter 2)
+Shooter rolled 7 (4, 3)
+Player 0 won $10.0 on Come(amount=10.0, number=None)!
+Point is Off (None)
+Player 0: Bankroll=80.0, Bet amount=0, Bets=[]
+
+Dice out! (roll 12, shooter 3)
+Shooter rolled 6 (2, 4)
+Point is On (6)
+Player 0: Bankroll=70.0, Bet amount=10.0, Bets=[Come(amount=10.0, number=None)]
+
+Dice out! (roll 13, shooter 3)
+Shooter rolled 12 (6, 6)
+Player 0 lost $10.0 on Come(amount=10.0, number=None).
+Point is On (6)
+Player 0: Bankroll=60.0, Bet amount=10.0, Bets=[Come(amount=10.0, number=None)]
+
+Dice out! (roll 14, shooter 3)
+Shooter rolled 10 (4, 6)
+Point is On (6)
+Player 0: Bankroll=50.0, Bet amount=20.0, Bets=[Come(amount=10.0, number=10), Come(amount=10.0, number=None)]
+
+Dice out! (roll 15, shooter 3)
+Shooter rolled 9 (4, 5)
+Point is On (6)
+Player 0: Bankroll=40.0, Bet amount=30.0, Bets=[Come(amount=10.0, number=10), Come(amount=10.0, number=9), Come(amount=10.0, number=None)]
+
+Dice out! (roll 16, shooter 3)
+Shooter rolled 10 (6, 4)
+Player 0 won $10.0 on Come(amount=10.0, number=10)!
+Point is On (6)
+Player 0: Bankroll=50.0, Bet amount=30.0, Bets=[Come(amount=10.0, number=9), Come(amount=10.0, number=10), Come(amount=10.0, number=None)]
+
+Dice out! (roll 17, shooter 3)
+Shooter rolled 6 (1, 5)
+Point is Off (None)
+Player 0: Bankroll=50.0, Bet amount=30.0, Bets=[Come(amount=10.0, number=9), Come(amount=10.0, number=10), Come(amount=10.0, number=6)]
+
+Dice out! (roll 18, shooter 3)
+Shooter rolled 7 (5, 2)
+Player 0 lost $10.0 on Come(amount=10.0, number=9).
+Player 0 lost $10.0 on Come(amount=10.0, number=10).
+Player 0 lost $10.0 on Come(amount=10.0, number=6).
+Point is Off (None)
+Player 0: Bankroll=50.0, Bet amount=0, Bets=[]
+
+Dice out! (roll 19, shooter 3)
+Shooter rolled 8 (6, 2)
+Point is On (8)
+Player 0: Bankroll=40.0, Bet amount=10.0, Bets=[Come(amount=10.0, number=None)]
+
+Dice out! (roll 20, shooter 3)
+Shooter rolled 11 (5, 6)
+Player 0 won $10.0 on Come(amount=10.0, number=None)!
+Point is On (8)
+Player 0: Bankroll=60.0, Bet amount=0, Bets=[]
+</pre></div>
+</div>
+</div>
+</div>
+<p>As we can see above, with a come bet strategy, we avoid the initial 12 craps but lose two come bets when the 3 is rolled. Two of them make it to the 8 and 5, but those also lose when the shooter sevens-out. The only saving grace is that our most recent come bet wins on a 7. The bad luck continues with the next shooter who sevens out while we have three come bets working (9, 10, and 6). Overall, we end this 20 roll session with only $60 on this come bet strategy.</p>
+<p>An important point is that the come bet is only placed when the point is on. This behavior is controlled by the <code class="docutils literal notranslate"><span class="pre">mode</span></code> argument, which we will discuss in more detail next.</p>
+</section>
+<section id="how-to-use-strategy-modes">
+<h2>How to use strategy modes<a class="headerlink" href="#how-to-use-strategy-modes" title="Link to this heading"></a></h2>
+<p>Strategy modes are an easy way to control when these single bets will be placed. For example, it makes sense to <code class="docutils literal notranslate"><span class="pre">BetPassLine()</span></code> when the point is off (<code class="docutils literal notranslate"><span class="pre">ADD_IF_POINT_OFF</span></code>), because otherwise we would be better off to place the point number. However, with the <code class="docutils literal notranslate"><span class="pre">BetYo()</span></code>, which wins on an 11, some players would only play this when the point is off while others might play more frequently. The full list of strategy modes is given below, and most are self-explanatory:</p>
+<p><code class="docutils literal notranslate"><span class="pre">StrategyMode</span></code>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">ADD_IF_NON_EXISTENT</span></code>: Adds a bet if the current player doesn’t already have it. This is essentially the same as playing the bet always.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ADD_IF_POINT_OFF</span></code>: Adds a bet only if the point is off</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ADD_IF_POINT_ON</span></code>: Adds a bet only if the point is on</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ADD_IF_NEW_SHOOTER</span></code>: Adds a bet only if there is a new shooter (i.e. the previous player has just seven-ed out)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ADD_OR_INCREASE</span></code>: After each roll of the dice, the bet will be added (if it doesn’t exist) or the bet amount will be increased by one unit (if it already exists)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">BET_IF_POINT_ON</span></code>: Player bets only if the point is on (i.e. also removes the bets when point is off, in contrast to <code class="docutils literal notranslate"><span class="pre">ADD_IF_POINT_ON</span></code>). Useful for place bets which typically are not working when the point is off.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">REPLACE</span></code>: Will remove all bets of this type (when possible) before adding a new one. This mode is less useful, so don’t worry if it’s confusing now</p></li>
+</ul>
+<p>The following example shows how to change the strategy mode, by showing two different players at the table that both bet the Yo, but at different times.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">crapssim.strategy.single_bet</span> <span class="kn">import</span> <span class="n">BetYo</span><span class="p">,</span> <span class="n">StrategyMode</span>
+
+<span class="n">table</span> <span class="o">=</span> <span class="n">craps</span><span class="o">.</span><span class="n">Table</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="mi">1234</span><span class="p">)</span>
+
+<span class="n">table</span><span class="o">.</span><span class="n">add_player</span><span class="p">(</span><span class="n">strategy</span><span class="o">=</span><span class="n">BetYo</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;Player Always&quot;</span><span class="p">)</span>
+<span class="n">table</span><span class="o">.</span><span class="n">add_player</span><span class="p">(</span><span class="n">strategy</span><span class="o">=</span><span class="n">BetYo</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">StrategyMode</span><span class="o">.</span><span class="n">ADD_IF_POINT_OFF</span><span class="p">),</span> <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;Player Sometimes&quot;</span><span class="p">)</span>
+<span class="n">table</span><span class="o">.</span><span class="n">add_player</span><span class="p">(</span><span class="n">strategy</span><span class="o">=</span><span class="n">BetYo</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="mi">4</span><span class="p">),</span> <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;Player 3&quot;</span><span class="p">)</span>
+
+<span class="n">table</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">max_rolls</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">FINAL RESULTS&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">table</span><span class="o">.</span><span class="n">players</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">p</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">: Bankroll=$</span><span class="si">{</span><span class="n">p</span><span class="o">.</span><span class="n">bankroll</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Welcome to the Craps Table!
+Player Always: Strategy=BetYo(bet_amount=1.0, mode=StrategyMode.ADD_IF_NOT_BET), Bankroll=100.0
+Player Sometimes: Strategy=BetYo(bet_amount=1.0, mode=StrategyMode.ADD_IF_POINT_OFF), Bankroll=100.0
+Player 3: Strategy=BetYo(bet_amount=1.0, mode=4), Bankroll=100.0
+
+
+Player Always: Bankroll=99.0, Bet amount=1.0, Bets=[Yo(amount=1.0)]
+Player Sometimes: Bankroll=99.0, Bet amount=1.0, Bets=[Yo(amount=1.0)]
+Player 3: Bankroll=100.0, Bet amount=0, Bets=[]
+
+Dice out! (roll 1, shooter 1)
+Shooter rolled 12 (6, 6)
+Player Always lost $1.0 on Yo(amount=1.0).
+Player Sometimes lost $1.0 on Yo(amount=1.0).
+Point is Off (None)
+Player Always: Bankroll=98.0, Bet amount=1.0, Bets=[Yo(amount=1.0)]
+Player Sometimes: Bankroll=98.0, Bet amount=1.0, Bets=[Yo(amount=1.0)]
+Player 3: Bankroll=100.0, Bet amount=0, Bets=[]
+
+Dice out! (roll 2, shooter 1)
+Shooter rolled 9 (6, 3)
+Player Always lost $1.0 on Yo(amount=1.0).
+Player Sometimes lost $1.0 on Yo(amount=1.0).
+Point is On (9)
+Player Always: Bankroll=97.0, Bet amount=1.0, Bets=[Yo(amount=1.0)]
+Player Sometimes: Bankroll=98.0, Bet amount=0, Bets=[]
+Player 3: Bankroll=100.0, Bet amount=0, Bets=[]
+
+Dice out! (roll 3, shooter 1)
+Shooter rolled 8 (2, 6)
+Player Always lost $1.0 on Yo(amount=1.0).
+Point is On (9)
+Player Always: Bankroll=96.0, Bet amount=1.0, Bets=[Yo(amount=1.0)]
+Player Sometimes: Bankroll=98.0, Bet amount=0, Bets=[]
+Player 3: Bankroll=100.0, Bet amount=0, Bets=[]
+
+Dice out! (roll 4, shooter 1)
+Shooter rolled 3 (1, 2)
+Player Always lost $1.0 on Yo(amount=1.0).
+Point is On (9)
+Player Always: Bankroll=95.0, Bet amount=1.0, Bets=[Yo(amount=1.0)]
+Player Sometimes: Bankroll=98.0, Bet amount=0, Bets=[]
+Player 3: Bankroll=100.0, Bet amount=0, Bets=[]
+
+Dice out! (roll 5, shooter 1)
+Shooter rolled 3 (1, 2)
+Player Always lost $1.0 on Yo(amount=1.0).
+Point is On (9)
+Player Always: Bankroll=94.0, Bet amount=1.0, Bets=[Yo(amount=1.0)]
+Player Sometimes: Bankroll=98.0, Bet amount=0, Bets=[]
+Player 3: Bankroll=100.0, Bet amount=0, Bets=[]
+
+Dice out! (roll 6, shooter 1)
+Shooter rolled 5 (4, 1)
+Player Always lost $1.0 on Yo(amount=1.0).
+Point is On (9)
+Player Always: Bankroll=93.0, Bet amount=1.0, Bets=[Yo(amount=1.0)]
+Player Sometimes: Bankroll=98.0, Bet amount=0, Bets=[]
+Player 3: Bankroll=100.0, Bet amount=0, Bets=[]
+
+Dice out! (roll 7, shooter 1)
+Shooter rolled 7 (5, 2)
+Player Always lost $1.0 on Yo(amount=1.0).
+Point is Off (None)
+Player Always: Bankroll=92.0, Bet amount=1.0, Bets=[Yo(amount=1.0)]
+Player Sometimes: Bankroll=97.0, Bet amount=1.0, Bets=[Yo(amount=1.0)]
+Player 3: Bankroll=100.0, Bet amount=0, Bets=[]
+
+Dice out! (roll 8, shooter 2)
+Shooter rolled 7 (5, 2)
+Player Always lost $1.0 on Yo(amount=1.0).
+Player Sometimes lost $1.0 on Yo(amount=1.0).
+Point is Off (None)
+Player Always: Bankroll=91.0, Bet amount=1.0, Bets=[Yo(amount=1.0)]
+Player Sometimes: Bankroll=96.0, Bet amount=1.0, Bets=[Yo(amount=1.0)]
+Player 3: Bankroll=100.0, Bet amount=0, Bets=[]
+
+Dice out! (roll 9, shooter 2)
+Shooter rolled 11 (5, 6)
+Player Always won $15.0 on Yo(amount=1.0)!
+Player Sometimes won $15.0 on Yo(amount=1.0)!
+Point is Off (None)
+Player Always: Bankroll=106.0, Bet amount=1.0, Bets=[Yo(amount=1.0)]
+Player Sometimes: Bankroll=111.0, Bet amount=1.0, Bets=[Yo(amount=1.0)]
+Player 3: Bankroll=100.0, Bet amount=0, Bets=[]
+
+Dice out! (roll 10, shooter 2)
+Shooter rolled 8 (6, 2)
+Player Always lost $1.0 on Yo(amount=1.0).
+Player Sometimes lost $1.0 on Yo(amount=1.0).
+Point is On (8)
+Player Always: Bankroll=106.0, Bet amount=0, Bets=[]
+Player Sometimes: Bankroll=111.0, Bet amount=0, Bets=[]
+Player 3: Bankroll=100.0, Bet amount=0, Bets=[]
+
+FINAL RESULTS
+  Player Always: Bankroll=$106.0
+  Player Sometimes: Bankroll=$111.0
+  Player 3: Bankroll=$100.0
+</pre></div>
+</div>
+</div>
+</div>
+<p>In this case, both players lose a few Yo bets in the beginning, but “Player Always” loses more while the point is on. An 11 rolls after the first seven-out, so both players won that time, and at the end, “Player Sometimes” ends up with more total cash (though thankfully both were winners this time!).</p>
+</section>
+<section id="extra-arguments-for-single-bet-strategies">
+<h2>Extra arguments for single bet strategies<a class="headerlink" href="#extra-arguments-for-single-bet-strategies" title="Link to this heading"></a></h2>
+<p>As we have seen so far, each of the single bet strategies has two primary arguments:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">bet_amount</span></code>: The value wagered each time a bet is made</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mode</span></code>: the <code class="docutils literal notranslate"><span class="pre">crapssim.strategy.single_bet.StrategyMode</span></code> value that specifies when the bets will be made</p></li>
+</ul>
+<p>However, some single bet strategies require a little bit of extra information.</p>
+<section id="betplace">
+<h3>BetPlace()<a class="headerlink" href="#betplace" title="Link to this heading"></a></h3>
+<p>For place bets, there are four arguments:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">place_bet_amounts</span></code>: Dictionary of the point to make the Place bet on and the amount of the place bet to make. Replaces <code class="docutils literal notranslate"><span class="pre">bet_amount</span></code> argument.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mode</span></code>: same as before. Defaults to <code class="docutils literal notranslate"><span class="pre">StrategyMode.BET_IF_POINT_ON</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">skip_point</span></code>: If True don’t make the bet on the given Place if that’s the number the tables Point is on. Default is True.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">skip_come</span></code>: If True don’t make the bet on the given Place if there is a Come bet with that Point already on that number. Default is False.</p></li>
+</ul>
+<p>The <code class="docutils literal notranslate"><span class="pre">place_bet_amount</span></code> argument is a python dictionary, which can be specified as <code class="docutils literal notranslate"><span class="pre">{key:</span> <span class="pre">value,</span> <span class="pre">key2:</span> <span class="pre">value2}</span></code>. It’s important to note that the <code class="docutils literal notranslate"><span class="pre">skip_point</span></code> argument defaults to <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+<p>For example, to place the 6 and 8 for $12 each when the point is on, we can use <code class="docutils literal notranslate"><span class="pre">BetPlace({6:</span> <span class="pre">12,</span> <span class="pre">8:</span> <span class="pre">12},</span> <span class="pre">skip_point=False)</span></code>.</p>
+<p>If we wanted to place the inside numbers (5, 6, 8, 9) except the number that the point is on (for example, if we covered that with a pass line bet already), we can use <code class="docutils literal notranslate"><span class="pre">BetPlace({5:</span> <span class="pre">10,</span> <span class="pre">6:</span> <span class="pre">12,</span> <span class="pre">8:</span> <span class="pre">12,</span> <span class="pre">9:</span> <span class="pre">10},</span> <span class="pre">skip_point=True)</span></code>.</p>
+<p>If we wanted to place all numbers the whole time (whether the point is on or off), with double values on the 8, 9 and 10, we can use <code class="docutils literal notranslate"><span class="pre">BetPlace({4:</span> <span class="pre">10,</span> <span class="pre">5:</span> <span class="pre">10,</span> <span class="pre">6:</span> <span class="pre">12,</span> <span class="pre">8:</span> <span class="pre">24,</span> <span class="pre">9:</span> <span class="pre">20,</span> <span class="pre">10:</span> <span class="pre">20},</span> <span class="pre">mode=StrategyMode.ADD_IF_NON_EXISTENT,</span> <span class="pre">skip_point=False)</span></code>.</p>
+<p>Comparing these three strategies on a few rolls (with a $200 bankroll this time) shows the differences:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">crapssim.strategy.single_bet</span> <span class="kn">import</span> <span class="n">BetPlace</span><span class="p">,</span> <span class="n">StrategyMode</span>
+
+<span class="n">table</span> <span class="o">=</span> <span class="n">craps</span><span class="o">.</span><span class="n">Table</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="mi">1234</span><span class="p">)</span>
+
+<span class="n">strategies</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">BetPlace</span><span class="p">({</span><span class="mi">6</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">8</span><span class="p">:</span> <span class="mi">12</span><span class="p">},</span> <span class="n">skip_point</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
+    <span class="n">BetPlace</span><span class="p">({</span><span class="mi">5</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">6</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">8</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">9</span><span class="p">:</span> <span class="mi">10</span><span class="p">},</span> <span class="n">skip_point</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+    <span class="n">BetPlace</span><span class="p">({</span><span class="mi">4</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">6</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">8</span><span class="p">:</span> <span class="mi">24</span><span class="p">,</span> <span class="mi">9</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">10</span><span class="p">:</span> <span class="mi">20</span><span class="p">},</span> <span class="n">mode</span><span class="o">=</span><span class="n">StrategyMode</span><span class="o">.</span><span class="n">ADD_IF_NOT_BET</span><span class="p">,</span> <span class="n">skip_point</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="p">]</span>
+
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">strategies</span><span class="p">):</span>
+    <span class="n">table</span><span class="o">.</span><span class="n">add_player</span><span class="p">(</span><span class="n">strategy</span><span class="o">=</span><span class="n">s</span><span class="p">,</span> <span class="n">bankroll</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Player </span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    
+<span class="n">table</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">max_rolls</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">FINAL RESULTS&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">table</span><span class="o">.</span><span class="n">players</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">p</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">: Bankroll=$</span><span class="si">{</span><span class="n">p</span><span class="o">.</span><span class="n">bankroll</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Welcome to the Craps Table!
+Player 1: Strategy=BetPlace(place_bet_amounts={6: 12, 8: 12}, mode=StrategyMode.BET_IF_POINT_ON, skip_point=False, skip_come=False), Bankroll=200.0
+Player 2: Strategy=BetPlace(place_bet_amounts={5: 10, 6: 12, 8: 12, 9: 10}, mode=StrategyMode.BET_IF_POINT_ON, skip_point=True, skip_come=False), Bankroll=200.0
+Player 3: Strategy=BetPlace(place_bet_amounts={4: 10, 5: 10, 6: 12, 8: 24, 9: 20, 10: 20}, mode=StrategyMode.ADD_IF_NOT_BET, skip_point=False, skip_come=False), Bankroll=200.0
+
+
+Player 1: Bankroll=200.0, Bet amount=0, Bets=[]
+Player 2: Bankroll=200.0, Bet amount=0, Bets=[]
+Player 3: Bankroll=104.0, Bet amount=96.0, Bets=[Place(4, amount=10.0), Place(5, amount=10.0), Place(6, amount=12.0), Place(8, amount=24.0), Place(9, amount=20.0), Place(10, amount=20.0)]
+
+Dice out! (roll 1, shooter 1)
+Shooter rolled 12 (6, 6)
+Point is Off (None)
+Player 1: Bankroll=200.0, Bet amount=0, Bets=[]
+Player 2: Bankroll=200.0, Bet amount=0, Bets=[]
+Player 3: Bankroll=104.0, Bet amount=96.0, Bets=[Place(4, amount=10.0), Place(5, amount=10.0), Place(6, amount=12.0), Place(8, amount=24.0), Place(9, amount=20.0), Place(10, amount=20.0)]
+
+Dice out! (roll 2, shooter 1)
+Shooter rolled 9 (6, 3)
+Player 3 won $28.0 on Place(9, amount=20.0)!
+Point is On (9)
+Player 1: Bankroll=176.0, Bet amount=24.0, Bets=[Place(6, amount=12.0), Place(8, amount=12.0)]
+Player 2: Bankroll=166.0, Bet amount=34.0, Bets=[Place(5, amount=10.0), Place(6, amount=12.0), Place(8, amount=12.0)]
+Player 3: Bankroll=132.0, Bet amount=96.0, Bets=[Place(4, amount=10.0), Place(5, amount=10.0), Place(6, amount=12.0), Place(8, amount=24.0), Place(10, amount=20.0), Place(9, amount=20.0)]
+
+Dice out! (roll 3, shooter 1)
+Shooter rolled 8 (2, 6)
+Player 1 won $14.0 on Place(8, amount=12.0)!
+Player 2 won $14.0 on Place(8, amount=12.0)!
+Player 3 won $28.0 on Place(8, amount=24.0)!
+Point is On (9)
+Player 1: Bankroll=190.0, Bet amount=24.0, Bets=[Place(6, amount=12.0), Place(8, amount=12.0)]
+Player 2: Bankroll=180.0, Bet amount=34.0, Bets=[Place(5, amount=10.0), Place(6, amount=12.0), Place(8, amount=12.0)]
+Player 3: Bankroll=160.0, Bet amount=96.0, Bets=[Place(4, amount=10.0), Place(5, amount=10.0), Place(6, amount=12.0), Place(10, amount=20.0), Place(9, amount=20.0), Place(8, amount=24.0)]
+
+Dice out! (roll 4, shooter 1)
+Shooter rolled 3 (1, 2)
+Point is On (9)
+Player 1: Bankroll=190.0, Bet amount=24.0, Bets=[Place(6, amount=12.0), Place(8, amount=12.0)]
+Player 2: Bankroll=180.0, Bet amount=34.0, Bets=[Place(5, amount=10.0), Place(6, amount=12.0), Place(8, amount=12.0)]
+Player 3: Bankroll=160.0, Bet amount=96.0, Bets=[Place(4, amount=10.0), Place(5, amount=10.0), Place(6, amount=12.0), Place(10, amount=20.0), Place(9, amount=20.0), Place(8, amount=24.0)]
+
+Dice out! (roll 5, shooter 1)
+Shooter rolled 3 (1, 2)
+Point is On (9)
+Player 1: Bankroll=190.0, Bet amount=24.0, Bets=[Place(6, amount=12.0), Place(8, amount=12.0)]
+Player 2: Bankroll=180.0, Bet amount=34.0, Bets=[Place(5, amount=10.0), Place(6, amount=12.0), Place(8, amount=12.0)]
+Player 3: Bankroll=160.0, Bet amount=96.0, Bets=[Place(4, amount=10.0), Place(5, amount=10.0), Place(6, amount=12.0), Place(10, amount=20.0), Place(9, amount=20.0), Place(8, amount=24.0)]
+
+Dice out! (roll 6, shooter 1)
+Shooter rolled 5 (4, 1)
+Player 2 won $14.0 on Place(5, amount=10.0)!
+Player 3 won $14.0 on Place(5, amount=10.0)!
+Point is On (9)
+Player 1: Bankroll=190.0, Bet amount=24.0, Bets=[Place(6, amount=12.0), Place(8, amount=12.0)]
+Player 2: Bankroll=194.0, Bet amount=34.0, Bets=[Place(6, amount=12.0), Place(8, amount=12.0), Place(5, amount=10.0)]
+Player 3: Bankroll=174.0, Bet amount=96.0, Bets=[Place(4, amount=10.0), Place(6, amount=12.0), Place(10, amount=20.0), Place(9, amount=20.0), Place(8, amount=24.0), Place(5, amount=10.0)]
+
+Dice out! (roll 7, shooter 1)
+Shooter rolled 7 (5, 2)
+Player 1 lost $12.0 on Place(6, amount=12.0).
+Player 1 lost $12.0 on Place(8, amount=12.0).
+Player 2 lost $12.0 on Place(6, amount=12.0).
+Player 2 lost $12.0 on Place(8, amount=12.0).
+Player 2 lost $10.0 on Place(5, amount=10.0).
+Player 3 lost $10.0 on Place(4, amount=10.0).
+Player 3 lost $12.0 on Place(6, amount=12.0).
+Player 3 lost $20.0 on Place(10, amount=20.0).
+Player 3 lost $20.0 on Place(9, amount=20.0).
+Player 3 lost $24.0 on Place(8, amount=24.0).
+Player 3 lost $10.0 on Place(5, amount=10.0).
+Point is Off (None)
+Player 1: Bankroll=190.0, Bet amount=0, Bets=[]
+Player 2: Bankroll=194.0, Bet amount=0, Bets=[]
+Player 3: Bankroll=78.0, Bet amount=96.0, Bets=[Place(4, amount=10.0), Place(5, amount=10.0), Place(6, amount=12.0), Place(8, amount=24.0), Place(9, amount=20.0), Place(10, amount=20.0)]
+
+Dice out! (roll 8, shooter 2)
+Shooter rolled 7 (5, 2)
+Player 3 lost $10.0 on Place(4, amount=10.0).
+Player 3 lost $10.0 on Place(5, amount=10.0).
+Player 3 lost $12.0 on Place(6, amount=12.0).
+Player 3 lost $24.0 on Place(8, amount=24.0).
+Player 3 lost $20.0 on Place(9, amount=20.0).
+Player 3 lost $20.0 on Place(10, amount=20.0).
+Point is Off (None)
+Player 1: Bankroll=190.0, Bet amount=0, Bets=[]
+Player 2: Bankroll=194.0, Bet amount=0, Bets=[]
+Player 3: Bankroll=2.0, Bet amount=76.0, Bets=[Place(4, amount=10.0), Place(5, amount=10.0), Place(6, amount=12.0), Place(8, amount=24.0), Place(9, amount=20.0)]
+
+Dice out! (roll 9, shooter 2)
+Shooter rolled 11 (5, 6)
+Point is Off (None)
+Player 1: Bankroll=190.0, Bet amount=0, Bets=[]
+Player 2: Bankroll=194.0, Bet amount=0, Bets=[]
+Player 3: Bankroll=2.0, Bet amount=76.0, Bets=[Place(4, amount=10.0), Place(5, amount=10.0), Place(6, amount=12.0), Place(8, amount=24.0), Place(9, amount=20.0)]
+
+Dice out! (roll 10, shooter 2)
+Shooter rolled 8 (6, 2)
+Player 3 won $28.0 on Place(8, amount=24.0)!
+Point is On (8)
+Player 1: Bankroll=190.0, Bet amount=0, Bets=[]
+Player 2: Bankroll=194.0, Bet amount=0, Bets=[]
+Player 3: Bankroll=54.0, Bet amount=52.0, Bets=[Place(4, amount=10.0), Place(5, amount=10.0), Place(6, amount=12.0), Place(9, amount=20.0)]
+
+FINAL RESULTS
+  Player 1: Bankroll=$190.0
+  Player 2: Bankroll=$194.0
+  Player 3: Bankroll=$54.0
+</pre></div>
+</div>
+</div>
+</div>
+<p>Player 3’s aggressive strategy didn’t work out this time, as the early seven-out wiped out all of their bets. Player’s 1 and 2 ended up closer to their initial bankroll with less betting.</p>
+</section>
+<section id="bethardway">
+<h3>BetHardway()<a class="headerlink" href="#bethardway" title="Link to this heading"></a></h3>
+<p>For hardway bets, there are three arguments:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">number</span></code>: One of 4, 6, 8, 10 to specify which hardway bet to use</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">bet_amount</span></code>: Same as before.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mode</span></code>: Same as before. Defaults to <code class="docutils literal notranslate"><span class="pre">StrategyMode.ADD_IF_NON_EXISTENT</span></code></p></li>
+</ul>
+<p>For example, to bet the Hard 8 on every roll for $1, use <code class="docutils literal notranslate"><span class="pre">BetHardWay(8)</span></code></p>
+<p>To bet the Hard 10 when the point is on for $2, use `BetHardWay(10, bet_amount=2, mode=StrategyMode.ADD_IF_NEW_SHOOTER).</p>
+<section id="exercise-1">
+<h4>Exercise 1<a class="headerlink" href="#exercise-1" title="Link to this heading"></a></h4>
+<p>Modify the code example from place bets to have two players with the Hard way bets as above and try it out on a few rolls.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
+<span class="kn">from</span> <span class="nn">crapssim.strategy.single_bet</span> <span class="kn">import</span> <span class="n">BetPlace</span><span class="p">,</span> <span class="n">StrategyMode</span>
+
+<span class="n">table</span> <span class="o">=</span> <span class="n">craps</span><span class="o">.</span><span class="n">Table</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="mi">1234</span><span class="p">)</span>
+
+<span class="n">strategies</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="c1"># CHANGE THE CODE HERE</span>
+    <span class="o">...</span><span class="p">,</span> 
+    <span class="o">...</span>
+<span class="p">]</span>
+
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">strategies</span><span class="p">):</span>
+    <span class="n">table</span><span class="o">.</span><span class="n">add_player</span><span class="p">(</span><span class="n">strategy</span><span class="o">=</span><span class="n">s</span><span class="p">,</span> <span class="n">bankroll</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Player </span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    
+<span class="n">table</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">max_rolls</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">FINAL RESULTS&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">table</span><span class="o">.</span><span class="n">players</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">p</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">: Bankroll=$</span><span class="si">{</span><span class="n">p</span><span class="o">.</span><span class="n">bankroll</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+<section id="detailed-example-strategies">
+<h2>Detailed example strategies<a class="headerlink" href="#detailed-example-strategies" title="Link to this heading"></a></h2>
+<p>Now you should be getting a feel for the single bet strategies and how to use them. However, very few people play strategies with just a single bet. Good news—the crapssim package comes with many example strategies that can be used just as easily. And the list of these example strategies will hopefully expand in the future.</p>
+<p>Let’s try the very famous Iron Cross strategy (though I should note that in my opinion, it’s not a good strategy at all). This time, we will run the table with two shooters (ulimited number of rolls). The Iron Cross strategy bets the pass line for 1 unit (with 2x odds after the point is set), then bets 2 units each on the 5, 6, and 8 (with slightly more on 6/8 to get even payouts; skipping the point number if it’s 5, 6, or 8) and then bets the field for 1 unit every roll that the point is on. We use $10 for our unit in the following example:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">crapssim.strategy.examples</span> <span class="kn">import</span> <span class="n">IronCross</span>
+
+<span class="n">table</span> <span class="o">=</span> <span class="n">craps</span><span class="o">.</span><span class="n">Table</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="mi">1234</span><span class="p">)</span>
+<span class="n">table</span><span class="o">.</span><span class="n">add_player</span><span class="p">(</span><span class="n">strategy</span><span class="o">=</span><span class="n">IronCross</span><span class="p">(</span><span class="n">base_amount</span><span class="o">=</span><span class="mi">10</span><span class="p">),</span> <span class="n">bankroll</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+
+<span class="n">table</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">max_shooter</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">max_rolls</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="s2">&quot;inf&quot;</span><span class="p">),</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Welcome to the Craps Table!
+Player 0: Strategy=IronCross(base_amount=10.0), Bankroll=200.0
+
+
+Player 0: Bankroll=190.0, Bet amount=10.0, Bets=[PassLine(amount=10.0)]
+
+Dice out! (roll 1, shooter 1)
+Shooter rolled 12 (6, 6)
+Player 0 lost $10.0 on PassLine(amount=10.0).
+Point is Off (None)
+Player 0: Bankroll=180.0, Bet amount=10.0, Bets=[PassLine(amount=10.0)]
+
+Dice out! (roll 2, shooter 1)
+Shooter rolled 9 (6, 3)
+Point is On (9)
+Player 0: Bankroll=82.0, Bet amount=108.0, Bets=[PassLine(amount=10.0), Odds(base_type=crapssim.bet.PassLine, number=9, amount=20.0), Place(5, amount=20.0), Place(6, amount=24.0), Place(8, amount=24.0), Field(amount=10.0)]
+
+Dice out! (roll 3, shooter 1)
+Shooter rolled 8 (2, 6)
+Player 0 won $28.0 on Place(8, amount=24.0)!
+Player 0 lost $10.0 on Field(amount=10.0).
+Point is On (9)
+Player 0: Bankroll=100.0, Bet amount=108.0, Bets=[PassLine(amount=10.0), Odds(base_type=crapssim.bet.PassLine, number=9, amount=20.0), Place(5, amount=20.0), Place(6, amount=24.0), Place(8, amount=24.0), Field(amount=10.0)]
+
+Dice out! (roll 4, shooter 1)
+Shooter rolled 3 (1, 2)
+Player 0 won $10.0 on Field(amount=10.0)!
+Point is On (9)
+Player 0: Bankroll=110.0, Bet amount=108.0, Bets=[PassLine(amount=10.0), Odds(base_type=crapssim.bet.PassLine, number=9, amount=20.0), Place(5, amount=20.0), Place(6, amount=24.0), Place(8, amount=24.0), Field(amount=10.0)]
+
+Dice out! (roll 5, shooter 1)
+Shooter rolled 3 (1, 2)
+Player 0 won $10.0 on Field(amount=10.0)!
+Point is On (9)
+Player 0: Bankroll=120.0, Bet amount=108.0, Bets=[PassLine(amount=10.0), Odds(base_type=crapssim.bet.PassLine, number=9, amount=20.0), Place(5, amount=20.0), Place(6, amount=24.0), Place(8, amount=24.0), Field(amount=10.0)]
+
+Dice out! (roll 6, shooter 1)
+Shooter rolled 5 (4, 1)
+Player 0 won $28.0 on Place(5, amount=20.0)!
+Player 0 lost $10.0 on Field(amount=10.0).
+Point is On (9)
+Player 0: Bankroll=138.0, Bet amount=108.0, Bets=[PassLine(amount=10.0), Odds(base_type=crapssim.bet.PassLine, number=9, amount=20.0), Place(6, amount=24.0), Place(8, amount=24.0), Place(5, amount=20.0), Field(amount=10.0)]
+
+Dice out! (roll 7, shooter 1)
+Shooter rolled 7 (5, 2)
+Player 0 lost $10.0 on PassLine(amount=10.0).
+Player 0 lost $20.0 on Odds(base_type=crapssim.bet.PassLine, number=9, amount=20.0).
+Player 0 lost $24.0 on Place(6, amount=24.0).
+Player 0 lost $24.0 on Place(8, amount=24.0).
+Player 0 lost $20.0 on Place(5, amount=20.0).
+Player 0 lost $10.0 on Field(amount=10.0).
+Point is Off (None)
+Player 0: Bankroll=128.0, Bet amount=10.0, Bets=[PassLine(amount=10.0)]
+
+Dice out! (roll 8, shooter 2)
+Shooter rolled 7 (5, 2)
+Player 0 won $10.0 on PassLine(amount=10.0)!
+Point is Off (None)
+Player 0: Bankroll=138.0, Bet amount=10.0, Bets=[PassLine(amount=10.0)]
+
+Dice out! (roll 9, shooter 2)
+Shooter rolled 11 (5, 6)
+Player 0 won $10.0 on PassLine(amount=10.0)!
+Point is Off (None)
+Player 0: Bankroll=148.0, Bet amount=10.0, Bets=[PassLine(amount=10.0)]
+
+Dice out! (roll 10, shooter 2)
+Shooter rolled 8 (6, 2)
+Point is On (8)
+Player 0: Bankroll=74.0, Bet amount=84.0, Bets=[PassLine(amount=10.0), Odds(base_type=crapssim.bet.PassLine, number=8, amount=20.0), Place(5, amount=20.0), Place(6, amount=24.0), Field(amount=10.0)]
+
+Dice out! (roll 11, shooter 2)
+Shooter rolled 7 (4, 3)
+Player 0 lost $10.0 on PassLine(amount=10.0).
+Player 0 lost $20.0 on Odds(base_type=crapssim.bet.PassLine, number=8, amount=20.0).
+Player 0 lost $20.0 on Place(5, amount=20.0).
+Player 0 lost $24.0 on Place(6, amount=24.0).
+Player 0 lost $10.0 on Field(amount=10.0).
+Point is Off (None)
+Player 0: Bankroll=74.0, Bet amount=0, Bets=[]
+</pre></div>
+</div>
+</div>
+</div>
+<p>The point of the IronCross strategy is to win on every roll (after the passline) except a seven-out. We can see the player’s cash increasing with each roll, some more than others, but it drops dramatically on the two seven outs. At the end of two shooters, we’ve lost over half of our starting bankroll in this session.</p>
+</section>
+<section id="list-of-all-example-strategies">
+<h2>List of all example strategies<a class="headerlink" href="#list-of-all-example-strategies" title="Link to this heading"></a></h2>
+<p>The following example strategies, and a brief description, can be found in the <code class="docutils literal notranslate"><span class="pre">crapssim.strategy.examples</span></code> module.</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Strategy</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Pass2Come()</span></code></p></td>
+<td><p>• Places a Pass Line bet<br>• Adds two Come bets</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">PassLinePlace68()</span></code></p></td>
+<td><p>• Places a Pass Line bet<br>• Places bets on both 6 and 8<br>• Can optionally skip place bets on point number</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">PlaceInside()</span></code></p></td>
+<td><p>• Places bets on all “inside” numbers (5, 6, 8, 9)<br>• Adjusts 6 and 8 bet amounts using 6/5 multiplier</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Place68Move59()</span></code></p></td>
+<td><p>• Initially places bets on 6 and 8<br>• Moves place bet to 5 or 9 if Pass Line or Come bet ends up on 6 or 8</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">PassLinePlace68Move59()</span></code></p></td>
+<td><p>• Combines Pass Line betting with Place68Move59 strategy</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Place682Come()</span></code></p></td>
+<td><p>• Places Pass Line bet when point is off<br>• Places 6 and 8 when point is on<br>• Makes up to 2 Come bets<br>• Maintains less than 4 total bets</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">IronCross()</span></code></p></td>
+<td><p>• Places Pass Line bet with 2x odds<br>• Places bets on 5, 6, and 8<br>• Adds Field bet when point is on</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">HammerLock()</span></code></p></td>
+<td><p>• Places both Pass Line and Don’t Pass bets when point is off<br>• Adds lay odds to Don’t Pass when point is on<br>• Places 6 and 8<br>• Shifts to 5, 6, 8, and 9 after 6/8 place wins<br>• Takes all place bets down on another win</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Risk12()</span></code></p></td>
+<td><p>• Places Pass Line and Field bets before point<br>• Places 6 and/or 8 after point<br>• Uses pre-point winnings to fund subsequent place bets<br>• Only risks $12 on a $5 table</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Knockout()</span></code></p></td>
+<td><p>• Places Pass Line and Don’t Pass bets before point<br>• Adds 3-4-5x odds on Pass Line after point</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">DiceDoctor()</span></code></p></td>
+<td><p>• Field bet progression strategy<br>• Uses progressive increases and decreases<br>• Follows specific progression sequence:<br>    10-20-15-30-25-50-35-70-50-100-75-150</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Place68PR()</span></code></p></td>
+<td><p>• Places bets on 6 and 8<br>• Doubles (presses) the winning bet after first win<br>• Reduces (regresses) back to original bet amount after second win<br>• Maintains press/regress cycle</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Place68DontCome2Odds()</span></code></p></td>
+<td><p>• Adds a single Don’t Come bet <br>• Places bets on 6 and 8<br>• Applies 2x odds to Don’t Come bets<br></p></td>
+</tr>
+</tbody>
+</table>
+<p>Each strategy has it’s own arguments that you will need to explore through the documentation.</p>
+<p>If you saw a strategy online or in a book, and have implemented with “crapssim”, then it most likely makes a great addition to the package. Please mention in <a class="reference external" href="https://github.com/skent259/crapssim/discussions/new">a new discussion</a>, file <a class="reference external" href="https://github.com/skent259/crapssim/issues/new">an issue</a>, or open <a class="reference external" href="https://github.com/skent259/crapssim/pulls">a pull request</a> and we can work together to make sure it fits well.</p>
+<p>To give a feel for how to compare different example strategies across many different table sessions, you can use the following code. In this case, we start with $300 bankroll, and test the strategy across 10 different shooters. At the end, we print out the result of 20 simulations.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">n_sim</span> <span class="o">=</span> <span class="mi">20</span>
+<span class="n">bankroll</span> <span class="o">=</span> <span class="mi">300</span>
+<span class="n">strategies</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;place68&quot;</span><span class="p">:</span> <span class="n">craps</span><span class="o">.</span><span class="n">strategy</span><span class="o">.</span><span class="n">examples</span><span class="o">.</span><span class="n">PassLinePlace68</span><span class="p">(</span><span class="mi">10</span><span class="p">),</span>
+    <span class="s2">&quot;ironcross&quot;</span><span class="p">:</span> <span class="n">craps</span><span class="o">.</span><span class="n">strategy</span><span class="o">.</span><span class="n">examples</span><span class="o">.</span><span class="n">IronCross</span><span class="p">(</span><span class="mi">10</span><span class="p">),</span>
+    <span class="s2">&quot;dicedoctor&quot;</span><span class="p">:</span> <span class="n">craps</span><span class="o">.</span><span class="n">strategy</span><span class="o">.</span><span class="n">examples</span><span class="o">.</span><span class="n">DiceDoctor</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_sim</span><span class="p">):</span>
+    <span class="n">table</span> <span class="o">=</span> <span class="n">craps</span><span class="o">.</span><span class="n">Table</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">strategies</span><span class="p">:</span>
+        <span class="n">table</span><span class="o">.</span><span class="n">add_player</span><span class="p">(</span><span class="n">bankroll</span><span class="p">,</span> <span class="n">strategy</span><span class="o">=</span><span class="n">strategies</span><span class="p">[</span><span class="n">s</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="n">s</span><span class="p">)</span>
+
+    <span class="n">table</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">max_rolls</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="s2">&quot;inf&quot;</span><span class="p">),</span> <span class="n">max_shooter</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">table</span><span class="o">.</span><span class="n">players</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">p</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">p</span><span class="o">.</span><span class="n">bankroll</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">bankroll</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">table</span><span class="o">.</span><span class="n">dice</span><span class="o">.</span><span class="n">n_rolls</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0, place68, 255.0, 300, 80
+0, ironcross, 150.0, 300, 80
+0, dicedoctor, 240.0, 300, 80
+1, place68, 218.0, 300, 48
+1, ironcross, 6.0, 300, 48
+1, dicedoctor, 125.0, 300, 48
+2, place68, 216.0, 300, 79
+2, ironcross, 74.0, 300, 79
+2, dicedoctor, 305.0, 300, 79
+3, place68, 319.0, 300, 108
+3, ironcross, 476.0, 300, 108
+3, dicedoctor, 365.0, 300, 108
+4, place68, 216.0, 300, 61
+4, ironcross, 6.0, 300, 61
+4, dicedoctor, 135.0, 300, 61
+5, place68, 314.0, 300, 94
+5, ironcross, 378.0, 300, 94
+5, dicedoctor, 465.0, 300, 94
+6, place68, 371.0, 300, 122
+6, ironcross, 820.0, 300, 122
+6, dicedoctor, 165.0, 300, 122
+7, place68, 468.0, 300, 108
+7, ironcross, 724.0, 300, 108
+7, dicedoctor, 0.0, 300, 108
+8, place68, 250.0, 300, 74
+8, ironcross, 0.0, 300, 74
+8, dicedoctor, 220.0, 300, 74
+9, place68, 276.0, 300, 77
+9, ironcross, 142.0, 300, 77
+9, dicedoctor, 85.0, 300, 77
+10, place68, 430.0, 300, 114
+10, ironcross, 752.0, 300, 114
+10, dicedoctor, 330.0, 300, 114
+11, place68, 475.0, 300, 149
+11, ironcross, 1170.0, 300, 149
+11, dicedoctor, 375.0, 300, 149
+12, place68, 314.0, 300, 67
+12, ironcross, 48.0, 300, 67
+12, dicedoctor, 30.0, 300, 67
+13, place68, 307.0, 300, 74
+13, ironcross, 108.0, 300, 74
+13, dicedoctor, 160.0, 300, 74
+14, place68, 299.0, 300, 86
+14, ironcross, 226.0, 300, 86
+14, dicedoctor, 145.0, 300, 86
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>15, place68, 245.0, 300, 74
+15, ironcross, 58.0, 300, 74
+15, dicedoctor, 220.0, 300, 74
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>16, place68, 327.0, 300, 88
+16, ironcross, 356.0, 300, 88
+16, dicedoctor, 255.0, 300, 88
+17, place68, 193.0, 300, 61
+17, ironcross, 4.0, 300, 61
+17, dicedoctor, 300.0, 300, 61
+18, place68, 330.0, 300, 117
+18, ironcross, 776.0, 300, 117
+18, dicedoctor, 710.0, 300, 117
+19, place68, 355.0, 300, 94
+19, ironcross, 364.0, 300, 94
+19, dicedoctor, 5.0, 300, 94
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="conclusion">
+<h2>Conclusion<a class="headerlink" href="#conclusion" title="Link to this heading"></a></h2>
+<p>In this tutorial, we’ve seen how to use the out-of-the-box strategies from the crapssim package, including <code class="docutils literal notranslate"><span class="pre">single_bet</span></code> and more detailed <code class="docutils literal notranslate"><span class="pre">examples</span></code>. We’ve seen how to look at the strategies on a small number of rolls, which is great for testing or getting a feel for the strategy. We’ve also seen how to compare multiple strategies across several sessions, which creates the basis for determining which we might want to use.</p>
+<p>The best way to get more comfortable with this is to try it out for yourself! See if you can install the package and test these available strategies.</p>
+<p>Quickly, you may find that you want to put together more detailed strategies of your own. The next tutorial will show you how to use these building blocks to make more complicated strategies, and to incorporate some core logic if needed.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="crapssim" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="crapssim_sandbox.html" class="btn btn-neutral float-right" title="Welcome to the crapssim sandbox!" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Sean Kent.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

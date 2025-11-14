@@ -1,0 +1,815 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>crapssim.strategy &mdash; crapssim 0.3.2 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=71d9d8e6"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="crapssim.strategy.examples" href="examples/index.html" />
+    <link rel="prev" title="crapssim.point" href="../point/index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            crapssim
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Examples and Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial-strategy-01.html">Strategy Tutorial 1: Starting off</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../crapssim_sandbox.html">Sandbox</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">Change Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../supported-bets.html">Supported Bets</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html">crapssim</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../index.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../bet/index.html">crapssim.bet</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../dice/index.html">crapssim.dice</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../point/index.html">crapssim.point</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">crapssim.strategy</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../table/index.html">crapssim.table</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../index.html#package-contents">Package Contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">crapssim</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">API Reference</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">crapssim</a></li>
+      <li class="breadcrumb-item active">crapssim.strategy</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../_sources/autoapi/crapssim/strategy/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-crapssim.strategy">
+<span id="crapssim-strategy"></span><h1>crapssim.strategy<a class="headerlink" href="#module-crapssim.strategy" title="Link to this heading"></a></h1>
+<p>Strategies to be assigned to players on the Craps table. The strategy determines what bets the
+player should make, remove, or change. Strategies are applied for the player to change the bets
+after the previous bets and table have been updated.</p>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="examples/index.html">crapssim.strategy.examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="odds/index.html">crapssim.strategy.odds</a></li>
+<li class="toctree-l1"><a class="reference internal" href="single_bet/index.html">crapssim.strategy.single_bet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tools/index.html">crapssim.strategy.tools</a></li>
+</ul>
+</div>
+</section>
+<section id="classes">
+<h2>Classes<a class="headerlink" href="#classes" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#crapssim.strategy.ComeOddsMultiplier" title="crapssim.strategy.ComeOddsMultiplier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ComeOddsMultiplier</span></code></a></p></td>
+<td><p>Adds Come Odds on specified odds multiplier(s)</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#crapssim.strategy.DontComeOddsMultiplier" title="crapssim.strategy.DontComeOddsMultiplier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DontComeOddsMultiplier</span></code></a></p></td>
+<td><p>Adds DontCome Odds on specified odds multiplier(s)</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#crapssim.strategy.DontPassOddsMultiplier" title="crapssim.strategy.DontPassOddsMultiplier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DontPassOddsMultiplier</span></code></a></p></td>
+<td><p>Adds DontPass Odds on specified odds multiplier(s)</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#crapssim.strategy.OddsAmount" title="crapssim.strategy.OddsAmount"><code class="xref py py-obj docutils literal notranslate"><span class="pre">OddsAmount</span></code></a></p></td>
+<td><p>Adds Odds for the bet type and specified numbers</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#crapssim.strategy.OddsMultiplier" title="crapssim.strategy.OddsMultiplier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">OddsMultiplier</span></code></a></p></td>
+<td><p>Adds Odds for the bet type and desired odds multiplier</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#crapssim.strategy.PassLineOddsMultiplier" title="crapssim.strategy.PassLineOddsMultiplier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PassLineOddsMultiplier</span></code></a></p></td>
+<td><p>Adds PassLine Odds on specified odds multiplier(s)</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#crapssim.strategy.BetDontPass" title="crapssim.strategy.BetDontPass"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BetDontPass</span></code></a></p></td>
+<td><p>Base helper for wrapping a single <code class="xref py py-class docutils literal notranslate"><span class="pre">Bet</span></code> in a strategy.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#crapssim.strategy.BetPassLine" title="crapssim.strategy.BetPassLine"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BetPassLine</span></code></a></p></td>
+<td><p>Base helper for wrapping a single <code class="xref py py-class docutils literal notranslate"><span class="pre">Bet</span></code> in a strategy.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#crapssim.strategy.BetPlace" title="crapssim.strategy.BetPlace"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BetPlace</span></code></a></p></td>
+<td><p>Strategy that makes multiple Place bets of given amounts. It can also skip making the bet</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#crapssim.strategy.AddIfNewShooter" title="crapssim.strategy.AddIfNewShooter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AddIfNewShooter</span></code></a></p></td>
+<td><p>Strategy that adds a bet if there is a new shooter at the table, and the Player doesn't have a bet on the</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#crapssim.strategy.AddIfNotBet" title="crapssim.strategy.AddIfNotBet"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AddIfNotBet</span></code></a></p></td>
+<td><p>Strategy that adds a bet if it isn't on the table for that player. Equivalent of</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#crapssim.strategy.AddIfPointOff" title="crapssim.strategy.AddIfPointOff"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AddIfPointOff</span></code></a></p></td>
+<td><p>Strategy that adds a bet if the table point is Off, and the Player doesn't have a bet on the</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#crapssim.strategy.AddIfPointOn" title="crapssim.strategy.AddIfPointOn"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AddIfPointOn</span></code></a></p></td>
+<td><p>Strategy that adds a bet if the table point is On, and the Player doesn't have a bet on the</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#crapssim.strategy.AddIfTrue" title="crapssim.strategy.AddIfTrue"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AddIfTrue</span></code></a></p></td>
+<td><p>Strategy that places a bet if a given key taking Player as a parameter is True.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#crapssim.strategy.AggregateStrategy" title="crapssim.strategy.AggregateStrategy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AggregateStrategy</span></code></a></p></td>
+<td><p>A combination of multiple strategies.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#crapssim.strategy.CountStrategy" title="crapssim.strategy.CountStrategy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CountStrategy</span></code></a></p></td>
+<td><p>Strategy that checks how many bets exist of a certain type. If the number of bets of that</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#crapssim.strategy.RemoveIfPointOff" title="crapssim.strategy.RemoveIfPointOff"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RemoveIfPointOff</span></code></a></p></td>
+<td><p>Strategy that removes a bet if the table point is Off</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#crapssim.strategy.RemoveIfTrue" title="crapssim.strategy.RemoveIfTrue"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RemoveIfTrue</span></code></a></p></td>
+<td><p>Strategy that removes all bets that are True for a given key. The key takes the Bet and the</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#crapssim.strategy.Strategy" title="crapssim.strategy.Strategy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Strategy</span></code></a></p></td>
+<td><p>A Strategy is assigned to a player and determines what bets the player</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="package-contents">
+<h2>Package Contents<a class="headerlink" href="#package-contents" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.strategy.ComeOddsMultiplier">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.strategy.</span></span><span class="sig-name descname"><span class="pre">ComeOddsMultiplier</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">odds_multiplier</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">MultiplierDict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">SupportsFloat</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">always_working</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.strategy.ComeOddsMultiplier" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">_BaseOddsMultiplier</span></code></p>
+<p>Adds Come Odds on specified odds multiplier(s)</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.ComeOddsMultiplier.bet_type">
+<span class="sig-name descname"><span class="pre">bet_type</span></span><a class="headerlink" href="#crapssim.strategy.ComeOddsMultiplier.bet_type" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.ComeOddsMultiplier.default_multiplier">
+<span class="sig-name descname"><span class="pre">default_multiplier</span></span><a class="headerlink" href="#crapssim.strategy.ComeOddsMultiplier.default_multiplier" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.strategy.DontComeOddsMultiplier">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.strategy.</span></span><span class="sig-name descname"><span class="pre">DontComeOddsMultiplier</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">odds_multiplier</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">MultiplierDict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">SupportsFloat</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">always_working</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.strategy.DontComeOddsMultiplier" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">_BaseOddsMultiplier</span></code></p>
+<p>Adds DontCome Odds on specified odds multiplier(s)</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.DontComeOddsMultiplier.bet_type">
+<span class="sig-name descname"><span class="pre">bet_type</span></span><a class="headerlink" href="#crapssim.strategy.DontComeOddsMultiplier.bet_type" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.DontComeOddsMultiplier.default_multiplier">
+<span class="sig-name descname"><span class="pre">default_multiplier</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">6.0</span></em><a class="headerlink" href="#crapssim.strategy.DontComeOddsMultiplier.default_multiplier" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.strategy.DontPassOddsMultiplier">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.strategy.</span></span><span class="sig-name descname"><span class="pre">DontPassOddsMultiplier</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">odds_multiplier</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">MultiplierDict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">SupportsFloat</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">always_working</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.strategy.DontPassOddsMultiplier" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">_BaseOddsMultiplier</span></code></p>
+<p>Adds DontPass Odds on specified odds multiplier(s)</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.DontPassOddsMultiplier.bet_type">
+<span class="sig-name descname"><span class="pre">bet_type</span></span><a class="headerlink" href="#crapssim.strategy.DontPassOddsMultiplier.bet_type" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.DontPassOddsMultiplier.default_multiplier">
+<span class="sig-name descname"><span class="pre">default_multiplier</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">6.0</span></em><a class="headerlink" href="#crapssim.strategy.DontPassOddsMultiplier.default_multiplier" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.strategy.OddsAmount">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.strategy.</span></span><span class="sig-name descname"><span class="pre">OddsAmount</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">type</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../bet/index.html#crapssim.bet.PassLine" title="crapssim.bet.PassLine"><span class="pre">crapssim.bet.PassLine</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../bet/index.html#crapssim.bet.DontPass" title="crapssim.bet.DontPass"><span class="pre">crapssim.bet.DontPass</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../bet/index.html#crapssim.bet.Come" title="crapssim.bet.Come"><span class="pre">crapssim.bet.Come</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../bet/index.html#crapssim.bet.DontCome" title="crapssim.bet.DontCome"><span class="pre">crapssim.bet.DontCome</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../bet/index.html#crapssim.bet.Put" title="crapssim.bet.Put"><span class="pre">crapssim.bet.Put</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">odds_amounts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsFloat</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">MultiplierDict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">always_working</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.strategy.OddsAmount" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="tools/index.html#crapssim.strategy.tools.Strategy" title="crapssim.strategy.tools.Strategy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">crapssim.strategy.tools.Strategy</span></code></a></p>
+<p>Adds Odds for the bet type and specified numbers</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>base_type</strong> – The bet that odds will be added to.</p></li>
+<li><p><strong>odds_amounts</strong> – A dictionary of point numbers and the amount to bet
+on each number.</p></li>
+<li><p><strong>always_working</strong> (<em>bool</em>) – Whether the odds are working when the point is off.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.OddsAmount.base_type">
+<span class="sig-name descname"><span class="pre">base_type</span></span><a class="headerlink" href="#crapssim.strategy.OddsAmount.base_type" title="Link to this definition"></a></dt>
+<dd><p>The bet that odds will be added to.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.OddsAmount.odds_amounts">
+<span class="sig-name descname"><span class="pre">odds_amounts</span></span><a class="headerlink" href="#crapssim.strategy.OddsAmount.odds_amounts" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.OddsAmount.always_working">
+<span class="sig-name descname"><span class="pre">always_working</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#crapssim.strategy.OddsAmount.always_working" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.strategy.OddsAmount.completed">
+<span class="sig-name descname"><span class="pre">completed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">crapssim.strategy.tools.Player</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#crapssim.strategy.OddsAmount.completed" title="Link to this definition"></a></dt>
+<dd><p>Return True if there are no bets of base_type on the table.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>player</strong> – The player whose bets to check for.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if there are no base type bets on the table, otherwise False.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.strategy.OddsAmount.update_bets">
+<span class="sig-name descname"><span class="pre">update_bets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">crapssim.strategy.tools.Player</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#crapssim.strategy.OddsAmount.update_bets" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.strategy.OddsAmount._get_always_working_repr">
+<span class="sig-name descname"><span class="pre">_get_always_working_repr</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#crapssim.strategy.OddsAmount._get_always_working_repr" title="Link to this definition"></a></dt>
+<dd><p>Since the default is false, only need to print when True</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.strategy.OddsAmount.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.strategy.OddsAmount.__repr__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.strategy.OddsMultiplier">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.strategy.</span></span><span class="sig-name descname"><span class="pre">OddsMultiplier</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">type</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../bet/index.html#crapssim.bet.PassLine" title="crapssim.bet.PassLine"><span class="pre">crapssim.bet.PassLine</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../bet/index.html#crapssim.bet.DontPass" title="crapssim.bet.DontPass"><span class="pre">crapssim.bet.DontPass</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../bet/index.html#crapssim.bet.Come" title="crapssim.bet.Come"><span class="pre">crapssim.bet.Come</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../bet/index.html#crapssim.bet.DontCome" title="crapssim.bet.DontCome"><span class="pre">crapssim.bet.DontCome</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../bet/index.html#crapssim.bet.Put" title="crapssim.bet.Put"><span class="pre">crapssim.bet.Put</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">odds_multiplier</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">MultiplierDict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">SupportsFloat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">always_working</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.strategy.OddsMultiplier" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="tools/index.html#crapssim.strategy.tools.Strategy" title="crapssim.strategy.tools.Strategy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">crapssim.strategy.tools.Strategy</span></code></a></p>
+<p>Adds Odds for the bet type and desired odds multiplier</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>base_type</strong> – The bet that odds will be added to.</p></li>
+<li><p><strong>odds_multiplier</strong> – If odds_multiplier is a float, adds multiplier * base_bets amount to the odds.
+If the odds multiplier is a dictionary of floats, looks at the dictionary to
+determine what odds multiplier to use depending on the given point.</p></li>
+<li><p><strong>always_working</strong> (<em>bool</em>) – Whether the odds are working when the point is off.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.OddsMultiplier.base_type">
+<span class="sig-name descname"><span class="pre">base_type</span></span><a class="headerlink" href="#crapssim.strategy.OddsMultiplier.base_type" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.OddsMultiplier.always_working">
+<span class="sig-name descname"><span class="pre">always_working</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#crapssim.strategy.OddsMultiplier.always_working" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.OddsMultiplier.odds_multiplier">
+<span class="sig-name descname"><span class="pre">odds_multiplier</span></span><a class="headerlink" href="#crapssim.strategy.OddsMultiplier.odds_multiplier" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.strategy.OddsMultiplier.get_point_number">
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_point_number</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bet</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../bet/index.html#crapssim.bet.Bet" title="crapssim.bet.Bet"><span class="pre">crapssim.bet.Bet</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">table</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">crapssim.strategy.tools.Table</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.strategy.OddsMultiplier.get_point_number" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.strategy.OddsMultiplier.update_bets">
+<span class="sig-name descname"><span class="pre">update_bets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">crapssim.strategy.tools.Player</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#crapssim.strategy.OddsMultiplier.update_bets" title="Link to this definition"></a></dt>
+<dd><p>Add an Odds bet to the given base_types in the amount determined by the odds_multiplier.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>player</strong> – The player to add the odds bet to.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.strategy.OddsMultiplier.completed">
+<span class="sig-name descname"><span class="pre">completed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">crapssim.strategy.tools.Player</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#crapssim.strategy.OddsMultiplier.completed" title="Link to this definition"></a></dt>
+<dd><p>Return True if there are no bets of base_type on the table.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>player</strong> – The player whose bets to check for.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if there are no base type bets on the table, otherwise False.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.strategy.OddsMultiplier._get_always_working_repr">
+<span class="sig-name descname"><span class="pre">_get_always_working_repr</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#crapssim.strategy.OddsMultiplier._get_always_working_repr" title="Link to this definition"></a></dt>
+<dd><p>Since the default is false, only need to print when True</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.strategy.OddsMultiplier.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#crapssim.strategy.OddsMultiplier.__repr__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.strategy.PassLineOddsMultiplier">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.strategy.</span></span><span class="sig-name descname"><span class="pre">PassLineOddsMultiplier</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">odds_multiplier</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">MultiplierDict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">SupportsFloat</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">always_working</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.strategy.PassLineOddsMultiplier" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">_BaseOddsMultiplier</span></code></p>
+<p>Adds PassLine Odds on specified odds multiplier(s)</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.PassLineOddsMultiplier.bet_type">
+<span class="sig-name descname"><span class="pre">bet_type</span></span><a class="headerlink" href="#crapssim.strategy.PassLineOddsMultiplier.bet_type" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.PassLineOddsMultiplier.default_multiplier">
+<span class="sig-name descname"><span class="pre">default_multiplier</span></span><a class="headerlink" href="#crapssim.strategy.PassLineOddsMultiplier.default_multiplier" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.strategy.BetDontPass">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.strategy.</span></span><span class="sig-name descname"><span class="pre">BetDontPass</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bet_amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsFloat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">StrategyMode.ADD_IF_POINT_OFF</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.strategy.BetDontPass" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">_BaseSingleBet</span></code></p>
+<p>Base helper for wrapping a single <code class="xref py py-class docutils literal notranslate"><span class="pre">Bet</span></code> in a strategy.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.strategy.BetPassLine">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.strategy.</span></span><span class="sig-name descname"><span class="pre">BetPassLine</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bet_amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsFloat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">StrategyMode.ADD_IF_POINT_OFF</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.strategy.BetPassLine" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">_BaseSingleBet</span></code></p>
+<p>Base helper for wrapping a single <code class="xref py py-class docutils literal notranslate"><span class="pre">Bet</span></code> in a strategy.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.strategy.BetPlace">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.strategy.</span></span><span class="sig-name descname"><span class="pre">BetPlace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">place_bet_amounts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="single_bet/index.html#crapssim.strategy.single_bet.StrategyMode" title="crapssim.strategy.single_bet.StrategyMode"><span class="pre">StrategyMode</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">StrategyMode.BET_IF_POINT_ON</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skip_point</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skip_come</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.strategy.BetPlace" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="tools/index.html#crapssim.strategy.tools.Strategy" title="crapssim.strategy.tools.Strategy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">crapssim.strategy.tools.Strategy</span></code></a></p>
+<p>Strategy that makes multiple Place bets of given amounts. It can also skip making the bet
+if the point is the same as the given bet number.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.BetPlace.place_bet_amounts">
+<span class="sig-name descname"><span class="pre">place_bet_amounts</span></span><a class="headerlink" href="#crapssim.strategy.BetPlace.place_bet_amounts" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.BetPlace.mode">
+<span class="sig-name descname"><span class="pre">mode</span></span><a class="headerlink" href="#crapssim.strategy.BetPlace.mode" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.BetPlace.skip_point">
+<span class="sig-name descname"><span class="pre">skip_point</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#crapssim.strategy.BetPlace.skip_point" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.BetPlace.skip_come">
+<span class="sig-name descname"><span class="pre">skip_come</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#crapssim.strategy.BetPlace.skip_come" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.strategy.BetPlace.completed">
+<span class="sig-name descname"><span class="pre">completed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">crapssim.strategy.tools.Player</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#crapssim.strategy.BetPlace.completed" title="Link to this definition"></a></dt>
+<dd><p>The strategy is completed if the player can no longer make any of the place bets in the
+place_bet_amounts dictionary and there are no Place bets on the table.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>player</strong> – The player to check the bankroll for</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><em>True if there are no Place bets on the table and the player can’t make any more Place bets</em></p></li>
+<li><p><em>because their bankroll is too low.</em></p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.strategy.BetPlace.update_bets">
+<span class="sig-name descname"><span class="pre">update_bets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">crapssim.strategy.tools.Player</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#crapssim.strategy.BetPlace.update_bets" title="Link to this definition"></a></dt>
+<dd><p>Add the place bets on the numbers and amounts defined by place_bet_amounts.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>player</strong> – The player to add the place bets to.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.strategy.BetPlace.remove_point_bet">
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">remove_point_bet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">crapssim.strategy.tools.Player</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#crapssim.strategy.BetPlace.remove_point_bet" title="Link to this definition"></a></dt>
+<dd><p>If skip_point is true and the player has a place bet for the table point number,
+remove the Place bet.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>player</strong> – The player to check and see if they have the given bet.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.strategy.BetPlace.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#crapssim.strategy.BetPlace.__repr__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.strategy.AddIfNewShooter">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.strategy.</span></span><span class="sig-name descname"><span class="pre">AddIfNewShooter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bet</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../bet/index.html#crapssim.bet.Bet" title="crapssim.bet.Bet"><span class="pre">crapssim.bet.Bet</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.strategy.AddIfNewShooter" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#crapssim.strategy.AddIfTrue" title="crapssim.strategy.AddIfTrue"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AddIfTrue</span></code></a></p>
+<p>Strategy that adds a bet if there is a new shooter at the table, and the Player doesn’t have a bet on the
+table. Equivalent to AddIfTrue(bet, lambda p: p.table.new_shooter and bet not in p.bets)</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.strategy.AddIfNewShooter.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#crapssim.strategy.AddIfNewShooter.__repr__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.strategy.AddIfNotBet">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.strategy.</span></span><span class="sig-name descname"><span class="pre">AddIfNotBet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bet</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../bet/index.html#crapssim.bet.Bet" title="crapssim.bet.Bet"><span class="pre">crapssim.bet.Bet</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.strategy.AddIfNotBet" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#crapssim.strategy.AddIfTrue" title="crapssim.strategy.AddIfTrue"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AddIfTrue</span></code></a></p>
+<p>Strategy that adds a bet if it isn’t on the table for that player. Equivalent of
+AddIfTrue(bet, lambda p: bet not in p.bets)</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.strategy.AddIfNotBet.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#crapssim.strategy.AddIfNotBet.__repr__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.strategy.AddIfPointOff">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.strategy.</span></span><span class="sig-name descname"><span class="pre">AddIfPointOff</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bet</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../bet/index.html#crapssim.bet.Bet" title="crapssim.bet.Bet"><span class="pre">crapssim.bet.Bet</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.strategy.AddIfPointOff" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#crapssim.strategy.AddIfTrue" title="crapssim.strategy.AddIfTrue"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AddIfTrue</span></code></a></p>
+<p>Strategy that adds a bet if the table point is Off, and the Player doesn’t have a bet on the
+table. Equivalent to AddIfTrue(bet, lambda p: p.table.point.status == “Off”</p>
+<blockquote>
+<div><p>and bet not in p.bets)</p>
+</div></blockquote>
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.strategy.AddIfPointOff.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#crapssim.strategy.AddIfPointOff.__repr__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.strategy.AddIfPointOn">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.strategy.</span></span><span class="sig-name descname"><span class="pre">AddIfPointOn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bet</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../bet/index.html#crapssim.bet.Bet" title="crapssim.bet.Bet"><span class="pre">crapssim.bet.Bet</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.strategy.AddIfPointOn" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#crapssim.strategy.AddIfTrue" title="crapssim.strategy.AddIfTrue"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AddIfTrue</span></code></a></p>
+<p>Strategy that adds a bet if the table point is On, and the Player doesn’t have a bet on the
+table. Equivalent to AddIfTrue(bet, lambda p: p.table.point.status == “On”</p>
+<blockquote>
+<div><p>and bet not in p.bets)</p>
+</div></blockquote>
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.strategy.AddIfPointOn.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#crapssim.strategy.AddIfPointOn.__repr__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.strategy.AddIfTrue">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.strategy.</span></span><span class="sig-name descname"><span class="pre">AddIfTrue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bet</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../bet/index.html#crapssim.bet.Bet" title="crapssim.bet.Bet"><span class="pre">crapssim.bet.Bet</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../index.html#crapssim.Player" title="crapssim.Player"><span class="pre">Player</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.strategy.AddIfTrue" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#crapssim.strategy.Strategy" title="crapssim.strategy.Strategy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Strategy</span></code></a></p>
+<p>Strategy that places a bet if a given key taking Player as a parameter is True.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.AddIfTrue.bet">
+<span class="sig-name descname"><span class="pre">bet</span></span><a class="headerlink" href="#crapssim.strategy.AddIfTrue.bet" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.AddIfTrue.key">
+<span class="sig-name descname"><span class="pre">key</span></span><a class="headerlink" href="#crapssim.strategy.AddIfTrue.key" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.strategy.AddIfTrue.update_bets">
+<span class="sig-name descname"><span class="pre">update_bets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#crapssim.Player" title="crapssim.Player"><span class="pre">Player</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#crapssim.strategy.AddIfTrue.update_bets" title="Link to this definition"></a></dt>
+<dd><p>If the key is True add the bet to the player and table.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>player</strong> – The Player to add the bet for.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.strategy.AddIfTrue.completed">
+<span class="sig-name descname"><span class="pre">completed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#crapssim.Player" title="crapssim.Player"><span class="pre">Player</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#crapssim.strategy.AddIfTrue.completed" title="Link to this definition"></a></dt>
+<dd><dl class="simple">
+<dt>The strategy is completed when the player  can’t make a bet because their bankroll is too</dt><dd><p>low and the player doesn’t have any bets left on the table.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>player</strong> – The player to check whether the</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if the Player can’t continue the strategy, otherwise False.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.strategy.AddIfTrue.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#crapssim.strategy.AddIfTrue.__repr__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.strategy.AddIfTrue.__eq__">
+<span class="sig-name descname"><span class="pre">__eq__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#crapssim.strategy.AddIfTrue.__eq__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.strategy.AggregateStrategy">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.strategy.</span></span><span class="sig-name descname"><span class="pre">AggregateStrategy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">strategies</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#crapssim.strategy.Strategy" title="crapssim.strategy.Strategy"><span class="pre">Strategy</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.strategy.AggregateStrategy" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#crapssim.strategy.Strategy" title="crapssim.strategy.Strategy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Strategy</span></code></a></p>
+<p>A combination of multiple strategies.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.AggregateStrategy.strategies">
+<span class="sig-name descname"><span class="pre">strategies</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">()</span></em><a class="headerlink" href="#crapssim.strategy.AggregateStrategy.strategies" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.strategy.AggregateStrategy.update_bets">
+<span class="sig-name descname"><span class="pre">update_bets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#crapssim.Player" title="crapssim.Player"><span class="pre">Player</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#crapssim.strategy.AggregateStrategy.update_bets" title="Link to this definition"></a></dt>
+<dd><p>Go through each of the strategies and run its update_bets method if the strategy has
+not been completed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>player</strong> – The player to update the bets for.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.strategy.AggregateStrategy.completed">
+<span class="sig-name descname"><span class="pre">completed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#crapssim.Player" title="crapssim.Player"><span class="pre">Player</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#crapssim.strategy.AggregateStrategy.completed" title="Link to this definition"></a></dt>
+<dd><p>Returns True if all the strategies in the AggregateStrategy are completed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>player</strong> – The Player to check the strategy for.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>A boolean representing whether the given strategy</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.strategy.AggregateStrategy.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#crapssim.strategy.AggregateStrategy.__repr__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.strategy.CountStrategy">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.strategy.</span></span><span class="sig-name descname"><span class="pre">CountStrategy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bet_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">type</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../bet/index.html#crapssim.bet.Bet" title="crapssim.bet.Bet"><span class="pre">crapssim.bet.Bet</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">type</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../bet/index.html#crapssim.bet.Bet" title="crapssim.bet.Bet"><span class="pre">crapssim.bet.Bet</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Ellipsis</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">count</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bet</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../bet/index.html#crapssim.bet.Bet" title="crapssim.bet.Bet"><span class="pre">crapssim.bet.Bet</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.strategy.CountStrategy" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#crapssim.strategy.AddIfTrue" title="crapssim.strategy.AddIfTrue"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AddIfTrue</span></code></a></p>
+<p>Strategy that checks how many bets exist of a certain type. If the number of bets of that
+type is less than the given count, it places the bet (if the bet isn’t already on the table.)</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.CountStrategy.bet_type">
+<span class="sig-name descname"><span class="pre">bet_type</span></span><a class="headerlink" href="#crapssim.strategy.CountStrategy.bet_type" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.CountStrategy.count">
+<span class="sig-name descname"><span class="pre">count</span></span><a class="headerlink" href="#crapssim.strategy.CountStrategy.count" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.strategy.CountStrategy.key">
+<span class="sig-name descname"><span class="pre">key</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#crapssim.Player" title="crapssim.Player"><span class="pre">Player</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#crapssim.strategy.CountStrategy.key" title="Link to this definition"></a></dt>
+<dd><p>Return True when the player is below the threshold for <code class="docutils literal notranslate"><span class="pre">bet_type</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.strategy.CountStrategy.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#crapssim.strategy.CountStrategy.__repr__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.strategy.RemoveIfPointOff">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.strategy.</span></span><span class="sig-name descname"><span class="pre">RemoveIfPointOff</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bet</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../bet/index.html#crapssim.bet.Bet" title="crapssim.bet.Bet"><span class="pre">crapssim.bet.Bet</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.strategy.RemoveIfPointOff" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#crapssim.strategy.RemoveIfTrue" title="crapssim.strategy.RemoveIfTrue"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RemoveIfTrue</span></code></a></p>
+<p>Strategy that removes a bet if the table point is Off</p>
+<p>This will match bets based on type, and number for Place and Hardway bets.
+It will not consider bet amounts when matching.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.RemoveIfPointOff.bet">
+<span class="sig-name descname"><span class="pre">bet</span></span><a class="headerlink" href="#crapssim.strategy.RemoveIfPointOff.bet" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.strategy.RemoveIfPointOff.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#crapssim.strategy.RemoveIfPointOff.__repr__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.strategy.RemoveIfTrue">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.strategy.</span></span><span class="sig-name descname"><span class="pre">RemoveIfTrue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../bet/index.html#crapssim.bet.Bet" title="crapssim.bet.Bet"><span class="pre">crapssim.bet.Bet</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../index.html#crapssim.Player" title="crapssim.Player"><span class="pre">Player</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.strategy.RemoveIfTrue" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#crapssim.strategy.Strategy" title="crapssim.strategy.Strategy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Strategy</span></code></a></p>
+<p>Strategy that removes all bets that are True for a given key. The key takes the Bet and the
+Player as parameters.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.RemoveIfTrue.key">
+<span class="sig-name descname"><span class="pre">key</span></span><a class="headerlink" href="#crapssim.strategy.RemoveIfTrue.key" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.strategy.RemoveIfTrue.update_bets">
+<span class="sig-name descname"><span class="pre">update_bets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#crapssim.Player" title="crapssim.Player"><span class="pre">Player</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#crapssim.strategy.RemoveIfTrue.update_bets" title="Link to this definition"></a></dt>
+<dd><p>For each of the players bets if the key is True remove the bet from the table.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>player</strong> – The Player to remove the bets for.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.strategy.RemoveIfTrue.completed">
+<span class="sig-name descname"><span class="pre">completed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#crapssim.Player" title="crapssim.Player"><span class="pre">Player</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#crapssim.strategy.RemoveIfTrue.completed" title="Link to this definition"></a></dt>
+<dd><p>The strategy is completed when the player doesn’t have any bets left on the table.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>player</strong> – The player to check whether the</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if the Player can’t continue the strategy, otherwise False.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.strategy.RemoveIfTrue.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#crapssim.strategy.RemoveIfTrue.__repr__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.strategy.Strategy">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.strategy.</span></span><span class="sig-name descname"><span class="pre">Strategy</span></span><a class="headerlink" href="#crapssim.strategy.Strategy" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
+<p>A Strategy is assigned to a player and determines what bets the player
+is going to make, remove, or change.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.strategy.Strategy.after_roll">
+<span class="sig-name descname"><span class="pre">after_roll</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#crapssim.Player" title="crapssim.Player"><span class="pre">Player</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#crapssim.strategy.Strategy.after_roll" title="Link to this definition"></a></dt>
+<dd><p>Update the Strategy after the dice are rolled but before the bets and the table are updated.</p>
+<p>For example, if you wanted to know whether the
+point changed from on to off you could do <cite>self.point_lost = table.point.status = “On” and
+table.dice.roll.total == 7</cite>. You could not do this in <a class="reference internal" href="#crapssim.strategy.Strategy" title="crapssim.strategy.Strategy"><code class="xref py py-func docutils literal notranslate"><span class="pre">Strategy()</span></code></a>’s <a class="reference internal" href="#crapssim.strategy.Strategy.update_bets" title="crapssim.strategy.Strategy.update_bets"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_bets()</span></code></a>
+method, since the table has already been updated setting the point’s status to Off. Other examples
+include counting the number of place bets that had won after the roll, counting total winnings
+for certain bets, or recording the starting bankroll upon a new shooter (to later have logic
+based on winnings of that shooter).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>player</strong> – The Player to check for bets, etc.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.strategy.Strategy.completed">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">completed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#crapssim.Player" title="crapssim.Player"><span class="pre">Player</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#crapssim.strategy.Strategy.completed" title="Link to this definition"></a></dt>
+<dd><p>If True, the Strategy is completed and the Player stops playing. If False, the Player
+keeps playing the Strategy.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.strategy.Strategy.update_bets">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">update_bets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../index.html#crapssim.Player" title="crapssim.Player"><span class="pre">Player</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#crapssim.strategy.Strategy.update_bets" title="Link to this definition"></a></dt>
+<dd><p>Add, remove, or change the bets on the table.</p>
+<p>This method is applied after the dice are rolled, the bets are updated,
+and the table is updated. It triggers in <a class="reference internal" href="../table/index.html#crapssim.table.TableUpdate.run_strategies" title="crapssim.table.TableUpdate.run_strategies"><code class="xref py py-meth docutils literal notranslate"><span class="pre">table.TableUpdate.run_strategies()</span></code></a>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.strategy.Strategy.__add__">
+<span class="sig-name descname"><span class="pre">__add__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#crapssim.strategy.Strategy" title="crapssim.strategy.Strategy"><span class="pre">Strategy</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#crapssim.strategy.AggregateStrategy" title="crapssim.strategy.AggregateStrategy"><span class="pre">AggregateStrategy</span></a></span></span><a class="headerlink" href="#crapssim.strategy.Strategy.__add__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.strategy.Strategy.__eq__">
+<span class="sig-name descname"><span class="pre">__eq__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#crapssim.strategy.Strategy.__eq__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.strategy.Strategy.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#crapssim.strategy.Strategy.__repr__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../point/index.html" class="btn btn-neutral float-left" title="crapssim.point" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="examples/index.html" class="btn btn-neutral float-right" title="crapssim.strategy.examples" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Sean Kent.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

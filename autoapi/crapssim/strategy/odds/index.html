@@ -1,0 +1,787 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>crapssim.strategy.odds &mdash; crapssim 0.3.2 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../_static/documentation_options.js?v=71d9d8e6"></script>
+      <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="crapssim.strategy.single_bet" href="../single_bet/index.html" />
+    <link rel="prev" title="crapssim.strategy.examples" href="../examples/index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            crapssim
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Examples and Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorial-strategy-01.html">Strategy Tutorial 1: Starting off</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../crapssim_sandbox.html">Sandbox</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../changelog.html">Change Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../supported-bets.html">Supported Bets</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html">crapssim</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../../index.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../../bet/index.html">crapssim.bet</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../dice/index.html">crapssim.dice</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../point/index.html">crapssim.point</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../index.html">crapssim.strategy</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../table/index.html">crapssim.table</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../index.html#package-contents">Package Contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">crapssim</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">API Reference</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">crapssim</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">crapssim.strategy</a></li>
+      <li class="breadcrumb-item active">crapssim.strategy.odds</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../../_sources/autoapi/crapssim/strategy/odds/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-crapssim.strategy.odds">
+<span id="crapssim-strategy-odds"></span><h1>crapssim.strategy.odds<a class="headerlink" href="#module-crapssim.strategy.odds" title="Link to this heading"></a></h1>
+<section id="attributes">
+<h2>Attributes<a class="headerlink" href="#attributes" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#crapssim.strategy.odds.MultiplierDict" title="crapssim.strategy.odds.MultiplierDict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MultiplierDict</span></code></a></p></td>
+<td><p>For odds multipliers keyed by point number (4/5/6/8/9/10)</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="classes">
+<h2>Classes<a class="headerlink" href="#classes" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#crapssim.strategy.odds.OddsAmount" title="crapssim.strategy.odds.OddsAmount"><code class="xref py py-obj docutils literal notranslate"><span class="pre">OddsAmount</span></code></a></p></td>
+<td><p>Adds Odds for the bet type and specified numbers</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#crapssim.strategy.odds._BaseOddsAmount" title="crapssim.strategy.odds._BaseOddsAmount"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_BaseOddsAmount</span></code></a></p></td>
+<td><p>Helper to define OddsAmount strategies for each bet type.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#crapssim.strategy.odds.PassLineOddsAmount" title="crapssim.strategy.odds.PassLineOddsAmount"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PassLineOddsAmount</span></code></a></p></td>
+<td><p>Adds PassLine Odds on specified numbers</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#crapssim.strategy.odds.DontPassOddsAmount" title="crapssim.strategy.odds.DontPassOddsAmount"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DontPassOddsAmount</span></code></a></p></td>
+<td><p>Adds DontPass Odds on specified numbers</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#crapssim.strategy.odds.ComeOddsAmount" title="crapssim.strategy.odds.ComeOddsAmount"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ComeOddsAmount</span></code></a></p></td>
+<td><p>Adds Come Odds on specified numbers</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#crapssim.strategy.odds.DontComeOddsAmount" title="crapssim.strategy.odds.DontComeOddsAmount"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DontComeOddsAmount</span></code></a></p></td>
+<td><p>Adds DontCome Odds on specified numbers</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#crapssim.strategy.odds.PutOddsAmount" title="crapssim.strategy.odds.PutOddsAmount"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PutOddsAmount</span></code></a></p></td>
+<td><p>Adds Put Odds on specified numbers</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#crapssim.strategy.odds.OddsMultiplier" title="crapssim.strategy.odds.OddsMultiplier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">OddsMultiplier</span></code></a></p></td>
+<td><p>Adds Odds for the bet type and desired odds multiplier</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#crapssim.strategy.odds._BaseOddsMultiplier" title="crapssim.strategy.odds._BaseOddsMultiplier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_BaseOddsMultiplier</span></code></a></p></td>
+<td><p>Helper to define OddsMultiplier strategies for each bet type.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#crapssim.strategy.odds.PassLineOddsMultiplier" title="crapssim.strategy.odds.PassLineOddsMultiplier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PassLineOddsMultiplier</span></code></a></p></td>
+<td><p>Adds PassLine Odds on specified odds multiplier(s)</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#crapssim.strategy.odds.DontPassOddsMultiplier" title="crapssim.strategy.odds.DontPassOddsMultiplier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DontPassOddsMultiplier</span></code></a></p></td>
+<td><p>Adds DontPass Odds on specified odds multiplier(s)</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#crapssim.strategy.odds.ComeOddsMultiplier" title="crapssim.strategy.odds.ComeOddsMultiplier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ComeOddsMultiplier</span></code></a></p></td>
+<td><p>Adds Come Odds on specified odds multiplier(s)</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#crapssim.strategy.odds.DontComeOddsMultiplier" title="crapssim.strategy.odds.DontComeOddsMultiplier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DontComeOddsMultiplier</span></code></a></p></td>
+<td><p>Adds DontCome Odds on specified odds multiplier(s)</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#crapssim.strategy.odds.PutOddsMultiplier" title="crapssim.strategy.odds.PutOddsMultiplier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PutOddsMultiplier</span></code></a></p></td>
+<td><p>Adds Put Odds on specified odds multiplier(s)</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#crapssim.strategy.odds.WinMultiplier" title="crapssim.strategy.odds.WinMultiplier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">WinMultiplier</span></code></a></p></td>
+<td><p>Adds Odds for the bet type and multiplier desired to win</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#crapssim.strategy.odds._BaseWinMultiplier" title="crapssim.strategy.odds._BaseWinMultiplier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_BaseWinMultiplier</span></code></a></p></td>
+<td><p>Helper to define win multiplier strategies for each bet type.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#crapssim.strategy.odds.PassLineWinMultiplier" title="crapssim.strategy.odds.PassLineWinMultiplier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PassLineWinMultiplier</span></code></a></p></td>
+<td><p>Adds PassLine Odds to win specified multiplier(s)</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#crapssim.strategy.odds.DontPassWinMultiplier" title="crapssim.strategy.odds.DontPassWinMultiplier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DontPassWinMultiplier</span></code></a></p></td>
+<td><p>Adds DontPass Odds to win specified multiplier(s)</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#crapssim.strategy.odds.ComeWinMultiplier" title="crapssim.strategy.odds.ComeWinMultiplier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ComeWinMultiplier</span></code></a></p></td>
+<td><p>Adds Come Odds to win specified multiplier(s)</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#crapssim.strategy.odds.DontComeWinMultiplier" title="crapssim.strategy.odds.DontComeWinMultiplier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DontComeWinMultiplier</span></code></a></p></td>
+<td><p>Adds DontCome Odds to win specified multiplier(s)</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#crapssim.strategy.odds.PutWinMultiplier" title="crapssim.strategy.odds.PutWinMultiplier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PutWinMultiplier</span></code></a></p></td>
+<td><p>Adds Put Odds to win specified multiplier(s)</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#crapssim.strategy.odds._expand_multiplier_dict" title="crapssim.strategy.odds._expand_multiplier_dict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_expand_multiplier_dict</span></code></a>(→ MultiplierDict)</p></td>
+<td><p>Helper to expand multiplier dictionary if it's only a float.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#crapssim.strategy.odds._condense_multiplier_dict" title="crapssim.strategy.odds._condense_multiplier_dict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_condense_multiplier_dict</span></code></a>(→ SupportsFloat | MultiplierDict)</p></td>
+<td><p>Helper to condense multiplier dictionary if all are the same</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading"></a></h2>
+<dl class="py type">
+<dt class="sig sig-object py" id="crapssim.strategy.odds.MultiplierDict">
+<em class="property"><span class="k"><span class="pre">type</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.strategy.odds.</span></span><span class="sig-name descname"><span class="pre">MultiplierDict</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">SupportsFloat</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#crapssim.strategy.odds.MultiplierDict" title="Link to this definition"></a></dt>
+<dd><p>For odds multipliers keyed by point number (4/5/6/8/9/10)</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="crapssim.strategy.odds._expand_multiplier_dict">
+<span class="sig-prename descclassname"><span class="pre">crapssim.strategy.odds.</span></span><span class="sig-name descname"><span class="pre">_expand_multiplier_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">multiplier</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsFloat</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">MultiplierDict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">MultiplierDict</span></span></span><a class="headerlink" href="#crapssim.strategy.odds._expand_multiplier_dict" title="Link to this definition"></a></dt>
+<dd><p>Helper to expand multiplier dictionary if it’s only a float.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>multiplier</strong> – A dictionary of point numbers and their associated
+multipliers or a float to be applied to all point numbers.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="crapssim.strategy.odds._condense_multiplier_dict">
+<span class="sig-prename descclassname"><span class="pre">crapssim.strategy.odds.</span></span><span class="sig-name descname"><span class="pre">_condense_multiplier_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">multiplier</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">MultiplierDict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">SupportsFloat</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">MultiplierDict</span></span></span><a class="headerlink" href="#crapssim.strategy.odds._condense_multiplier_dict" title="Link to this definition"></a></dt>
+<dd><p>Helper to condense multiplier dictionary if all are the same</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>multiplier</strong> – A dictionary of point numbers and their associated
+multipliers.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.strategy.odds.OddsAmount">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.strategy.odds.</span></span><span class="sig-name descname"><span class="pre">OddsAmount</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">type</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../../bet/index.html#crapssim.bet.PassLine" title="crapssim.bet.PassLine"><span class="pre">crapssim.bet.PassLine</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../../bet/index.html#crapssim.bet.DontPass" title="crapssim.bet.DontPass"><span class="pre">crapssim.bet.DontPass</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../../bet/index.html#crapssim.bet.Come" title="crapssim.bet.Come"><span class="pre">crapssim.bet.Come</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../../bet/index.html#crapssim.bet.DontCome" title="crapssim.bet.DontCome"><span class="pre">crapssim.bet.DontCome</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../../bet/index.html#crapssim.bet.Put" title="crapssim.bet.Put"><span class="pre">crapssim.bet.Put</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">odds_amounts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsFloat</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">MultiplierDict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">always_working</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.strategy.odds.OddsAmount" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="../tools/index.html#crapssim.strategy.tools.Strategy" title="crapssim.strategy.tools.Strategy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">crapssim.strategy.tools.Strategy</span></code></a></p>
+<p>Adds Odds for the bet type and specified numbers</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>base_type</strong> – The bet that odds will be added to.</p></li>
+<li><p><strong>odds_amounts</strong> – A dictionary of point numbers and the amount to bet
+on each number.</p></li>
+<li><p><strong>always_working</strong> (<em>bool</em>) – Whether the odds are working when the point is off.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.odds.OddsAmount.base_type">
+<span class="sig-name descname"><span class="pre">base_type</span></span><a class="headerlink" href="#crapssim.strategy.odds.OddsAmount.base_type" title="Link to this definition"></a></dt>
+<dd><p>The bet that odds will be added to.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.odds.OddsAmount.odds_amounts">
+<span class="sig-name descname"><span class="pre">odds_amounts</span></span><a class="headerlink" href="#crapssim.strategy.odds.OddsAmount.odds_amounts" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.odds.OddsAmount.always_working">
+<span class="sig-name descname"><span class="pre">always_working</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#crapssim.strategy.odds.OddsAmount.always_working" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.strategy.odds.OddsAmount.completed">
+<span class="sig-name descname"><span class="pre">completed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">crapssim.strategy.tools.Player</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#crapssim.strategy.odds.OddsAmount.completed" title="Link to this definition"></a></dt>
+<dd><p>Return True if there are no bets of base_type on the table.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>player</strong> – The player whose bets to check for.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if there are no base type bets on the table, otherwise False.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.strategy.odds.OddsAmount.update_bets">
+<span class="sig-name descname"><span class="pre">update_bets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">crapssim.strategy.tools.Player</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#crapssim.strategy.odds.OddsAmount.update_bets" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.strategy.odds.OddsAmount._get_always_working_repr">
+<span class="sig-name descname"><span class="pre">_get_always_working_repr</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#crapssim.strategy.odds.OddsAmount._get_always_working_repr" title="Link to this definition"></a></dt>
+<dd><p>Since the default is false, only need to print when True</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.strategy.odds.OddsAmount.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.strategy.odds.OddsAmount.__repr__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.strategy.odds._BaseOddsAmount">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.strategy.odds.</span></span><span class="sig-name descname"><span class="pre">_BaseOddsAmount</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bet_amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsFloat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">numbers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">(4,</span> <span class="pre">5,</span> <span class="pre">6,</span> <span class="pre">8,</span> <span class="pre">9,</span> <span class="pre">10)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">always_working</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.strategy.odds._BaseOddsAmount" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#crapssim.strategy.odds.OddsAmount" title="crapssim.strategy.odds.OddsAmount"><code class="xref py py-obj docutils literal notranslate"><span class="pre">OddsAmount</span></code></a></p>
+<p>Helper to define OddsAmount strategies for each bet type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bet_amount</strong> – The amount to bet on each specified number.</p></li>
+<li><p><strong>numbers</strong> – The point numbers to place the odds on. Defaults to (4, 5, 6, 8, 9, 10).</p></li>
+<li><p><strong>always_working</strong> (<em>bool</em>) – Whether the odds are working when the point is off.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.odds._BaseOddsAmount.bet_type">
+<span class="sig-name descname"><span class="pre">bet_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">type</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../../bet/index.html#crapssim.bet.PassLine" title="crapssim.bet.PassLine"><span class="pre">crapssim.bet.PassLine</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../../bet/index.html#crapssim.bet.DontPass" title="crapssim.bet.DontPass"><span class="pre">crapssim.bet.DontPass</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../../bet/index.html#crapssim.bet.Come" title="crapssim.bet.Come"><span class="pre">crapssim.bet.Come</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../../bet/index.html#crapssim.bet.DontCome" title="crapssim.bet.DontCome"><span class="pre">crapssim.bet.DontCome</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../../bet/index.html#crapssim.bet.Put" title="crapssim.bet.Put"><span class="pre">crapssim.bet.Put</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#crapssim.strategy.odds._BaseOddsAmount.bet_type" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.odds._BaseOddsAmount.bet_amount">
+<span class="sig-name descname"><span class="pre">bet_amount</span></span><a class="headerlink" href="#crapssim.strategy.odds._BaseOddsAmount.bet_amount" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.odds._BaseOddsAmount.numbers">
+<span class="sig-name descname"><span class="pre">numbers</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(4,</span> <span class="pre">5,</span> <span class="pre">6,</span> <span class="pre">8,</span> <span class="pre">9,</span> <span class="pre">10)</span></em><a class="headerlink" href="#crapssim.strategy.odds._BaseOddsAmount.numbers" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.strategy.odds._BaseOddsAmount.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#crapssim.strategy.odds._BaseOddsAmount.__repr__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.strategy.odds.PassLineOddsAmount">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.strategy.odds.</span></span><span class="sig-name descname"><span class="pre">PassLineOddsAmount</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bet_amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsFloat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">numbers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">(4,</span> <span class="pre">5,</span> <span class="pre">6,</span> <span class="pre">8,</span> <span class="pre">9,</span> <span class="pre">10)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">always_working</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.strategy.odds.PassLineOddsAmount" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#crapssim.strategy.odds._BaseOddsAmount" title="crapssim.strategy.odds._BaseOddsAmount"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_BaseOddsAmount</span></code></a></p>
+<p>Adds PassLine Odds on specified numbers</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.odds.PassLineOddsAmount.bet_type">
+<span class="sig-name descname"><span class="pre">bet_type</span></span><a class="headerlink" href="#crapssim.strategy.odds.PassLineOddsAmount.bet_type" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.strategy.odds.DontPassOddsAmount">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.strategy.odds.</span></span><span class="sig-name descname"><span class="pre">DontPassOddsAmount</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bet_amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsFloat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">numbers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">(4,</span> <span class="pre">5,</span> <span class="pre">6,</span> <span class="pre">8,</span> <span class="pre">9,</span> <span class="pre">10)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">always_working</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.strategy.odds.DontPassOddsAmount" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#crapssim.strategy.odds._BaseOddsAmount" title="crapssim.strategy.odds._BaseOddsAmount"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_BaseOddsAmount</span></code></a></p>
+<p>Adds DontPass Odds on specified numbers</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.odds.DontPassOddsAmount.bet_type">
+<span class="sig-name descname"><span class="pre">bet_type</span></span><a class="headerlink" href="#crapssim.strategy.odds.DontPassOddsAmount.bet_type" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.strategy.odds.ComeOddsAmount">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.strategy.odds.</span></span><span class="sig-name descname"><span class="pre">ComeOddsAmount</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bet_amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsFloat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">numbers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">(4,</span> <span class="pre">5,</span> <span class="pre">6,</span> <span class="pre">8,</span> <span class="pre">9,</span> <span class="pre">10)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">always_working</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.strategy.odds.ComeOddsAmount" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#crapssim.strategy.odds._BaseOddsAmount" title="crapssim.strategy.odds._BaseOddsAmount"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_BaseOddsAmount</span></code></a></p>
+<p>Adds Come Odds on specified numbers</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.odds.ComeOddsAmount.bet_type">
+<span class="sig-name descname"><span class="pre">bet_type</span></span><a class="headerlink" href="#crapssim.strategy.odds.ComeOddsAmount.bet_type" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.strategy.odds.DontComeOddsAmount">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.strategy.odds.</span></span><span class="sig-name descname"><span class="pre">DontComeOddsAmount</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bet_amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsFloat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">numbers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">(4,</span> <span class="pre">5,</span> <span class="pre">6,</span> <span class="pre">8,</span> <span class="pre">9,</span> <span class="pre">10)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">always_working</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.strategy.odds.DontComeOddsAmount" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#crapssim.strategy.odds._BaseOddsAmount" title="crapssim.strategy.odds._BaseOddsAmount"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_BaseOddsAmount</span></code></a></p>
+<p>Adds DontCome Odds on specified numbers</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.odds.DontComeOddsAmount.bet_type">
+<span class="sig-name descname"><span class="pre">bet_type</span></span><a class="headerlink" href="#crapssim.strategy.odds.DontComeOddsAmount.bet_type" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.strategy.odds.PutOddsAmount">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.strategy.odds.</span></span><span class="sig-name descname"><span class="pre">PutOddsAmount</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bet_amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsFloat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">numbers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">(4,</span> <span class="pre">5,</span> <span class="pre">6,</span> <span class="pre">8,</span> <span class="pre">9,</span> <span class="pre">10)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">always_working</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.strategy.odds.PutOddsAmount" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#crapssim.strategy.odds._BaseOddsAmount" title="crapssim.strategy.odds._BaseOddsAmount"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_BaseOddsAmount</span></code></a></p>
+<p>Adds Put Odds on specified numbers</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.odds.PutOddsAmount.bet_type">
+<span class="sig-name descname"><span class="pre">bet_type</span></span><a class="headerlink" href="#crapssim.strategy.odds.PutOddsAmount.bet_type" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.strategy.odds.OddsMultiplier">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.strategy.odds.</span></span><span class="sig-name descname"><span class="pre">OddsMultiplier</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">type</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../../bet/index.html#crapssim.bet.PassLine" title="crapssim.bet.PassLine"><span class="pre">crapssim.bet.PassLine</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../../bet/index.html#crapssim.bet.DontPass" title="crapssim.bet.DontPass"><span class="pre">crapssim.bet.DontPass</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../../bet/index.html#crapssim.bet.Come" title="crapssim.bet.Come"><span class="pre">crapssim.bet.Come</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../../bet/index.html#crapssim.bet.DontCome" title="crapssim.bet.DontCome"><span class="pre">crapssim.bet.DontCome</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../../bet/index.html#crapssim.bet.Put" title="crapssim.bet.Put"><span class="pre">crapssim.bet.Put</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">odds_multiplier</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">MultiplierDict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">SupportsFloat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">always_working</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.strategy.odds.OddsMultiplier" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="../tools/index.html#crapssim.strategy.tools.Strategy" title="crapssim.strategy.tools.Strategy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">crapssim.strategy.tools.Strategy</span></code></a></p>
+<p>Adds Odds for the bet type and desired odds multiplier</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>base_type</strong> – The bet that odds will be added to.</p></li>
+<li><p><strong>odds_multiplier</strong> – If odds_multiplier is a float, adds multiplier * base_bets amount to the odds.
+If the odds multiplier is a dictionary of floats, looks at the dictionary to
+determine what odds multiplier to use depending on the given point.</p></li>
+<li><p><strong>always_working</strong> (<em>bool</em>) – Whether the odds are working when the point is off.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.odds.OddsMultiplier.base_type">
+<span class="sig-name descname"><span class="pre">base_type</span></span><a class="headerlink" href="#crapssim.strategy.odds.OddsMultiplier.base_type" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.odds.OddsMultiplier.always_working">
+<span class="sig-name descname"><span class="pre">always_working</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#crapssim.strategy.odds.OddsMultiplier.always_working" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.odds.OddsMultiplier.odds_multiplier">
+<span class="sig-name descname"><span class="pre">odds_multiplier</span></span><a class="headerlink" href="#crapssim.strategy.odds.OddsMultiplier.odds_multiplier" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.strategy.odds.OddsMultiplier.get_point_number">
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_point_number</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bet</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../bet/index.html#crapssim.bet.Bet" title="crapssim.bet.Bet"><span class="pre">crapssim.bet.Bet</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">table</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">crapssim.strategy.tools.Table</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.strategy.odds.OddsMultiplier.get_point_number" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.strategy.odds.OddsMultiplier.update_bets">
+<span class="sig-name descname"><span class="pre">update_bets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">crapssim.strategy.tools.Player</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#crapssim.strategy.odds.OddsMultiplier.update_bets" title="Link to this definition"></a></dt>
+<dd><p>Add an Odds bet to the given base_types in the amount determined by the odds_multiplier.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>player</strong> – The player to add the odds bet to.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.strategy.odds.OddsMultiplier.completed">
+<span class="sig-name descname"><span class="pre">completed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">crapssim.strategy.tools.Player</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#crapssim.strategy.odds.OddsMultiplier.completed" title="Link to this definition"></a></dt>
+<dd><p>Return True if there are no bets of base_type on the table.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>player</strong> – The player whose bets to check for.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if there are no base type bets on the table, otherwise False.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.strategy.odds.OddsMultiplier._get_always_working_repr">
+<span class="sig-name descname"><span class="pre">_get_always_working_repr</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#crapssim.strategy.odds.OddsMultiplier._get_always_working_repr" title="Link to this definition"></a></dt>
+<dd><p>Since the default is false, only need to print when True</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.strategy.odds.OddsMultiplier.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#crapssim.strategy.odds.OddsMultiplier.__repr__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.strategy.odds._BaseOddsMultiplier">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.strategy.odds.</span></span><span class="sig-name descname"><span class="pre">_BaseOddsMultiplier</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">odds_multiplier</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">MultiplierDict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">SupportsFloat</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">always_working</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.strategy.odds._BaseOddsMultiplier" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#crapssim.strategy.odds.OddsMultiplier" title="crapssim.strategy.odds.OddsMultiplier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">OddsMultiplier</span></code></a></p>
+<p>Helper to define OddsMultiplier strategies for each bet type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>odds_multiplier</strong> – If odds_multiplier is an integer the bet amount is the PassLine bet amount *
+odds_multiplier.  If it’s a dictionary it uses the PassLine bet’s point to determine
+the multiplier. Defaults to {4: 3, 5: 4, 6: 5, 8: 5, 9: 4, 10: 3} which are 345x odds.</p></li>
+<li><p><strong>always_working</strong> (<em>bool</em>) – Whether the odds are working when the point is off.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.odds._BaseOddsMultiplier.bet_type">
+<span class="sig-name descname"><span class="pre">bet_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">type</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../../bet/index.html#crapssim.bet.PassLine" title="crapssim.bet.PassLine"><span class="pre">crapssim.bet.PassLine</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../../bet/index.html#crapssim.bet.DontPass" title="crapssim.bet.DontPass"><span class="pre">crapssim.bet.DontPass</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../../bet/index.html#crapssim.bet.Come" title="crapssim.bet.Come"><span class="pre">crapssim.bet.Come</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../../bet/index.html#crapssim.bet.DontCome" title="crapssim.bet.DontCome"><span class="pre">crapssim.bet.DontCome</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../../bet/index.html#crapssim.bet.Put" title="crapssim.bet.Put"><span class="pre">crapssim.bet.Put</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#crapssim.strategy.odds._BaseOddsMultiplier.bet_type" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.odds._BaseOddsMultiplier.default_multiplier">
+<span class="sig-name descname"><span class="pre">default_multiplier</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">MultiplierDict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">SupportsFloat</span></em><a class="headerlink" href="#crapssim.strategy.odds._BaseOddsMultiplier.default_multiplier" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.strategy.odds._BaseOddsMultiplier.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#crapssim.strategy.odds._BaseOddsMultiplier.__repr__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.strategy.odds.PassLineOddsMultiplier">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.strategy.odds.</span></span><span class="sig-name descname"><span class="pre">PassLineOddsMultiplier</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">odds_multiplier</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">MultiplierDict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">SupportsFloat</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">always_working</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.strategy.odds.PassLineOddsMultiplier" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#crapssim.strategy.odds._BaseOddsMultiplier" title="crapssim.strategy.odds._BaseOddsMultiplier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_BaseOddsMultiplier</span></code></a></p>
+<p>Adds PassLine Odds on specified odds multiplier(s)</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.odds.PassLineOddsMultiplier.bet_type">
+<span class="sig-name descname"><span class="pre">bet_type</span></span><a class="headerlink" href="#crapssim.strategy.odds.PassLineOddsMultiplier.bet_type" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.odds.PassLineOddsMultiplier.default_multiplier">
+<span class="sig-name descname"><span class="pre">default_multiplier</span></span><a class="headerlink" href="#crapssim.strategy.odds.PassLineOddsMultiplier.default_multiplier" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.strategy.odds.DontPassOddsMultiplier">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.strategy.odds.</span></span><span class="sig-name descname"><span class="pre">DontPassOddsMultiplier</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">odds_multiplier</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">MultiplierDict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">SupportsFloat</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">always_working</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.strategy.odds.DontPassOddsMultiplier" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#crapssim.strategy.odds._BaseOddsMultiplier" title="crapssim.strategy.odds._BaseOddsMultiplier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_BaseOddsMultiplier</span></code></a></p>
+<p>Adds DontPass Odds on specified odds multiplier(s)</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.odds.DontPassOddsMultiplier.bet_type">
+<span class="sig-name descname"><span class="pre">bet_type</span></span><a class="headerlink" href="#crapssim.strategy.odds.DontPassOddsMultiplier.bet_type" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.odds.DontPassOddsMultiplier.default_multiplier">
+<span class="sig-name descname"><span class="pre">default_multiplier</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">6.0</span></em><a class="headerlink" href="#crapssim.strategy.odds.DontPassOddsMultiplier.default_multiplier" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.strategy.odds.ComeOddsMultiplier">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.strategy.odds.</span></span><span class="sig-name descname"><span class="pre">ComeOddsMultiplier</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">odds_multiplier</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">MultiplierDict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">SupportsFloat</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">always_working</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.strategy.odds.ComeOddsMultiplier" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#crapssim.strategy.odds._BaseOddsMultiplier" title="crapssim.strategy.odds._BaseOddsMultiplier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_BaseOddsMultiplier</span></code></a></p>
+<p>Adds Come Odds on specified odds multiplier(s)</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.odds.ComeOddsMultiplier.bet_type">
+<span class="sig-name descname"><span class="pre">bet_type</span></span><a class="headerlink" href="#crapssim.strategy.odds.ComeOddsMultiplier.bet_type" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.odds.ComeOddsMultiplier.default_multiplier">
+<span class="sig-name descname"><span class="pre">default_multiplier</span></span><a class="headerlink" href="#crapssim.strategy.odds.ComeOddsMultiplier.default_multiplier" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.strategy.odds.DontComeOddsMultiplier">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.strategy.odds.</span></span><span class="sig-name descname"><span class="pre">DontComeOddsMultiplier</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">odds_multiplier</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">MultiplierDict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">SupportsFloat</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">always_working</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.strategy.odds.DontComeOddsMultiplier" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#crapssim.strategy.odds._BaseOddsMultiplier" title="crapssim.strategy.odds._BaseOddsMultiplier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_BaseOddsMultiplier</span></code></a></p>
+<p>Adds DontCome Odds on specified odds multiplier(s)</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.odds.DontComeOddsMultiplier.bet_type">
+<span class="sig-name descname"><span class="pre">bet_type</span></span><a class="headerlink" href="#crapssim.strategy.odds.DontComeOddsMultiplier.bet_type" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.odds.DontComeOddsMultiplier.default_multiplier">
+<span class="sig-name descname"><span class="pre">default_multiplier</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">6.0</span></em><a class="headerlink" href="#crapssim.strategy.odds.DontComeOddsMultiplier.default_multiplier" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.strategy.odds.PutOddsMultiplier">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.strategy.odds.</span></span><span class="sig-name descname"><span class="pre">PutOddsMultiplier</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">odds_multiplier</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">MultiplierDict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">SupportsFloat</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">always_working</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.strategy.odds.PutOddsMultiplier" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#crapssim.strategy.odds._BaseOddsMultiplier" title="crapssim.strategy.odds._BaseOddsMultiplier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_BaseOddsMultiplier</span></code></a></p>
+<p>Adds Put Odds on specified odds multiplier(s)</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.odds.PutOddsMultiplier.bet_type">
+<span class="sig-name descname"><span class="pre">bet_type</span></span><a class="headerlink" href="#crapssim.strategy.odds.PutOddsMultiplier.bet_type" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.odds.PutOddsMultiplier.default_multiplier">
+<span class="sig-name descname"><span class="pre">default_multiplier</span></span><a class="headerlink" href="#crapssim.strategy.odds.PutOddsMultiplier.default_multiplier" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.strategy.odds.WinMultiplier">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.strategy.odds.</span></span><span class="sig-name descname"><span class="pre">WinMultiplier</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">type</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../../bet/index.html#crapssim.bet.PassLine" title="crapssim.bet.PassLine"><span class="pre">crapssim.bet.PassLine</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../../bet/index.html#crapssim.bet.DontPass" title="crapssim.bet.DontPass"><span class="pre">crapssim.bet.DontPass</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../../bet/index.html#crapssim.bet.Come" title="crapssim.bet.Come"><span class="pre">crapssim.bet.Come</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../../bet/index.html#crapssim.bet.DontCome" title="crapssim.bet.DontCome"><span class="pre">crapssim.bet.DontCome</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../../bet/index.html#crapssim.bet.Put" title="crapssim.bet.Put"><span class="pre">crapssim.bet.Put</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">win_multiplier</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">MultiplierDict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">SupportsFloat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">always_working</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.strategy.odds.WinMultiplier" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#crapssim.strategy.odds.OddsMultiplier" title="crapssim.strategy.odds.OddsMultiplier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">OddsMultiplier</span></code></a></p>
+<p>Adds Odds for the bet type and multiplier desired to win</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>base_type</strong> – The bet that odds will be added to.</p></li>
+<li><p><strong>win_multiplier</strong> – If win_multiplier is a float, adds amount so that
+multiplier * base_bets is the win amount for the odds.
+If the odds multiplier is a dictionary of floats, looks at the
+dictionary to determine what win multiplier to use
+depending on the given point.</p></li>
+<li><p><strong>always_working</strong> (<em>bool</em>) – Whether the odds are working when the point is off.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.odds.WinMultiplier.win_multiplier">
+<span class="sig-name descname"><span class="pre">win_multiplier</span></span><a class="headerlink" href="#crapssim.strategy.odds.WinMultiplier.win_multiplier" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.strategy.odds.WinMultiplier._convert_win_to_odds_mult">
+<span class="sig-name descname"><span class="pre">_convert_win_to_odds_mult</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">win_multiplier</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">MultiplierDict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">type</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../../bet/index.html#crapssim.bet.PassLine" title="crapssim.bet.PassLine"><span class="pre">crapssim.bet.PassLine</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../../bet/index.html#crapssim.bet.DontPass" title="crapssim.bet.DontPass"><span class="pre">crapssim.bet.DontPass</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../../bet/index.html#crapssim.bet.Come" title="crapssim.bet.Come"><span class="pre">crapssim.bet.Come</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../../bet/index.html#crapssim.bet.DontCome" title="crapssim.bet.DontCome"><span class="pre">crapssim.bet.DontCome</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../../bet/index.html#crapssim.bet.Put" title="crapssim.bet.Put"><span class="pre">crapssim.bet.Put</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">MultiplierDict</span></span></span><a class="headerlink" href="#crapssim.strategy.odds.WinMultiplier._convert_win_to_odds_mult" title="Link to this definition"></a></dt>
+<dd><p>Converts a win multiplier to an odds multiplier</p>
+<p>For example, for the Don’t Pass bet with point of 4, if we want to win
+1x the bet, need to bet 2x odds. A win multiplier of 1.0 will return 2.0.
+The conversion is flipped for a lightside bet. For example, for the Pass
+Line, to win 1x the bet, need 0.5x odds only (note: some casinos won’t
+let you have less than 1x odds at any point, but this function will not
+restrict things)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.strategy.odds.WinMultiplier.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#crapssim.strategy.odds.WinMultiplier.__repr__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.strategy.odds._BaseWinMultiplier">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.strategy.odds.</span></span><span class="sig-name descname"><span class="pre">_BaseWinMultiplier</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">win_multiplier</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">MultiplierDict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">SupportsFloat</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">always_working</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.strategy.odds._BaseWinMultiplier" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#crapssim.strategy.odds.WinMultiplier" title="crapssim.strategy.odds.WinMultiplier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">WinMultiplier</span></code></a></p>
+<p>Helper to define win multiplier strategies for each bet type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>win_multiplier</strong> – If win_multiplier is a float, adds amount so that
+multiplier * base_bets is the win amount for the odds.
+If the odds multiplier is a dictionary of floats, looks at the
+dictionary to determine what win multiplier to use
+depending on the given point.</p></li>
+<li><p><strong>always_working</strong> (<em>bool</em>) – Whether the odds are working when the point is off.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.odds._BaseWinMultiplier.bet_type">
+<span class="sig-name descname"><span class="pre">bet_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">type</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../../bet/index.html#crapssim.bet.PassLine" title="crapssim.bet.PassLine"><span class="pre">crapssim.bet.PassLine</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../../bet/index.html#crapssim.bet.DontPass" title="crapssim.bet.DontPass"><span class="pre">crapssim.bet.DontPass</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../../bet/index.html#crapssim.bet.Come" title="crapssim.bet.Come"><span class="pre">crapssim.bet.Come</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../../bet/index.html#crapssim.bet.DontCome" title="crapssim.bet.DontCome"><span class="pre">crapssim.bet.DontCome</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../../bet/index.html#crapssim.bet.Put" title="crapssim.bet.Put"><span class="pre">crapssim.bet.Put</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#crapssim.strategy.odds._BaseWinMultiplier.bet_type" title="Link to this definition"></a></dt>
+<dd><p>The bet that odds will be added to.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.odds._BaseWinMultiplier.default_multiplier">
+<span class="sig-name descname"><span class="pre">default_multiplier</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">MultiplierDict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">SupportsFloat</span></em><a class="headerlink" href="#crapssim.strategy.odds._BaseWinMultiplier.default_multiplier" title="Link to this definition"></a></dt>
+<dd><p>Win multiplier to use if none is specified.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.strategy.odds._BaseWinMultiplier.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#crapssim.strategy.odds._BaseWinMultiplier.__repr__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.strategy.odds.PassLineWinMultiplier">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.strategy.odds.</span></span><span class="sig-name descname"><span class="pre">PassLineWinMultiplier</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">win_multiplier</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">MultiplierDict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">SupportsFloat</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">always_working</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.strategy.odds.PassLineWinMultiplier" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#crapssim.strategy.odds._BaseWinMultiplier" title="crapssim.strategy.odds._BaseWinMultiplier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_BaseWinMultiplier</span></code></a></p>
+<p>Adds PassLine Odds to win specified multiplier(s)</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.odds.PassLineWinMultiplier.bet_type">
+<span class="sig-name descname"><span class="pre">bet_type</span></span><a class="headerlink" href="#crapssim.strategy.odds.PassLineWinMultiplier.bet_type" title="Link to this definition"></a></dt>
+<dd><p>The bet that odds will be added to.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.odds.PassLineWinMultiplier.default_multiplier">
+<span class="sig-name descname"><span class="pre">default_multiplier</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">6.0</span></em><a class="headerlink" href="#crapssim.strategy.odds.PassLineWinMultiplier.default_multiplier" title="Link to this definition"></a></dt>
+<dd><p>Win multiplier to use if none is specified.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.strategy.odds.DontPassWinMultiplier">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.strategy.odds.</span></span><span class="sig-name descname"><span class="pre">DontPassWinMultiplier</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">win_multiplier</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">MultiplierDict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">SupportsFloat</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">always_working</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.strategy.odds.DontPassWinMultiplier" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#crapssim.strategy.odds._BaseWinMultiplier" title="crapssim.strategy.odds._BaseWinMultiplier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_BaseWinMultiplier</span></code></a></p>
+<p>Adds DontPass Odds to win specified multiplier(s)</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.odds.DontPassWinMultiplier.bet_type">
+<span class="sig-name descname"><span class="pre">bet_type</span></span><a class="headerlink" href="#crapssim.strategy.odds.DontPassWinMultiplier.bet_type" title="Link to this definition"></a></dt>
+<dd><p>The bet that odds will be added to.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.odds.DontPassWinMultiplier.default_multiplier">
+<span class="sig-name descname"><span class="pre">default_multiplier</span></span><a class="headerlink" href="#crapssim.strategy.odds.DontPassWinMultiplier.default_multiplier" title="Link to this definition"></a></dt>
+<dd><p>Win multiplier to use if none is specified.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.strategy.odds.ComeWinMultiplier">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.strategy.odds.</span></span><span class="sig-name descname"><span class="pre">ComeWinMultiplier</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">win_multiplier</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">MultiplierDict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">SupportsFloat</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">always_working</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.strategy.odds.ComeWinMultiplier" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#crapssim.strategy.odds._BaseWinMultiplier" title="crapssim.strategy.odds._BaseWinMultiplier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_BaseWinMultiplier</span></code></a></p>
+<p>Adds Come Odds to win specified multiplier(s)</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.odds.ComeWinMultiplier.bet_type">
+<span class="sig-name descname"><span class="pre">bet_type</span></span><a class="headerlink" href="#crapssim.strategy.odds.ComeWinMultiplier.bet_type" title="Link to this definition"></a></dt>
+<dd><p>The bet that odds will be added to.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.odds.ComeWinMultiplier.default_multiplier">
+<span class="sig-name descname"><span class="pre">default_multiplier</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">6.0</span></em><a class="headerlink" href="#crapssim.strategy.odds.ComeWinMultiplier.default_multiplier" title="Link to this definition"></a></dt>
+<dd><p>Win multiplier to use if none is specified.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.strategy.odds.DontComeWinMultiplier">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.strategy.odds.</span></span><span class="sig-name descname"><span class="pre">DontComeWinMultiplier</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">win_multiplier</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">MultiplierDict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">SupportsFloat</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">always_working</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.strategy.odds.DontComeWinMultiplier" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#crapssim.strategy.odds._BaseWinMultiplier" title="crapssim.strategy.odds._BaseWinMultiplier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_BaseWinMultiplier</span></code></a></p>
+<p>Adds DontCome Odds to win specified multiplier(s)</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.odds.DontComeWinMultiplier.bet_type">
+<span class="sig-name descname"><span class="pre">bet_type</span></span><a class="headerlink" href="#crapssim.strategy.odds.DontComeWinMultiplier.bet_type" title="Link to this definition"></a></dt>
+<dd><p>The bet that odds will be added to.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.odds.DontComeWinMultiplier.default_multiplier">
+<span class="sig-name descname"><span class="pre">default_multiplier</span></span><a class="headerlink" href="#crapssim.strategy.odds.DontComeWinMultiplier.default_multiplier" title="Link to this definition"></a></dt>
+<dd><p>Win multiplier to use if none is specified.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.strategy.odds.PutWinMultiplier">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.strategy.odds.</span></span><span class="sig-name descname"><span class="pre">PutWinMultiplier</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">win_multiplier</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">MultiplierDict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">SupportsFloat</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">always_working</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.strategy.odds.PutWinMultiplier" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#crapssim.strategy.odds._BaseWinMultiplier" title="crapssim.strategy.odds._BaseWinMultiplier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_BaseWinMultiplier</span></code></a></p>
+<p>Adds Put Odds to win specified multiplier(s)</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.odds.PutWinMultiplier.bet_type">
+<span class="sig-name descname"><span class="pre">bet_type</span></span><a class="headerlink" href="#crapssim.strategy.odds.PutWinMultiplier.bet_type" title="Link to this definition"></a></dt>
+<dd><p>The bet that odds will be added to.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.odds.PutWinMultiplier.default_multiplier">
+<span class="sig-name descname"><span class="pre">default_multiplier</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">6.0</span></em><a class="headerlink" href="#crapssim.strategy.odds.PutWinMultiplier.default_multiplier" title="Link to this definition"></a></dt>
+<dd><p>Win multiplier to use if none is specified.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../examples/index.html" class="btn btn-neutral float-left" title="crapssim.strategy.examples" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../single_bet/index.html" class="btn btn-neutral float-right" title="crapssim.strategy.single_bet" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Sean Kent.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

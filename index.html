@@ -1,0 +1,193 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>crapssim &mdash; crapssim 0.3.2 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
+      <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=71d9d8e6"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Tutorial 1: Starting off with strategies" href="tutorial-strategy-01.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="#" class="icon icon-home">
+            crapssim
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Examples and Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="tutorial-strategy-01.html">Strategy Tutorial 1: Starting off</a></li>
+<li class="toctree-l1"><a class="reference internal" href="crapssim_sandbox.html">Sandbox</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Change Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="supported-bets.html">Supported Bets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="autoapi/index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">crapssim</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="#" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">crapssim</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/index.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="crapssim">
+<h1>crapssim<a class="headerlink" href="#crapssim" title="Link to this heading"></a></h1>
+<p><img alt="PyPI" src="https://img.shields.io/pypi/v/crapssim" />
+<img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/skent259/crapssim?style=social" /></p>
+<p>When playing craps in a casino, there are unlimited combinations of ways that that players can place their bets. But, with this freedom comes complexity, and players deserve to know how a strategy could perform in each session. The ‘crapssim’ package is designed answer these tough questions: What’s a fun strategy involving multiple numbers where the house edge doesn’t increase too much? What’s the best amount of passline or don’t pass odds for my bankroll? Does hedging my bet improve my net winnings?</p>
+<p>Crapssim is a python package which runs all of the necessary elements of a Craps table.  The package follows some natural logic:</p>
+<ul class="simple">
+<li><p>a <code class="docutils literal notranslate"><span class="pre">Table</span></code> has <code class="docutils literal notranslate"><span class="pre">Player</span></code>(s) and <code class="docutils literal notranslate"><span class="pre">Dice</span></code> on it</p></li>
+<li><p>the <code class="docutils literal notranslate"><span class="pre">Player</span></code>(s) have <code class="docutils literal notranslate"><span class="pre">Bet</span></code>(s) on the <code class="docutils literal notranslate"><span class="pre">Table</span></code></p></li>
+<li><p>each <code class="docutils literal notranslate"><span class="pre">Player</span></code>’s <code class="docutils literal notranslate"><span class="pre">Strategy</span></code> can automatically set up <code class="docutils literal notranslate"><span class="pre">Bet</span></code>(s)</p></li>
+</ul>
+<p>With these building blocks, crapssim supports</p>
+<ul class="simple">
+<li><p>running <strong>1 session</strong> with <strong>1 player/strategy</strong> to test a realistic day at the craps table,</p></li>
+<li><p>running <strong>many sessions</strong> with <strong>1 player/strategy</strong> to understand how a strategy performs in the long term, or</p></li>
+<li><p>running <strong>many sessions</strong> with <strong>many players/strategies</strong> to simulate how they compare to each other</p></li>
+</ul>
+<p>These powerful options can lead to some unique analysis of the game of craps, such as the following figure comparing 4 strategies with a budget of $200:</p>
+<p><img alt="best-budget-strategies" src="https://user-images.githubusercontent.com/41379385/109597132-404bc280-7add-11eb-848c-1981d57d100a.png" /></p>
+<section id="it-s-easy-to-get-started">
+<h2>It’s easy to get started<a class="headerlink" href="#it-s-easy-to-get-started" title="Link to this heading"></a></h2>
+<p>To see how a single session might play out for you using a pass line bet with double odds, over 20 rolls, one might run:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">crapssim</span> <span class="k">as</span> <span class="nn">craps</span>
+<span class="kn">from</span> <span class="nn">crapssim.strategy</span> <span class="kn">import</span> <span class="n">BetPassLine</span><span class="p">,</span> <span class="n">PassLineOddsMultiplier</span>
+
+<span class="n">table</span> <span class="o">=</span> <span class="n">craps</span><span class="o">.</span><span class="n">Table</span><span class="p">()</span>
+<span class="n">your_strat</span> <span class="o">=</span> <span class="n">BetPassLine</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span> <span class="o">+</span> <span class="n">PassLineOddsMultiplier</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="n">table</span><span class="o">.</span><span class="n">add_player</span><span class="p">(</span><span class="n">strategy</span><span class="o">=</span><span class="n">your_strat</span><span class="p">)</span>
+<span class="n">table</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">max_rolls</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>To evaluate a couple of strategies across many table sessions, you can run:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">crapssim</span> <span class="k">as</span> <span class="nn">craps</span>
+
+<span class="n">n_sim</span> <span class="o">=</span> <span class="mi">20</span>
+<span class="n">bankroll</span> <span class="o">=</span> <span class="mi">300</span>
+<span class="n">strategies</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;place68&quot;</span><span class="p">:</span> <span class="n">craps</span><span class="o">.</span><span class="n">strategy</span><span class="o">.</span><span class="n">examples</span><span class="o">.</span><span class="n">PassLinePlace68</span><span class="p">(</span><span class="mi">5</span><span class="p">),</span>
+    <span class="s2">&quot;ironcross&quot;</span><span class="p">:</span> <span class="n">craps</span><span class="o">.</span><span class="n">strategy</span><span class="o">.</span><span class="n">examples</span><span class="o">.</span><span class="n">IronCross</span><span class="p">(</span><span class="mi">5</span><span class="p">),</span>
+<span class="p">}</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_sim</span><span class="p">):</span>
+    <span class="n">table</span> <span class="o">=</span> <span class="n">craps</span><span class="o">.</span><span class="n">Table</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">strategies</span><span class="p">:</span>
+        <span class="n">table</span><span class="o">.</span><span class="n">add_player</span><span class="p">(</span><span class="n">bankroll</span><span class="p">,</span> <span class="n">strategy</span><span class="o">=</span><span class="n">strategies</span><span class="p">[</span><span class="n">s</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="n">s</span><span class="p">)</span>
+
+    <span class="n">table</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">max_rolls</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="s2">&quot;inf&quot;</span><span class="p">),</span> <span class="n">max_shooter</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">table</span><span class="o">.</span><span class="n">players</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">p</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">p</span><span class="o">.</span><span class="n">bankroll</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">bankroll</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">table</span><span class="o">.</span><span class="n">dice</span><span class="o">.</span><span class="n">n_rolls</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>For more advanced strategies, you can either write your own custom <code class="docutils literal notranslate"><span class="pre">Strategy</span></code> class or add strategy components together.  Some building blocks and examples can be found in the <a class="reference external" href="https://github.com/skent259/crapssim/tree/main/crapssim/strategy">strategy</a> module. We plan to have a more detailed tutorial and more strategy examples available soon.</p>
+</section>
+<section id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Link to this heading"></a></h2>
+<p>For a normal user, it is recommended to install the official release. You will
+need an installation of python version 3.10 or newer.  Then, run the following
+code in your terminal:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">crapssim</span>
+</pre></div>
+</div>
+<p>Development installation instructions are <a class="reference internal" href="installation.html"><span class="std std-doc">also available</span></a>.</p>
+<div class="toctree-wrapper compound">
+</div>
+<div class="toctree-wrapper compound">
+</div>
+</section>
+<section id="indices-and-tables">
+<h2>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="tutorial-strategy-01.html" class="btn btn-neutral float-right" title="Tutorial 1: Starting off with strategies" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Sean Kent.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

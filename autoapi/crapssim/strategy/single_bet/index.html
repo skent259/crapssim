@@ -1,0 +1,597 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>crapssim.strategy.single_bet &mdash; crapssim 0.3.2 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../_static/documentation_options.js?v=71d9d8e6"></script>
+      <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="crapssim.strategy.tools" href="../tools/index.html" />
+    <link rel="prev" title="crapssim.strategy.odds" href="../odds/index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            crapssim
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Examples and Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorial-strategy-01.html">Strategy Tutorial 1: Starting off</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../crapssim_sandbox.html">Sandbox</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../changelog.html">Change Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../supported-bets.html">Supported Bets</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html">crapssim</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../../index.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../../bet/index.html">crapssim.bet</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../dice/index.html">crapssim.dice</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../point/index.html">crapssim.point</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../index.html">crapssim.strategy</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../table/index.html">crapssim.table</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../index.html#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../index.html#package-contents">Package Contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">crapssim</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">API Reference</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">crapssim</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">crapssim.strategy</a></li>
+      <li class="breadcrumb-item active">crapssim.strategy.single_bet</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../../_sources/autoapi/crapssim/strategy/single_bet/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-crapssim.strategy.single_bet">
+<span id="crapssim-strategy-single-bet"></span><h1>crapssim.strategy.single_bet<a class="headerlink" href="#module-crapssim.strategy.single_bet" title="Link to this heading"></a></h1>
+<p>Strategies that place a given bet if that bet of that type isn’t currently placed and the bet
+is allowed.</p>
+<section id="classes">
+<h2>Classes<a class="headerlink" href="#classes" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#crapssim.strategy.single_bet.StrategyMode" title="crapssim.strategy.single_bet.StrategyMode"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StrategyMode</span></code></a></p></td>
+<td><p>Create a collection of name/value pairs.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#crapssim.strategy.single_bet.BetPlace" title="crapssim.strategy.single_bet.BetPlace"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BetPlace</span></code></a></p></td>
+<td><p>Strategy that makes multiple Place bets of given amounts. It can also skip making the bet</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#crapssim.strategy.single_bet.BetPassLine" title="crapssim.strategy.single_bet.BetPassLine"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BetPassLine</span></code></a></p></td>
+<td><p>Base helper for wrapping a single <code class="xref py py-class docutils literal notranslate"><span class="pre">Bet</span></code> in a strategy.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#crapssim.strategy.single_bet.BetDontPass" title="crapssim.strategy.single_bet.BetDontPass"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BetDontPass</span></code></a></p></td>
+<td><p>Base helper for wrapping a single <code class="xref py py-class docutils literal notranslate"><span class="pre">Bet</span></code> in a strategy.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#crapssim.strategy.single_bet.BetCome" title="crapssim.strategy.single_bet.BetCome"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BetCome</span></code></a></p></td>
+<td><p>Base helper for wrapping a single <code class="xref py py-class docutils literal notranslate"><span class="pre">Bet</span></code> in a strategy.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#crapssim.strategy.single_bet.BetDontCome" title="crapssim.strategy.single_bet.BetDontCome"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BetDontCome</span></code></a></p></td>
+<td><p>Base helper for wrapping a single <code class="xref py py-class docutils literal notranslate"><span class="pre">Bet</span></code> in a strategy.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#crapssim.strategy.single_bet.BetHardWay" title="crapssim.strategy.single_bet.BetHardWay"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BetHardWay</span></code></a></p></td>
+<td><p>Base helper for wrapping a single <code class="xref py py-class docutils literal notranslate"><span class="pre">Bet</span></code> in a strategy.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#crapssim.strategy.single_bet.BetHop" title="crapssim.strategy.single_bet.BetHop"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BetHop</span></code></a></p></td>
+<td><p>Base helper for wrapping a single <code class="xref py py-class docutils literal notranslate"><span class="pre">Bet</span></code> in a strategy.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#crapssim.strategy.single_bet.BetField" title="crapssim.strategy.single_bet.BetField"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BetField</span></code></a></p></td>
+<td><p>Base helper for wrapping a single <code class="xref py py-class docutils literal notranslate"><span class="pre">Bet</span></code> in a strategy.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#crapssim.strategy.single_bet.BetAny7" title="crapssim.strategy.single_bet.BetAny7"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BetAny7</span></code></a></p></td>
+<td><p>Base helper for wrapping a single <code class="xref py py-class docutils literal notranslate"><span class="pre">Bet</span></code> in a strategy.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#crapssim.strategy.single_bet.BetHorn" title="crapssim.strategy.single_bet.BetHorn"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BetHorn</span></code></a></p></td>
+<td><p>Place a Horn bet if none currently placed.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#crapssim.strategy.single_bet.BetWorld" title="crapssim.strategy.single_bet.BetWorld"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BetWorld</span></code></a></p></td>
+<td><p>Place a World (Whirl) bet if none currently placed.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#crapssim.strategy.single_bet.BetBig6" title="crapssim.strategy.single_bet.BetBig6"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BetBig6</span></code></a></p></td>
+<td><p>Place a Big6 bet if none currently placed.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#crapssim.strategy.single_bet.BetBig8" title="crapssim.strategy.single_bet.BetBig8"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BetBig8</span></code></a></p></td>
+<td><p>Place a Big8 bet if none currently placed.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#crapssim.strategy.single_bet.BetTwo" title="crapssim.strategy.single_bet.BetTwo"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BetTwo</span></code></a></p></td>
+<td><p>Place a Two (snake eyes) bet when not already active.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#crapssim.strategy.single_bet.BetThree" title="crapssim.strategy.single_bet.BetThree"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BetThree</span></code></a></p></td>
+<td><p>Place a Three (ace deuce) bet when not already active.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#crapssim.strategy.single_bet.BetYo" title="crapssim.strategy.single_bet.BetYo"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BetYo</span></code></a></p></td>
+<td><p>Place a Yo (11) bet when not already active.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#crapssim.strategy.single_bet.BetBoxcars" title="crapssim.strategy.single_bet.BetBoxcars"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BetBoxcars</span></code></a></p></td>
+<td><p>Place a Boxcars (12) bet when not already active.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#crapssim.strategy.single_bet.BetBuy" title="crapssim.strategy.single_bet.BetBuy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BetBuy</span></code></a></p></td>
+<td><p>Place a Buy bet on a specific number if none currently placed.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#crapssim.strategy.single_bet.BetLay" title="crapssim.strategy.single_bet.BetLay"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BetLay</span></code></a></p></td>
+<td><p>Place a Lay bet against a specific number if none currently placed.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#crapssim.strategy.single_bet.BetPut" title="crapssim.strategy.single_bet.BetPut"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BetPut</span></code></a></p></td>
+<td><p>Place a Put bet on a specific number (allowed only when point is ON).</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#crapssim.strategy.single_bet.BetFire" title="crapssim.strategy.single_bet.BetFire"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BetFire</span></code></a></p></td>
+<td><p>Place a Fire bet if not currently in action.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#crapssim.strategy.single_bet.BetAll" title="crapssim.strategy.single_bet.BetAll"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BetAll</span></code></a></p></td>
+<td><p>Place an All bet if not currently in action.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#crapssim.strategy.single_bet.BetTall" title="crapssim.strategy.single_bet.BetTall"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BetTall</span></code></a></p></td>
+<td><p>Place a Tall bet if not currently in action.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#crapssim.strategy.single_bet.BetSmall" title="crapssim.strategy.single_bet.BetSmall"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BetSmall</span></code></a></p></td>
+<td><p>Place a Small bet if not currently in action.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.strategy.single_bet.StrategyMode">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.strategy.single_bet.</span></span><span class="sig-name descname"><span class="pre">StrategyMode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwds</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.strategy.single_bet.StrategyMode" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">enum.Enum</span></code></p>
+<p>Create a collection of name/value pairs.</p>
+<p>Example enumeration:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">Color</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">RED</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="gp">... </span>    <span class="n">BLUE</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="gp">... </span>    <span class="n">GREEN</span> <span class="o">=</span> <span class="mi">3</span>
+</pre></div>
+</div>
+<p>Access them by:</p>
+<ul>
+<li><p>attribute access:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="o">.</span><span class="n">RED</span>
+<span class="go">&lt;Color.RED: 1&gt;</span>
+</pre></div>
+</div>
+</li>
+<li><p>value lookup:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="go">&lt;Color.RED: 1&gt;</span>
+</pre></div>
+</div>
+</li>
+<li><p>name lookup:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Color</span><span class="p">[</span><span class="s1">&#39;RED&#39;</span><span class="p">]</span>
+<span class="go">&lt;Color.RED: 1&gt;</span>
+</pre></div>
+</div>
+</li>
+</ul>
+<p>Enumerations can be iterated over, and know how many members they have:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">Color</span><span class="p">)</span>
+<span class="go">3</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">list</span><span class="p">(</span><span class="n">Color</span><span class="p">)</span>
+<span class="go">[&lt;Color.RED: 1&gt;, &lt;Color.BLUE: 2&gt;, &lt;Color.GREEN: 3&gt;]</span>
+</pre></div>
+</div>
+<p>Methods can be added to enumerations, and members can have their own
+attributes – see the documentation for details.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.single_bet.StrategyMode.ADD_IF_NOT_BET">
+<span class="sig-name descname"><span class="pre">ADD_IF_NOT_BET</span></span><a class="headerlink" href="#crapssim.strategy.single_bet.StrategyMode.ADD_IF_NOT_BET" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.single_bet.StrategyMode.ADD_IF_POINT_OFF">
+<span class="sig-name descname"><span class="pre">ADD_IF_POINT_OFF</span></span><a class="headerlink" href="#crapssim.strategy.single_bet.StrategyMode.ADD_IF_POINT_OFF" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.single_bet.StrategyMode.ADD_IF_POINT_ON">
+<span class="sig-name descname"><span class="pre">ADD_IF_POINT_ON</span></span><a class="headerlink" href="#crapssim.strategy.single_bet.StrategyMode.ADD_IF_POINT_ON" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.single_bet.StrategyMode.ADD_IF_NEW_SHOOTER">
+<span class="sig-name descname"><span class="pre">ADD_IF_NEW_SHOOTER</span></span><a class="headerlink" href="#crapssim.strategy.single_bet.StrategyMode.ADD_IF_NEW_SHOOTER" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.single_bet.StrategyMode.ADD_OR_INCREASE">
+<span class="sig-name descname"><span class="pre">ADD_OR_INCREASE</span></span><a class="headerlink" href="#crapssim.strategy.single_bet.StrategyMode.ADD_OR_INCREASE" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.single_bet.StrategyMode.BET_IF_POINT_ON">
+<span class="sig-name descname"><span class="pre">BET_IF_POINT_ON</span></span><a class="headerlink" href="#crapssim.strategy.single_bet.StrategyMode.BET_IF_POINT_ON" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.single_bet.StrategyMode.REPLACE">
+<span class="sig-name descname"><span class="pre">REPLACE</span></span><a class="headerlink" href="#crapssim.strategy.single_bet.StrategyMode.REPLACE" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.strategy.single_bet.BetPlace">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.strategy.single_bet.</span></span><span class="sig-name descname"><span class="pre">BetPlace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">place_bet_amounts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#crapssim.strategy.single_bet.StrategyMode" title="crapssim.strategy.single_bet.StrategyMode"><span class="pre">StrategyMode</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">StrategyMode.BET_IF_POINT_ON</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skip_point</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skip_come</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.strategy.single_bet.BetPlace" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="../tools/index.html#crapssim.strategy.tools.Strategy" title="crapssim.strategy.tools.Strategy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">crapssim.strategy.tools.Strategy</span></code></a></p>
+<p>Strategy that makes multiple Place bets of given amounts. It can also skip making the bet
+if the point is the same as the given bet number.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.single_bet.BetPlace.place_bet_amounts">
+<span class="sig-name descname"><span class="pre">place_bet_amounts</span></span><a class="headerlink" href="#crapssim.strategy.single_bet.BetPlace.place_bet_amounts" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.single_bet.BetPlace.mode">
+<span class="sig-name descname"><span class="pre">mode</span></span><a class="headerlink" href="#crapssim.strategy.single_bet.BetPlace.mode" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.single_bet.BetPlace.skip_point">
+<span class="sig-name descname"><span class="pre">skip_point</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#crapssim.strategy.single_bet.BetPlace.skip_point" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.single_bet.BetPlace.skip_come">
+<span class="sig-name descname"><span class="pre">skip_come</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#crapssim.strategy.single_bet.BetPlace.skip_come" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.strategy.single_bet.BetPlace.completed">
+<span class="sig-name descname"><span class="pre">completed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">crapssim.strategy.tools.Player</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#crapssim.strategy.single_bet.BetPlace.completed" title="Link to this definition"></a></dt>
+<dd><p>The strategy is completed if the player can no longer make any of the place bets in the
+place_bet_amounts dictionary and there are no Place bets on the table.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>player</strong> – The player to check the bankroll for</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><em>True if there are no Place bets on the table and the player can’t make any more Place bets</em></p></li>
+<li><p><em>because their bankroll is too low.</em></p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.strategy.single_bet.BetPlace.update_bets">
+<span class="sig-name descname"><span class="pre">update_bets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">crapssim.strategy.tools.Player</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#crapssim.strategy.single_bet.BetPlace.update_bets" title="Link to this definition"></a></dt>
+<dd><p>Add the place bets on the numbers and amounts defined by place_bet_amounts.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>player</strong> – The player to add the place bets to.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.strategy.single_bet.BetPlace.remove_point_bet">
+<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">remove_point_bet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">crapssim.strategy.tools.Player</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#crapssim.strategy.single_bet.BetPlace.remove_point_bet" title="Link to this definition"></a></dt>
+<dd><p>If skip_point is true and the player has a place bet for the table point number,
+remove the Place bet.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>player</strong> – The player to check and see if they have the given bet.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.strategy.single_bet.BetPlace.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#crapssim.strategy.single_bet.BetPlace.__repr__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.strategy.single_bet.BetPassLine">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.strategy.single_bet.</span></span><span class="sig-name descname"><span class="pre">BetPassLine</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bet_amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsFloat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">StrategyMode.ADD_IF_POINT_OFF</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.strategy.single_bet.BetPassLine" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">_BaseSingleBet</span></code></p>
+<p>Base helper for wrapping a single <code class="xref py py-class docutils literal notranslate"><span class="pre">Bet</span></code> in a strategy.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.strategy.single_bet.BetDontPass">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.strategy.single_bet.</span></span><span class="sig-name descname"><span class="pre">BetDontPass</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bet_amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsFloat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">StrategyMode.ADD_IF_POINT_OFF</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.strategy.single_bet.BetDontPass" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">_BaseSingleBet</span></code></p>
+<p>Base helper for wrapping a single <code class="xref py py-class docutils literal notranslate"><span class="pre">Bet</span></code> in a strategy.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.strategy.single_bet.BetCome">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.strategy.single_bet.</span></span><span class="sig-name descname"><span class="pre">BetCome</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bet_amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsFloat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">StrategyMode.ADD_IF_POINT_ON</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.strategy.single_bet.BetCome" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">_BaseSingleBet</span></code></p>
+<p>Base helper for wrapping a single <code class="xref py py-class docutils literal notranslate"><span class="pre">Bet</span></code> in a strategy.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.strategy.single_bet.BetDontCome">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.strategy.single_bet.</span></span><span class="sig-name descname"><span class="pre">BetDontCome</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bet_amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsFloat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">StrategyMode.ADD_IF_POINT_ON</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.strategy.single_bet.BetDontCome" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">_BaseSingleBet</span></code></p>
+<p>Base helper for wrapping a single <code class="xref py py-class docutils literal notranslate"><span class="pre">Bet</span></code> in a strategy.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.strategy.single_bet.BetHardWay">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.strategy.single_bet.</span></span><span class="sig-name descname"><span class="pre">BetHardWay</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">number</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bet_amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsFloat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">StrategyMode.ADD_IF_NOT_BET</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.strategy.single_bet.BetHardWay" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">_BaseSingleBet</span></code></p>
+<p>Base helper for wrapping a single <code class="xref py py-class docutils literal notranslate"><span class="pre">Bet</span></code> in a strategy.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.single_bet.BetHardWay.number">
+<span class="sig-name descname"><span class="pre">number</span></span><a class="headerlink" href="#crapssim.strategy.single_bet.BetHardWay.number" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.strategy.single_bet.BetHardWay.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#crapssim.strategy.single_bet.BetHardWay.__repr__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.strategy.single_bet.BetHop">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.strategy.single_bet.</span></span><span class="sig-name descname"><span class="pre">BetHop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">result</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bet_amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsFloat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">StrategyMode.ADD_IF_NOT_BET</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.strategy.single_bet.BetHop" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">_BaseSingleBet</span></code></p>
+<p>Base helper for wrapping a single <code class="xref py py-class docutils literal notranslate"><span class="pre">Bet</span></code> in a strategy.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.single_bet.BetHop.result">
+<span class="sig-name descname"><span class="pre">result</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#crapssim.strategy.single_bet.BetHop.result" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="crapssim.strategy.single_bet.BetHop.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#crapssim.strategy.single_bet.BetHop.__repr__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.strategy.single_bet.BetField">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.strategy.single_bet.</span></span><span class="sig-name descname"><span class="pre">BetField</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bet_amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsFloat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">StrategyMode.ADD_IF_NOT_BET</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.strategy.single_bet.BetField" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">_BaseSingleBet</span></code></p>
+<p>Base helper for wrapping a single <code class="xref py py-class docutils literal notranslate"><span class="pre">Bet</span></code> in a strategy.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.strategy.single_bet.BetAny7">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.strategy.single_bet.</span></span><span class="sig-name descname"><span class="pre">BetAny7</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bet_amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsFloat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">StrategyMode.ADD_IF_NOT_BET</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.strategy.single_bet.BetAny7" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">_BaseSingleBet</span></code></p>
+<p>Base helper for wrapping a single <code class="xref py py-class docutils literal notranslate"><span class="pre">Bet</span></code> in a strategy.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.strategy.single_bet.BetHorn">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.strategy.single_bet.</span></span><span class="sig-name descname"><span class="pre">BetHorn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bet_amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsFloat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#crapssim.strategy.single_bet.StrategyMode" title="crapssim.strategy.single_bet.StrategyMode"><span class="pre">StrategyMode</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">StrategyMode.ADD_IF_NOT_BET</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.strategy.single_bet.BetHorn" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">BetSingle</span></code></p>
+<p>Place a Horn bet if none currently placed.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.single_bet.BetHorn.bet_type">
+<span class="sig-name descname"><span class="pre">bet_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">type</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../../bet/index.html#crapssim.bet.Bet" title="crapssim.bet.Bet"><span class="pre">crapssim.bet.Bet</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#crapssim.strategy.single_bet.BetHorn.bet_type" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.strategy.single_bet.BetWorld">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.strategy.single_bet.</span></span><span class="sig-name descname"><span class="pre">BetWorld</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bet_amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsFloat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#crapssim.strategy.single_bet.StrategyMode" title="crapssim.strategy.single_bet.StrategyMode"><span class="pre">StrategyMode</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">StrategyMode.ADD_IF_NOT_BET</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.strategy.single_bet.BetWorld" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">BetSingle</span></code></p>
+<p>Place a World (Whirl) bet if none currently placed.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.single_bet.BetWorld.bet_type">
+<span class="sig-name descname"><span class="pre">bet_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">type</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../../bet/index.html#crapssim.bet.Bet" title="crapssim.bet.Bet"><span class="pre">crapssim.bet.Bet</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#crapssim.strategy.single_bet.BetWorld.bet_type" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.strategy.single_bet.BetBig6">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.strategy.single_bet.</span></span><span class="sig-name descname"><span class="pre">BetBig6</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bet_amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsFloat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#crapssim.strategy.single_bet.StrategyMode" title="crapssim.strategy.single_bet.StrategyMode"><span class="pre">StrategyMode</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">StrategyMode.ADD_IF_NOT_BET</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.strategy.single_bet.BetBig6" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">BetSingle</span></code></p>
+<p>Place a Big6 bet if none currently placed.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.single_bet.BetBig6.bet_type">
+<span class="sig-name descname"><span class="pre">bet_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">type</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../../bet/index.html#crapssim.bet.Bet" title="crapssim.bet.Bet"><span class="pre">crapssim.bet.Bet</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#crapssim.strategy.single_bet.BetBig6.bet_type" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.strategy.single_bet.BetBig8">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.strategy.single_bet.</span></span><span class="sig-name descname"><span class="pre">BetBig8</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bet_amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsFloat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#crapssim.strategy.single_bet.StrategyMode" title="crapssim.strategy.single_bet.StrategyMode"><span class="pre">StrategyMode</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">StrategyMode.ADD_IF_NOT_BET</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.strategy.single_bet.BetBig8" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">BetSingle</span></code></p>
+<p>Place a Big8 bet if none currently placed.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.single_bet.BetBig8.bet_type">
+<span class="sig-name descname"><span class="pre">bet_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">type</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../../bet/index.html#crapssim.bet.Bet" title="crapssim.bet.Bet"><span class="pre">crapssim.bet.Bet</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#crapssim.strategy.single_bet.BetBig8.bet_type" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.strategy.single_bet.BetTwo">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.strategy.single_bet.</span></span><span class="sig-name descname"><span class="pre">BetTwo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bet_amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsFloat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#crapssim.strategy.single_bet.StrategyMode" title="crapssim.strategy.single_bet.StrategyMode"><span class="pre">StrategyMode</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">StrategyMode.ADD_IF_NOT_BET</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.strategy.single_bet.BetTwo" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">_BaseSingleBet</span></code></p>
+<p>Place a Two (snake eyes) bet when not already active.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.strategy.single_bet.BetThree">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.strategy.single_bet.</span></span><span class="sig-name descname"><span class="pre">BetThree</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bet_amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsFloat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#crapssim.strategy.single_bet.StrategyMode" title="crapssim.strategy.single_bet.StrategyMode"><span class="pre">StrategyMode</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">StrategyMode.ADD_IF_NOT_BET</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.strategy.single_bet.BetThree" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">_BaseSingleBet</span></code></p>
+<p>Place a Three (ace deuce) bet when not already active.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.strategy.single_bet.BetYo">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.strategy.single_bet.</span></span><span class="sig-name descname"><span class="pre">BetYo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bet_amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsFloat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#crapssim.strategy.single_bet.StrategyMode" title="crapssim.strategy.single_bet.StrategyMode"><span class="pre">StrategyMode</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">StrategyMode.ADD_IF_NOT_BET</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.strategy.single_bet.BetYo" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">_BaseSingleBet</span></code></p>
+<p>Place a Yo (11) bet when not already active.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.strategy.single_bet.BetBoxcars">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.strategy.single_bet.</span></span><span class="sig-name descname"><span class="pre">BetBoxcars</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bet_amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsFloat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#crapssim.strategy.single_bet.StrategyMode" title="crapssim.strategy.single_bet.StrategyMode"><span class="pre">StrategyMode</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">StrategyMode.ADD_IF_NOT_BET</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.strategy.single_bet.BetBoxcars" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">_BaseSingleBet</span></code></p>
+<p>Place a Boxcars (12) bet when not already active.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.strategy.single_bet.BetBuy">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.strategy.single_bet.</span></span><span class="sig-name descname"><span class="pre">BetBuy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">number</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bet_amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsFloat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#crapssim.strategy.single_bet.StrategyMode" title="crapssim.strategy.single_bet.StrategyMode"><span class="pre">StrategyMode</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">StrategyMode.ADD_IF_NOT_BET</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.strategy.single_bet.BetBuy" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">BetSingleNumber</span></code></p>
+<p>Place a Buy bet on a specific number if none currently placed.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.single_bet.BetBuy.bet_type">
+<span class="sig-name descname"><span class="pre">bet_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">type</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../../bet/index.html#crapssim.bet.Bet" title="crapssim.bet.Bet"><span class="pre">crapssim.bet.Bet</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#crapssim.strategy.single_bet.BetBuy.bet_type" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.strategy.single_bet.BetLay">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.strategy.single_bet.</span></span><span class="sig-name descname"><span class="pre">BetLay</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">number</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bet_amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsFloat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#crapssim.strategy.single_bet.StrategyMode" title="crapssim.strategy.single_bet.StrategyMode"><span class="pre">StrategyMode</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">StrategyMode.ADD_IF_NOT_BET</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.strategy.single_bet.BetLay" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">BetSingleNumber</span></code></p>
+<p>Place a Lay bet against a specific number if none currently placed.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.single_bet.BetLay.bet_type">
+<span class="sig-name descname"><span class="pre">bet_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">type</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../../bet/index.html#crapssim.bet.Bet" title="crapssim.bet.Bet"><span class="pre">crapssim.bet.Bet</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#crapssim.strategy.single_bet.BetLay.bet_type" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.strategy.single_bet.BetPut">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.strategy.single_bet.</span></span><span class="sig-name descname"><span class="pre">BetPut</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">number</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bet_amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SupportsFloat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#crapssim.strategy.single_bet.StrategyMode" title="crapssim.strategy.single_bet.StrategyMode"><span class="pre">StrategyMode</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">StrategyMode.ADD_IF_NOT_BET</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.strategy.single_bet.BetPut" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">BetSingleNumber</span></code></p>
+<p>Place a Put bet on a specific number (allowed only when point is ON).</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="crapssim.strategy.single_bet.BetPut.bet_type">
+<span class="sig-name descname"><span class="pre">bet_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">type</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../../bet/index.html#crapssim.bet.Bet" title="crapssim.bet.Bet"><span class="pre">crapssim.bet.Bet</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#crapssim.strategy.single_bet.BetPut.bet_type" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.strategy.single_bet.BetFire">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.strategy.single_bet.</span></span><span class="sig-name descname"><span class="pre">BetFire</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bet_amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#crapssim.strategy.single_bet.StrategyMode" title="crapssim.strategy.single_bet.StrategyMode"><span class="pre">StrategyMode</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">StrategyMode.ADD_IF_NOT_BET</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.strategy.single_bet.BetFire" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">_BaseSingleBet</span></code></p>
+<p>Place a Fire bet if not currently in action.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.strategy.single_bet.BetAll">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.strategy.single_bet.</span></span><span class="sig-name descname"><span class="pre">BetAll</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bet_amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#crapssim.strategy.single_bet.StrategyMode" title="crapssim.strategy.single_bet.StrategyMode"><span class="pre">StrategyMode</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">StrategyMode.ADD_IF_NOT_BET</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.strategy.single_bet.BetAll" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">_BaseSingleBet</span></code></p>
+<p>Place an All bet if not currently in action.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.strategy.single_bet.BetTall">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.strategy.single_bet.</span></span><span class="sig-name descname"><span class="pre">BetTall</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bet_amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#crapssim.strategy.single_bet.StrategyMode" title="crapssim.strategy.single_bet.StrategyMode"><span class="pre">StrategyMode</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">StrategyMode.ADD_IF_NOT_BET</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.strategy.single_bet.BetTall" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">_BaseSingleBet</span></code></p>
+<p>Place a Tall bet if not currently in action.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="crapssim.strategy.single_bet.BetSmall">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">crapssim.strategy.single_bet.</span></span><span class="sig-name descname"><span class="pre">BetSmall</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bet_amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#crapssim.strategy.single_bet.StrategyMode" title="crapssim.strategy.single_bet.StrategyMode"><span class="pre">StrategyMode</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">StrategyMode.ADD_IF_NOT_BET</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#crapssim.strategy.single_bet.BetSmall" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">_BaseSingleBet</span></code></p>
+<p>Place a Small bet if not currently in action.</p>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../odds/index.html" class="btn btn-neutral float-left" title="crapssim.strategy.odds" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../tools/index.html" class="btn btn-neutral float-right" title="crapssim.strategy.tools" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Sean Kent.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

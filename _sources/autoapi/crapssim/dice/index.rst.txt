@@ -1,0 +1,106 @@
+crapssim.dice
+=============
+
+.. py:module:: crapssim.dice
+
+.. autoapi-nested-parse::
+
+   The dice are used by the craps Table for keeping track of the latest roll
+   and the total number of rolls so far. The dice object is mostly handled
+   internally, but advanced users may access it (through the Table, as table.dice)
+   for new bets or strategies as needed.
+
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   crapssim.dice.DicePair
+   crapssim.dice.DicePairInput
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   crapssim.dice.Dice
+
+
+Module Contents
+---------------
+
+.. py:type:: DicePair
+   :canonical: tuple[int, int]
+
+
+   Pair of dice represented as (die_one, die_two).
+
+.. py:type:: DicePairInput
+   :canonical: Iterable[int]
+
+
+   Pair of dice represented as an iterable of two integers.
+
+.. py:class:: Dice(seed=None)
+
+   Simulate the rolling of a dice.
+
+   :param seed: The seed passed to the random number generator.
+   :type seed: int
+
+
+   .. py:attribute:: _result
+      :type:  DicePairInput | None
+      :value: None
+
+
+
+   .. py:attribute:: n_rolls
+      :type:  int
+      :value: 0
+
+
+      Number of rolls for the dice
+
+
+   .. py:attribute:: rng
+      :type:  Generator
+
+      Random number generated used when rolling
+
+
+   .. py:property:: total
+      :type: int
+
+
+      Sum of dice outcome, e.g. 8 for (2, 6)
+
+
+   .. py:property:: result
+      :type: DicePair
+
+
+      Most recent outcome of the roll of two dice, e.g. (2, 6)
+
+
+   .. py:method:: roll() -> None
+
+      Randomly roll the dice
+
+      The randomness of the dice is based on numpy.random,
+      which uses the PCG-64 pseudo-random number generation
+      (see numpy.random.PCG64`).
+
+
+
+   .. py:method:: fixed_roll(outcome: DicePairInput) -> None
+
+      Roll the dice with a specified outcome
+
+      :param outcome: The desired dice result to roll
+
+
+

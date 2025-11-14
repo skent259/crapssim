@@ -1,0 +1,245 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Supported Bets &mdash; crapssim 0.3.2 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
+      <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=71d9d8e6"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="API Reference" href="autoapi/index.html" />
+    <link rel="prev" title="Changelog" href="changelog.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            crapssim
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Examples and Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="tutorial-strategy-01.html">Strategy Tutorial 1: Starting off</a></li>
+<li class="toctree-l1"><a class="reference internal" href="crapssim_sandbox.html">Sandbox</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Change Log</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Supported Bets</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#overview">Overview</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#odds-bets">Odds bets</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#field-bets">Field bets</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#buy-lay-bets-and-the-vig-commission">Buy/Lay bets and the vig (commission)</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#what-if-i-want-to-change-things">What if I want to change things?</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#calling-a-bet-by-a-different-name">Calling a bet by a different name</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#changing-payouts-when-things-are-hardcoded">Changing payouts when things are hardcoded</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="autoapi/index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">crapssim</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Supported Bets</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/supported-bets.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="supported-bets">
+<h1>Supported Bets<a class="headerlink" href="#supported-bets" title="Link to this heading"></a></h1>
+<p>The crapssim package includes all of the common bets for a craps table in the <a class="reference internal" href="autoapi/crapssim/bet/index.html#module-crapssim.bet" title="crapssim.bet"><code class="xref py py-mod docutils literal notranslate"><span class="pre">crapssim.bet</span></code></a> module:</p>
+<ul class="simple">
+<li><p>PassLine, Come</p></li>
+<li><p>DontPass, DontCome</p></li>
+<li><p>Place, Buy, Lay, and Put on 4/5/6/8/9/10</p></li>
+<li><p>Field</p></li>
+<li><p>Prop bets:</p>
+<ul>
+<li><p>Any 7</p></li>
+<li><p>Any Craps</p></li>
+<li><p>Two, Three, Yo (11), Boxcars (12)</p></li>
+<li><p>CAndE (craps and 11), Horn, World</p></li>
+<li><p>Hardways</p></li>
+<li><p>Hop bets</p></li>
+</ul>
+</li>
+<li><p>Big 6/8</p></li>
+<li><p>Side features: Fire, All/Tall/Small (ATS)</p></li>
+</ul>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
+<p>Most bets take an <code class="docutils literal notranslate"><span class="pre">amount</span></code> (typically the cost of the bet) argument (e.g.
+<code class="docutils literal notranslate"><span class="pre">PassLine(5)</span></code> is a $5 PassLine bet). Place bets, along with Buy, Lay, and
+Put bets, also need a <code class="docutils literal notranslate"><span class="pre">number</span></code> to be bet on (e.g. <code class="docutils literal notranslate"><span class="pre">Place(8,</span> <span class="pre">12)</span></code> is a $12
+Place bet on the 8).</p>
+<p>Some bets have options that can be specified in the <a class="reference internal" href="autoapi/crapssim/table/index.html#crapssim.table.TableSettings" title="crapssim.table.TableSettings"><code class="xref py py-class docutils literal notranslate"><span class="pre">TableSettings</span></code></a>, which is unique to each Table.</p>
+<section id="odds-bets">
+<h3>Odds bets<a class="headerlink" href="#odds-bets" title="Link to this heading"></a></h3>
+<p>Odds bets need the <code class="docutils literal notranslate"><span class="pre">bet_type</span></code> in addition to the <code class="docutils literal notranslate"><span class="pre">amount</span></code> and <code class="docutils literal notranslate"><span class="pre">number</span></code>.
+For example, <code class="docutils literal notranslate"><span class="pre">Odds(PassLine,</span> <span class="pre">4,</span> <span class="pre">10)</span></code> is a $10 odds bet on the pass line,
+where the point is 4.</p>
+<p>The maximum odds allowable is defined by the <code class="docutils literal notranslate"><span class="pre">&quot;max_odds&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;max_dont_odds&quot;</span></code> option in TableSettings. The default is <code class="docutils literal notranslate"><span class="pre">{4:</span> <span class="pre">3,</span> <span class="pre">5:</span> <span class="pre">4,</span> <span class="pre">6:</span> <span class="pre">5,</span> <span class="pre">8:</span> <span class="pre">5,</span> <span class="pre">9:</span> <span class="pre">4,</span> <span class="pre">10:</span> <span class="pre">3}</span></code>
+for <code class="docutils literal notranslate"><span class="pre">&quot;max_odds&quot;</span></code> on light-side bets (3-4-5x odds), and <code class="docutils literal notranslate"><span class="pre">{4:</span> <span class="pre">6,</span> <span class="pre">5:</span> <span class="pre">6,</span> <span class="pre">6:</span> <span class="pre">6,</span> <span class="pre">8:</span> <span class="pre">6,</span> <span class="pre">9:</span> <span class="pre">6,</span> <span class="pre">10:</span> <span class="pre">6}</span></code> for <code class="docutils literal notranslate"><span class="pre">&quot;max_dont_odds&quot;</span></code> on dark-side bets (6x odds, which win 3-4-5x).
+If you wanted 100x odds, you could use <code class="docutils literal notranslate"><span class="pre">{x:</span> <span class="pre">100</span> <span class="pre">for</span> <span class="pre">x</span> <span class="pre">in</span> <span class="pre">(4,</span> <span class="pre">5,</span> <span class="pre">6,</span> <span class="pre">8,</span> <span class="pre">9,</span> <span class="pre">10)}</span></code>.</p>
+</section>
+<section id="field-bets">
+<h3>Field bets<a class="headerlink" href="#field-bets" title="Link to this heading"></a></h3>
+<p>The field bet wins if 2/3/4/9/10/11/12 are rolled, but casinos have some variation
+in the payout. Commonly, the field pays 2x on 2/12 and 1x on everything else (5.56% house edge). Sometimes, either the 2 or 12 will pay 3x instead (reduces the house edge to 2.78%).</p>
+<p>This can be specified with the <code class="docutils literal notranslate"><span class="pre">&quot;field_payouts&quot;</span></code> option of the TableSettings, which expects a dictionary with all of the numbers and the payout ratio. The default is
+<code class="docutils literal notranslate"><span class="pre">{2:</span> <span class="pre">2,</span> <span class="pre">3:</span> <span class="pre">1,</span> <span class="pre">4:</span> <span class="pre">1,</span> <span class="pre">9:</span> <span class="pre">1,</span> <span class="pre">10:</span> <span class="pre">1,</span> <span class="pre">11:</span> <span class="pre">1,</span> <span class="pre">12:</span> <span class="pre">2}</span></code>, which pays 2x on 2/12. For example, to have a 3x payout on the 2 instead, use <code class="docutils literal notranslate"><span class="pre">{2:</span> <span class="pre">3,</span> <span class="pre">3:</span> <span class="pre">1,</span> <span class="pre">4:</span> <span class="pre">1,</span> <span class="pre">9:</span> <span class="pre">1,</span> <span class="pre">10:</span> <span class="pre">1,</span> <span class="pre">11:</span> <span class="pre">1,</span> <span class="pre">12:</span> <span class="pre">2}</span></code>.</p>
+</section>
+<section id="buy-lay-bets-and-the-vig-commission">
+<h3>Buy/Lay bets and the vig (commission)<a class="headerlink" href="#buy-lay-bets-and-the-vig-commission" title="Link to this heading"></a></h3>
+<p>This simulator uses a fixed 5% commission for applicable bets (e.g., Buy/Lay) to match common table practice.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">vig</span></code> is added to the bet <code class="docutils literal notranslate"><span class="pre">amount</span></code> to equal the bet’s <code class="docutils literal notranslate"><span class="pre">cost</span></code>.</p>
+<p><strong>Buy/Lay commission policy in <a class="reference internal" href="autoapi/crapssim/table/index.html#crapssim.table.TableSettings" title="crapssim.table.TableSettings"><code class="xref py py-class docutils literal notranslate"><span class="pre">TableSettings</span></code></a>:</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">vig_rounding</span></code> (<code class="docutils literal notranslate"><span class="pre">&quot;none&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;ceil_dollar&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;nearest_dollar&quot;</span></code> default)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">vig_floor</span></code> (float dollars, default <code class="docutils literal notranslate"><span class="pre">0.0</span></code>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">vig_paid_on_win</span></code> (bool, default <code class="docutils literal notranslate"><span class="pre">False</span></code>)</p></li>
+</ul>
+<p><strong>Rounding semantics in <code class="docutils literal notranslate"><span class="pre">vig_floor</span></code></strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;none&quot;</span></code> will do no rounding, mimicking a bubble craps style.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;ceil_dollar&quot;</span></code> always rounds up to the next whole dollar (e.g. 1.25 rounds to 2).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;nearest_dollar&quot;</span></code> rounds to the nearest dollar, and rounds up when the decimal is 0.5 (e.g. 2.5 rounds to 3).</p></li>
+</ul>
+<p>The <code class="docutils literal notranslate"><span class="pre">vig_floor</span></code> setting is the minimum vig that will be charged, for example in a high-roller table with the lowest demonination of $5, one could set the minimum vig to be $5.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">vig_paid_on_win</span></code> setting will determine whether to charge the vig after the bet wins (if <code class="docutils literal notranslate"><span class="pre">True</span></code>) or up-front when the bet is placed (if <code class="docutils literal notranslate"><span class="pre">False</span></code>). For example, if there is a $20 buy bet on the 4, up-front cost is $21 ($1 vig) and a win will give the player $60 = $40 win + $20 bet cost. If the vig is paid on win, the up-front cost is $20 and a win will give the player $59 = $40 win + $20 bet cost - $1 vig.</p>
+</section>
+</section>
+<section id="what-if-i-want-to-change-things">
+<h2>What if I want to change things?<a class="headerlink" href="#what-if-i-want-to-change-things" title="Link to this heading"></a></h2>
+<section id="calling-a-bet-by-a-different-name">
+<h3>Calling a bet by a different name<a class="headerlink" href="#calling-a-bet-by-a-different-name" title="Link to this heading"></a></h3>
+<p>If, for example, you love to call the prop bet on 12 as “Midnight” instead of “Boxcars”, and you want to do this in your code as well, you can either import the bet under an alias, or define your own subclass.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;Import under an alias&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">crapssim.bet</span> <span class="kn">import</span> <span class="n">Boxcars</span> <span class="k">as</span> <span class="n">Midnight</span>
+
+<span class="n">my_bet</span> <span class="o">=</span> <span class="n">Midnight</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="c1"># $1 bet on 12 in the next roll</span>
+<span class="c1"># Note, bet will still print out as `Boxcars(amount=1.0)`</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;Define custom subclass&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">crapssim.bet</span> <span class="kn">import</span> <span class="n">Boxcars</span>
+
+<span class="k">class</span> <span class="nc">Midnight</span><span class="p">(</span><span class="n">Boxcars</span><span class="p">):</span>
+    <span class="k">pass</span>
+
+<span class="n">my_bet</span> <span class="o">=</span> <span class="n">Midnight</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="c1"># $1 bet on 12 in the next roll</span>
+<span class="c1"># Prints out as `Mignight(amount=1.0)`</span>
+</pre></div>
+</div>
+</section>
+<section id="changing-payouts-when-things-are-hardcoded">
+<h3>Changing payouts when things are hardcoded<a class="headerlink" href="#changing-payouts-when-things-are-hardcoded" title="Link to this heading"></a></h3>
+<p>While the <a class="reference internal" href="autoapi/crapssim/table/index.html#crapssim.table.TableSettings" title="crapssim.table.TableSettings"><code class="xref py py-class docutils literal notranslate"><span class="pre">TableSettings</span></code></a> covers a lot of common options,
+it might not cover every option in a casino, especially for bet payouts.</p>
+<p>For example, the Yo (11) bet in crapssim has a fixed payout of 15 <strong>to</strong> 1,
+so winning a $1 bet will give the player $15 in winnings plus the $1
+bet back. If your local casino pays 15 <strong>for</strong> 1 instead, i.e. $15 in winnings
+but not returning your bet back, for net $14 payout ratio, you can modify
+bet into your own class and over-ride the attribute. Then you can define a
+corresponding single-bet strategy, like in <span class="xref std std-doc">crapssim.strategy.single_bet</span>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">crapssim.bet</span> <span class="kn">import</span> <span class="n">Yo</span> 
+
+<span class="k">class</span> <span class="nc">MyYo</span><span class="p">(</span><span class="n">Yo</span><span class="p">):</span>
+    <span class="n">payout_ratio</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">14</span> <span class="c1"># vs 15 in Yo</span>
+
+<span class="n">my_bet</span> <span class="o">=</span> <span class="n">MyYo</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">BetMyYo</span><span class="p">(</span><span class="n">BetSingle</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Place a Yo bet if none currently placed.&quot;&quot;&quot;</span>
+
+    <span class="n">bet_type</span> <span class="o">=</span> <span class="n">MyYo</span>
+
+<span class="n">my_strategy</span> <span class="o">=</span> <span class="n">BetMyYo</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="changelog.html" class="btn btn-neutral float-left" title="Changelog" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="autoapi/index.html" class="btn btn-neutral float-right" title="API Reference" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Sean Kent.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

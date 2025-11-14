@@ -1,0 +1,528 @@
+crapssim.strategy.odds
+======================
+
+.. py:module:: crapssim.strategy.odds
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   crapssim.strategy.odds.MultiplierDict
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   crapssim.strategy.odds.OddsAmount
+   crapssim.strategy.odds._BaseOddsAmount
+   crapssim.strategy.odds.PassLineOddsAmount
+   crapssim.strategy.odds.DontPassOddsAmount
+   crapssim.strategy.odds.ComeOddsAmount
+   crapssim.strategy.odds.DontComeOddsAmount
+   crapssim.strategy.odds.PutOddsAmount
+   crapssim.strategy.odds.OddsMultiplier
+   crapssim.strategy.odds._BaseOddsMultiplier
+   crapssim.strategy.odds.PassLineOddsMultiplier
+   crapssim.strategy.odds.DontPassOddsMultiplier
+   crapssim.strategy.odds.ComeOddsMultiplier
+   crapssim.strategy.odds.DontComeOddsMultiplier
+   crapssim.strategy.odds.PutOddsMultiplier
+   crapssim.strategy.odds.WinMultiplier
+   crapssim.strategy.odds._BaseWinMultiplier
+   crapssim.strategy.odds.PassLineWinMultiplier
+   crapssim.strategy.odds.DontPassWinMultiplier
+   crapssim.strategy.odds.ComeWinMultiplier
+   crapssim.strategy.odds.DontComeWinMultiplier
+   crapssim.strategy.odds.PutWinMultiplier
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   crapssim.strategy.odds._expand_multiplier_dict
+   crapssim.strategy.odds._condense_multiplier_dict
+
+
+Module Contents
+---------------
+
+.. py:type:: MultiplierDict
+   :canonical: dict[int, SupportsFloat]
+
+
+   For odds multipliers keyed by point number (4/5/6/8/9/10)
+
+.. py:function:: _expand_multiplier_dict(multiplier: SupportsFloat | MultiplierDict) -> MultiplierDict
+
+   Helper to expand multiplier dictionary if it's only a float.
+
+   :param multiplier: A dictionary of point numbers and their associated
+                      multipliers or a float to be applied to all point numbers.
+
+
+.. py:function:: _condense_multiplier_dict(multiplier: MultiplierDict) -> SupportsFloat | MultiplierDict
+
+   Helper to condense multiplier dictionary if all are the same
+
+   :param multiplier: A dictionary of point numbers and their associated
+                      multipliers.
+
+
+.. py:class:: OddsAmount(base_type: type[crapssim.bet.PassLine | crapssim.bet.DontPass | crapssim.bet.Come | crapssim.bet.DontCome | crapssim.bet.Put], odds_amounts: SupportsFloat | MultiplierDict, always_working: bool = False)
+
+   Bases: :py:obj:`crapssim.strategy.tools.Strategy`
+
+
+   Adds Odds for the bet type and specified numbers
+
+   :param base_type: The bet that odds will be added to.
+   :param odds_amounts: A dictionary of point numbers and the amount to bet
+                        on each number.
+   :param always_working: Whether the odds are working when the point is off.
+   :type always_working: bool
+
+
+   .. py:attribute:: base_type
+
+      The bet that odds will be added to.
+
+
+   .. py:attribute:: odds_amounts
+
+
+   .. py:attribute:: always_working
+      :value: False
+
+
+
+   .. py:method:: completed(player: crapssim.strategy.tools.Player) -> bool
+
+      Return True if there are no bets of base_type on the table.
+
+      :param player: The player whose bets to check for.
+
+      :rtype: True if there are no base type bets on the table, otherwise False.
+
+
+
+   .. py:method:: update_bets(player: crapssim.strategy.tools.Player) -> None
+
+
+   .. py:method:: _get_always_working_repr() -> str
+
+      Since the default is false, only need to print when True
+
+
+
+   .. py:method:: __repr__()
+
+
+.. py:class:: _BaseOddsAmount(bet_amount: SupportsFloat, numbers: tuple[int] = (4, 5, 6, 8, 9, 10), always_working: bool = False)
+
+   Bases: :py:obj:`OddsAmount`
+
+
+   Helper to define OddsAmount strategies for each bet type.
+
+   :param bet_amount: The amount to bet on each specified number.
+   :param numbers: The point numbers to place the odds on. Defaults to (4, 5, 6, 8, 9, 10).
+   :param always_working: Whether the odds are working when the point is off.
+   :type always_working: bool
+
+
+   .. py:attribute:: bet_type
+      :type:  type[crapssim.bet.PassLine | crapssim.bet.DontPass | crapssim.bet.Come | crapssim.bet.DontCome | crapssim.bet.Put]
+
+
+   .. py:attribute:: bet_amount
+
+
+   .. py:attribute:: numbers
+      :value: (4, 5, 6, 8, 9, 10)
+
+
+
+   .. py:method:: __repr__() -> str
+
+
+.. py:class:: PassLineOddsAmount(bet_amount: SupportsFloat, numbers: tuple[int] = (4, 5, 6, 8, 9, 10), always_working: bool = False)
+
+   Bases: :py:obj:`_BaseOddsAmount`
+
+
+   Adds PassLine Odds on specified numbers
+
+
+   .. py:attribute:: bet_type
+
+
+.. py:class:: DontPassOddsAmount(bet_amount: SupportsFloat, numbers: tuple[int] = (4, 5, 6, 8, 9, 10), always_working: bool = False)
+
+   Bases: :py:obj:`_BaseOddsAmount`
+
+
+   Adds DontPass Odds on specified numbers
+
+
+   .. py:attribute:: bet_type
+
+
+.. py:class:: ComeOddsAmount(bet_amount: SupportsFloat, numbers: tuple[int] = (4, 5, 6, 8, 9, 10), always_working: bool = False)
+
+   Bases: :py:obj:`_BaseOddsAmount`
+
+
+   Adds Come Odds on specified numbers
+
+
+   .. py:attribute:: bet_type
+
+
+.. py:class:: DontComeOddsAmount(bet_amount: SupportsFloat, numbers: tuple[int] = (4, 5, 6, 8, 9, 10), always_working: bool = False)
+
+   Bases: :py:obj:`_BaseOddsAmount`
+
+
+   Adds DontCome Odds on specified numbers
+
+
+   .. py:attribute:: bet_type
+
+
+.. py:class:: PutOddsAmount(bet_amount: SupportsFloat, numbers: tuple[int] = (4, 5, 6, 8, 9, 10), always_working: bool = False)
+
+   Bases: :py:obj:`_BaseOddsAmount`
+
+
+   Adds Put Odds on specified numbers
+
+
+   .. py:attribute:: bet_type
+
+
+.. py:class:: OddsMultiplier(base_type: type[crapssim.bet.PassLine | crapssim.bet.DontPass | crapssim.bet.Come | crapssim.bet.DontCome | crapssim.bet.Put], odds_multiplier: MultiplierDict | SupportsFloat, always_working: bool = False)
+
+   Bases: :py:obj:`crapssim.strategy.tools.Strategy`
+
+
+   Adds Odds for the bet type and desired odds multiplier
+
+   :param base_type: The bet that odds will be added to.
+   :param odds_multiplier: If odds_multiplier is a float, adds multiplier * base_bets amount to the odds.
+                           If the odds multiplier is a dictionary of floats, looks at the dictionary to
+                           determine what odds multiplier to use depending on the given point.
+   :param always_working: Whether the odds are working when the point is off.
+   :type always_working: bool
+
+
+   .. py:attribute:: base_type
+
+
+   .. py:attribute:: always_working
+      :value: False
+
+
+
+   .. py:attribute:: odds_multiplier
+
+
+   .. py:method:: get_point_number(bet: crapssim.bet.Bet, table: crapssim.strategy.tools.Table)
+      :staticmethod:
+
+
+
+   .. py:method:: update_bets(player: crapssim.strategy.tools.Player) -> None
+
+      Add an Odds bet to the given base_types in the amount determined by the odds_multiplier.
+
+      :param player: The player to add the odds bet to.
+
+
+
+   .. py:method:: completed(player: crapssim.strategy.tools.Player) -> bool
+
+      Return True if there are no bets of base_type on the table.
+
+      :param player: The player whose bets to check for.
+
+      :rtype: True if there are no base type bets on the table, otherwise False.
+
+
+
+   .. py:method:: _get_always_working_repr() -> str
+
+      Since the default is false, only need to print when True
+
+
+
+   .. py:method:: __repr__() -> str
+
+
+.. py:class:: _BaseOddsMultiplier(odds_multiplier: MultiplierDict | SupportsFloat | None = None, always_working: bool = False)
+
+   Bases: :py:obj:`OddsMultiplier`
+
+
+   Helper to define OddsMultiplier strategies for each bet type.
+
+   :param odds_multiplier: If odds_multiplier is an integer the bet amount is the PassLine bet amount *
+                           odds_multiplier.  If it's a dictionary it uses the PassLine bet's point to determine
+                           the multiplier. Defaults to {4: 3, 5: 4, 6: 5, 8: 5, 9: 4, 10: 3} which are 345x odds.
+   :param always_working: Whether the odds are working when the point is off.
+   :type always_working: bool
+
+
+   .. py:attribute:: bet_type
+      :type:  type[crapssim.bet.PassLine | crapssim.bet.DontPass | crapssim.bet.Come | crapssim.bet.DontCome | crapssim.bet.Put]
+
+
+   .. py:attribute:: default_multiplier
+      :type:  MultiplierDict | SupportsFloat
+
+
+   .. py:method:: __repr__() -> str
+
+
+.. py:class:: PassLineOddsMultiplier(odds_multiplier: MultiplierDict | SupportsFloat | None = None, always_working: bool = False)
+
+   Bases: :py:obj:`_BaseOddsMultiplier`
+
+
+   Adds PassLine Odds on specified odds multiplier(s)
+
+
+   .. py:attribute:: bet_type
+
+
+   .. py:attribute:: default_multiplier
+
+
+.. py:class:: DontPassOddsMultiplier(odds_multiplier: MultiplierDict | SupportsFloat | None = None, always_working: bool = False)
+
+   Bases: :py:obj:`_BaseOddsMultiplier`
+
+
+   Adds DontPass Odds on specified odds multiplier(s)
+
+
+   .. py:attribute:: bet_type
+
+
+   .. py:attribute:: default_multiplier
+      :value: 6.0
+
+
+
+.. py:class:: ComeOddsMultiplier(odds_multiplier: MultiplierDict | SupportsFloat | None = None, always_working: bool = False)
+
+   Bases: :py:obj:`_BaseOddsMultiplier`
+
+
+   Adds Come Odds on specified odds multiplier(s)
+
+
+   .. py:attribute:: bet_type
+
+
+   .. py:attribute:: default_multiplier
+
+
+.. py:class:: DontComeOddsMultiplier(odds_multiplier: MultiplierDict | SupportsFloat | None = None, always_working: bool = False)
+
+   Bases: :py:obj:`_BaseOddsMultiplier`
+
+
+   Adds DontCome Odds on specified odds multiplier(s)
+
+
+   .. py:attribute:: bet_type
+
+
+   .. py:attribute:: default_multiplier
+      :value: 6.0
+
+
+
+.. py:class:: PutOddsMultiplier(odds_multiplier: MultiplierDict | SupportsFloat | None = None, always_working: bool = False)
+
+   Bases: :py:obj:`_BaseOddsMultiplier`
+
+
+   Adds Put Odds on specified odds multiplier(s)
+
+
+   .. py:attribute:: bet_type
+
+
+   .. py:attribute:: default_multiplier
+
+
+.. py:class:: WinMultiplier(base_type: type[crapssim.bet.PassLine | crapssim.bet.DontPass | crapssim.bet.Come | crapssim.bet.DontCome | crapssim.bet.Put], win_multiplier: MultiplierDict | SupportsFloat, always_working: bool = False)
+
+   Bases: :py:obj:`OddsMultiplier`
+
+
+   Adds Odds for the bet type and multiplier desired to win
+
+   :param base_type: The bet that odds will be added to.
+   :param win_multiplier: If win_multiplier is a float, adds amount so that
+                          multiplier * base_bets is the win amount for the odds.
+                          If the odds multiplier is a dictionary of floats, looks at the
+                          dictionary to determine what win multiplier to use
+                          depending on the given point.
+   :param always_working: Whether the odds are working when the point is off.
+   :type always_working: bool
+
+
+   .. py:attribute:: win_multiplier
+
+
+   .. py:method:: _convert_win_to_odds_mult(win_multiplier: MultiplierDict, base_type: type[crapssim.bet.PassLine | crapssim.bet.DontPass | crapssim.bet.Come | crapssim.bet.DontCome | crapssim.bet.Put]) -> MultiplierDict
+
+      Converts a win multiplier to an odds multiplier
+
+      For example, for the Don't Pass bet with point of 4, if we want to win
+      1x the bet, need to bet 2x odds. A win multiplier of 1.0 will return 2.0.
+      The conversion is flipped for a lightside bet. For example, for the Pass
+      Line, to win 1x the bet, need 0.5x odds only (note: some casinos won't
+      let you have less than 1x odds at any point, but this function will not
+      restrict things)
+
+
+
+   .. py:method:: __repr__() -> str
+
+
+.. py:class:: _BaseWinMultiplier(win_multiplier: MultiplierDict | SupportsFloat | None = None, always_working: bool = False)
+
+   Bases: :py:obj:`WinMultiplier`
+
+
+   Helper to define win multiplier strategies for each bet type.
+
+   :param win_multiplier: If win_multiplier is a float, adds amount so that
+                          multiplier * base_bets is the win amount for the odds.
+                          If the odds multiplier is a dictionary of floats, looks at the
+                          dictionary to determine what win multiplier to use
+                          depending on the given point.
+   :param always_working: Whether the odds are working when the point is off.
+   :type always_working: bool
+
+
+   .. py:attribute:: bet_type
+      :type:  type[crapssim.bet.PassLine | crapssim.bet.DontPass | crapssim.bet.Come | crapssim.bet.DontCome | crapssim.bet.Put]
+
+      The bet that odds will be added to.
+
+
+   .. py:attribute:: default_multiplier
+      :type:  MultiplierDict | SupportsFloat
+
+      Win multiplier to use if none is specified.
+
+
+   .. py:method:: __repr__() -> str
+
+
+.. py:class:: PassLineWinMultiplier(win_multiplier: MultiplierDict | SupportsFloat | None = None, always_working: bool = False)
+
+   Bases: :py:obj:`_BaseWinMultiplier`
+
+
+   Adds PassLine Odds to win specified multiplier(s)
+
+
+   .. py:attribute:: bet_type
+
+      The bet that odds will be added to.
+
+
+   .. py:attribute:: default_multiplier
+      :value: 6.0
+
+
+      Win multiplier to use if none is specified.
+
+
+.. py:class:: DontPassWinMultiplier(win_multiplier: MultiplierDict | SupportsFloat | None = None, always_working: bool = False)
+
+   Bases: :py:obj:`_BaseWinMultiplier`
+
+
+   Adds DontPass Odds to win specified multiplier(s)
+
+
+   .. py:attribute:: bet_type
+
+      The bet that odds will be added to.
+
+
+   .. py:attribute:: default_multiplier
+
+      Win multiplier to use if none is specified.
+
+
+.. py:class:: ComeWinMultiplier(win_multiplier: MultiplierDict | SupportsFloat | None = None, always_working: bool = False)
+
+   Bases: :py:obj:`_BaseWinMultiplier`
+
+
+   Adds Come Odds to win specified multiplier(s)
+
+
+   .. py:attribute:: bet_type
+
+      The bet that odds will be added to.
+
+
+   .. py:attribute:: default_multiplier
+      :value: 6.0
+
+
+      Win multiplier to use if none is specified.
+
+
+.. py:class:: DontComeWinMultiplier(win_multiplier: MultiplierDict | SupportsFloat | None = None, always_working: bool = False)
+
+   Bases: :py:obj:`_BaseWinMultiplier`
+
+
+   Adds DontCome Odds to win specified multiplier(s)
+
+
+   .. py:attribute:: bet_type
+
+      The bet that odds will be added to.
+
+
+   .. py:attribute:: default_multiplier
+
+      Win multiplier to use if none is specified.
+
+
+.. py:class:: PutWinMultiplier(win_multiplier: MultiplierDict | SupportsFloat | None = None, always_working: bool = False)
+
+   Bases: :py:obj:`_BaseWinMultiplier`
+
+
+   Adds Put Odds to win specified multiplier(s)
+
+
+   .. py:attribute:: bet_type
+
+      The bet that odds will be added to.
+
+
+   .. py:attribute:: default_multiplier
+      :value: 6.0
+
+
+      Win multiplier to use if none is specified.
+
+

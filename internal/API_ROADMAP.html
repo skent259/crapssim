@@ -1,0 +1,216 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CrapsSim-Vanilla API Roadmap (CSC Adapter) &mdash; crapssim 0.3.2 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=71d9d8e6"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            crapssim
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Examples and Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial-strategy-01.html">Strategy Tutorial 1: Starting off</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../crapssim_sandbox.html">Sandbox</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Change Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../supported-bets.html">Supported Bets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../autoapi/index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">crapssim</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">CrapsSim-Vanilla API Roadmap (CSC Adapter)</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/internal/API_ROADMAP.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="crapssim-vanilla-api-roadmap-csc-adapter">
+<h1>CrapsSim-Vanilla API Roadmap (CSC Adapter)<a class="headerlink" href="#crapssim-vanilla-api-roadmap-csc-adapter" title="Link to this heading"></a></h1>
+<p><strong>Objective</strong><br />
+Expose a minimal, deterministic HTTP API on top of CrapsSim-Vanilla that CSC (and other controllers) can drive. Core math remains untouched. The API is an <strong>adapter</strong>: small, stable JSON contracts; deterministic by construction; truthful capabilities.</p>
+<p><strong>Final Deliverable (PR title)</strong><br />
+<em>Add deterministic HTTP API adapter for CrapsSim-Vanilla (v0.1.0-api).</em></p>
+<hr class="docutils" />
+<section id="phase-1-api-scaffolding-determinism-contract">
+<h2>Phase 1 — API Scaffolding &amp; Determinism Contract<a class="headerlink" href="#phase-1-api-scaffolding-determinism-contract" title="Link to this heading"></a></h2>
+<p><strong>Goal:</strong> Framework + versioning + seeded determinism.</p>
+<ul class="simple">
+<li><p><strong>P1·C1 — Adapter skeleton</strong>: <code class="docutils literal notranslate"><span class="pre">crapssim_api/{http.py,state.py,rng.py,errors.py,events.py}</span></code></p></li>
+<li><p><strong>P1·C2 — Determinism harness</strong>: seeded RNG wrapper; action/roll tape recorder; reproducibility test</p></li>
+<li><p><strong>P1·C3 — Version &amp; schema</strong>: <code class="docutils literal notranslate"><span class="pre">engine_api.version</span></code>, <code class="docutils literal notranslate"><span class="pre">capabilities.schema_version</span></code></p></li>
+<li><p><strong>P1·C4 — Baseline conformance</strong>: identical outputs for identical <code class="docutils literal notranslate"><span class="pre">{spec,</span> <span class="pre">seed,</span> <span class="pre">tape}</span></code>; tag <code class="docutils literal notranslate"><span class="pre">v0.1.0-api-phase1</span></code></p></li>
+</ul>
+<p><strong>Exit:</strong> Determinism proven; constants surfaced; core untouched.</p>
+</section>
+<hr class="docutils" />
+<section id="phase-2-session-lifecycle-capabilities">
+<h2>Phase 2 — Session Lifecycle + Capabilities<a class="headerlink" href="#phase-2-session-lifecycle-capabilities" title="Link to this heading"></a></h2>
+<p><strong>Goal:</strong> Start/end sessions and report truthful capabilities.</p>
+<ul class="simple">
+<li><p><strong>P2·C1 — <code class="docutils literal notranslate"><span class="pre">/start_session</span></code> + <code class="docutils literal notranslate"><span class="pre">/end_session</span></code></strong>: accept <code class="docutils literal notranslate"><span class="pre">{spec,</span> <span class="pre">seed}</span></code>; return <code class="docutils literal notranslate"><span class="pre">{session_id,</span> <span class="pre">snapshot}</span></code></p></li>
+<li><p><strong>P2·C2 — <code class="docutils literal notranslate"><span class="pre">/capabilities</span></code></strong>: bet families, increments/limits, odds policy (3-4-5), commission modes/rounding/floors, field pays, prop catalog</p></li>
+<li><p><strong>P2·C3 — Identity &amp; idempotency</strong>: echo <code class="docutils literal notranslate"><span class="pre">{spec,</span> <span class="pre">seed}</span></code>; idempotency key on mutating calls</p></li>
+<li><p><strong>P2·C4 — Docs</strong>: <code class="docutils literal notranslate"><span class="pre">docs/API_LIFECYCLE.md</span></code>; tag <code class="docutils literal notranslate"><span class="pre">v0.1.0-api-phase2</span></code></p></li>
+</ul>
+<p><strong>Exit:</strong> Stable session lifecycle; truthful capabilities JSON.</p>
+</section>
+<hr class="docutils" />
+<section id="phase-3-actions-legality-errors">
+<h2>Phase 3 — Actions, Legality, Errors<a class="headerlink" href="#phase-3-actions-legality-errors" title="Link to this heading"></a></h2>
+<p><strong>Goal:</strong> CSC verbs with timing/legality enforcement and machine-readable errors.</p>
+<ul class="simple">
+<li><p><strong>P3·C1 — Action registry</strong>: <code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/apply_action</span></code> maps verbs → engine ops (<code class="docutils literal notranslate"><span class="pre">place|buy|lay|put|pass_line|dont_pass|come|dont_come|odds|hardway|field|prop|big6|big8|horn|world</span></code>)</p></li>
+<li><p><strong>P3·C2 — Legality</strong>: increments, limits, timing windows (odds require base; no mid-resolve pulls)</p></li>
+<li><p><strong>P3·C3 — Errors</strong>: <code class="docutils literal notranslate"><span class="pre">{code,</span> <span class="pre">hint,</span> <span class="pre">at_state}</span></code> with codes: <code class="docutils literal notranslate"><span class="pre">ILLEGAL_TIMING,</span> <span class="pre">ILLEGAL_AMOUNT,</span> <span class="pre">UNSUPPORTED_BET,</span> <span class="pre">LIMIT_BREACH,</span> <span class="pre">INSUFFICIENT_FUNDS,</span> <span class="pre">TABLE_RULE_BLOCK,</span> <span class="pre">BAD_ARGS</span></code></p></li>
+<li><p><strong>P3·C4 — Tests</strong>: timing rejections; insufficient funds; increments/limits</p></li>
+<li><p><strong>P3·C5 — Docs</strong>: verbs + error catalog; tag <code class="docutils literal notranslate"><span class="pre">v0.1.0-api-phase3</span></code></p></li>
+</ul>
+<p><strong>Exit:</strong> Safe, deterministic actions; clear errors.</p>
+</section>
+<hr class="docutils" />
+<section id="phase-4-roll-stepping-event-journal">
+<h2>Phase 4 — Roll Stepping &amp; Event Journal<a class="headerlink" href="#phase-4-roll-stepping-event-journal" title="Link to this heading"></a></h2>
+<p><strong>Goal:</strong> Atomic toss resolution with ordered events and single source-of-truth snapshot.</p>
+<ul class="simple">
+<li><p><strong>P4·C1 — <code class="docutils literal notranslate"><span class="pre">/step_roll</span></code></strong>: <code class="docutils literal notranslate"><span class="pre">{&quot;mode&quot;:&quot;auto&quot;}</span></code> (seed RNG) or <code class="docutils literal notranslate"><span class="pre">{&quot;mode&quot;:&quot;inject&quot;,&quot;dice&quot;:[d1,d2]}</span></code></p></li>
+<li><p><strong>P4·C2 — Event schema</strong>: <code class="docutils literal notranslate"><span class="pre">hand_started,</span> <span class="pre">puck_on/off,</span> <span class="pre">point_set,</span> <span class="pre">bet_placed,</span> <span class="pre">bet_traveled,</span> <span class="pre">bet_resolved{payout,commission},</span> <span class="pre">payment,</span> <span class="pre">seven_out,</span> <span class="pre">hand_ended</span></code></p></li>
+<li><p><strong>P4·C3 — Snapshot generator</strong>: stable JSON for puck/point/dice/bankroll/bets/flags/identity</p></li>
+<li><p><strong>P4·C4 — Tests</strong>: point cycles, seven-outs, event ordering</p></li>
+<li><p><strong>P4·C5 — Docs</strong>: <code class="docutils literal notranslate"><span class="pre">docs/API_SNAPSHOT.md</span></code>; tag <code class="docutils literal notranslate"><span class="pre">v0.1.0-api-phase4</span></code></p></li>
+</ul>
+<p><strong>Exit:</strong> Events + snapshots consistent across endpoints.</p>
+</section>
+<hr class="docutils" />
+<section id="phase-5-tape-export-import-replay">
+<h2>Phase 5 — Tape Export/Import &amp; Replay<a class="headerlink" href="#phase-5-tape-export-import-replay" title="Link to this heading"></a></h2>
+<p><strong>Goal:</strong> Deterministic replay with hashing.</p>
+<ul class="simple">
+<li><p><strong>P5·C1 — <code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/export_tape</span></code></strong>: <code class="docutils literal notranslate"><span class="pre">{actions,</span> <span class="pre">rolls,</span> <span class="pre">run_hash,</span> <span class="pre">tape_hash,</span> <span class="pre">capabilities_hash}</span></code></p></li>
+<li><p><strong>P5·C2 — <code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/import_tape</span></code></strong>: re-run and verify parity</p></li>
+<li><p><strong>P5·C3 — Tests</strong>: bit-for-bit equality on replay</p></li>
+<li><p><strong>P5·C4 — Docs</strong>: <code class="docutils literal notranslate"><span class="pre">docs/API_REPLAY.md</span></code>; tag <code class="docutils literal notranslate"><span class="pre">v0.1.0-api-phase5</span></code></p></li>
+</ul>
+<p><strong>Exit:</strong> Replay parity verified.</p>
+</section>
+<hr class="docutils" />
+<section id="phase-6-docs-conformance-suite-release-candidate">
+<h2>Phase 6 — Docs, Conformance Suite, Release Candidate<a class="headerlink" href="#phase-6-docs-conformance-suite-release-candidate" title="Link to this heading"></a></h2>
+<p><strong>Goal:</strong> Professional docs + self-test battery.</p>
+<ul class="simple">
+<li><p><strong>P6·C1 — Commission docs</strong>: <code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/docs/commission</span></code> with worked examples (on_win vs on_bet + ceil + floor)</p></li>
+<li><p><strong>P6·C2 — Conformance mini-suite</strong>: payouts (Place/Buy/Lay/Odds incl. 3-4-5), field/hardways, timing rejections, rounding ties, replay parity</p></li>
+<li><p><strong>P6·C3 — Docs polish</strong>: <code class="docutils literal notranslate"><span class="pre">docs/API_OVERVIEW.md</span></code>, endpoint inventory, schema examples</p></li>
+<li><p><strong>P6·C4 — Tag &amp; PR</strong>: <code class="docutils literal notranslate"><span class="pre">v0.1.0-api</span></code> and submit adapter PR</p></li>
+</ul>
+<p><strong>Exit:</strong> Conformance green; adapter isolated; core untouched.</p>
+</section>
+<hr class="docutils" />
+<section id="guardrails">
+<h2>Guardrails<a class="headerlink" href="#guardrails" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>Zero core mutations</strong> — all API code in <code class="docutils literal notranslate"><span class="pre">crapssim_api/</span></code></p></li>
+<li><p><strong>Deterministic by construction</strong> — seed + tape; injected dice supported</p></li>
+<li><p><strong>Small reversible phases</strong> — each tagged; easy rollback</p></li>
+<li><p><strong>Truthful capabilities</strong> — no promises the engine can’t keep</p></li>
+<li><p><strong>Out of scope remains out</strong> — strategies/DSL/risk/journals stay in CSC</p></li>
+</ul>
+</section>
+<hr class="docutils" />
+<section id="minimal-endpoint-inventory-mvp">
+<h2>Minimal Endpoint Inventory (MVP)<a class="headerlink" href="#minimal-endpoint-inventory-mvp" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/start_session</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/end_session</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/capabilities</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/apply_action</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/step_roll</span></code></p></li>
+<li><p><em>(Pre-GA)</em> <code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/export_tape</span></code>, <code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">/import_tape</span></code></p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Sean Kent.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
