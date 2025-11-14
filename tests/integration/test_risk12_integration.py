@@ -26,8 +26,6 @@ from crapssim.table import Table, TableUpdate
             [Place(6, amount=6.0), Place(8, amount=6.0)],
             (1, 1),
             [
-                Place(6, amount=6.0),
-                Place(8, amount=6.0),
                 PassLine(amount=5.0),
                 Field(amount=5.0),
             ],
@@ -39,8 +37,6 @@ from crapssim.table import Table, TableUpdate
             [Place(6, amount=6.0), Place(8, amount=6.0)],
             (2, 1),
             [
-                Place(6, amount=6.0),
-                Place(8, amount=6.0),
                 PassLine(amount=5.0),
                 Field(amount=5.0),
             ],
@@ -52,8 +48,6 @@ from crapssim.table import Table, TableUpdate
             [Place(6, amount=6.0), Place(8, amount=6.0)],
             (2, 2),
             [
-                Place(6, amount=6.0),
-                Place(8, amount=6.0),
                 PassLine(amount=5.0),
                 Field(amount=5.0),
             ],
@@ -153,8 +147,6 @@ from crapssim.table import Table, TableUpdate
             [Place(6, amount=6.0), Place(8, amount=6.0)],
             (3, 4),
             [
-                Place(6, amount=6.0),
-                Place(8, amount=6.0),
                 PassLine(amount=5.0),
                 Field(amount=5.0),
             ],
@@ -213,7 +205,7 @@ from crapssim.table import Table, TableUpdate
             {"winnings": 5},
             [Place(6, amount=6.0)],
             (3, 5),
-            [Place(6, amount=6.0), PassLine(amount=5.0), Field(amount=5.0)],
+            [PassLine(amount=5.0), Field(amount=5.0)],
         ),
         (
             None,
@@ -221,7 +213,7 @@ from crapssim.table import Table, TableUpdate
             {"winnings": 10},
             [Place(6, amount=6.0)],
             (3, 5),
-            [Place(6, amount=6.0), PassLine(amount=5.0), Field(amount=5.0)],
+            [PassLine(amount=5.0), Field(amount=5.0)],
         ),
         (
             None,
@@ -230,8 +222,6 @@ from crapssim.table import Table, TableUpdate
             [Place(6, amount=6.0), Place(8, amount=6.0)],
             (5, 4),
             [
-                Place(6, amount=6.0),
-                Place(8, amount=6.0),
                 PassLine(amount=5.0),
                 Field(amount=5.0),
             ],
@@ -243,8 +233,6 @@ from crapssim.table import Table, TableUpdate
             [Place(6, amount=6.0), Place(8, amount=6.0)],
             (3, 6),
             [
-                Place(6, amount=6.0),
-                Place(8, amount=6.0),
                 PassLine(amount=5.0),
                 Field(amount=5.0),
             ],
@@ -256,8 +244,6 @@ from crapssim.table import Table, TableUpdate
             [Place(6, amount=6.0), Place(8, amount=6.0)],
             (4, 6),
             [
-                Place(6, amount=6.0),
-                Place(8, amount=6.0),
                 PassLine(amount=5.0),
                 Field(amount=5.0),
             ],
@@ -269,8 +255,6 @@ from crapssim.table import Table, TableUpdate
             [Place(8, amount=6.0), Place(6, amount=6.0)],
             (6, 4),
             [
-                Place(8, amount=6.0),
-                Place(6, amount=6.0),
                 PassLine(amount=5.0),
                 Field(amount=5.0),
             ],
@@ -1545,19 +1529,13 @@ def test_risk12_integration(
     strategy.min_bankroll = bankroll - 12
 
     if table.point.number in (4, 9, 10):
-        # strategy.pre_point_winnings = 10
         winnings = 10
-        # strategy.min_bankroll =
     elif strat_info is not None and "winnings" in strat_info:
-        # strategy.min_bankroll = bankroll - 12
-        # strategy.pre_point_winnings = strat_info["winnings"]
         winnings = strat_info["winnings"]
     else:
         winnings = 10
 
-    table.add_player(
-        bankroll=bankroll + winnings, strategy=strategy
-    )  # ADD STRATEGY HERE
+    table.add_player(bankroll=bankroll + winnings, strategy=strategy)
     table.players[0].bets = copy.copy(bets_before)
     table.dice.result = dice_result
     TableUpdate().run_strategies(table)
