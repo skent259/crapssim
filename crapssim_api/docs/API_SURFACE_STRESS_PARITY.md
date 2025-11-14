@@ -2,8 +2,8 @@
 
 ## Summary
 
-* Scenarios defined: **35**
-* Matches: **35**
+* Scenarios defined: **71**
+* Matches: **71**
 * Mismatches: **0**
 * Missing in API journal: **0**
 * Missing in engine journal: **0**
