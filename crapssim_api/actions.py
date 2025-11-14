@@ -4,24 +4,34 @@ from functools import reduce
 from typing import Any, Dict, Iterable, Mapping
 
 from crapssim.bet import (
+    All,
     Any7,
+    AnyCraps,
     Bet,
     Big6,
     Big8,
+    Boxcars,
     Buy,
     CAndE,
     Come,
     DontCome,
     DontPass,
     Field,
+    Fire,
     HardWay,
+    Hop,
     Horn,
     Lay,
     Odds,
     PassLine,
     Place,
     Put,
+    Small,
+    Tall,
+    Three,
+    Two,
     World,
+    Yo,
 )
 from crapssim.table import Player, Table
 
@@ -42,6 +52,15 @@ _SIMPLE_AMOUNT_ONLY: Dict[str, type[Bet]] = {
     "world": World,
     "big6": Big6,
     "big8": Big8,
+    "two": Two,
+    "three": Three,
+    "yo": Yo,
+    "boxcars": Boxcars,
+    "any_craps": AnyCraps,
+    "fire": Fire,
+    "all": All,
+    "tall": Tall,
+    "small": Small,
 }
 
 _NUMBER_REQUIRED: Dict[str, type[Bet]] = {
@@ -61,7 +80,7 @@ _ODDS_BASES: Dict[str, type[Bet]] = {
 }
 
 SUPPORTED_VERBS = frozenset(
-    list(_SIMPLE_AMOUNT_ONLY) + list(_NUMBER_REQUIRED) + ["odds"]
+    list(_SIMPLE_AMOUNT_ONLY) + list(_NUMBER_REQUIRED) + ["odds", "hop"]
 )
 
 
@@ -83,6 +102,20 @@ def _coerce_number(args: AmountArgs, verb: str) -> int:
         return int(number_value)
     except (TypeError, ValueError) as exc:  # pragma: no cover - defensive
         raise bad_args("number must be an integer") from exc
+
+
+def _coerce_hop_result(args: AmountArgs, verb: str) -> tuple[int, int]:
+    result = args.get("result")
+    if not isinstance(result, (list, tuple)) or len(result) != 2:
+        raise bad_args(f"{verb} requires result=[die1, die2]")
+    try:
+        die_1 = int(result[0])
+        die_2 = int(result[1])
+    except (TypeError, ValueError) as exc:  # pragma: no cover - defensive
+        raise bad_args("result values must be integers") from exc
+    if not all(1 <= value <= 6 for value in (die_1, die_2)):
+        raise bad_args("result values must be between 1 and 6")
+    return die_1, die_2
 
 
 def _combine_bets(bets: Iterable[Bet]) -> Bet:
@@ -153,6 +186,10 @@ def build_bet(
             return bet_cls(number, amount)
         except (ValueError, KeyError) as exc:
             raise bad_args(f"invalid number '{number}' for {verb}") from exc
+
+    if verb == "hop":
+        dice_result = _coerce_hop_result(args, verb)
+        return Hop(dice_result, amount)
 
     if verb == "odds":
         base_value = args.get("base")
