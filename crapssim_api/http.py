@@ -243,11 +243,51 @@ if router is not None:  # pragma: no cover - FastAPI optional
     router.get("/capabilities")(_http_capabilities)
 
 
-def start_session(body: StartSessionRequest) -> Response:
-    spec: TableSpec = body.get("spec", {})
-    seed = body.get("seed", 0)
-    if not isinstance(seed, int):
+def _coerce_start_session_payload(
+    payload: StartSessionRequest | BaseModel | Dict[str, Any]
+) -> Dict[str, Any]:
+    """Return a plain mapping for the start session request."""
+
+    if isinstance(payload, BaseModel):  # pragma: no branch - pydantic model
+        if hasattr(payload, "model_dump"):
+            data = payload.model_dump()  # type: ignore[assignment]
+        elif hasattr(payload, "dict"):
+            data = payload.dict()  # type: ignore[assignment]
+        else:  # pragma: no cover - defensive fallback
+            data = dict(payload.__dict__)
+        return dict(data)
+
+    if isinstance(payload, dict):
+        return dict(payload)
+
+    raise bad_args("start_session payload must be a mapping")
+
+
+class StartSessionResult(dict):
+    """Dictionary-like result that retains a JSON encoded body for legacy callers."""
+
+    body: bytes
+
+    def __init__(self, payload: StartSessionResponse):
+        super().__init__(payload)
+        self.body = _json_dumps(payload).encode()
+
+
+def start_session(payload: StartSessionRequest | BaseModel | Dict[str, Any]) -> StartSessionResult:
+    """Core callable used by tests and the FastAPI layer."""
+
+    request_data = _coerce_start_session_payload(payload)
+    spec_value = request_data.get("spec", {})
+    if not isinstance(spec_value, dict):
+        raise bad_args("spec must be a mapping")
+    spec: TableSpec = spec_value
+
+    seed_value = request_data.get("seed", 0)
+    if isinstance(seed_value, bool) or not isinstance(seed_value, int):
         raise bad_args("seed must be int")
+    seed = seed_value
+
+    random.seed(seed)
 
     vig_settings = _resolve_vig_settings(spec)
     caps = _apply_vig_settings_to_caps(dict(BASE_CAPABILITIES), vig_settings)
@@ -291,9 +331,16 @@ def start_session(body: StartSessionRequest) -> Response:
         "session_id": session_id,
         "snapshot": snapshot,
     }
-    return _json_response(response)
+    return StartSessionResult(response)
+
+
 if router is not None:  # pragma: no cover - FastAPI optional
-    router.post("/start_session")(start_session)
+
+    def _start_session_http(body: StartSessionRequest = Body(...)) -> Response:
+        return _json_response(start_session(body))
+
+    router.post("/session/start")(_start_session_http)
+    router.post("/start_session")(_start_session_http)
 
 
 def end_session():
