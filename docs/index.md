@@ -92,6 +92,7 @@ Installation <installation>
 Contributing <contributing>
 Change Log <changelog>
 Supported Bets <supported-bets>
+API Verbs <API_VERBS>
 ```
 
 
