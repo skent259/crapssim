@@ -8,7 +8,9 @@ __pycache__/
 
 # Distribution / packaging
 .Python
-build/
+build/*
+!build/api_surface_api.json
+!build/api_surface_vanilla.json
 develop-eggs/
 dist/
 downloads/
