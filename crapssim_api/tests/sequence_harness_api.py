@@ -70,19 +70,19 @@ def _apply_initial_state(
 
 def _apply_action(client: Any, session_id: str, action: Dict[str, Any]) -> ActionResult:
     verb = action["verb"]
-    args = action.get("args", {}) or {}
+    args = dict(action.get("args", {}) or {})
     payload = {"verb": verb, "args": args, "session_id": session_id}
     response = client.post("/apply_action", json=payload)
 
     if response.status_code == 200:
-        return {"verb": verb, "args": args, "result": "ok", "error_code": None}
+        return {"verb": verb, "args": dict(args), "result": "ok", "error_code": None}
 
     error_code: str | None
     try:
         error_code = response.json().get("code")
     except ValueError:  # pragma: no cover - defensive
         error_code = None
-    return {"verb": verb, "args": args, "result": "error", "error_code": error_code}
+    return {"verb": verb, "args": dict(args), "result": "error", "error_code": error_code}
 
 
 def _inject_roll(client: Any, session_id: str, dice: Tuple[int, int]) -> None:
@@ -92,6 +92,8 @@ def _inject_roll(client: Any, session_id: str, dice: Tuple[int, int]) -> None:
 
 
 def run_api_sequence_harness(config: SequenceRunConfig | None = None) -> List[SequenceJournalEntry]:
+    pytest.importorskip("fastapi")
+    pytest.importorskip("pydantic")
     TestClient = _require_test_client()
     app = create_app()
     client = TestClient(app)
@@ -116,11 +118,14 @@ def run_api_sequence_harness(config: SequenceRunConfig | None = None) -> List[Se
 
         player = _ensure_player(session_obj)
 
-        step_results: List[Dict[str, Any]] = []
+        initial_snapshot = session_obj.snapshot()
+        normalized_initial_bets = normalize_bets(initial_snapshot.get("bets", []))
+
+        steps: List[Dict[str, Any]] = []
         last_result = "ok"
         last_error: str | None = None
 
-        for step in scenario.get("steps", []):
+        for step_index, step in enumerate(scenario.get("steps", [])):
             before_snapshot = session_obj.snapshot()
             before_bankroll = float(before_snapshot.get("bankroll", 0.0))
             before_bets = normalize_bets(before_snapshot.get("bets", []))
@@ -133,29 +138,26 @@ def run_api_sequence_harness(config: SequenceRunConfig | None = None) -> List[Se
 
             actions = step.get("actions", []) or []
             action_results: List[ActionResult] = []
-            step_errors: List[str] = []
             for action in actions:
                 result = _apply_action(client, session_id, action)
                 action_results.append(result)
                 last_result = result["result"]
                 last_error = result.get("error_code")
-                if result["result"] == "error":
-                    step_errors.append(f"{result['verb']}: {result.get('error_code')}")
 
             after_snapshot = session_obj.snapshot()
             after_bankroll = float(after_snapshot.get("bankroll", 0.0))
             after_bets = normalize_bets(after_snapshot.get("bets", []))
 
-            step_results.append(
+            steps.append(
                 {
-                    "step_label": step.get("label", f"step_{index}"),
+                    "index": step_index,
+                    "label": step.get("label", f"step_{step_index}"),
                     "dice": [int(dice[0]), int(dice[1])] if dice is not None else None,
                     "before_bankroll": before_bankroll,
                     "after_bankroll": after_bankroll,
                     "bets_before": before_bets,
                     "bets_after": after_bets,
                     "actions": action_results,
-                    "errors": step_errors,
                 }
             )
 
@@ -167,7 +169,9 @@ def run_api_sequence_harness(config: SequenceRunConfig | None = None) -> List[Se
             {
                 "scenario": scenario["label"],
                 "seed": seed,
-                "step_results": step_results,
+                "initial_bankroll": initial_bankroll,
+                "initial_bets": normalized_initial_bets,
+                "steps": steps,
                 "final_state": {
                     "bankroll": final_bankroll,
                     "bets": final_bets,
@@ -180,5 +184,7 @@ def run_api_sequence_harness(config: SequenceRunConfig | None = None) -> List[Se
         player.bets.clear()
 
     write_json(API_JSON_PATH, journal)
-    write_sequence_report(API_REPORT_PATH, journal, title="CrapsSim API Sequence Harness")
+    write_sequence_report(
+        API_REPORT_PATH, journal, title="CrapsSim API — Roll-by-Roll Sequence Trace"
+    )
     return journal

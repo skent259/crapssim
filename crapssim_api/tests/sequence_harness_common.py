@@ -4,38 +4,44 @@ from __future__ import annotations
 import json
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, Iterable, List, Sequence, TypedDict
+from typing import Any, Dict, Iterable, List, Mapping, MutableMapping, Sequence, TypedDict
 
 from .sequence_scenarios import NormalizedBet, SEQUENCE_SCENARIOS
 
 
 RESULTS_DIR = Path(__file__).parent / "results"
 API_JSON_PATH = RESULTS_DIR / "api_sequences_journal.json"
-API_REPORT_PATH = RESULTS_DIR / "API_SEQUENCE_STRESS_API.md"
+API_REPORT_PATH = RESULTS_DIR / "API_SEQUENCE_TRACE_API.md"
 VANILLA_JSON_PATH = RESULTS_DIR / "vanilla_sequences_journal.json"
-VANILLA_REPORT_PATH = RESULTS_DIR / "API_SEQUENCE_STRESS_VANILLA.md"
-PARITY_REPORT_PATH = RESULTS_DIR / "API_SEQUENCE_STRESS_PARITY.md"
+VANILLA_REPORT_PATH = RESULTS_DIR / "API_SEQUENCE_TRACE_VANILLA.md"
+PARITY_REPORT_PATH = RESULTS_DIR / "API_SEQUENCE_TRACE_PARITY.md"
 
 
 class ActionResult(TypedDict):
+    """Outcome for an action applied in a sequence step."""
+
     verb: str
     args: Dict[str, Any]
     result: str
     error_code: str | None
 
 
-class StepResult(TypedDict):
-    step_label: str
+class StepJournalEntry(TypedDict):
+    """Roll-by-roll journal entry for a single step."""
+
+    index: int
+    label: str
     dice: List[int] | None
     before_bankroll: float
     after_bankroll: float
     bets_before: List[NormalizedBet]
     bets_after: List[NormalizedBet]
     actions: List[ActionResult]
-    errors: List[str]
 
 
 class FinalState(TypedDict):
+    """Summary of the final session state after a sequence finishes."""
+
     bankroll: float
     bets: List[NormalizedBet]
     result: str
@@ -43,22 +49,32 @@ class FinalState(TypedDict):
 
 
 class SequenceJournalEntry(TypedDict):
+    """Roll-by-roll journal captured for a full test scenario."""
+
     scenario: str
     seed: int
-    step_results: List[StepResult]
+    initial_bankroll: float
+    initial_bets: List[NormalizedBet]
+    steps: List[StepJournalEntry]
     final_state: FinalState
 
 
 @dataclass(frozen=True)
 class SequenceRunConfig:
+    """Configuration for sequence harness runs."""
+
     seed_base: int = 42000
 
 
 def ensure_results_dir() -> None:
+    """Ensure the results directory exists before writing artifacts."""
+
     RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 
 
-def normalize_bets(bets: Iterable[dict[str, Any]]) -> List[NormalizedBet]:
+def normalize_bets(bets: Iterable[Mapping[str, Any]]) -> List[NormalizedBet]:
+    """Normalize bet dictionaries for stable comparisons and reporting."""
+
     normalized: List[NormalizedBet] = []
     for bet in bets:
         normalized.append(
@@ -79,6 +95,8 @@ def normalize_bets(bets: Iterable[dict[str, Any]]) -> List[NormalizedBet]:
 
 
 def write_json(path: Path, data: Any) -> None:
+    """Persist JSON data with deterministic formatting."""
+
     ensure_results_dir()
     path.write_text(json.dumps(data, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
@@ -90,200 +108,166 @@ def _summary_counts(journal: Sequence[SequenceJournalEntry]) -> tuple[int, int, 
     return total, ok_count, error_count
 
 
-def _render_step_table(entry: SequenceJournalEntry) -> List[str]:
+def _format_bet_summary(bets: Sequence[NormalizedBet]) -> str:
+    if not bets:
+        return "(none)"
+    fragments: List[str] = []
+    for bet in bets:
+        amount_value = float(bet["amount"])
+        amount = f"${amount_value:.0f}" if amount_value.is_integer() else f"${amount_value:.2f}"
+        number = bet.get("number")
+        number_part = f" {number}" if number is not None else ""
+        fragments.append(f"{bet['type']}{number_part}: {amount}")
+    return "; ".join(fragments)
+
+
+def _format_action(action: ActionResult) -> str:
+    args = action.get("args", {})
+    pieces: List[str] = []
+    number = args.get("number")
+    base = args.get("base")
+    amount = args.get("amount")
+    if number is not None and amount is not None:
+        pieces.append(f"{number}:{amount}")
+    elif amount is not None:
+        pieces.append(str(amount))
+    if base is not None:
+        pieces.append(str(base))
+    extra_keys = [key for key in sorted(args) if key not in {"number", "amount", "base"}]
+    for key in extra_keys:
+        pieces.append(f"{key}={args[key]}")
+
+    detail = f" {' '.join(pieces)}" if pieces else ""
+    if action.get("result") == "error":
+        error = action.get("error_code") or "error"
+        outcome = f"error ({error})"
+    else:
+        outcome = "ok"
+    return f"{action['verb']}{detail} {outcome}".strip()
+
+
+def _render_step_rows(entry: SequenceJournalEntry) -> List[str]:
     lines = [
-        "| Step | Dice | Before | After | Result | Errors |",
-        "| --- | --- | --- | --- | --- | --- |",
+        "| Step # | Label | Dice | Actions | Bankroll (before→after) | Bet Summary |",
+        "| ------ | ----- | ---- | ------- | ------------------------ | ----------- |",
     ]
-    for step in entry["step_results"]:
+    for step in entry["steps"]:
         dice = step["dice"]
-        dice_display = "-" if dice is None else f"{dice[0]}+{dice[1]}"
-        action_desc = "; ".join(
-            f"{action['verb']}:{action['result']}" for action in step["actions"]
-        )
-        error_desc = ", ".join(step["errors"]) if step["errors"] else ""
+        dice_display = "—" if dice is None else f"{dice[0]}+{dice[1]}"
+        actions_display = "; ".join(_format_action(action) for action in step["actions"]) or "(none)"
+        bankroll_display = f"{step['before_bankroll']:.2f} → {step['after_bankroll']:.2f}"
+        bets_display = _format_bet_summary(step["bets_after"])
         lines.append(
-            "| {label} | {dice} | {before:.2f} | {after:.2f} | {actions} | {errors} |".format(
-                label=step["step_label"],
+            "| {index} | {label} | {dice} | {actions} | {bankroll} | {bets} |".format(
+                index=step["index"],
+                label=step["label"],
                 dice=dice_display,
-                before=step["before_bankroll"],
-                after=step["after_bankroll"],
-                actions=action_desc or "",
-                errors=error_desc,
+                actions=actions_display,
+                bankroll=bankroll_display,
+                bets=bets_display,
             )
         )
-    lines.append("")
-    return lines
-
-
-def _render_step_overview(entry: SequenceJournalEntry) -> List[str]:
-    lines: List[str] = ["#### Step Overview", ""]
-    if not entry["step_results"]:
-        lines.append("(no steps recorded)")
-        lines.append("")
-        return lines
-
-    for step in entry["step_results"]:
-        fragments: List[str] = []
-        dice = step["dice"]
-        if dice is not None:
-            fragments.append(f"dice {dice[0]}+{dice[1]}")
-        if step["actions"]:
-            action_bits = []
-            for action in step["actions"]:
-                verb = action["verb"]
-                result = action["result"]
-                error_code = action.get("error_code")
-                if error_code:
-                    action_bits.append(f"{verb} ({result}, {error_code})")
-                else:
-                    action_bits.append(f"{verb} ({result})")
-            fragments.append("actions: " + ", ".join(action_bits))
-        if step["errors"]:
-            fragments.append("errors: " + ", ".join(step["errors"]))
-        if not fragments:
-            fragments.append("no actions")
-        lines.append(f"- **{step['step_label']}**: " + "; ".join(fragments))
     lines.append("")
     return lines
 
 
 def write_sequence_report(path: Path, journal: Sequence[SequenceJournalEntry], *, title: str) -> None:
+    """Write a human-friendly markdown trace report for the provided journal."""
+
     ensure_results_dir()
     total, ok_count, error_count = _summary_counts(journal)
-    scenario_lookup = {scenario["label"]: scenario for scenario in SEQUENCE_SCENARIOS}
 
     lines: List[str] = [f"# {title}", ""]
     lines.extend(["## Summary", ""])
-    lines.append(f"* Total sequences: **{total}**")
-    lines.append(f"* Final OK states: **{ok_count}**")
-    lines.append(f"* Final errors: **{error_count}**")
+    lines.append(f"- Total scenarios: {total}")
+    lines.append(f"- Successful (final result ok): {ok_count}")
+    lines.append(f"- With errors: {error_count}")
     lines.append("")
 
-    lines.extend(["## Sequence Results", ""])
-    lines.append("| Scenario | Final Result | Error Code | Expected Result | Expected Error |")
-    lines.append("| --- | --- | --- | --- | --- |")
     for entry in journal:
-        expect = scenario_lookup.get(entry["scenario"], {}).get("expect", {})
-        expected_desc = expect.get("expected_result")
-        expected_code = expect.get("error_code")
-        lines.append(
-            "| {scenario} | {result} | {error} | {expected_result} | {expected_error} |".format(
-                scenario=entry["scenario"],
-                result=entry["final_state"]["result"],
-                error=entry["final_state"].get("error_code") or "",
-                expected_result=expected_desc or "",
-                expected_error=expected_code or "",
-            )
-        )
-    lines.append("")
-
-    lines.extend(["## Sequence Journals", ""])
-    for entry in journal:
-        lines.append(f"### {entry['scenario']}")
+        lines.append(f"## Scenario: {entry['scenario']}")
         lines.append("")
-        lines.extend(_render_step_overview(entry))
+        lines.append(f"- Initial bankroll: {entry['initial_bankroll']:.2f}")
+        lines.append(f"- Initial bets: {_format_bet_summary(entry['initial_bets'])}")
+        lines.append("")
+        lines.extend(_render_step_rows(entry))
         lines.append("```json")
-        lines.append(json.dumps(entry, indent=2, sort_keys=True))
+        lines.append(json.dumps({"final_state": entry["final_state"]}, indent=2, sort_keys=True))
         lines.append("```")
         lines.append("")
-        lines.extend(_render_step_table(entry))
 
     path.write_text("\n".join(lines), encoding="utf-8")
 
 
-def build_parity_rows(
-    api_journal: Sequence[SequenceJournalEntry],
-    vanilla_journal: Sequence[SequenceJournalEntry],
-    *,
-    epsilon: float = 1e-6,
-) -> Dict[str, List[Dict[str, Any]]]:
-    vanilla_lookup = {entry["scenario"]: entry for entry in vanilla_journal}
-    rows: Dict[str, List[Dict[str, Any]]] = {}
-
-    for api_entry in api_journal:
-        label = api_entry["scenario"]
-        scenario_rows: List[Dict[str, Any]] = []
-        vanilla_entry = vanilla_lookup.get(label)
-        if vanilla_entry is None:
-            scenario_rows.append(
-                {
-                    "field": "scenario",
-                    "api": "present",
-                    "vanilla": "missing",
-                    "status": "❌",
-                }
-            )
-            rows[label] = scenario_rows
-            continue
-
-        api_final = api_entry["final_state"]
-        vanilla_final = vanilla_entry["final_state"]
-
-        scenario_rows.append(
-            {
-                "field": "final_result",
-                "api": api_final["result"],
-                "vanilla": vanilla_final["result"],
-                "status": "✅" if api_final["result"] == vanilla_final["result"] else "❌",
-            }
-        )
-        scenario_rows.append(
-            {
-                "field": "error_code",
-                "api": api_final.get("error_code") or "",
-                "vanilla": vanilla_final.get("error_code") or "",
-                "status": "✅"
-                if (api_final.get("error_code") or "") == (vanilla_final.get("error_code") or "")
-                else "❌",
-            }
-        )
-
-        bankroll_match = abs(api_final["bankroll"] - vanilla_final["bankroll"]) <= epsilon
-        scenario_rows.append(
-            {
-                "field": "final_bankroll",
-                "api": f"{api_final['bankroll']:.2f}",
-                "vanilla": f"{vanilla_final['bankroll']:.2f}",
-                "status": "✅" if bankroll_match else "❌",
-            }
-        )
-
-        api_bets = json.dumps(api_final["bets"], sort_keys=True)
-        vanilla_bets = json.dumps(vanilla_final["bets"], sort_keys=True)
-        scenario_rows.append(
-            {
-                "field": "final_bets",
-                "api": api_bets,
-                "vanilla": vanilla_bets,
-                "status": "✅" if api_bets == vanilla_bets else "❌",
-            }
-        )
-
-        rows[label] = scenario_rows
-
-    for vanilla_entry in vanilla_journal:
-        label = vanilla_entry["scenario"]
-        if label not in rows:
-            rows[label] = [
-                {
-                    "field": "scenario",
-                    "api": "missing",
-                    "vanilla": "present",
-                    "status": "❌",
-                }
-            ]
-
-    return rows
-
-
 def _extract_mismatch_label(message: str) -> str:
-    if message.startswith("Scenario "):
-        return message.split(" ", 2)[1]
     prefix = message.split(":", 1)[0]
     if " step" in prefix:
         return prefix.split(" step", 1)[0]
     return prefix
+
+
+def _build_parity_summary(
+    api_journal: Sequence[SequenceJournalEntry],
+    vanilla_journal: Sequence[SequenceJournalEntry],
+    *,
+    epsilon: float,
+) -> Dict[str, MutableMapping[str, Any]]:
+    vanilla_lookup = {entry["scenario"]: entry for entry in vanilla_journal}
+    summary: Dict[str, MutableMapping[str, Any]] = {}
+
+    for api_entry in api_journal:
+        label = api_entry["scenario"]
+        vanilla_entry = vanilla_lookup.get(label)
+        record: MutableMapping[str, Any] = {
+            "scenario": label,
+            "api_final": api_entry["final_state"],
+            "vanilla_final": vanilla_entry["final_state"] if vanilla_entry else None,
+            "result_match": False,
+            "error_match": False,
+            "bankroll_match": False,
+            "bets_match": False,
+            "status": "❌",
+        }
+
+        if vanilla_entry is None:
+            summary[label] = record
+            continue
+
+        api_final = api_entry["final_state"]
+        vanilla_final = vanilla_entry["final_state"]
+        record["result_match"] = api_final["result"] == vanilla_final["result"]
+        record["error_match"] = (api_final.get("error_code") or "") == (
+            vanilla_final.get("error_code") or ""
+        )
+        record["bankroll_match"] = (
+            abs(api_final["bankroll"] - vanilla_final["bankroll"]) <= epsilon
+        )
+        record["bets_match"] = api_final["bets"] == vanilla_final["bets"]
+        record["status"] = "✅" if all(
+            (
+                record["result_match"],
+                record["error_match"],
+                record["bankroll_match"],
+                record["bets_match"],
+            )
+        ) else "❌"
+        summary[label] = record
+
+    for vanilla_entry in vanilla_journal:
+        label = vanilla_entry["scenario"]
+        if label not in summary:
+            summary[label] = {
+                "scenario": label,
+                "api_final": None,
+                "vanilla_final": vanilla_entry["final_state"],
+                "result_match": False,
+                "error_match": False,
+                "bankroll_match": False,
+                "bets_match": False,
+                "status": "❌",
+            }
+
+    return summary
 
 
 def compare_journals(
@@ -292,16 +276,31 @@ def compare_journals(
     *,
     epsilon: float = 1e-6,
 ) -> tuple[bool, List[str]]:
+    """Compare API and vanilla journals, returning mismatch messages."""
+
     mismatches: List[str] = []
     vanilla_lookup = {entry["scenario"]: entry for entry in vanilla_journal}
 
-    parity_rows = build_parity_rows(api_journal, vanilla_journal, epsilon=epsilon)
-    for label, scenario_rows in parity_rows.items():
-        for row in scenario_rows:
-            if row["status"] == "❌":
-                mismatches.append(
-                    f"{label}: {row['field']} mismatch ({row['api']} vs {row['vanilla']})"
-                )
+    parity_summary = _build_parity_summary(api_journal, vanilla_journal, epsilon=epsilon)
+    for record in parity_summary.values():
+        if not record["result_match"]:
+            mismatches.append(
+                f"{record['scenario']}: result mismatch"
+                if record["vanilla_final"] is not None and record["api_final"] is not None
+                else f"{record['scenario']}: scenario mismatch"
+            )
+        if record["vanilla_final"] is None or record["api_final"] is None:
+            continue
+        if not record["error_match"]:
+            mismatches.append(
+                f"{record['scenario']}: error code mismatch ({record['api_final'].get('error_code')} vs {record['vanilla_final'].get('error_code')})"
+            )
+        if not record["bankroll_match"]:
+            mismatches.append(
+                f"{record['scenario']}: bankroll mismatch ({record['api_final']['bankroll']:.2f} vs {record['vanilla_final']['bankroll']:.2f})"
+            )
+        if not record["bets_match"]:
+            mismatches.append(f"{record['scenario']}: final bets mismatch")
 
     for api_entry in api_journal:
         label = api_entry["scenario"]
@@ -309,45 +308,50 @@ def compare_journals(
         if vanilla_entry is None:
             continue
 
-        vanilla_steps = vanilla_entry["step_results"]
-        api_steps = api_entry["step_results"]
+        vanilla_steps = vanilla_entry["steps"]
+        api_steps = api_entry["steps"]
         if len(api_steps) != len(vanilla_steps):
             mismatches.append(f"{label}: step count mismatch")
             continue
         for idx, (api_step, vanilla_step) in enumerate(zip(api_steps, vanilla_steps)):
-            step_label = api_step["step_label"]
-            if api_step["step_label"] != vanilla_step["step_label"]:
+            if api_step["label"] != vanilla_step["label"]:
                 mismatches.append(
-                    f"{label} step {idx}: label mismatch ({api_step['step_label']} vs {vanilla_step['step_label']})"
+                    f"{label} step {idx}: label mismatch ({api_step['label']} vs {vanilla_step['label']})"
+                )
+            if api_step["dice"] != vanilla_step["dice"]:
+                mismatches.append(
+                    f"{label} step {idx}: dice mismatch ({api_step['dice']} vs {vanilla_step['dice']})"
                 )
             if abs(api_step["before_bankroll"] - vanilla_step["before_bankroll"]) > epsilon:
                 mismatches.append(
-                    f"{label} step {step_label}: before bankroll mismatch ({api_step['before_bankroll']:.2f} vs {vanilla_step['before_bankroll']:.2f})"
+                    f"{label} step {idx}: before bankroll mismatch ({api_step['before_bankroll']:.2f} vs {vanilla_step['before_bankroll']:.2f})"
                 )
             if abs(api_step["after_bankroll"] - vanilla_step["after_bankroll"]) > epsilon:
                 mismatches.append(
-                    f"{label} step {step_label}: after bankroll mismatch ({api_step['after_bankroll']:.2f} vs {vanilla_step['after_bankroll']:.2f})"
+                    f"{label} step {idx}: after bankroll mismatch ({api_step['after_bankroll']:.2f} vs {vanilla_step['after_bankroll']:.2f})"
                 )
             if api_step["bets_after"] != vanilla_step["bets_after"]:
-                mismatches.append(f"{label} step {step_label}: bets after mismatch")
+                mismatches.append(f"{label} step {idx}: bets after mismatch")
             if len(api_step["actions"]) != len(vanilla_step["actions"]):
-                mismatches.append(f"{label} step {step_label}: action count mismatch")
-            else:
-                for action_idx, (api_action, vanilla_action) in enumerate(
-                    zip(api_step["actions"], vanilla_step["actions"])
+                mismatches.append(f"{label} step {idx}: action count mismatch")
+                continue
+            for action_idx, (api_action, vanilla_action) in enumerate(
+                zip(api_step["actions"], vanilla_step["actions"])
+            ):
+                if api_action["verb"] != vanilla_action["verb"]:
+                    mismatches.append(
+                        f"{label} step {idx} action {action_idx}: verb mismatch"
+                    )
+                if api_action["result"] != vanilla_action["result"]:
+                    mismatches.append(
+                        f"{label} step {idx} action {action_idx}: result mismatch ({api_action['result']} vs {vanilla_action['result']})"
+                    )
+                if (api_action.get("error_code") or "") != (
+                    vanilla_action.get("error_code") or ""
                 ):
-                    if api_action["verb"] != vanilla_action["verb"]:
-                        mismatches.append(
-                            f"{label} step {step_label} action {action_idx}: verb mismatch"
-                        )
-                    if api_action["result"] != vanilla_action["result"]:
-                        mismatches.append(
-                            f"{label} step {step_label} action {action_idx}: result mismatch ({api_action['result']} vs {vanilla_action['result']})"
-                        )
-                    if api_action.get("error_code") != vanilla_action.get("error_code"):
-                        mismatches.append(
-                            f"{label} step {step_label} action {action_idx}: error code mismatch ({api_action.get('error_code')} vs {vanilla_action.get('error_code')})"
-                        )
+                    mismatches.append(
+                        f"{label} step {idx} action {action_idx}: error code mismatch ({api_action.get('error_code')} vs {vanilla_action.get('error_code')})"
+                    )
 
     ok = not mismatches
     return ok, mismatches
@@ -358,75 +362,58 @@ def write_parity_report(
     vanilla_journal: Sequence[SequenceJournalEntry],
     mismatches: Sequence[str],
 ) -> None:
+    """Write a parity report comparing API and vanilla journals."""
+
     ensure_results_dir()
-    total = len(api_journal)
-    vanilla_total = len(vanilla_journal)
+    parity_summary = _build_parity_summary(api_journal, vanilla_journal, epsilon=1e-6)
 
-    lines: List[str] = ["# CrapsSim API Sequence Parity", ""]
+    total = len(parity_summary)
+    perfect_matches = sum(1 for record in parity_summary.values() if record["status"] == "✅")
+    mismatch_count = total - perfect_matches
+
+    lines: List[str] = ["# CrapsSim API — Sequence Trace Parity (API vs Vanilla)", ""]
     lines.extend(["## Summary", ""])
-    lines.append(f"* API sequences: **{total}**")
-    lines.append(f"* Vanilla sequences: **{vanilla_total}**")
-    lines.append(f"* Mismatches: **{len(mismatches)}**")
+    lines.append(f"- Total scenarios: {total}")
+    lines.append(f"- Perfect matches: {perfect_matches}")
+    lines.append(f"- Mismatches: {mismatch_count}")
     lines.append("")
 
-    parity_rows = build_parity_rows(api_journal, vanilla_journal)
-
-    lines.extend(["## Field Comparisons", ""])
-    lines.append("| Scenario | Field | API | Vanilla | Status |")
-    lines.append("| --- | --- | --- | --- | --- |")
-    for label in sorted(parity_rows):
-        for row in parity_rows[label]:
-            lines.append(
-                "| {scenario} | {field} | {api} | {vanilla} | {status} |".format(
-                    scenario=label,
-                    field=row["field"],
-                    api=row["api"],
-                    vanilla=row["vanilla"],
-                    status=row["status"],
-                )
+    lines.extend(["## Scenario Parity", ""])
+    lines.append(
+        "| Scenario | Result | Error Code | Bankroll (API) | Bankroll (Vanilla) | Bets Match? | Status |"
+    )
+    lines.append("| --- | --- | --- | --- | --- | --- | --- |")
+    for label in sorted(parity_summary):
+        record = parity_summary[label]
+        api_final = record.get("api_final")
+        vanilla_final = record.get("vanilla_final")
+        result = api_final["result"] if api_final else "—"
+        error_code = api_final.get("error_code") if api_final else None
+        lines.append(
+            "| {scenario} | {result} | {error} | {api_bankroll} | {vanilla_bankroll} | {bets_match} | {status} |".format(
+                scenario=label,
+                result=result,
+                error=error_code or "",
+                api_bankroll=f"{api_final['bankroll']:.2f}" if api_final else "—",
+                vanilla_bankroll=f"{vanilla_final['bankroll']:.2f}" if vanilla_final else "—",
+                bets_match="✅" if record.get("bets_match") else "❌",
+                status=record["status"],
             )
+        )
     lines.append("")
 
-    mismatch_labels = {label for label, rows in parity_rows.items() if any(row["status"] == "❌" for row in rows)}
-    mismatch_labels.update(_extract_mismatch_label(msg) for msg in mismatches)
-    mismatch_labels = {label for label in mismatch_labels if label}
-
-    if mismatch_labels:
+    if mismatches:
         lines.extend(["## Mismatch Details", ""])
-        api_lookup = {entry["scenario"]: entry for entry in api_journal}
-        vanilla_lookup = {entry["scenario"]: entry for entry in vanilla_journal}
-        for label in sorted(mismatch_labels):
-            lines.append(f"### {label}")
-            lines.append("")
-            scenario_messages = [msg for msg in mismatches if _extract_mismatch_label(msg) == label]
-            if scenario_messages:
-                lines.append("**Issues**")
+        seen_labels = set()
+        for message in mismatches:
+            label = _extract_mismatch_label(message)
+            if label not in seen_labels:
+                lines.append(f"### {label}")
                 lines.append("")
-                for msg in scenario_messages:
-                    lines.append(f"- {msg}")
-                lines.append("")
-
-            api_entry = api_lookup.get(label)
-            vanilla_entry = vanilla_lookup.get(label)
-            if api_entry is not None:
-                lines.append("**API Final State**")
-                lines.append("")
-                lines.append("```json")
-                lines.append(json.dumps(api_entry["final_state"], indent=2, sort_keys=True))
-                lines.append("```")
-                lines.append("")
-            if vanilla_entry is not None:
-                lines.append("**Vanilla Final State**")
-                lines.append("")
-                lines.append("```json")
-                lines.append(json.dumps(vanilla_entry["final_state"], indent=2, sort_keys=True))
-                lines.append("```")
-                lines.append("")
-            else:
-                lines.append("Vanilla result missing.")
-                lines.append("")
-
-    if not mismatch_labels:
+                seen_labels.add(label)
+            lines.append(f"- {message}")
+        lines.append("")
+    else:
         lines.append("All scenarios matched across API and vanilla harnesses.")
 
     PARITY_REPORT_PATH.write_text("\n".join(lines), encoding="utf-8")

@@ -1,5 +1,10 @@
 from __future__ import annotations
 
+import pytest
+
+pytest.importorskip("fastapi")
+pytest.importorskip("pydantic")
+
 from .sequence_harness_common import (
     PARITY_REPORT_PATH,
     compare_journals,

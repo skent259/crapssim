@@ -4,6 +4,9 @@ from typing import Dict
 
 import pytest
 
+pytest.importorskip("fastapi")
+pytest.importorskip("pydantic")
+
 from .sequence_harness_common import SequenceJournalEntry
 from .sequence_scenarios import SEQUENCE_SCENARIOS
 
@@ -44,4 +47,4 @@ def test_api_sequences_expectations(api_sequence_journal: list[SequenceJournalEn
                 final_state["bets"] == expected_bets
             ), f"{entry['scenario']}: expected bets {expected_bets}, got {final_state['bets']}"
 
-        assert len(entry["step_results"]) == len(scenario.get("steps", []))
+        assert len(entry["steps"]) == len(scenario.get("steps", []))
