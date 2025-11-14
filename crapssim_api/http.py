@@ -136,7 +136,20 @@ BASE_CAPABILITIES: Capabilities = {
         "lay": ["lay_4", "lay_5", "lay_6", "lay_8", "lay_9", "lay_10"],
         "field": {"pays": {"2": "double", "12": "double"}},
         "hardways": {"break_on": "seven_or_easy"},
-        "props": ["any7", "c&e", "horn", "world"],
+        "props": [
+            "any7",
+            "c&e",
+            "horn",
+            "world",
+            "two",
+            "three",
+            "yo",
+            "boxcars",
+            "any_craps",
+            "hop",
+        ],
+        "fire": ["fire"],
+        "small_tall_all": ["small", "tall", "all"],
     },
     "increments": {
         "place": {"4": 5, "5": 5, "6": 6, "8": 6, "9": 5, "10": 5},
@@ -157,10 +170,7 @@ BASE_CAPABILITIES: Capabilities = {
         },
     },
     "working_flags": {"comeout_odds_work": False, "place_work_comeout": False},
-    "why_unsupported": {
-        "fire": "not implemented in vanilla",
-        "small_tall_all": "not implemented in vanilla",
-    },
+    "why_unsupported": {},
 }
 
 
