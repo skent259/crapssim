@@ -7,6 +7,6 @@
   - Added `tools/api_fingerprint.py` to emit engine/capabilities version JSON.
 - Commands:
   - PYTHONPATH=. pytest -q
-  - PYTHONPATH=. pytest tests/api -q
+  - PYTHONPATH=. pytest crapssim_api/tests -q
   - PYTHONPATH=. pytest tests/integration -q
 - Result: ✅ All tests passing.

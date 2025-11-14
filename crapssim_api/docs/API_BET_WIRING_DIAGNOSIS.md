@@ -30,7 +30,7 @@ Affected paths:
   ```bash
   uvicorn crapssim_api.http:app --reload
   ```
-  Then POST to `/session/start`, `/apply_action`, and `/session/roll` with the sequences demonstrated in `tests/api/test_api_bet_flow.py`.
+  Then POST to `/session/start`, `/apply_action`, and `/session/roll` with the sequences demonstrated in `crapssim_api/tests/test_api_bet_flow.py`.
 
 ## Open Questions / Future Work
 - Consider consolidating duplicated state between `HandState` and the engine snapshot to avoid divergence.
