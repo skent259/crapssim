@@ -5,7 +5,7 @@ import pytest
 pytest.importorskip("fastapi")
 pytest.importorskip("pydantic")
 
-from .sequence_harness_common import (
+from crapssim_api.tests.sequence_harness_common import (
     PARITY_REPORT_PATH,
     compare_journals,
     write_parity_report,

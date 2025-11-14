@@ -4,23 +4,20 @@ from typing import Dict
 
 import pytest
 
-pytest.importorskip("fastapi")
-pytest.importorskip("pydantic")
-
-from .sequence_harness_common import SequenceJournalEntry
-from .sequence_scenarios import SEQUENCE_SCENARIOS
+from crapssim_api.tests.sequence_harness_common import SequenceJournalEntry
+from crapssim_api.tests.sequence_scenarios import SEQUENCE_SCENARIOS
 
 
 def _scenario_lookup() -> Dict[str, dict]:
     return {scenario["label"]: scenario for scenario in SEQUENCE_SCENARIOS}
 
 
-@pytest.mark.usefixtures("api_sequence_journal")
-def test_api_sequences_expectations(api_sequence_journal: list[SequenceJournalEntry]) -> None:
+@pytest.mark.usefixtures("vanilla_sequence_journal")
+def test_vanilla_sequences_expectations(vanilla_sequence_journal: list[SequenceJournalEntry]) -> None:
     lookup = _scenario_lookup()
-    assert api_sequence_journal, "sequence journal should not be empty"
+    assert vanilla_sequence_journal, "vanilla journal should not be empty"
 
-    for entry in api_sequence_journal:
+    for entry in vanilla_sequence_journal:
         scenario = lookup[entry["scenario"]]
         expect = scenario.get("expect", {})
 
