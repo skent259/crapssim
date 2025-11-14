@@ -88,25 +88,9 @@ class RollRequest(BaseModel):
         return v
 
 
-from .actions import VerbRegistry
-from .actions import (
-    SessionBankrolls,
-    TableView,
-    apply_bankroll_delta,
-    check_amount,
-    check_funds,
-    check_limits,
-    check_timing,
-    get_bankroll,
-)
+from .actions import SUPPORTED_VERBS, build_bet, compute_required_cash, describe_vig
 from .capabilities import get_capabilities_payload
-from .errors import (
-    ApiError,
-    api_error_handler,
-    bad_args,
-    table_rule_block,
-    unsupported_bet,
-)
+from .errors import ApiError, ApiErrorCode, api_error_handler, bad_args, unsupported_bet
 from .events import (
     build_event,
     build_hand_ended,
@@ -178,47 +162,6 @@ BASE_CAPABILITIES: Capabilities = {
         "small_tall_all": "not implemented in vanilla",
     },
 }
-
-
-def _map_verb_to_command(verb: str, args: Dict[str, Any]) -> Dict[str, Any] | None:
-    amount_value = args.get("amount")
-    if amount_value is None:
-        return None
-    try:
-        amount = float(amount_value)
-    except (TypeError, ValueError):
-        raise bad_args("amount must be numeric")
-
-    if verb == "pass_line":
-        return {"type": "place_bet", "bet": "PassLine", "args": {"amount": amount}}
-    if verb == "dont_pass":
-        return {"type": "place_bet", "bet": "DontPass", "args": {"amount": amount}}
-    if verb == "come":
-        return {"type": "place_bet", "bet": "Come", "args": {"amount": amount}}
-    if verb == "dont_come":
-        return {"type": "place_bet", "bet": "DontCome", "args": {"amount": amount}}
-
-    if verb in {"place", "buy", "lay", "put"}:
-        bet_name = {
-            "place": "Place",
-            "buy": "Buy",
-            "lay": "Lay",
-            "put": "Put",
-        }[verb]
-        number_value = args.get("box", args.get("number"))
-        if number_value is None:
-            raise bad_args("box/number is required for this bet")
-        try:
-            number = int(number_value)
-        except (TypeError, ValueError):
-            raise bad_args("box/number must be an integer")
-        return {
-            "type": "place_bet",
-            "bet": bet_name,
-            "args": {"number": number, "amount": amount},
-        }
-
-    return None
 
 
 def _resolve_vig_settings(spec: TableSpec) -> Dict[str, Any]:
@@ -408,7 +351,6 @@ def start_session(
     session_obj = session_state["session"]
     snapshot_state = session_obj.snapshot()
     bankroll_after = float(snapshot_state.get("bankroll", 0.0))
-    SessionBankrolls[session_id] = bankroll_after
 
     snapshot: Dict[str, Any] = {
         "identity": {
@@ -484,148 +426,129 @@ if router is not None:  # pragma: no cover - FastAPI optional
     router.post("/end_session")(end_session)
 
 
+def _at_state(session_id: str, session_state: Dict[str, Any]) -> Dict[str, Any]:
+    hand = session_state.get("hand")
+    hand_id = getattr(hand, "hand_id", None)
+    return {
+        "session_id": session_id,
+        "hand_id": hand_id,
+        "roll_seq": session_state.get("roll_seq"),
+    }
+
+
+def _player_signature(player: Any) -> list[tuple[str, int | None, float]]:
+    signature: list[tuple[str, int | None, float]] = []
+    for bet in getattr(player, "bets", []):
+        signature.append(
+            (
+                bet.__class__.__name__,
+                getattr(bet, "number", None),
+                float(getattr(bet, "amount", 0.0)),
+            )
+        )
+    return signature
+
+
 def apply_action(req: dict):
     verb = req.get("verb")
     args = req.get("args", {})
-    session_provided = "session_id" in req
-    session_id = req.get("session_id", "stub-session")
+    session_id = req.get("session_id")
 
     if not isinstance(verb, str) or not verb:
         raise bad_args("verb must be a non-empty string")
-    if verb not in VerbRegistry:
+    if verb not in SUPPORTED_VERBS:
         raise unsupported_bet(f"verb '{verb}' not recognized")
     if not isinstance(args, dict):
         raise bad_args("args must be a dictionary")
+    if not isinstance(session_id, str) or not session_id.strip():
+        raise bad_args("session_id must be provided")
 
-    # ----- legality context ---------------------------------------------------
-    caps = _capabilities_dict()["capabilities"]
-    place_increments = {
-        str(k): int(v) for k, v in caps.get("increments", {}).get("place", {}).items()
-    }
-    odds_limits = caps.get("odds_limits", {"policy": "3-4-5", "max_x": 20})
-    odds_policy = str(odds_limits.get("policy", "3-4-5"))
-    odds_max_x = int(odds_limits.get("max_x", 20))
+    session_state = SESSION_STORE.ensure(session_id)
+    table_settings = session_state.setdefault("settings", dict(DEFAULT_VIG_SETTINGS))
+    session_obj: Session | None = session_state.get("session")
+    table = session_state.get("table")
 
-    # Allow tests/clients to pass a minimal state hint; default puck OFF (come-out)
-    # Example: {"state": {"puck": "ON", "point": 6}}
-    state = req.get("state", {})
-    puck = state.get("puck", "OFF")
-    point = state.get("point", None)
-    table_view = TableView(puck=puck, point=point)
-
-    # ----- legality checks ----------------------------------------------------
-    check_timing(verb, table_view)
-    check_amount(verb, args, place_increments)
-    check_limits(verb, args, odds_policy, odds_max_x)
-
-    session_obj: Session | None = None
-    table = None
-    player = None
-    session_state: Dict[str, Any] | None = None
-    bankroll_before = 0.0
-    if session_provided:
-        session_state = SESSION_STORE.ensure(session_id)
-        table_settings = session_state.setdefault(
-            "settings", dict(DEFAULT_VIG_SETTINGS)
-        )
-        session_obj = session_state.get("session")
-        table = session_state.get("table")
-        if session_obj is None:
-            if table is None:
-                table = SESSION_STORE.ensure(session_id)["table"]
-            session_obj = Session(table=table)
-            session_state["session"] = session_obj
-        assert session_obj is not None
+    if session_obj is None:
         if table is None:
-            table = session_obj.table
-            session_state["table"] = table
+            table = SESSION_STORE.ensure(session_id)["table"]
+        session_obj = Session(table=table)
+        session_state["session"] = session_obj
 
-        vig_rounding = table_settings.get("vig_rounding")
-        if isinstance(vig_rounding, str):
-            table.settings["vig_rounding"] = vig_rounding
-        vig_floor = table_settings.get("vig_floor")
-        if isinstance(vig_floor, (int, float)):
-            table.settings["vig_floor"] = float(vig_floor)
-        vig_paid_on_win = table_settings.get("vig_paid_on_win")
-        if isinstance(vig_paid_on_win, bool):
-            table.settings["vig_paid_on_win"] = vig_paid_on_win
+    assert session_obj is not None
 
+    if table is None:
+        table = session_obj.table
+        session_state["table"] = table
+
+    vig_rounding = table_settings.get("vig_rounding")
+    if isinstance(vig_rounding, str):
+        table.settings["vig_rounding"] = vig_rounding
+    vig_floor = table_settings.get("vig_floor")
+    if isinstance(vig_floor, (int, float)):
+        table.settings["vig_floor"] = float(vig_floor)
+    vig_paid_on_win = table_settings.get("vig_paid_on_win")
+    if isinstance(vig_paid_on_win, bool):
+        table.settings["vig_paid_on_win"] = vig_paid_on_win
+
+    player = session_obj.player()
+    if player is None:
+        table.add_player(bankroll=1000, strategy=None, name="API Player")
         player = session_obj.player()
-        if player is None:
-            table.add_player(bankroll=1000, strategy=None, name="API Player")
-            player = session_obj.player()
 
-        bankroll_before = float(getattr(player, "bankroll", 0.0)) if player else 0.0
-        SessionBankrolls[session_id] = bankroll_before
-    else:
-        table_settings = dict(DEFAULT_VIG_SETTINGS)
+    if player is None:  # pragma: no cover - defensive
+        raise ApiError(
+            ApiErrorCode.INTERNAL,
+            "session player unavailable",
+            at_state=_at_state(session_id, session_state),
+        )
 
-    amt = args.get("amount", 0)
-    required_cash = 0.0
-    vig_info: Dict[str, Any] | None = None
-    if isinstance(amt, (int, float)) and amt > 0:
-        amount_value = float(amt)
-        required_cash = amount_value
-        rounding, floor = _vig_policy(table_settings)
-        if verb in ("buy", "lay"):
-            vig_amount = _compute_vig(amount_value, rounding=rounding, floor=floor)
-            vig_info = {
-                "amount": vig_amount,
-                "paid_on_win": bool(table_settings.get("vig_paid_on_win", False)),
-            }
-            if not table_settings.get("vig_paid_on_win", False):
-                required_cash += vig_amount
-        if session_provided:
-            check_funds(session_id, required_cash)
+    bankroll_before = float(player.bankroll)
+    signature_before = _player_signature(player)
 
-    command = _map_verb_to_command(verb, args) if session_provided else None
-    result: Dict[str, Any]
-    if command is not None and player is not None:
-        if required_cash:
-            apply_bankroll_delta(session_id, -required_cash)
-        engine_result = session_obj.apply_command(command)
-        applied = bool(engine_result.get("ok"))
-        bankroll_after = float(player.bankroll)
-        SessionBankrolls[session_id] = bankroll_after
-        bankroll_delta = bankroll_after - bankroll_before
-        note = "applied via engine" if applied else "engine rejected action"
-        result = {
-            "applied": applied,
-            "bankroll_delta": bankroll_delta,
-            "note": note,
-        }
-    else:
-        result = VerbRegistry[verb](args)
-        bankroll_after = bankroll_before + float(result.get("bankroll_delta", 0.0))
-        SessionBankrolls[session_id] = bankroll_after
-        result_note = result.get("note", "")
-        if result_note.startswith("stub:"):
-            result["note"] = "validated (legal, stub execution)"
+    bet = build_bet(verb, args, table=table, player=player)
+    required_cash = compute_required_cash(player, bet)
+
+    if required_cash > bankroll_before + 1e-9:
+        raise ApiError(
+            ApiErrorCode.INSUFFICIENT_FUNDS,
+            f"bankroll ${bankroll_before:.2f} < required ${required_cash:.2f}",
+            at_state=_at_state(session_id, session_state),
+        )
+
+    player.add_bet(bet)
+
+    bankroll_after = float(player.bankroll)
+    signature_after = _player_signature(player)
+
+    applied = bankroll_after != bankroll_before or signature_after != signature_before
+    if not applied:
+        raise ApiError(
+            ApiErrorCode.TABLE_RULE_BLOCK,
+            "engine rejected action",
+            at_state=_at_state(session_id, session_state),
+        )
+
+    bankroll_delta = bankroll_after - bankroll_before
+    vig_info = describe_vig(bet, table)
+
+    effect_summary: Dict[str, Any] = {
+        "verb": verb,
+        "args": args,
+        "applied": True,
+        "bankroll_delta": bankroll_delta,
+        "note": "applied via engine",
+    }
 
     if vig_info is not None:
-        result["vig"] = vig_info
-    if required_cash:
-        result["cash_required"] = required_cash
+        effect_summary["vig"] = vig_info
+    if required_cash > 0:
+        effect_summary["cash_required"] = required_cash
 
-    snapshot_state = session_obj.snapshot() if session_obj is not None else {"bets": []}
-
-    if session_provided:
-        puck_value = "ON" if table.point.status == "On" else "OFF"
-        point_value = table.point.number
-        bets_value = snapshot_state.get("bets", [])
-        bankroll_value = f"{get_bankroll(session_id):.2f}"
-    else:
-        puck_value = table_view.puck
-        point_value = table_view.point
-        bets_value = []
-        bankroll_value = f"{get_bankroll(session_id):.2f}"
+    snapshot_state = session_obj.snapshot()
+    bankroll_value = f"{float(snapshot_state.get('bankroll', bankroll_after)):.2f}"
 
     return {
-        "effect_summary": {
-            "verb": verb,
-            "args": args,
-            **result,
-        },
+        "effect_summary": effect_summary,
         "snapshot": {
             "session_id": session_id,
             "bankroll_after": bankroll_value,
@@ -633,10 +556,9 @@ def apply_action(req: dict):
                 "engine_api_version": ENGINE_API_VERSION,
                 "capabilities_schema_version": CAPABILITIES_SCHEMA_VERSION,
             },
-            # expose minimal table view echo for client tracing
-            "puck": puck_value,
-            "point": point_value,
-            "bets": bets_value,
+            "puck": "ON" if table.point.status == "On" else "OFF",
+            "point": table.point.number,
+            "bets": snapshot_state.get("bets", []),
         },
     }
 
@@ -699,7 +621,6 @@ def step_roll(req: StepRollRequest):
     after_snapshot = event.get("after", {})
     bankroll_before = f"{float(before_snapshot.get('bankroll', 0.0)):.2f}"
     bankroll_after = f"{float(after_snapshot.get('bankroll', 0.0)):.2f}"
-    SessionBankrolls[session_id] = float(after_snapshot.get("bankroll", 0.0))
 
     events = []
     if roll_seq == 1:

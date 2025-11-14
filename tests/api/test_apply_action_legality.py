@@ -1,47 +1,66 @@
 import pytest
 
-pytest.importorskip("fastapi")
 pytest.importorskip("pydantic")
 
 from pytest import raises
 
-from crapssim_api.http import apply_action
 from crapssim_api.errors import ApiError, ApiErrorCode
+from crapssim_api.http import apply_action, roll, start_session
 
 
-def _req(verb, args, puck="OFF", point=None):
-    return {"verb": verb, "args": args, "state": {"puck": puck, "point": point}}
+def _session_with_point(seed: int = 404) -> str:
+    session_id = start_session({"seed": seed})["session_id"]
+    roll({"session_id": session_id, "dice": [3, 3]})
+    return session_id
 
 
-def test_place_illegal_on_comeout():
-    with raises(ApiError) as e:
-        apply_action(_req("place", {"box": 6, "amount": 12}, puck="OFF"))
-    assert e.value.code is ApiErrorCode.ILLEGAL_TIMING
+def test_pass_line_rejected_when_point_on() -> None:
+    session_id = start_session({"seed": 111})["session_id"]
+    apply_action(
+        {"verb": "pass_line", "args": {"amount": 10}, "session_id": session_id}
+    )
+    roll({"session_id": session_id, "dice": [3, 3]})
+
+    with raises(ApiError) as exc:
+        apply_action(
+            {"verb": "pass_line", "args": {"amount": 5}, "session_id": session_id}
+        )
+
+    assert exc.value.code is ApiErrorCode.TABLE_RULE_BLOCK
 
 
-def test_place_legal_when_puck_on_with_increment_ok():
-    res = apply_action(_req("place", {"box": 6, "amount": 12}, puck="ON", point=6))
-    eff = res["effect_summary"]
-    assert eff["applied"] is True
-    assert eff["bankroll_delta"] == 0.0
+def test_come_bet_requires_point_on() -> None:
+    session_id = start_session({"seed": 222})["session_id"]
+    with raises(ApiError) as exc:
+        apply_action({"verb": "come", "args": {"amount": 10}, "session_id": session_id})
+    assert exc.value.code is ApiErrorCode.TABLE_RULE_BLOCK
 
 
-def test_increment_violation_on_place6():
-    # CrapsSim-Vanilla intentionally does not enforce increment policy.
-    # Higher-level tools (CSC, CLI, UI) are responsible for increment correctness.
-    res = apply_action(_req("place", {"box": 6, "amount": 7}, puck="ON", point=6))
-    eff = res["effect_summary"]
-    assert eff["applied"] is True
-    assert eff["bankroll_delta"] == 0.0
+def test_come_bet_allowed_after_point_on() -> None:
+    session_id = _session_with_point()
+    result = apply_action(
+        {"verb": "come", "args": {"amount": 10}, "session_id": session_id}
+    )
+    effect = result["effect_summary"]
+    assert effect["applied"] is True
+    assert effect["bankroll_delta"] < 0
 
 
-def test_table_cap_limit_breach():
-    with raises(ApiError) as e:
-        apply_action(_req("buy", {"box": 4, "amount": 50000}, puck="ON", point=4))
-    assert e.value.code is ApiErrorCode.LIMIT_BREACH
+def test_state_hint_does_not_override_engine() -> None:
+    session_id = start_session({"seed": 333})["session_id"]
+    apply_action(
+        {"verb": "pass_line", "args": {"amount": 10}, "session_id": session_id}
+    )
+    roll({"session_id": session_id, "dice": [3, 3]})
 
+    with raises(ApiError) as exc:
+        apply_action(
+            {
+                "verb": "pass_line",
+                "args": {"amount": 5},
+                "session_id": session_id,
+                "state": {"puck": "OFF", "point": None},
+            }
+        )
 
-def test_line_bet_only_on_comeout():
-    with raises(ApiError) as e:
-        apply_action(_req("pass_line", {"amount": 10}, puck="ON", point=6))
-    assert e.value.code is ApiErrorCode.ILLEGAL_TIMING
+    assert exc.value.code is ApiErrorCode.TABLE_RULE_BLOCK

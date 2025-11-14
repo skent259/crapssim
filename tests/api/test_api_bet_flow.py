@@ -26,12 +26,11 @@ def _start_session(seed: int = 424242):
     return data["session_id"], data["snapshot"]
 
 
-def _place_pass_line(session_id: str, state: dict[str, object]) -> dict:
+def _place_pass_line(session_id: str) -> dict:
     payload = {
         "session_id": session_id,
         "verb": "pass_line",
         "args": {"amount": 10},
-        "state": state,
     }
     resp = client.post("/apply_action", json=payload)
     assert resp.status_code == 200
@@ -51,10 +50,9 @@ def _to_float(value):
 
 
 def test_api_pass_line_bet_lifecycle():
-    session_id, snap0 = _start_session()
-    state = {"puck": snap0["puck"], "point": snap0["point"]}
+    session_id, _snap0 = _start_session()
 
-    apply_resp = _place_pass_line(session_id, state)
+    apply_resp = _place_pass_line(session_id)
     effect = apply_resp["effect_summary"]
     assert effect["applied"] is True
     assert effect["verb"] == "pass_line"

@@ -1,104 +1,202 @@
 from __future__ import annotations
 
-from typing import Any, Callable, Dict, Optional
+from functools import reduce
+from typing import Any, Dict, Iterable, Mapping
 
-from .errors import ApiError, ApiErrorCode
+from crapssim.bet import (
+    Any7,
+    Bet,
+    Big6,
+    Big8,
+    Buy,
+    CAndE,
+    Come,
+    DontCome,
+    DontPass,
+    Field,
+    HardWay,
+    Horn,
+    Lay,
+    Odds,
+    PassLine,
+    Place,
+    Put,
+    World,
+)
+from crapssim.table import Player, Table
+
+from .errors import ApiError, ApiErrorCode, bad_args
 
 
-def stub_handler(args: Dict[str, Any]) -> Dict[str, Any]:
-    # No side effects: deterministic, verb-agnostic no-op
-    return {
-        "applied": True,
-        "bankroll_delta": 0.0,
-        "note": "stub: action accepted, no-op",
-    }
+AmountArgs = Mapping[str, Any]
 
-
-VerbRegistry: Dict[str, Callable[[Dict[str, Any]], Dict[str, Any]]] = {
-    "pass_line": stub_handler,
-    "dont_pass": stub_handler,
-    "come": stub_handler,
-    "dont_come": stub_handler,
-    "place": stub_handler,
-    "buy": stub_handler,
-    "lay": stub_handler,
-    "put": stub_handler,
-    "hardway": stub_handler,
-    "field": stub_handler,
-    "horn": stub_handler,
-    "world": stub_handler,
+_SIMPLE_AMOUNT_ONLY: Dict[str, type[Bet]] = {
+    "pass_line": PassLine,
+    "dont_pass": DontPass,
+    "come": Come,
+    "dont_come": DontCome,
+    "field": Field,
+    "any7": Any7,
+    "c&e": CAndE,
+    "horn": Horn,
+    "world": World,
+    "big6": Big6,
+    "big8": Big8,
 }
 
+_NUMBER_REQUIRED: Dict[str, type[Bet]] = {
+    "place": Place,
+    "buy": Buy,
+    "lay": Lay,
+    "put": Put,
+    "hardway": HardWay,
+}
 
-class TableView:
-    def __init__(self, puck: str = "OFF", point: Optional[int] = None):
-        # puck: "OFF" | "ON" | "MOVING" (adapter sentinel during resolve)
-        self.puck = puck
-        self.point = point
+_ODDS_BASES: Dict[str, type[Bet]] = {
+    "pass_line": PassLine,
+    "dont_pass": DontPass,
+    "come": Come,
+    "dont_come": DontCome,
+    "put": Put,
+}
 
-
-def check_timing(verb: str, table: TableView) -> None:
-    if table.puck == "MOVING":
-        raise ApiError(ApiErrorCode.ILLEGAL_TIMING, f"{verb} disallowed while dice are resolving")
-    # Line bets only on come-out
-    if verb in ("pass_line", "dont_pass") and table.puck == "ON":
-        raise ApiError(ApiErrorCode.ILLEGAL_TIMING, f"{verb} only legal on come-out (puck OFF)")
-    # Box bets only after point is set
-    if verb in ("place", "buy", "lay", "put") and table.puck == "OFF":
-        raise ApiError(ApiErrorCode.ILLEGAL_TIMING, f"{verb} only legal after point established (puck ON)")
-
-
-def check_amount(verb: str, args: Dict[str, Any], place_increments: Dict[str, int]) -> None:
-    amt = args.get("amount")
-    if not isinstance(amt, (int, float)) or amt <= 0:
-        raise ApiError(ApiErrorCode.ILLEGAL_AMOUNT, "bet amount must be a positive number")
-    # For box-addressed verbs, ensure target box exists but defer increment policy.
-    if verb in ("place", "buy", "lay", "put"):
-        box = str(args.get("box"))
-        if box not in place_increments:
-            # If box missing or unsupported, treat as bad args amount shape
-            raise ApiError(ApiErrorCode.ILLEGAL_AMOUNT, f"missing/unsupported box '{box}' for {verb}")
-        if int(amt) != amt:
-            # For simplicity in P3·C2, require whole-dollar chips
-            raise ApiError(ApiErrorCode.ILLEGAL_AMOUNT, "amount must be whole dollars at this table")
+SUPPORTED_VERBS = frozenset(
+    list(_SIMPLE_AMOUNT_ONLY) + list(_NUMBER_REQUIRED) + ["odds"]
+)
 
 
-def check_limits(verb: str, args: Dict[str, Any], odds_policy: str, odds_max_x: int) -> None:
-    amt = args.get("amount", 0)
-    # Simple table cap placeholder to avoid outrageous inputs
-    if amt and amt > 20000:
-        raise ApiError(ApiErrorCode.LIMIT_BREACH, f"{verb} exceeds table cap")
-    # Odds-related checks will land in P3·C3 when odds verbs are implemented.
-    # Kept here for structure; no-op for now.
+def _coerce_amount(args: AmountArgs, verb: str) -> float:
+    value = args.get("amount")
+    if not isinstance(value, (int, float)):
+        raise bad_args(f"{verb} requires numeric amount")
+    amount = float(value)
+    if amount <= 0:
+        raise bad_args("amount must be greater than zero")
+    return amount
 
 
-# ---------------------------------------------------------------------------
-# Session Bankroll Tracking (Phase 3 · C3)
-# ---------------------------------------------------------------------------
-
-SessionBankrolls: Dict[str, float] = {}
-DEFAULT_START_BANKROLL = 1000.0
-
-
-def get_bankroll(session_id: str) -> float:
-    """Return current bankroll for session, defaulting to start bankroll."""
-
-    return SessionBankrolls.get(session_id, DEFAULT_START_BANKROLL)
+def _coerce_number(args: AmountArgs, verb: str) -> int:
+    number_value = args.get("number", args.get("box"))
+    if number_value is None:
+        raise bad_args(f"{verb} requires box/number argument")
+    try:
+        return int(number_value)
+    except (TypeError, ValueError) as exc:  # pragma: no cover - defensive
+        raise bad_args("number must be an integer") from exc
 
 
-def apply_bankroll_delta(session_id: str, delta: float):
-    """Apply deterministic bankroll delta and persist it in ledger."""
+def _combine_bets(bets: Iterable[Bet]) -> Bet:
+    bets = list(bets)
+    if not bets:
+        raise ValueError("combine_bets requires at least one bet")
+    return reduce(lambda acc, b: acc + b, bets[1:], bets[0])
 
-    SessionBankrolls[session_id] = get_bankroll(session_id) + float(delta)
 
+def _ensure_odds_base(
+    player: Player, base_cls: type[Bet], number: int | None, verb: str
+) -> None:
+    if base_cls in (PassLine, DontPass):
+        if player.table.point.number is None:
+            raise ApiError(
+                ApiErrorCode.TABLE_RULE_BLOCK,
+                "odds require an established point",
+            )
+        if not player.get_bets_by_type(base_cls):
+            raise ApiError(
+                ApiErrorCode.TABLE_RULE_BLOCK,
+                f"odds require an active {base_cls.__name__} bet",
+            )
+        return
 
-def check_funds(session_id: str, amount: float):
-    """Ensure bankroll sufficient before placing action."""
-
-    bankroll = get_bankroll(session_id)
-    if amount > bankroll:
+    target_number = number
+    if target_number is None:
         raise ApiError(
-            ApiErrorCode.INSUFFICIENT_FUNDS,
-            f"bankroll ${bankroll:.2f} < required ${amount:.2f}",
-            at_state={"session_id": session_id, "hand_id": None, "roll_seq": None},
+            ApiErrorCode.TABLE_RULE_BLOCK,
+            f"odds for {verb} require a resolved number",
         )
+
+    matching = [
+        bet
+        for bet in player.get_bets_by_type(base_cls)
+        if getattr(bet, "number", None) == target_number
+    ]
+    if not matching:
+        raise ApiError(
+            ApiErrorCode.TABLE_RULE_BLOCK,
+            f"odds require an active {base_cls.__name__} bet on {target_number}",
+        )
+
+
+def build_bet(
+    verb: str,
+    args: AmountArgs,
+    *,
+    table: Table,
+    player: Player,
+) -> Bet:
+    if verb not in SUPPORTED_VERBS:
+        raise ApiError(ApiErrorCode.UNSUPPORTED_BET, f"verb '{verb}' not recognized")
+
+    amount = _coerce_amount(args, verb)
+
+    if verb in _SIMPLE_AMOUNT_ONLY:
+        bet_cls = _SIMPLE_AMOUNT_ONLY[verb]
+        try:
+            return bet_cls(amount)
+        except TypeError as exc:  # pragma: no cover - defensive
+            raise bad_args(f"invalid arguments for {verb}") from exc
+
+    if verb in _NUMBER_REQUIRED:
+        number = _coerce_number(args, verb)
+        bet_cls = _NUMBER_REQUIRED[verb]
+        try:
+            return bet_cls(number, amount)
+        except (ValueError, KeyError) as exc:
+            raise bad_args(f"invalid number '{number}' for {verb}") from exc
+
+    if verb == "odds":
+        base_value = args.get("base")
+        if not isinstance(base_value, str) or not base_value:
+            raise bad_args("odds requires base bet identifier")
+        base_key = base_value.lower()
+        base_cls = _ODDS_BASES.get(base_key)
+        if base_cls is None:
+            raise bad_args(f"unsupported odds base '{base_value}'")
+
+        if base_cls in (PassLine, DontPass):
+            number = table.point.number
+        else:
+            number = None
+            if "number" in args or "box" in args:
+                number = _coerce_number(args, verb)
+
+        always_working = bool(args.get("working"))
+        _ensure_odds_base(player, base_cls, number, base_value)
+        if number is None:
+            raise ApiError(
+                ApiErrorCode.TABLE_RULE_BLOCK,
+                "odds require an established number",
+            )
+        return Odds(base_cls, number, amount, always_working=always_working)
+
+    raise ApiError(ApiErrorCode.UNSUPPORTED_BET, f"verb '{verb}' not recognized")
+
+
+def compute_required_cash(player: Player, bet: Bet) -> float:
+    existing = list(player.already_placed_bets(bet))
+    existing_cost = sum(x.cost(player.table) for x in existing)
+    combined = existing + [bet]
+    new_bet = _combine_bets(combined)
+    new_cost = new_bet.cost(player.table)
+    return float(new_cost - existing_cost)
+
+
+def describe_vig(bet: Bet, table: Table) -> Dict[str, Any] | None:
+    vig_method = getattr(bet, "vig", None)
+    if callable(vig_method):
+        vig_amount = float(vig_method(table))
+        return {
+            "amount": vig_amount,
+            "paid_on_win": bool(table.settings.get("vig_paid_on_win", False)),
+        }
+    return None
