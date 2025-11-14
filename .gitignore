@@ -151,8 +151,10 @@ dmypy.json
 # pytype static type analyzer
 .pytype/
 
-# CrapsSim API test/demo result artifacts
-crapssim_api/tests/results/
+# CrapsSim-API generated test artifacts
+crapssim_api/tests/results/*
+crapssim_api/tests/results/**/*.json
+crapssim_api/tests/results/**/*.md
 
 # Cython debug symbols
 cython_debug/

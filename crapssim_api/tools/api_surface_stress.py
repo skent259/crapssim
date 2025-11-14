@@ -19,7 +19,7 @@ from .api_surface_scenarios import (
 )
 
 DEFAULT_JSON = Path("build/api_surface_api.json")
-DEFAULT_MARKDOWN = Path("crapssim_api/docs/API_SURFACE_STRESS_API.md")
+DEFAULT_MARKDOWN = Path("crapssim_api/docs/dev/API_SURFACE_STRESS_API.md")
 
 
 def _require_test_client():

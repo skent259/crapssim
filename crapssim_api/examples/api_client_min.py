@@ -1,25 +1,10 @@
-"""
-Minimal example client for the CrapsSim HTTP API.
+"""Minimal HTTP client demo for CrapsSim.
 
-This script assumes:
+See ``crapssim_api/docs/API_VERBS.md`` for verb documentation and
+``crapssim_api/docs/dev/`` for deeper stress/sequence reports.
 
-- the FastAPI app is running locally, e.g.:
-
-    uvicorn crapssim_api.http:app --reload
-
-- the API implements the endpoints used below:
-    - GET  /health
-    - GET  /capabilities
-    - POST /session/start
-    - POST /session/apply_action
-    - POST /session/roll
-
-The goal is to demonstrate end-to-end usage:
-    1. check health
-    2. read capabilities
-    3. start a seeded session
-    4. place a simple Pass Line bet
-    5. roll once and print the result
+Run the FastAPI app locally (for example ``uvicorn crapssim_api.http:app --reload``)
+before executing this script.
 """
 
 from __future__ import annotations
@@ -37,81 +22,89 @@ def pretty(label: str, payload: Any) -> None:
     print(json.dumps(payload, indent=2, sort_keys=True))
 
 
-def get_health(client: httpx.Client) -> Dict[str, Any]:
-    resp = client.get("/health")
-    resp.raise_for_status()
-    data = resp.json()
-    pretty("health", data)
-    return data
-
-
-def get_capabilities(client: httpx.Client) -> Dict[str, Any]:
-    resp = client.get("/capabilities")
-    resp.raise_for_status()
-    data = resp.json()
-    pretty("capabilities", data)
-    return data
-
-
-def start_session(client: httpx.Client, seed: int = 12345) -> str:
-    payload: Dict[str, Any] = {
-        "seed": seed,
-        "profile_id": "default",
-    }
-    resp = client.post("/session/start", json=payload)
+def start_session(client: httpx.Client, *, seed: int = 4242) -> Dict[str, Any]:
+    resp = client.post("/session/start", json={"seed": seed})
     resp.raise_for_status()
     data = resp.json()
     pretty("session/start", data)
-
-    # The exact path to session id is defined by the API schema.
-    # Adjust this if your schema differs.
-    session = data.get("session") or data
-    session_id = session.get("id") or session.get("session_id")
-    if not session_id:
-        raise RuntimeError(f"Could not find session id in response: {data}")
-    return str(session_id)
+    return data
 
 
-def apply_passline_bet(client: httpx.Client, session_id: str, amount: int = 10) -> None:
-    payload: Dict[str, Any] = {
-        "session_id": session_id,
-        "actions": [
-            {
-                "type": "place_bet",
-                "bet": "PassLine",
-                "amount": amount,
-                "player_id": 0,
-            }
-        ],
-    }
-    resp = client.post("/session/apply_action", json=payload)
+def apply_action(client: httpx.Client, session_id: str, verb: str, args: Dict[str, Any]) -> Dict[str, Any]:
+    resp = client.post(
+        "/apply_action",
+        json={"session_id": session_id, "verb": verb, "args": args},
+    )
     resp.raise_for_status()
     data = resp.json()
-    pretty("session/apply_action (PassLine)", data)
+    summary = data.get("effect_summary", {})
+    pretty(f"apply_action → {verb}", summary)
+    return data
 
 
-def roll_once(client: httpx.Client, session_id: str) -> None:
-    payload: Dict[str, Any] = {
-        "session_id": session_id,
-        # Optionally include explicit dice for deterministic testing:
-        # "dice": [3, 4],
-    }
-    resp = client.post("/session/roll", json=payload)
+def roll_once(client: httpx.Client, session_id: str, dice: list[int]) -> Dict[str, Any]:
+    resp = client.post("/session/roll", json={"session_id": session_id, "dice": dice})
     resp.raise_for_status()
     data = resp.json()
     pretty("session/roll", data)
+    return data
+
+
+def step_auto(client: httpx.Client, session_id: str) -> Dict[str, Any]:
+    resp = client.post("/step_roll", json={"session_id": session_id, "mode": "auto"})
+    resp.raise_for_status()
+    snapshot = resp.json()
+    pretty(
+        "step_roll",
+        {
+            "bankroll_after": snapshot.get("bankroll_after"),
+            "bets": snapshot.get("bets", []),
+            "dice": snapshot.get("dice"),
+        },
+    )
+    return snapshot
+
+
+def handle_error(response: httpx.Response) -> None:
+    details = {
+        "status": response.status_code,
+        "body": response.json(),
+    }
+    pretty("apply_action error", details)
 
 
 def main() -> None:
     with httpx.Client(base_url=BASE_URL, timeout=5.0) as client:
-        get_health(client)
-        get_capabilities(client)
+        session_data = start_session(client, seed=2025)
+        session_id = session_data.get("session_id")
+        if not session_id:
+            raise RuntimeError(f"Unexpected session payload: {session_data}")
 
-        session_id = start_session(client, seed=4242)
-        print(f"\nSession started with id: {session_id}")
+        # Pass Line on the come-out roll
+        apply_action(client, session_id, "pass_line", {"amount": 10})
 
-        apply_passline_bet(client, session_id, amount=10)
-        roll_once(client, session_id)
+        # Establish the point with deterministic dice
+        roll_once(client, session_id, dice=[2, 2])
+
+        # Add a Place bet and odds behind the Pass Line
+        apply_action(client, session_id, "place", {"number": 6, "amount": 30})
+        apply_action(client, session_id, "odds", {"base": "pass_line", "amount": 20})
+
+        # Take an automatic roll and display bankroll/bets after the outcome
+        step_auto(client, session_id)
+
+        # Use a management verb to clear removable bets
+        apply_action(client, session_id, "clear_all_bets", {})
+
+        # Demonstrate error handling with an intentionally oversized bet
+        resp = client.post(
+            "/apply_action",
+            json={"session_id": session_id, "verb": "pass_line", "args": {"amount": 5000}},
+        )
+        if resp.status_code >= 400:
+            handle_error(resp)
+        else:
+            pretty("unexpected success", resp.json())
 
 
 if __name__ == "__main__":

@@ -26,7 +26,7 @@ from .api_surface_scenarios import (
 )
 
 DEFAULT_JSON = Path("build/api_surface_vanilla.json")
-DEFAULT_MARKDOWN = Path("crapssim_api/docs/API_SURFACE_STRESS_VANILLA.md")
+DEFAULT_MARKDOWN = Path("crapssim_api/docs/dev/API_SURFACE_STRESS_VANILLA.md")
 
 
 def _ensure_player(session: Session) -> Any:
