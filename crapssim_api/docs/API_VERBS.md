@@ -40,6 +40,14 @@ engine bet class.
 | `tall` | `amount` | Places a `Tall` ATS bet. |
 | `small` | `amount` | Places a `Small` ATS bet. |
 | `odds` | `amount`, `base`, optional `number`, optional `working` | Adds an `Odds` bet behind `pass_line`, `dont_pass`, `come`, `dont_come`, or `put`. The engine requires the matching base bet to be present. |
+| `remove_bet` | `type`, optional `number` | Removes matching removable bets of the requested type/number. |
+| `reduce_bet` | `type`, optional `number`, `new_amount` | Decreases or zeroes an existing bet while respecting table removal rules. |
+| `clear_all_bets` | _none_ | Removes all currently removable bets from the layout. |
+| `clear_center_bets` | _none_ | Clears center-action bets such as horn, world, hops, and field. |
+| `clear_place_buy_lay` | _none_ | Clears all `Place`, `Buy`, and `Lay` bets. |
+| `clear_ats_bets` | _none_ | Clears the All/Tall/Small bets. |
+| `clear_fire_bets` | _none_ | Clears any active `Fire` bets. |
+| `set_odds_working` | `base`, `number`, `working` | Toggles the always-working flag for matching odds bets. |
 
 Unsupported verbs produce an `UNSUPPORTED_BET` error with no side effects. Bets that the
 engine rejects (for example, attempting odds without an established base bet) raise a

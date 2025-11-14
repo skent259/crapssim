@@ -1,4 +1,5 @@
 """Sequence scenario definitions for CrapsSim API multi-step testing."""
+
 from __future__ import annotations
 
 from typing import Any, Dict, List, Literal, Optional, Tuple, TypedDict
@@ -181,12 +182,14 @@ SEQUENCE_SCENARIOS: List[SequenceScenario] = [
             },
             {"label": "hard_six_hits", "dice": (3, 3), "actions": []},
             {
-                "label": "rebet_hard_six", "dice": None, "actions": [
+                "label": "rebet_hard_six",
+                "dice": None,
+                "actions": [
                     {"verb": "hardway", "args": {"amount": 10, "number": 6}},
-                ]},
+                ],
+            },
             {"label": "easy_six_breaks", "dice": (4, 2), "actions": []},
-            {
-                "label": "hard_eight_hits", "dice": (4, 4), "actions": []},
+            {"label": "hard_eight_hits", "dice": (4, 4), "actions": []},
         ],
         "expect": {
             "final_bankroll": 370.0,
@@ -210,10 +213,13 @@ SEQUENCE_SCENARIOS: List[SequenceScenario] = [
             },
             {"label": "seven_roll", "dice": (2, 5), "actions": []},
             {
-                "label": "horn_and_world", "dice": None, "actions": [
+                "label": "horn_and_world",
+                "dice": None,
+                "actions": [
                     {"verb": "horn", "args": {"amount": 16}},
                     {"verb": "world", "args": {"amount": 5}},
-                ]},
+                ],
+            },
             {"label": "horn_three", "dice": (1, 2), "actions": []},
         ],
         "expect": {
@@ -264,9 +270,15 @@ SEQUENCE_SCENARIOS: List[SequenceScenario] = [
             },
             {"label": "come_bet_travels", "dice": (3, 2), "actions": []},
             {
-                "label": "add_odds_to_come", "dice": None, "actions": [
-                    {"verb": "odds", "args": {"base": "come", "amount": 30, "number": 5}},
-                ]},
+                "label": "add_odds_to_come",
+                "dice": None,
+                "actions": [
+                    {
+                        "verb": "odds",
+                        "args": {"base": "come", "amount": 30, "number": 5},
+                    },
+                ],
+            },
             {"label": "resolve_come_number", "dice": (4, 1), "actions": []},
             {"label": "seven_out", "dice": (3, 4), "actions": []},
         ],
@@ -294,9 +306,12 @@ SEQUENCE_SCENARIOS: List[SequenceScenario] = [
             },
             {"label": "dont_come_travel", "dice": (2, 2), "actions": []},
             {
-                "label": "invalid_odds_attempt", "dice": None, "actions": [
+                "label": "invalid_odds_attempt",
+                "dice": None,
+                "actions": [
                     {"verb": "odds", "args": {"base": "dont_come", "amount": 25}},
-                ]},
+                ],
+            },
             {"label": "seven_out", "dice": (3, 4), "actions": []},
         ],
         "expect": {
@@ -323,6 +338,129 @@ SEQUENCE_SCENARIOS: List[SequenceScenario] = [
             "final_bankroll": 250.0,
             "expected_result": "error",
             "error_code": "TABLE_RULE_BLOCK",
+            "bets_after": [],
+        },
+    },
+    {
+        "label": "prop_bets_resolution_cycle",
+        "initial_bankroll": 360.0,
+        "initial_bets": [
+            {"verb": "pass_line", "args": {"amount": 15}},
+        ],
+        "steps": [
+            {
+                "label": "load_prop_suite",
+                "dice": None,
+                "actions": [
+                    {"verb": "fire", "args": {"amount": 5}},
+                    {"verb": "all", "args": {"amount": 5}},
+                    {"verb": "tall", "args": {"amount": 5}},
+                    {"verb": "small", "args": {"amount": 5}},
+                ],
+            },
+            {"label": "comeout_point_six", "dice": (3, 3), "actions": []},
+            {
+                "label": "enter_hop_and_world",
+                "dice": None,
+                "actions": [
+                    {"verb": "world", "args": {"amount": 10}},
+                    {"verb": "horn", "args": {"amount": 16}},
+                    {"verb": "hop", "args": {"amount": 10, "result": [2, 4]}},
+                ],
+            },
+            {"label": "point_made_with_hop", "dice": (2, 4), "actions": []},
+            {
+                "label": "re_establish_pass_line",
+                "dice": None,
+                "actions": [
+                    {"verb": "pass_line", "args": {"amount": 15}},
+                ],
+            },
+            {"label": "new_point_five", "dice": (3, 2), "actions": []},
+            {"label": "seven_out_clears_props", "dice": (4, 3), "actions": []},
+        ],
+        "expect": {
+            "final_bankroll": 464.0,
+            "expected_result": "ok",
+            "error_code": None,
+            "bets_after": [],
+        },
+    },
+    {
+        "label": "bet_management_cycle_sequence",
+        "initial_bankroll": 320.0,
+        "initial_bets": [
+            {"verb": "pass_line", "args": {"amount": 15}},
+            {"verb": "place", "args": {"amount": 30, "number": 6}},
+            {"verb": "place", "args": {"amount": 30, "number": 8}},
+        ],
+        "steps": [
+            {"label": "comeout_point_six", "dice": (4, 2), "actions": []},
+            {
+                "label": "establish_odds_and_come",
+                "dice": None,
+                "actions": [
+                    {"verb": "odds", "args": {"base": "pass_line", "amount": 30}},
+                    {"verb": "come", "args": {"amount": 15}},
+                ],
+            },
+            {"label": "come_moves_to_five", "dice": (3, 2), "actions": []},
+            {
+                "label": "add_come_odds_and_toggle_off",
+                "dice": None,
+                "actions": [
+                    {
+                        "verb": "odds",
+                        "args": {"base": "come", "amount": 30, "number": 5},
+                    },
+                    {
+                        "verb": "set_odds_working",
+                        "args": {"base": "come", "number": 5, "working": False},
+                    },
+                ],
+            },
+            {
+                "label": "reduce_and_remove_place",
+                "dice": None,
+                "actions": [
+                    {
+                        "verb": "reduce_bet",
+                        "args": {"type": "place", "number": 8, "new_amount": 18},
+                    },
+                    {"verb": "remove_bet", "args": {"type": "place", "number": 8}},
+                ],
+            },
+            {"label": "hit_point_six", "dice": (5, 1), "actions": []},
+            {
+                "label": "toggle_come_odds_on",
+                "dice": None,
+                "actions": [
+                    {
+                        "verb": "set_odds_working",
+                        "args": {"base": "come", "number": 5, "working": True},
+                    },
+                ],
+            },
+            {"label": "seven_out_resolves", "dice": (4, 3), "actions": []},
+            {
+                "label": "rebuild_single_place",
+                "dice": None,
+                "actions": [
+                    {"verb": "place", "args": {"amount": 18, "number": 8}},
+                ],
+            },
+            {
+                "label": "clear_remaining_layout",
+                "dice": None,
+                "actions": [
+                    {"verb": "clear_all_bets", "args": {}},
+                ],
+            },
+        ],
+        "expect": {
+            "final_bankroll": 361.0,
+            "expected_result": "ok",
+            "error_code": None,
             "bets_after": [],
         },
     },

@@ -1,4 +1,5 @@
 """Run the CrapsSim API surface stress scenarios directly against the engine."""
+
 from __future__ import annotations
 
 import json
@@ -7,11 +8,22 @@ from typing import Any, Iterable, List
 
 from crapssim.table import Table
 
-from crapssim_api.actions import build_bet, compute_required_cash
+from crapssim_api.actions import (
+    apply_bet_management,
+    build_bet,
+    compute_required_cash,
+    is_bet_management_verb,
+    is_bet_placement_verb,
+)
 from crapssim_api.errors import ApiError, ApiErrorCode
 from crapssim_api.session import Session
 
-from .api_surface_scenarios import SCENARIOS, Scenario
+from .api_surface_scenarios import (
+    SCENARIOS,
+    Scenario,
+    ScenarioPreAction,
+    ScenarioSetupStep,
+)
 
 DEFAULT_JSON = Path("build/api_surface_vanilla.json")
 DEFAULT_MARKDOWN = Path("crapssim_api/docs/API_SURFACE_STRESS_VANILLA.md")
@@ -23,6 +35,23 @@ def _ensure_player(session: Session) -> Any:
     if player is None:  # pragma: no cover - defensive
         raise RuntimeError("session player unavailable")
     return player
+
+
+def _run_pre_action(session: Session, action: ScenarioPreAction) -> None:
+    verb = action["verb"]
+    args = dict(action.get("args", {}) or {})
+    result, error_code, *_ = _apply_scenario_action(session, verb, args)
+    if result != "ok":
+        raise RuntimeError(f"pre-state action {verb} failed with {error_code}")
+
+
+def _execute_setup_steps(session: Session, steps: Iterable[ScenarioSetupStep]) -> None:
+    for step in steps:
+        for action in step.get("actions", []) or []:
+            _run_pre_action(session, action)
+        dice = step.get("dice")
+        if dice is not None:
+            session.step_roll(dice=[int(dice[0]), int(dice[1])])
 
 
 def _normalize_bets(bets: Iterable[dict]) -> List[dict]:
@@ -45,13 +74,32 @@ def _normalize_bets(bets: Iterable[dict]) -> List[dict]:
     return normalized
 
 
-def _apply_bet(session: Session, verb: str, args: dict) -> tuple[str, str | None, float, float, List[dict], List[dict]]:
+def _apply_scenario_action(
+    session: Session, verb: str, args: dict
+) -> tuple[str, str | None, float, float, List[dict], List[dict]]:
     player = _ensure_player(session)
     table = session.table
 
     before_snapshot = session.snapshot()
     before_bankroll = float(before_snapshot.get("bankroll", 0.0))
     before_bets = _normalize_bets(before_snapshot.get("bets", []))
+
+    if is_bet_management_verb(verb):
+        management_result = apply_bet_management(session, verb, args)
+        after_snapshot = session.snapshot()
+        after_bankroll = float(after_snapshot.get("bankroll", 0.0))
+        after_bets = _normalize_bets(after_snapshot.get("bets", []))
+        return (
+            management_result.get("result", "ok"),
+            management_result.get("error_code"),
+            before_bankroll,
+            after_bankroll,
+            before_bets,
+            after_bets,
+        )
+
+    if not is_bet_placement_verb(verb):
+        raise RuntimeError(f"unsupported scenario verb: {verb}")
 
     try:
         bet = build_bet(verb, args, table=table, player=player)
@@ -66,7 +114,9 @@ def _apply_bet(session: Session, verb: str, args: dict) -> tuple[str, str | None
         after_snapshot = session.snapshot()
         after_bankroll = float(after_snapshot.get("bankroll", 0.0))
         after_bets = _normalize_bets(after_snapshot.get("bets", []))
-        applied = (abs(after_bankroll - before_bankroll) > 1e-9) or (after_bets != before_bets)
+        applied = (abs(after_bankroll - before_bankroll) > 1e-9) or (
+            after_bets != before_bets
+        )
         if not applied:
             raise ApiError(ApiErrorCode.TABLE_RULE_BLOCK, "engine rejected action")
         return "ok", None, before_bankroll, after_bankroll, before_bets, after_bets
@@ -134,7 +184,12 @@ def _write_markdown(path: Path, journal: list[dict]) -> None:
     path.write_text("\n".join(lines), encoding="utf-8")
 
 
-def run(*, limit: int | None = None, json_path: Path = DEFAULT_JSON, markdown_path: Path = DEFAULT_MARKDOWN) -> list[dict]:
+def run(
+    *,
+    limit: int | None = None,
+    json_path: Path = DEFAULT_JSON,
+    markdown_path: Path = DEFAULT_MARKDOWN,
+) -> list[dict]:
     journal: list[dict] = []
     scenarios: Iterable[Scenario]
     if limit is not None:
@@ -152,20 +207,18 @@ def run(*, limit: int | None = None, json_path: Path = DEFAULT_JSON, markdown_pa
         if bankroll is not None:
             player.bankroll = float(bankroll)
 
-        for bet_spec in scenario["pre_state"].get("existing_bets", []):
-            bet_verb = bet_spec.get("verb")
-            bet_args = bet_spec.get("args", {}) or {}
-            if not isinstance(bet_verb, str):
-                raise RuntimeError(f"invalid pre-state bet verb: {bet_spec!r}")
-            result, error_code, *_ = _apply_bet(session, bet_verb, bet_args)
-            if result != "ok":
-                raise RuntimeError(f"pre-state bet {bet_verb} failed with {error_code}")
+        for action in scenario["pre_state"].get("existing_bets", []):
+            _run_pre_action(session, action)
 
         for dice in scenario["pre_state"].get("rolls_before", []):
             session.step_roll(dice=[int(dice[0]), int(dice[1])])
 
-        result, error_code, before_bankroll, after_bankroll, before_bets, after_bets = _apply_bet(
-            session, scenario["verb"], scenario["args"]
+        setup_steps = scenario["pre_state"].get("setup_steps", []) or []
+        if setup_steps:
+            _execute_setup_steps(session, setup_steps)
+
+        result, error_code, before_bankroll, after_bankroll, before_bets, after_bets = (
+            _apply_scenario_action(session, scenario["verb"], scenario["args"])
         )
 
         journal.append(
@@ -190,11 +243,23 @@ def run(*, limit: int | None = None, json_path: Path = DEFAULT_JSON, markdown_pa
 def main() -> None:
     import argparse
 
-    parser = argparse.ArgumentParser(description="Run the CrapsSim vanilla engine stress scenarios")
-    parser.add_argument("--limit", type=int, default=None, help="Limit the number of scenarios to execute")
-    parser.add_argument("--json", type=Path, default=DEFAULT_JSON, help="Path to write the JSON journal")
+    parser = argparse.ArgumentParser(
+        description="Run the CrapsSim vanilla engine stress scenarios"
+    )
     parser.add_argument(
-        "--markdown", type=Path, default=DEFAULT_MARKDOWN, help="Path to write the markdown report"
+        "--limit",
+        type=int,
+        default=None,
+        help="Limit the number of scenarios to execute",
+    )
+    parser.add_argument(
+        "--json", type=Path, default=DEFAULT_JSON, help="Path to write the JSON journal"
+    )
+    parser.add_argument(
+        "--markdown",
+        type=Path,
+        default=DEFAULT_MARKDOWN,
+        help="Path to write the markdown report",
     )
     args = parser.parse_args()
 

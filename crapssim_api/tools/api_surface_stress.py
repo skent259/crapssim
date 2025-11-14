@@ -1,4 +1,5 @@
 """Run the CrapsSim API surface stress scenarios against the FastAPI layer."""
+
 from __future__ import annotations
 
 import json
@@ -10,7 +11,12 @@ import pytest
 from crapssim_api.http import SESSION_STORE, create_app
 from crapssim_api.session import Session
 
-from .api_surface_scenarios import SCENARIOS, Scenario
+from .api_surface_scenarios import (
+    SCENARIOS,
+    Scenario,
+    ScenarioPreAction,
+    ScenarioSetupStep,
+)
 
 DEFAULT_JSON = Path("build/api_surface_api.json")
 DEFAULT_MARKDOWN = Path("crapssim_api/docs/API_SURFACE_STRESS_API.md")
@@ -52,12 +58,28 @@ def _normalize_bets(bets: Iterable[dict]) -> List[dict]:
     return normalized
 
 
-def _apply_pre_bet(client: Any, session_id: str, verb: str, args: dict) -> None:
-    response = client.post("/apply_action", json={"verb": verb, "args": args, "session_id": session_id})
+def _apply_pre_action(client: Any, session_id: str, action: ScenarioPreAction) -> None:
+    verb = action["verb"]
+    args = dict(action.get("args", {}) or {})
+    response = client.post(
+        "/apply_action",
+        json={"verb": verb, "args": args, "session_id": session_id},
+    )
     if response.status_code != 200:
         raise RuntimeError(
-            f"pre-state bet {verb} failed: status={response.status_code}, body={response.text}"
+            f"pre-state action {verb} failed: status={response.status_code}, body={response.text}"
         )
+
+
+def _execute_setup_steps(
+    client: Any, session_id: str, steps: Iterable[ScenarioSetupStep]
+) -> None:
+    for step in steps:
+        for action in step.get("actions", []) or []:
+            _apply_pre_action(client, session_id, action)
+        dice = step.get("dice")
+        if dice is not None:
+            _inject_roll(client, session_id, (int(dice[0]), int(dice[1])))
 
 
 def _inject_roll(client: Any, session_id: str, dice: tuple[int, int]) -> None:
@@ -85,21 +107,25 @@ def _run_single_scenario(client: Any, scenario: Scenario, seed: int) -> dict:
     if bankroll is not None:
         player.bankroll = float(bankroll)
 
-    for bet_spec in scenario["pre_state"].get("existing_bets", []):
-        bet_verb = bet_spec.get("verb")
-        bet_args = bet_spec.get("args", {}) or {}
-        if not isinstance(bet_verb, str):
-            raise RuntimeError(f"invalid pre-state bet verb: {bet_spec!r}")
-        _apply_pre_bet(client, session_id, bet_verb, bet_args)
+    for action in scenario["pre_state"].get("existing_bets", []):
+        _apply_pre_action(client, session_id, action)
 
     for dice in scenario["pre_state"].get("rolls_before", []):
         _inject_roll(client, session_id, tuple(dice))
+
+    setup_steps = scenario["pre_state"].get("setup_steps", []) or []
+    if setup_steps:
+        _execute_setup_steps(client, session_id, setup_steps)
 
     before_snapshot = session_obj.snapshot()
     before_bankroll = float(before_snapshot.get("bankroll", 0.0))
     before_bets = _normalize_bets(before_snapshot.get("bets", []))
 
-    payload = {"verb": scenario["verb"], "args": scenario["args"], "session_id": session_id}
+    payload = {
+        "verb": scenario["verb"],
+        "args": scenario["args"],
+        "session_id": session_id,
+    }
     response = client.post("/apply_action", json=payload)
 
     if response.status_code == 200:
@@ -169,7 +195,7 @@ def _write_markdown(path: Path, journal: list[dict]) -> None:
                 scenario=entry["scenario"],
                 verb=entry["verb"],
                 result=entry["result"],
-                error_code=entry["error_code"] or "", 
+                error_code=entry["error_code"] or "",
                 expected=expected_desc or "",
             )
         )
@@ -185,7 +211,12 @@ def _write_markdown(path: Path, journal: list[dict]) -> None:
     path.write_text("\n".join(lines), encoding="utf-8")
 
 
-def run(*, limit: int | None = None, json_path: Path = DEFAULT_JSON, markdown_path: Path = DEFAULT_MARKDOWN) -> list[dict]:
+def run(
+    *,
+    limit: int | None = None,
+    json_path: Path = DEFAULT_JSON,
+    markdown_path: Path = DEFAULT_MARKDOWN,
+) -> list[dict]:
     TestClient = _require_test_client()
     app = create_app()
     client = TestClient(app)
@@ -210,13 +241,23 @@ def run(*, limit: int | None = None, json_path: Path = DEFAULT_JSON, markdown_pa
 def main() -> None:
     import argparse
 
-    parser = argparse.ArgumentParser(description="Run the CrapsSim API stress scenarios")
-    parser.add_argument("--limit", type=int, default=None, help="Limit the number of scenarios to execute")
+    parser = argparse.ArgumentParser(
+        description="Run the CrapsSim API stress scenarios"
+    )
+    parser.add_argument(
+        "--limit",
+        type=int,
+        default=None,
+        help="Limit the number of scenarios to execute",
+    )
     parser.add_argument(
         "--json", type=Path, default=DEFAULT_JSON, help="Path to write the JSON journal"
     )
     parser.add_argument(
-        "--markdown", type=Path, default=DEFAULT_MARKDOWN, help="Path to write the markdown report"
+        "--markdown",
+        type=Path,
+        default=DEFAULT_MARKDOWN,
+        help="Path to write the markdown report",
     )
     args = parser.parse_args()
 

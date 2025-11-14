@@ -1,13 +1,18 @@
-"""Vanilla engine sequence harness for CrapsSim."""
-from __future__ import annotations
-
 """Vanilla-engine sequence harness for CrapsSim."""
+
+from __future__ import annotations
 
 from typing import Any, Dict, List
 
 from crapssim.table import Table
 
-from crapssim_api.actions import build_bet, compute_required_cash
+from crapssim_api.actions import (
+    apply_bet_management,
+    build_bet,
+    compute_required_cash,
+    is_bet_management_verb,
+    is_bet_placement_verb,
+)
 from crapssim_api.errors import ApiError, ApiErrorCode
 from crapssim_api.session import Session
 
@@ -33,7 +38,9 @@ def _ensure_player(session: Session):
     return player
 
 
-def _apply_initial_state(session: Session, *, bankroll: float, initial_bets: List[Dict[str, Any]]) -> None:
+def _apply_initial_state(
+    session: Session, *, bankroll: float, initial_bets: List[Dict[str, Any]]
+) -> None:
     player = _ensure_player(session)
     player.bets.clear()
     player.bankroll = float(bankroll)
@@ -41,7 +48,9 @@ def _apply_initial_state(session: Session, *, bankroll: float, initial_bets: Lis
     for bet in initial_bets:
         result = _apply_action(session, bet)
         if result["result"] != "ok":
-            raise RuntimeError(f"initial bet {bet['verb']} failed with {result['error_code']}")
+            raise RuntimeError(
+                f"initial bet {bet['verb']} failed with {result['error_code']}"
+            )
 
 
 def _apply_action(session: Session, action: Dict[str, Any]) -> ActionResult:
@@ -53,6 +62,18 @@ def _apply_action(session: Session, action: Dict[str, Any]) -> ActionResult:
     before_snapshot = session.snapshot()
     before_bets = normalize_bets(before_snapshot.get("bets", []))
     before_bankroll = float(before_snapshot.get("bankroll", 0.0))
+
+    if is_bet_management_verb(verb):
+        management_result = apply_bet_management(session, verb, args)
+        return {
+            "verb": verb,
+            "args": dict(args),
+            "result": management_result.get("result", "ok"),
+            "error_code": management_result.get("error_code"),
+        }
+
+    if not is_bet_placement_verb(verb):
+        raise RuntimeError(f"unsupported sequence verb: {verb}")
 
     try:
         bet = build_bet(verb, args, table=table, player=player)
@@ -66,7 +87,9 @@ def _apply_action(session: Session, action: Dict[str, Any]) -> ActionResult:
         after_snapshot = session.snapshot()
         after_bets = normalize_bets(after_snapshot.get("bets", []))
         after_bankroll = float(after_snapshot.get("bankroll", 0.0))
-        applied = (abs(after_bankroll - before_bankroll) > 1e-9) or (after_bets != before_bets)
+        applied = (abs(after_bankroll - before_bankroll) > 1e-9) or (
+            after_bets != before_bets
+        )
         if not applied:
             raise ApiError(ApiErrorCode.TABLE_RULE_BLOCK, "engine rejected action")
         return {"verb": verb, "args": dict(args), "result": "ok", "error_code": None}
@@ -75,7 +98,9 @@ def _apply_action(session: Session, action: Dict[str, Any]) -> ActionResult:
         return {"verb": verb, "args": dict(args), "result": "error", "error_code": code}
 
 
-def run_vanilla_sequence_harness(config: SequenceRunConfig | None = None) -> List[SequenceJournalEntry]:
+def run_vanilla_sequence_harness(
+    config: SequenceRunConfig | None = None,
+) -> List[SequenceJournalEntry]:
     cfg = config or SequenceRunConfig()
     journal: List[SequenceJournalEntry] = []
 
