@@ -44,4 +44,4 @@ def test_vanilla_sequences_expectations(vanilla_sequence_journal: list[SequenceJ
                 final_state["bets"] == expected_bets
             ), f"{entry['scenario']}: expected bets {expected_bets}, got {final_state['bets']}"
 
-        assert len(entry["step_results"]) == len(scenario.get("steps", []))
+        assert len(entry["steps"]) == len(scenario.get("steps", []))

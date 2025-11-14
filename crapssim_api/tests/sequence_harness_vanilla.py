@@ -1,6 +1,8 @@
 """Vanilla engine sequence harness for CrapsSim."""
 from __future__ import annotations
 
+"""Vanilla-engine sequence harness for CrapsSim."""
+
 from typing import Any, Dict, List
 
 from crapssim.table import Table
@@ -44,7 +46,7 @@ def _apply_initial_state(session: Session, *, bankroll: float, initial_bets: Lis
 
 def _apply_action(session: Session, action: Dict[str, Any]) -> ActionResult:
     verb = action["verb"]
-    args = action.get("args", {}) or {}
+    args = dict(action.get("args", {}) or {})
     player = _ensure_player(session)
     table = session.table
 
@@ -67,10 +69,10 @@ def _apply_action(session: Session, action: Dict[str, Any]) -> ActionResult:
         applied = (abs(after_bankroll - before_bankroll) > 1e-9) or (after_bets != before_bets)
         if not applied:
             raise ApiError(ApiErrorCode.TABLE_RULE_BLOCK, "engine rejected action")
-        return {"verb": verb, "args": args, "result": "ok", "error_code": None}
+        return {"verb": verb, "args": dict(args), "result": "ok", "error_code": None}
     except ApiError as exc:
         code = exc.code.value if isinstance(exc.code, ApiErrorCode) else str(exc.code)
-        return {"verb": verb, "args": args, "result": "error", "error_code": code}
+        return {"verb": verb, "args": dict(args), "result": "error", "error_code": code}
 
 
 def run_vanilla_sequence_harness(config: SequenceRunConfig | None = None) -> List[SequenceJournalEntry]:
@@ -83,17 +85,22 @@ def run_vanilla_sequence_harness(config: SequenceRunConfig | None = None) -> Lis
         seed = cfg.seed_base + scenario.get("seed_offset", index)
         table = Table(seed=seed)
         session = Session(table=table)
+        initial_bankroll = float(scenario.get("initial_bankroll", 250.0))
+        initial_bets = list(scenario.get("initial_bets", []))
         _apply_initial_state(
             session,
-            bankroll=float(scenario.get("initial_bankroll", 250.0)),
-            initial_bets=list(scenario.get("initial_bets", [])),
+            bankroll=initial_bankroll,
+            initial_bets=initial_bets,
         )
 
-        step_results: List[Dict[str, Any]] = []
+        initial_snapshot = session.snapshot()
+        normalized_initial_bets = normalize_bets(initial_snapshot.get("bets", []))
+
+        steps: List[Dict[str, Any]] = []
         last_result = "ok"
         last_error: str | None = None
 
-        for step in scenario.get("steps", []):
+        for step_index, step in enumerate(scenario.get("steps", [])):
             before_snapshot = session.snapshot()
             before_bankroll = float(before_snapshot.get("bankroll", 0.0))
             before_bets = normalize_bets(before_snapshot.get("bets", []))
@@ -106,29 +113,26 @@ def run_vanilla_sequence_harness(config: SequenceRunConfig | None = None) -> Lis
 
             actions = step.get("actions", []) or []
             action_results: List[ActionResult] = []
-            step_errors: List[str] = []
             for action in actions:
                 result = _apply_action(session, action)
                 action_results.append(result)
                 last_result = result["result"]
                 last_error = result.get("error_code")
-                if result["result"] == "error":
-                    step_errors.append(f"{result['verb']}: {result.get('error_code')}")
 
             after_snapshot = session.snapshot()
             after_bankroll = float(after_snapshot.get("bankroll", 0.0))
             after_bets = normalize_bets(after_snapshot.get("bets", []))
 
-            step_results.append(
+            steps.append(
                 {
-                    "step_label": step.get("label", f"step_{index}"),
+                    "index": step_index,
+                    "label": step.get("label", f"step_{step_index}"),
                     "dice": [int(dice[0]), int(dice[1])] if dice is not None else None,
                     "before_bankroll": before_bankroll,
                     "after_bankroll": after_bankroll,
                     "bets_before": before_bets,
                     "bets_after": after_bets,
                     "actions": action_results,
-                    "errors": step_errors,
                 }
             )
 
@@ -140,7 +144,9 @@ def run_vanilla_sequence_harness(config: SequenceRunConfig | None = None) -> Lis
             {
                 "scenario": scenario["label"],
                 "seed": seed,
-                "step_results": step_results,
+                "initial_bankroll": initial_bankroll,
+                "initial_bets": normalized_initial_bets,
+                "steps": steps,
                 "final_state": {
                     "bankroll": final_bankroll,
                     "bets": final_bets,
@@ -157,6 +163,6 @@ def run_vanilla_sequence_harness(config: SequenceRunConfig | None = None) -> Lis
     write_sequence_report(
         VANILLA_REPORT_PATH,
         journal,
-        title="CrapsSim Vanilla Engine Sequence Harness",
+        title="CrapsSim API — Roll-by-Roll Sequence Trace (Vanilla)",
     )
     return journal
