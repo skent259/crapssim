@@ -63,7 +63,7 @@ The router includes endpoints for:
 •stepping rolls (optionally with fixed dice)
 •querying basic capabilities and version metadata
 
-The exact endpoint and payload contracts are described in the tests under tests/api/ and in the dedicated API documentation files in this folder.
+The exact endpoint and payload contracts are described in the tests under crapssim_api/tests/ and in the dedicated API documentation files in this folder.
 
 ⸻
 

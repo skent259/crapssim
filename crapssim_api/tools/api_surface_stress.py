@@ -13,7 +13,7 @@ from crapssim_api.session import Session
 from .api_surface_scenarios import SCENARIOS, Scenario
 
 DEFAULT_JSON = Path("build/api_surface_api.json")
-DEFAULT_MARKDOWN = Path("docs/API_SURFACE_STRESS_API.md")
+DEFAULT_MARKDOWN = Path("crapssim_api/docs/API_SURFACE_STRESS_API.md")
 
 
 def _require_test_client():

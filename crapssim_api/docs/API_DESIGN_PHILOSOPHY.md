@@ -52,7 +52,7 @@ Those belong in downstream tools (for example, CrapsSim-Control, notebooks, or o
 
 Public API contracts should be:
 
-- documented in tests (under `tests/api/`)
+- documented in tests (under `crapssim_api/tests/`)
 - reflected in small, focused doc files in this folder
 - stable across minor changes where practical
 
@@ -87,7 +87,7 @@ Breaking changes to endpoints, payload shapes, or version tags should be deliber
 ## Maintenance Expectations
 
 - Keep changes **small and local**. Avoid refactors that span the core engine and the API in one step.
-- Prefer adding tests in `tests/api/` that encode expectations for new endpoints or fields.
+- Prefer adding tests in `crapssim_api/tests/` that encode expectations for new endpoints or fields.
 - When in doubt:
   - favor explicit, boring code over clever abstractions
   - leave a short comment explaining why a decision was made

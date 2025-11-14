@@ -10,7 +10,7 @@ from .api_surface_scenarios import SCENARIOS
 
 API_JSON = Path("build/api_surface_api.json")
 VANILLA_JSON = Path("build/api_surface_vanilla.json")
-PARITY_MARKDOWN = Path("docs/API_SURFACE_STRESS_PARITY.md")
+PARITY_MARKDOWN = Path("crapssim_api/docs/API_SURFACE_STRESS_PARITY.md")
 
 
 @dataclass
