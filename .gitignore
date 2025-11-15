@@ -155,6 +155,8 @@ dmypy.json
 crapssim_api/tests/results/*
 crapssim_api/tests/results/**/*.json
 crapssim_api/tests/results/**/*.md
+crapssim_api/tests/results_*/**
+crapssim_api/docs/dev/API_SEQUENCE_TRACE_*.md
 
 # Cython debug symbols
 cython_debug/
