@@ -171,6 +171,16 @@ baselines/vxp/
 reports/
 **/vxp_gauntlet/**/summary.md
 **/vxp_gauntlet/**/journal.csv
+ build/api_surface_api.json
+ build/api_surface_vanilla.json
+crapssim_api/docs/dev/API_SURFACE_STRESS_API.md
+crapssim_api/docs/dev/API_SURFACE_STRESS_PARITY.md
+crapssim_api/docs/dev/API_SURFACE_STRESS_VANILLA.md
+crapssim_api/docs/dev/API_TEST_REPORT.md
+crapssim_api/tests/integration/test_api_bet_flow.py
+crapssim_api/tests/integration/test_api_surface_smoke.py
+crapssim_api/tools/api_surface_scenarios.py
+crapssim_api/tools/vanilla_surface_stress.py
 
 # VScode
 .vscode
