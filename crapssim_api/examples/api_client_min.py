@@ -1,110 +1,137 @@
 """Minimal HTTP client demo for CrapsSim.
 
-See ``crapssim_api/docs/API_VERBS.md`` for verb documentation and
-``crapssim_api/docs/dev/`` for deeper stress/sequence reports.
+Run this script with a local server listening on ``http://127.0.0.1:8000``::
 
-Run the FastAPI app locally (for example ``uvicorn crapssim_api.http:app --reload``)
-before executing this script.
+    uvicorn crapssim_api.http:app --reload
+
+The walkthrough starts a session, establishes a point with fixed dice, adds odds and a place bet, resolves the hand, and shows
+the layout clearing verbs. It also demonstrates how errors are returned from the API.
 """
 
 from __future__ import annotations
 
-import json
 from typing import Any, Dict
 
-import httpx
+import requests
 
 BASE_URL = "http://127.0.0.1:8000"
 
 
-def pretty(label: str, payload: Any) -> None:
-    print(f"\n=== {label} ===")
-    print(json.dumps(payload, indent=2, sort_keys=True))
+def _print_header(title: str) -> None:
+    print("\n" + title)
+    print("-" * len(title))
 
 
-def start_session(client: httpx.Client, *, seed: int = 4242) -> Dict[str, Any]:
-    resp = client.post("/session/start", json={"seed": seed})
+def _print_bets(bets: list[Dict[str, Any]]) -> None:
+    if not bets:
+        print("  Bets: none")
+        return
+
+    print("  Bets:")
+    for bet in bets:
+        parts = [bet.get("type", "?")]
+        number = bet.get("number")
+        base = bet.get("base")
+        if number not in (None, ""):
+            parts.append(f"number={number}")
+        if base:
+            parts.append(f"base={base}")
+        amount = float(bet.get("amount", 0.0))
+        parts.append(f"amount=${amount:0.2f}")
+        print("    - " + ", ".join(parts))
+
+
+def _print_transition(label: str, before: float, after: float, bets: list[Dict[str, Any]]) -> float:
+    _print_header(label)
+    print(f"  Bankroll: before ${before:0.2f} → after ${after:0.2f}")
+    _print_bets(bets)
+    return after
+
+
+def start_session(client: requests.Session, *, seed: int = 4242) -> tuple[str, float]:
+    resp = client.post(f"{BASE_URL}/session/start", json={"seed": seed})
     resp.raise_for_status()
-    data = resp.json()
-    pretty("session/start", data)
-    return data
+    payload = resp.json()
+    snapshot = payload["snapshot"]
+    session_id = payload["session_id"]
+    bankroll = float(snapshot["bankroll_after"])
+    _print_transition("Session started", bankroll, bankroll, snapshot.get("bets", []))
+    return session_id, bankroll
 
 
-def apply_action(client: httpx.Client, session_id: str, verb: str, args: Dict[str, Any]) -> Dict[str, Any]:
+def apply_action(
+    client: requests.Session, session_id: str, verb: str, args: Dict[str, Any], bankroll: float
+) -> tuple[float, Dict[str, Any]]:
     resp = client.post(
-        "/apply_action",
-        json={"session_id": session_id, "verb": verb, "args": args},
+        f"{BASE_URL}/apply_action", json={"session_id": session_id, "verb": verb, "args": args}
     )
     resp.raise_for_status()
-    data = resp.json()
-    summary = data.get("effect_summary", {})
-    pretty(f"apply_action → {verb}", summary)
-    return data
-
-
-def roll_once(client: httpx.Client, session_id: str, dice: list[int]) -> Dict[str, Any]:
-    resp = client.post("/session/roll", json={"session_id": session_id, "dice": dice})
-    resp.raise_for_status()
-    data = resp.json()
-    pretty("session/roll", data)
-    return data
-
-
-def step_auto(client: httpx.Client, session_id: str) -> Dict[str, Any]:
-    resp = client.post("/step_roll", json={"session_id": session_id, "mode": "auto"})
-    resp.raise_for_status()
-    snapshot = resp.json()
-    pretty(
-        "step_roll",
-        {
-            "bankroll_after": snapshot.get("bankroll_after"),
-            "bets": snapshot.get("bets", []),
-            "dice": snapshot.get("dice"),
-        },
+    payload = resp.json()
+    snapshot = payload["snapshot"]
+    after = float(snapshot["bankroll_after"])
+    new_bankroll = _print_transition(
+        f"Applied {verb}", bankroll, after, snapshot.get("bets", [])
     )
-    return snapshot
+    return new_bankroll, payload
 
 
-def handle_error(response: httpx.Response) -> None:
-    details = {
-        "status": response.status_code,
-        "body": response.json(),
-    }
-    pretty("apply_action error", details)
+def roll_once(
+    client: requests.Session, session_id: str, dice: list[int], bankroll: float, label: str
+) -> float:
+    resp = client.post(
+        f"{BASE_URL}/session/roll", json={"session_id": session_id, "dice": dice}
+    )
+    resp.raise_for_status()
+    snapshot = resp.json()["snapshot"]
+    after = float(snapshot["bankroll_after"])
+    return _print_transition(label, bankroll, after, snapshot.get("bets", []))
 
 
 def main() -> None:
-    with httpx.Client(base_url=BASE_URL, timeout=5.0) as client:
-        session_data = start_session(client, seed=2025)
-        session_id = session_data.get("session_id")
-        if not session_id:
-            raise RuntimeError(f"Unexpected session payload: {session_data}")
+    with requests.Session() as client:
+        client.headers.update({"Accept": "application/json"})
 
-        # Pass Line on the come-out roll
-        apply_action(client, session_id, "pass_line", {"amount": 10})
+        session_id, bankroll = start_session(client, seed=2025)
 
-        # Establish the point with deterministic dice
-        roll_once(client, session_id, dice=[2, 2])
+        bankroll, _ = apply_action(client, session_id, "pass_line", {"amount": 10}, bankroll)
 
-        # Add a Place bet and odds behind the Pass Line
-        apply_action(client, session_id, "place", {"number": 6, "amount": 30})
-        apply_action(client, session_id, "odds", {"base": "pass_line", "amount": 20})
+        bankroll = roll_once(
+            client,
+            session_id,
+            dice=[3, 2],
+            bankroll=bankroll,
+            label="Come-out roll (point established)",
+        )
 
-        # Take an automatic roll and display bankroll/bets after the outcome
-        step_auto(client, session_id)
+        bankroll, _ = apply_action(
+            client, session_id, "odds", {"base": "pass_line", "amount": 20}, bankroll
+        )
 
-        # Use a management verb to clear removable bets
-        apply_action(client, session_id, "clear_all_bets", {})
+        bankroll, _ = apply_action(
+            client, session_id, "place", {"number": 6, "amount": 30}, bankroll
+        )
 
-        # Demonstrate error handling with an intentionally oversized bet
-        resp = client.post(
-            "/apply_action",
+        bankroll = roll_once(
+            client,
+            session_id,
+            dice=[2, 3],
+            bankroll=bankroll,
+            label="Point made (bets resolved)",
+        )
+
+        bankroll, _ = apply_action(client, session_id, "clear_all_bets", {}, bankroll)
+
+        # Demonstrate structured error payloads.
+        error_resp = client.post(
+            f"{BASE_URL}/apply_action",
             json={"session_id": session_id, "verb": "pass_line", "args": {"amount": 5000}},
         )
-        if resp.status_code >= 400:
-            handle_error(resp)
-        else:
-            pretty("unexpected success", resp.json())
+        _print_header("Intentional error")
+        print(f"  HTTP status: {error_resp.status_code}")
+        try:
+            print(f"  Body: {error_resp.json()}")
+        except ValueError:
+            print(f"  Raw body: {error_resp.text}")
 
 
 if __name__ == "__main__":

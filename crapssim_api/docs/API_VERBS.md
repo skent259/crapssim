@@ -1,83 +1,142 @@
-# CrapsSim API Betting Verbs
+# HTTP Verb Reference
 
-The `/apply_action` endpoint exposes a set of verbs that map directly to bet classes
-provided by the underlying CrapsSim engine. Legality (timing, bankroll availability,
-base-bet requirements, etc.) is enforced by the engine itself; the API validates only
-request shape and surfaces the engine's decision.
+All wagering and management actions flow through the `POST /apply_action` endpoint. Each request uses the same envelope:
 
-### Added missing API bet verbs for full engine parity
+```json
+{
+  "session_id": "<8-char id returned from /session/start>",
+  "verb": "pass_line",
+  "args": {"amount": 10}
+}
+```
 
-The following bet types now have full API coverage: Two, Three, Yo, Boxcars, AnyCraps,
-Hop, Fire, All, Tall, Small. Each verb maps directly to the corresponding CrapsSim
-engine bet class.
+Responses include the effect summary and an updated snapshot:
 
-| Verb | Required fields | Notes |
-| ---- | --------------- | ----- |
-| `pass_line` | `amount` | Come-out only. Places a `PassLine` bet. |
-| `dont_pass` | `amount` | Come-out only. Places a `DontPass` bet. |
-| `come` | `amount` | Requires point on. Places a `Come` bet. |
-| `dont_come` | `amount` | Requires point on. Places a `DontCome` bet. |
-| `place` | `amount`, `box`/`number` | Places a `Place` bet on 4/5/6/8/9/10. |
-| `buy` | `amount`, `box`/`number` | Places a `Buy` bet with table vig policy. |
-| `lay` | `amount`, `box`/`number` | Places a `Lay` bet with table vig policy. |
-| `put` | `amount`, `box`/`number` | Places a flat `Put` bet while the point is on. |
-| `hardway` | `amount`, `number` | Places a `HardWay` bet on 4/6/8/10. |
-| `field` | `amount` | Places a one-roll `Field` bet. |
-| `any7` | `amount` | Places an `Any7` one-roll proposition. |
-| `two` | `amount` | Places a `Two` (snake eyes) one-roll proposition. |
-| `three` | `amount` | Places a `Three` one-roll proposition. |
-| `yo` | `amount` | Places a `Yo` (eleven) one-roll proposition. |
-| `boxcars` | `amount` | Places a `Boxcars` (midnight) one-roll proposition. |
-| `any_craps` | `amount` | Places an `AnyCraps` one-roll proposition. |
-| `c&e` | `amount` | Places a `CAndE` one-roll proposition. |
-| `horn` | `amount` | Places a `Horn` one-roll proposition. |
-| `world` | `amount` | Places a `World` one-roll proposition. |
-| `hop` | `amount`, `result=[d1,d2]` | Places a `Hop` bet on a specific dice outcome. |
-| `big6` | `amount` | Places a `Big6` bet. |
-| `big8` | `amount` | Places a `Big8` bet. |
-| `fire` | `amount` | Places a `Fire` bet (requires new shooter per engine rules). |
-| `all` | `amount` | Places an `All` ATS bet. |
-| `tall` | `amount` | Places a `Tall` ATS bet. |
-| `small` | `amount` | Places a `Small` ATS bet. |
-| `odds` | `amount`, `base`, optional `number`, optional `working` | Adds an `Odds` bet behind `pass_line`, `dont_pass`, `come`, `dont_come`, or `put`. The engine requires the matching base bet to be present. |
-| `remove_bet` | `type`, optional `number` | Removes matching removable bets of the requested type/number. |
-| `reduce_bet` | `type`, optional `number`, `new_amount` | Decreases or zeroes an existing bet while respecting table removal rules. |
-| `clear_all_bets` | _none_ | Removes all currently removable bets from the layout. |
-| `clear_center_bets` | _none_ | Clears center-action bets such as horn, world, hops, and field. |
-| `clear_place_buy_lay` | _none_ | Clears all `Place`, `Buy`, and `Lay` bets. |
-| `clear_ats_bets` | _none_ | Clears the All/Tall/Small bets. |
-| `clear_fire_bets` | _none_ | Clears any active `Fire` bets. |
-| `set_odds_working` | `base`, `number`, `working` | Toggles the always-working flag for matching odds bets. |
+```json
+{
+  "effect_summary": {
+    "verb": "pass_line",
+    "applied": true,
+    "bankroll_delta": -10.0,
+    "note": "applied via engine"
+  },
+  "snapshot": {
+    "bankroll_after": "990.00",
+    "bets": [...]
+  }
+}
+```
 
-Unsupported verbs produce an `UNSUPPORTED_BET` error with no side effects. Bets that the
-engine rejects (for example, attempting odds without an established base bet) raise a
-`TABLE_RULE_BLOCK` error and leave bankroll/bets unchanged.
+Unless otherwise stated, `amount` values are in dollars and must respect the table limits enforced by the vanilla engine. Bets that require a `number` expect standard box numbers (4,5,6,8,9,10). Management verbs never accept `amount` and only take the arguments listed below.
 
-The bankroll reported in `/apply_action` responses is taken directly from
-`Session.player().bankroll`, making the engine the sole source of truth.
+## Core line bets
 
-## Bet management helpers
+| Verb | Required args | Notes |
+| --- | --- | --- |
+| `pass_line` | `{"amount": int}` | Come-out bet that wins on 7/11, loses on 2/3/12. |
+| `dont_pass` | `{"amount": int}` | Come-out bet that wins on 2/3, pushes on 12. |
+| `come` | `{"amount": int}` | Moves to the rolled number as a point. |
+| `dont_come` | `{"amount": int}` | Travels to the rolled number as a lay. |
+| `put` | `{"amount": int, "number": int}` | Places a direct line bet on the specified box number. |
+| `odds` | `{"base": "pass_line"/"dont_pass"/"come"/"dont_come", "amount": int}` | Adds odds behind an existing base bet. |
 
-The CrapsSim API includes dedicated verbs for manipulating bets that are already on the layout.
-These helpers operate entirely within the API layer and respect the engine's `is_removable`
-checks, so non-removable bets remain in place.
+### Example
 
-- `remove_bet` — remove bets of a given type (and optional number) when the bet reports itself as
-  removable. Chips are returned to the player's bankroll.
-- `reduce_bet` — lower the total amount on a given bet type/number to `new_amount`. Attempts to
-  increase the action are rejected.
-- `clear_all_bets` — remove every removable bet for the player.
-- `clear_center_bets` — remove Field, prop, hop, Fire, ATS, and other center-action bets.
-- `clear_place_buy_lay` — clear Place, Buy, and Lay bets.
-- `clear_ats_bets` — remove All/Tall/Small bets.
-- `clear_fire_bets` — remove Fire bets.
+```json
+{"verb": "odds", "args": {"base": "pass_line", "amount": 20}}
+```
 
-These verbs only adjust existing bet state; they do not implement any betting strategy or payoffs.
+## Place / Buy / Lay / Big bets
 
-## Working status controls
+| Verb | Required args | Notes |
+| --- | --- | --- |
+| `place` | `{"number": int, "amount": int}` | Standard place bet on 4,5,6,8,9,10. |
+| `buy` | `{"number": int, "amount": int}` | Pay vig on win; vig rounded per table settings. |
+| `lay` | `{"number": int, "amount": int}` | Lay against a number; vig paid up front. |
+| `big6` | `{"amount": int}` | Even-money bet on 6. |
+| `big8` | `{"amount": int}` | Even-money bet on 8. |
 
-- Engine-level working support detected: **YES** — the `Odds` bet exposes an `always_working` flag.
-- `set_odds_working` toggles the `always_working` flag for matching odds bets (identified by base bet
-  and number).
+### Example
 
-Generic working-status control for other bet types is not currently exposed by the engine.
+```json
+{"verb": "place", "args": {"number": 6, "amount": 30}}
+```
+
+## Field, prop, and center bets
+
+| Verb | Required args | Notes |
+| --- | --- | --- |
+| `field` | `{"amount": int}` | Wins on 2,3,4,9,10,11,12 (2/12 pay double). |
+| `any7` | `{"amount": int}` | One-roll bet on any seven. |
+| `any_craps` | `{"amount": int}` | One-roll bet on 2,3,12. |
+| `two` | `{"amount": int}` | Yo-leven style single-number prop (also see `three`, `yo`, `boxcars`). |
+| `three` | `{"amount": int}` | One-roll bet on 3. |
+| `yo` | `{"amount": int}` | One-roll bet on 11. |
+| `boxcars` | `{"amount": int}` | One-roll bet on 12. |
+| `c&e` | `{"amount": int}` | Split prop covering craps + yo. |
+| `horn` | `{"amount": int}` | Splits action on 2/3/11/12. |
+| `world` | `{"amount": int}` | Horn plus any-seven protection. |
+
+### Example
+
+```json
+{"verb": "horn", "args": {"amount": 5}}
+```
+
+## Hardways and hops
+
+| Verb | Required args | Notes |
+| --- | --- | --- |
+| `hardway` | `{"number": 4/6/8/10, "amount": int}` | Wins on the hard combination, loses on easy or seven. |
+| `hop` | `{"dice": [int, int], "amount": int}` | One-roll hop bet on exact dice. |
+
+### Example
+
+```json
+{"verb": "hop", "args": {"dice": [2, 2], "amount": 2}}
+```
+
+## Fire & All/Tall/Small
+
+| Verb | Required args | Notes |
+| --- | --- | --- |
+| `fire` | `{"amount": int}` | Tracks unique points made for the shooter. |
+| `all` | `{"amount": int}` | Part of the All/Tall/Small feature. |
+| `tall` | `{"amount": int}` | Part of the All/Tall/Small feature. |
+| `small` | `{"amount": int}` | Part of the All/Tall/Small feature. |
+
+### Example
+
+```json
+{"verb": "fire", "args": {"amount": 5}}
+```
+
+## Bet management verbs
+
+| Verb | Required args | Notes |
+| --- | --- | --- |
+| `remove_bet` | `{"bet_id": str}` | Removes a single bet by identifier returned in snapshots. |
+| `reduce_bet` | `{"bet_id": str, "amount": int}` | Reduce an existing bet while keeping it active. |
+| `clear_all_bets` | `{}` | Removes every removable bet from the layout. |
+| `clear_center_bets` | `{}` | Clears horn/prop/field wagers. |
+| `clear_place_buy_lay` | `{}` | Clears place/buy/lay bets. |
+| `clear_ats_bets` | `{}` | Clears All/Tall/Small wagers. |
+| `clear_fire_bets` | `{}` | Clears Fire bets. |
+| `set_odds_working` | `{"working": bool}` | Toggles whether odds work on the come-out. |
+
+### Example
+
+```json
+{"verb": "clear_all_bets", "args": {}}
+```
+
+Management verbs report `bets_before` and `bets_after` arrays so clients can confirm the layout change.
+
+## Session endpoints
+
+- `POST /session/start` — returns a new session identifier and initial snapshot. Accepts optional `seed` and table configuration.
+- `POST /session/roll` — advance the session with automatic dice or a supplied pair via the `dice` array.
+- `POST /step_roll` — convenience endpoint used by parity tests for deterministic roll scripts.
+- `POST /end_session` — currently returns a minimal report placeholder.
+
+Refer to the [example client](../examples/api_client_min.py) for a scripted walkthrough that chains these calls together.
