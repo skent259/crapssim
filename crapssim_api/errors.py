@@ -1,0 +1,74 @@
+import json
+from enum import Enum
+from typing import Any, Dict, Optional
+
+try:
+    from fastapi import Request
+except Exception:  # pragma: no cover
+
+    class Request:  # minimal stub
+        pass
+
+try:
+    from fastapi.responses import JSONResponse
+except Exception:  # pragma: no cover
+
+    class JSONResponse:  # minimal stub
+        def __init__(self, *, status_code: int, content: Dict[str, Any]):
+            self.status_code = status_code
+            self.content = content
+            self.body = json.dumps(content).encode()
+
+
+class ApiErrorCode(str, Enum):
+    BAD_ARGS = "BAD_ARGS"
+    TABLE_RULE_BLOCK = "TABLE_RULE_BLOCK"
+    INSUFFICIENT_FUNDS = "INSUFFICIENT_FUNDS"
+    UNSUPPORTED_BET = "UNSUPPORTED_BET"
+    ILLEGAL_TIMING = "ILLEGAL_TIMING"
+    ILLEGAL_AMOUNT = "ILLEGAL_AMOUNT"
+    LIMIT_BREACH = "LIMIT_BREACH"
+    INTERNAL = "INTERNAL"
+
+
+class ApiError(Exception):
+    def __init__(self, code: ApiErrorCode, hint: str, at_state: Optional[Dict[str, Any]] = None):
+        super().__init__(hint)
+        self.code = code
+        self.hint = hint
+        self.at_state = at_state or {"session_id": None, "hand_id": None, "roll_seq": None}
+
+
+def bad_args(hint: str) -> ApiError:
+    return ApiError(ApiErrorCode.BAD_ARGS, hint)
+
+
+def table_rule_block(hint: str) -> ApiError:
+    return ApiError(ApiErrorCode.TABLE_RULE_BLOCK, hint)
+
+
+def unsupported_bet(hint: str) -> ApiError:
+    return ApiError(ApiErrorCode.UNSUPPORTED_BET, hint)
+
+
+async def api_error_handler(request: Request, exc: ApiError):
+    status_map = {
+        ApiErrorCode.BAD_ARGS: 400,
+        ApiErrorCode.TABLE_RULE_BLOCK: 409,
+        ApiErrorCode.INSUFFICIENT_FUNDS: 409,
+        ApiErrorCode.ILLEGAL_TIMING: 409,
+        ApiErrorCode.ILLEGAL_AMOUNT: 422,
+        ApiErrorCode.LIMIT_BREACH: 422,
+        ApiErrorCode.UNSUPPORTED_BET: 422,
+        ApiErrorCode.INTERNAL: 500,
+    }
+    if not isinstance(exc.code, ApiErrorCode):
+        status_code = 500
+        code = "INTERNAL"
+    else:
+        status_code = status_map.get(exc.code, 500)
+        code = exc.code
+    return JSONResponse(
+        status_code=status_code,
+        content={"code": code, "hint": exc.hint, "at_state": exc.at_state},
+    )
