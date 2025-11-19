@@ -190,3 +190,11 @@ crapssim_api/tools/vanilla_surface_stress.py
 **/reports/
 # End reports ignore
 
+
+# CrapsSim Engine API gauntlet outputs
+crapssim_api/tests/results/*.md
+crapssim_api/tests/results/*.json
+crapssim_api/tests/results/*.csv
+crapssim_api/tests/results/**/*.md
+crapssim_api/tests/results/**/*.json
+crapssim_api/tests/results/**/*.csv
