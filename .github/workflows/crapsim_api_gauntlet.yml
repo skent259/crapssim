@@ -19,7 +19,8 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          python -m pip install flake8 pytest typing_extensions
+          pip install -e .
+          pip install flake8 pytest typing_extensions fastapi pydantic httpx
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
         env:
           PIP_DISABLE_PIP_VERSION_CHECK: "1"
