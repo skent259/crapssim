@@ -30,13 +30,19 @@ jobs:
 
       - name: Run API surface stress suite
         run: |
-          PYTHONPATH=. pytest -q crapssim_api/tests/test_api_surface_stress.py
+          PYTHONPATH=. pytest -q crapssim_api/tests/stress/test_api_sequences.py
         env:
           PYTHONUNBUFFERED: "1"
 
-      - name: Run API sequence parity suite
+      - name: Run API sequence trace suite
         run: |
-          PYTHONPATH=. pytest -q crapssim_api/tests/test_api_sequence_parity.py
+          PYTHONPATH=. pytest -q crapssim_api/tests/stress/test_vanilla_sequences.py
+        env:
+          PYTHONUNBUFFERED: "1"
+
+      - name: Run API surface parity suite
+        run: |
+          PYTHONPATH=. pytest -q crapssim_api/tests/stress/test_sequence_parity.py
         env:
           PYTHONUNBUFFERED: "1"
 
