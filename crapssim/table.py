@@ -74,7 +74,8 @@ class TableUpdate:
             if verbose:
                 print(
                     f"{player.name}: Bankroll={player.bankroll}, "
-                    f"Bet amount={player.total_bet_amount}, Bets={player.bets}"
+                    f"Bet amount={player.total_bet_amount}, "
+                    f"Bets=[{', '.join([str(bet) for bet in player.bets])}]"
                 )
 
     @staticmethod

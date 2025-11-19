@@ -22,7 +22,7 @@ copyright = "2025, Sean Kent"
 author = "Sean Kent, amortization, nova-rey"
 
 # The full version, including alpha/beta/rc tags
-release = "0.3.2"
+release = "0.4.0"
 
 
 # -- General configuration ---------------------------------------------------

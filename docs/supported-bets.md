@@ -47,7 +47,7 @@ This can be specified with the `"field_payouts"` option of the TableSettings, wh
 
 ### Buy/Lay bets and the vig (commission)
 
-This simulator uses a fixed 5% commission for applicable bets (e.g., Buy/Lay) to match common table practice. 
+This simulator uses a fixed 5% commission for applicable bets (e.g., Buy/Lay). This is 5% of the **bet amount** for Buy bets, and 5% of the potential **win amount** for Lay bets, as per common practice. For example, a \$20 Buy bet on the 4 and a \$40 Lay bet on the 4 (which wins \$20) both have a \$1 vig. 
 
 The `vig` is added to the bet `amount` to equal the bet's `cost`. 
 

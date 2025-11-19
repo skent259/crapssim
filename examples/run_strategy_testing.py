@@ -2,7 +2,7 @@ from crapssim import strategy
 from crapssim.table import Table
 
 # SELECT ONE STRATEGY TO TEST
-STRATEGY_TO_TEST = strategy.examples.Risk12(10)
+STRATEGY_TO_TEST = strategy.examples.ThreePointDolly(10)
 
 # Create fixed roll scenarios that can be pulled as needed
 # fmt: off
@@ -14,6 +14,7 @@ SCENARIOS = {
     "multipler_comeout_losers": [(1, 1), (6, 6), (1, 2), (2, 1), (3, 3), (3, 4)],
     "hit_68_when_on_4": [(2, 2), (3, 3), (4, 4), (5, 1), (5, 3), (2, 4), (6, 2), (3, 4)],
     "8,8,3,5": [(4, 4), (4, 4), (1, 2), (2, 3), (3, 4)],
+    "hit_all_except_point": [(2, 2), (2, 3), (3, 3), (4, 4), (4, 5), (5, 5), (3, 4)],
 }
 # fmt: on
 
@@ -28,7 +29,7 @@ def run_scenario(rolls):
     # Show remaining open bets (should be few or none in these demos)
     # Note this does not run strategy to add/clear bets for next roll
     if player.bets:
-        print("Open bets:", [repr(bet) for bet in player.bets])
+        print("Open bets:", [str(bet) for bet in player.bets])
 
 
 def main():

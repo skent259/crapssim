@@ -1,6 +1,6 @@
 import pytest
 
-from crapssim.bet import Buy, _compute_vig
+from crapssim.bet import Buy, Lay, _compute_vig
 from crapssim.table import Table, TableUpdate
 
 
@@ -77,6 +77,25 @@ def test_vig_paid_on_win_does_not_charge_at_placement():
     vig = _compute_vig(active_bet.amount)
 
     TableUpdate.roll(table, fixed_outcome=(2, 2))
+    TableUpdate.update_bets(table)
+
+    assert player.bankroll == pytest.approx(100 + gross_win - vig)
+
+
+def test_vig_for_lay_is_on_win_amount():
+    table = Table()
+    table.settings["vig_paid_on_win"] = True
+    table.settings["vig_rounding"] = "none"
+    player = table.add_player(bankroll=100)
+
+    player.add_bet(Lay(4, 40))
+    assert player.bankroll == pytest.approx(60)
+    active_bet = player.bets[0]
+
+    gross_win = active_bet.payout_ratio * active_bet.amount
+    vig = _compute_vig(gross_win)  # based on win amount
+
+    TableUpdate.roll(table, fixed_outcome=(3, 4))
     TableUpdate.update_bets(table)
 
     assert player.bankroll == pytest.approx(100 + gross_win - vig)

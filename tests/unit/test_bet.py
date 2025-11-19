@@ -163,6 +163,63 @@ def test_repr_names(bet, bet_name):
     assert repr(bet) == bet_name
 
 
+# fmt: off
+def test_str_names():
+    bets = [
+        (crapssim.bet.PassLine(5), "$5 PassLine"),
+        (crapssim.bet.Come(1), "$1 Come"),
+        (crapssim.bet.Come(1, 6), "$1 Come(6)"),
+        (crapssim.bet.DontPass(1), "$1 DontPass"),
+        (crapssim.bet.DontCome(1), "$1 DontCome"),
+        (crapssim.bet.DontCome(1, 4), "$1 DontCome(4)"),
+        (crapssim.bet.Odds(crapssim.bet.PassLine, 6, 1, False), "$1 Odds(PassLine)"),
+        (crapssim.bet.Odds(crapssim.bet.Come, 8, 1), "$1 Odds(Come, 8)"),
+        (crapssim.bet.Odds(crapssim.bet.DontPass, 9, 1), "$1 Odds(DontPass)"),
+        (crapssim.bet.Odds(crapssim.bet.DontCome, 10, 1), "$1 Odds(DontCome, 10)"),
+        (crapssim.bet.Odds(crapssim.bet.PassLine, 6, 1, True), "$1 Odds(PassLine)"),
+        (crapssim.bet.Odds(crapssim.bet.Come, 8, 1, True), "$1 Odds(Come, 8)"),
+        (crapssim.bet.Odds(crapssim.bet.DontPass, 9, 1, True), "$1 Odds(DontPass)"),
+        (crapssim.bet.Odds(crapssim.bet.DontCome, 10, 1, True), "$1 Odds(DontCome, 10)",),
+        (crapssim.bet.Place(4, 1), "$1 Place(4)"),
+        (crapssim.bet.Place(5, 1), "$1 Place(5)"),
+        (crapssim.bet.Place(6, 1), "$1 Place(6)"),
+        (crapssim.bet.Place(8, 1), "$1 Place(8)"),
+        (crapssim.bet.Place(9, 1), "$1 Place(9)"),
+        (crapssim.bet.Place(10, 1), "$1 Place(10)"),
+        (crapssim.bet.Field(1), "$1 Field"),
+        (crapssim.bet.Any7(1), "$1 Any7"),
+        (crapssim.bet.Two(1.5), "$1.5 Two"),
+        (crapssim.bet.Three(1), "$1 Three"),
+        (crapssim.bet.Yo(1), "$1 Yo"),
+        (crapssim.bet.Boxcars(1), "$1 Boxcars"),
+        (crapssim.bet.AnyCraps(1), "$1 AnyCraps"),
+        (crapssim.bet.CAndE(1), "$1 CAndE"),
+        (crapssim.bet.HardWay(4, 1), "$1 HardWay(4)"),
+        (crapssim.bet.HardWay(6, 1), "$1 HardWay(6)"),
+        (crapssim.bet.HardWay(8, 1), "$1 HardWay(8)"),
+        (crapssim.bet.HardWay(10, 1), "$1 HardWay(10)"),
+        (crapssim.bet.Hop((2, 3), 1), "$1 Hop(2,3)"),
+        (crapssim.bet.Hop((3, 2), 1), "$1 Hop(2,3)"),
+        (crapssim.bet.Hop((3, 3), 1), "$1 Hop(3,3)"),
+        (crapssim.bet.Fire(1), "$1 Fire"),
+        (crapssim.bet.All(1), "$1 All"),
+        (crapssim.bet.Tall(1), "$1 Tall"),
+        (crapssim.bet.Small(1), "$1 Small"),
+        (crapssim.bet.Horn(1), "$1 Horn"),
+        (crapssim.bet.World(1), "$1 World"),
+        (crapssim.bet.Big6(1), "$1 Big6"),
+        (crapssim.bet.Big8(1), "$1 Big8"),
+        (crapssim.bet.Buy(4, 1), "$1 Buy(4)"),
+        (crapssim.bet.Lay(6, 1), "$1 Lay(6)"),
+        (crapssim.bet.Put(6, 1), "$1 Put(6)"),
+        (crapssim.bet.Put(10, 1), "$1 Put(10)"),
+    ]
+    for bet, bet_name in bets:
+        print(bet)
+        assert str(bet) == bet_name
+# fmt: on
+
+
 @pytest.mark.parametrize(
     "bet",
     [

@@ -88,7 +88,7 @@ class OddsAmount(Strategy):
 
     def __repr__(self):
         return (
-            f"{self.__class__.__name__}(base_type={self.base_type}, "
+            f"{self.__class__.__name__}(base_type={self.base_type!r}, "
             f"odds_amounts={self.odds_amounts}"
             f"{self._get_always_working_repr()}"
         )
@@ -227,7 +227,7 @@ class OddsMultiplier(Strategy):
 
     def __repr__(self) -> str:
         return (
-            f"{self.__class__.__name__}(base_type={self.base_type}, "
+            f"{self.__class__.__name__}(base_type={self.base_type!r}, "
             f"odds_multiplier={_condense_multiplier_dict(self.odds_multiplier)}"
             f"{self._get_always_working_repr()}"
         )
@@ -354,7 +354,7 @@ class WinMultiplier(OddsMultiplier):
 
     def __repr__(self) -> str:
         return (
-            f"{self.__class__.__name__}(base_type={self.base_type}, "
+            f"{self.__class__.__name__}(base_type={self.base_type!r}, "
             f"win_multiplier={_condense_multiplier_dict(self.win_multiplier)}"
             f"{self._get_always_working_repr()}"
         )

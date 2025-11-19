@@ -4,6 +4,7 @@ in order to do the intended"""
 from typing import SupportsFloat
 
 from crapssim.bet import Come, DontCome, DontPass, Field, PassLine, Place, Put
+from crapssim.strategy import odds, single_bet, tools
 from crapssim.strategy.odds import (
     DontPassOddsMultiplier,
     OddsMultiplier,
@@ -819,15 +820,108 @@ class PutWithOdds(AggregateStrategy):
         )
 
 
-class HornExample(AggregateStrategy):
-    """Demonstrates Horn bet lifecycle and resolution."""
+class ThreePointMolly(AggregateStrategy):
+    """Place a PassLine bet and two Come bets, plus odds.
 
-    def __init__(self, amount: float = 4.0):
-        super().__init__(BetHorn(amount))
+    Equivalent to::
+
+        (
+            BetPassLine(bet_amount)
+            + PassLineOddsMultiplier(odds_multiplier)
+            + CountStrategy(Come, 2, Come(bet_amount))
+            + ComeOddsMultiplier(odds_multiplier)
+        )
+
+    Args:
+        bet_amount: The amount of the PassLine and Come bets.
+        odds_multiplier: The odds multiplier to apply to the PassLine and Come
+          bets. If `None`, then no odds bets are placed.
+
+    See Also:
+        :class:`~crapssim.strategy.single_bet.BetPassLine`
+        :class:`~crapssim.strategy.odds.PassLineOddsMultiplier`
+        :class:`~crapssim.strategy.tools.CountStrategy`
+        :class:`~crapssim.strategy.odds.ComeOddsMultiplier`
+    """
+
+    def __init__(
+        self, bet_amount: SupportsFloat, odds_multiplier: SupportsFloat | None = 1.0
+    ):
+
+        self.bet_amount: float = float(bet_amount)
+        self.odds_multiplier: float = (
+            float(odds_multiplier) if odds_multiplier is not None else None
+        )
+
+        if self.odds_multiplier is None:
+            super().__init__(
+                single_bet.BetPassLine(bet_amount),
+                tools.CountStrategy(Come, 2, Come(bet_amount)),
+            )
+        else:
+            super().__init__(
+                single_bet.BetPassLine(bet_amount),
+                odds.PassLineOddsMultiplier(self.odds_multiplier),
+                tools.CountStrategy(Come, 2, Come(bet_amount)),
+                odds.ComeOddsMultiplier(self.odds_multiplier),
+            )
+
+    def __repr__(self) -> str:
+        return (
+            f"{self.__class__.__name__}(amount={self.bet_amount}, "
+            f"odds_multiplier={self.odds_multiplier})"
+        )
 
 
-class WorldExample(AggregateStrategy):
-    """Demonstrates World bet lifecycle and resolution."""
+class ThreePointDolly(AggregateStrategy):
+    """
+    Place a DontPass bet and two DontCome bets, plus odds.
 
-    def __init__(self, amount: float = 5.0):
-        super().__init__(BetWorld(amount))
+    Equivalent to::
+
+        (
+            BetDontPass(bet_amount)
+            + DontPassWinMultiplier(win_multiplier)
+            + CountStrategy(DontCome, 2, DontCome(bet_amount))
+            + DontComeWinMultiplier(win_multiplier)
+        )
+
+    Args:
+        bet_amount: The amount of the DontPass and DontCome bets.
+        win_multiplier: The multiplier to apply to the DontPass and DontCome
+            to win. If ``None``, then no odds bets are placed.
+
+    See Also:
+        :class:`~crapssim.strategy.single_bet.BetDontPass`
+        :class:`~crapssim.strategy.odds.DontPassWinMultiplier`
+        :class:`~crapssim.strategy.tools.CountStrategy`
+        :class:`~crapssim.strategy.odds.DontComeWinMultiplier`
+    """
+
+    def __init__(
+        self, bet_amount: SupportsFloat, win_multiplier: SupportsFloat | None = 1.0
+    ):
+
+        self.bet_amount: float = float(bet_amount)
+        self.win_multiplier: float = (
+            float(win_multiplier) if win_multiplier is not None else None
+        )
+
+        if self.win_multiplier is None:
+            super().__init__(
+                single_bet.BetDontPass(bet_amount),
+                tools.CountStrategy(DontCome, 2, DontCome(bet_amount)),
+            )
+        else:
+            super().__init__(
+                single_bet.BetDontPass(bet_amount),
+                odds.DontPassWinMultiplier(self.win_multiplier),
+                tools.CountStrategy(DontCome, 2, DontCome(bet_amount)),
+                odds.DontComeWinMultiplier(self.win_multiplier),
+            )
+
+    def __repr__(self) -> str:
+        return (
+            f"{self.__class__.__name__}(amount={self.bet_amount}, "
+            f"win_multiplier={self.win_multiplier})"
+        )

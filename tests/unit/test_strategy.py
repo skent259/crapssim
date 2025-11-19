@@ -455,8 +455,8 @@ def test_count_strategy_when_less(player):
 def test_count_strategy_repr():
     strategy = CountStrategy((PassLine, Come), 2, PassLine(1))
     assert (
-        repr(strategy) == f"CountStrategy(bet_type=({PassLine},"
-        f" {Come}), count=2, bet={PassLine(1)})"
+        repr(strategy) == f"CountStrategy(bet_type=({repr(PassLine)},"
+        f" {repr(Come)}), count=2, bet={repr(PassLine(1))})"
     )
 
 

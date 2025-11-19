@@ -75,7 +75,7 @@ def scenario_horn_world() -> ScenarioResult:
         start_bankroll=start_bankroll,
         end_bankroll=player.bankroll,
         rolls=rolls,
-        final_open_bets=[repr(bet) for bet in player.bets],
+        final_open_bets=[str(bet) for bet in player.bets],
     )
 
 
@@ -104,7 +104,7 @@ def scenario_props_isolated() -> ScenarioResult:
         start_bankroll=start_bankroll,
         end_bankroll=player.bankroll,
         rolls=rolls,
-        final_open_bets=[repr(bet) for bet in player.bets],
+        final_open_bets=[str(bet) for bet in player.bets],
     )
 
 
@@ -128,7 +128,7 @@ def scenario_big6_big8() -> ScenarioResult:
         start_bankroll,
         player.bankroll,
         rolls,
-        [repr(bet) for bet in player.bets],
+        [str(bet) for bet in player.bets],
     )
 
 
@@ -199,7 +199,7 @@ def scenario_buy_lay_matrix() -> list[ScenarioResult]:
                     start_bankroll,
                     player.bankroll,
                     rolls,
-                    [repr(bet) for bet in player.bets],
+                    [str(bet) for bet in player.bets],
                 )
             )
 
@@ -232,7 +232,7 @@ def scenario_put_with_and_without_odds() -> list[ScenarioResult]:
             start_bankroll,
             player.bankroll,
             rolls,
-            [repr(bet) for bet in player.bets],
+            [str(bet) for bet in player.bets],
         )
     )
 
@@ -251,7 +251,7 @@ def scenario_put_with_and_without_odds() -> list[ScenarioResult]:
             start_bankroll3,
             player3.bankroll,
             record,
-            [repr(bet) for bet in player3.bets],
+            [str(bet) for bet in player3.bets],
         )
     )
 
