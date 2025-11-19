@@ -1,0 +1,50 @@
+name: CrapsSim Engine API Gauntlet
+
+on:
+  workflow_dispatch:
+
+jobs:
+  api-gauntlet:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: "3.12"
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install flake8 pytest
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        env:
+          PIP_DISABLE_PIP_VERSION_CHECK: "1"
+
+      - name: Ensure results directory exists
+        run: |
+          mkdir -p crapssim_api/tests/results
+
+      - name: Run API surface stress suite
+        run: |
+          PYTHONPATH=. pytest -q crapssim_api/tests/test_api_surface_stress.py
+        env:
+          PYTHONUNBUFFERED: "1"
+
+      - name: Run API sequence parity suite
+        run: |
+          PYTHONPATH=. pytest -q crapssim_api/tests/test_api_sequence_parity.py
+        env:
+          PYTHONUNBUFFERED: "1"
+
+      - name: Upload API gauntlet artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: crapsim-api-gauntlet-${{ github.sha }}
+          path: |
+            crapssim_api/tests/results/**/*.md
+            crapssim_api/tests/results/**/*.json
+            crapssim_api/tests/results/**/*.csv
