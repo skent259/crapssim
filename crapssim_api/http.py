@@ -88,15 +88,6 @@ class RollRequest(BaseModel):
         return v
 
 
-from .actions import (
-    SUPPORTED_VERBS,
-    apply_bet_management,
-    build_bet,
-    compute_required_cash,
-    describe_vig,
-    is_bet_management_verb,
-    is_bet_placement_verb,
-)
 from .capabilities import get_capabilities_payload
 from .errors import ApiError, ApiErrorCode, api_error_handler, bad_args, unsupported_bet
 from .events import (
@@ -109,6 +100,15 @@ from .events import (
 from .session_store import SESSION_STORE
 from .session import Session
 from .types import Capabilities, StartSessionRequest, StartSessionResponse, TableSpec
+from .verbs import (
+    SUPPORTED_VERBS,
+    apply_bet_management,
+    build_bet,
+    compute_required_cash,
+    describe_vig,
+    is_bet_management_verb,
+    is_bet_placement_verb,
+)
 from .version import CAPABILITIES_SCHEMA_VERSION, ENGINE_API_VERSION, get_identity
 
 if FastAPI is None:  # pragma: no cover - FastAPI optional
@@ -142,6 +142,7 @@ BASE_CAPABILITIES: Capabilities = {
         "place": ["place_4", "place_5", "place_6", "place_8", "place_9", "place_10"],
         "buy": ["buy_4", "buy_5", "buy_6", "buy_8", "buy_9", "buy_10"],
         "lay": ["lay_4", "lay_5", "lay_6", "lay_8", "lay_9", "lay_10"],
+        "big": ["big6", "big8"],
         "field": {"pays": {"2": "double", "12": "double"}},
         "hardways": {"break_on": "seven_or_easy"},
         "props": [

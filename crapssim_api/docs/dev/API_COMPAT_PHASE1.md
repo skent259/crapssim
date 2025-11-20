@@ -79,3 +79,9 @@
   - Wire API `TableSpec` controls (field payouts, odds policy/limits, increments, working flags, enablement toggles) into `Table.settings` so sessions honor requested policies.
   - Consider explicit engine-side feedback for rejected bets to reduce reliance on post-hoc signature comparisons.
   - Align public docs/examples to `actions.py` as the verb map to avoid confusion with the non-existent `verbs.py` module.
+
+## 6. Phase 1-B Implementation Notes
+
+- Added a `verbs.py` adapter that re-exports the actual verb handlers from `actions.py`, matching the upstream naming expectations noted in Phase 1-A.
+- Updated the base capabilities surface to include `big6` and `big8`, reflecting the supported bet classes already wired through the API verbs.
+- Documented the verb-to-engine mappings and error surfaces in `docs/API_VERB_INDEX.md` to track the aligned surface.
