@@ -1,6 +1,6 @@
 from __future__ import annotations
 import importlib
-from typing import Callable, Optional, Any
+from typing import Any, Callable, Optional
 
 from crapssim.table import Table, TableUpdate
 
@@ -89,6 +89,7 @@ class Session:
         updater = TableUpdate()
         updater.update_table_stats(self._table)
         updater.roll(self._table, fixed_outcome=roll_values)
+        bet_results = self._compute_bet_results()
         updater.update_bets(self._table)
         updater.set_new_shooter(self._table)
         updater.update_numbers(self._table, verbose=False)
@@ -104,6 +105,7 @@ class Session:
             "dice": dice_values,
             "before": before,
             "after": after,
+            "is_push": self._detect_push(before, after, bet_results),
         }
         self._emit(event)
         return event
@@ -159,6 +161,52 @@ class Session:
                     )
                 )
         return sig
+
+    def _compute_bet_results(self) -> list[Any]:
+        player = self._first_player()
+        if not player:
+            return []
+
+        results: list[Any] = []
+        for bet in list(player.bets):
+            try:
+                results.append(bet.get_result(self._table))
+            except Exception:
+                continue
+        return results
+
+    def _detect_push(self, before: dict, after: dict, bet_results: list[Any]) -> bool:
+        if any(getattr(result, "pushed", False) for result in bet_results):
+            return True
+
+        try:
+            bankroll_before = float(before.get("bankroll", 0.0))
+            bankroll_after = float(after.get("bankroll", 0.0))
+        except (TypeError, ValueError):  # pragma: no cover - defensive
+            return False
+
+        bankroll_delta = bankroll_after - bankroll_before
+        tolerance = 1e-9
+
+        bets_before = {
+            (bet.get("type"), bet.get("number")): float(bet.get("amount", 0.0))
+            for bet in before.get("bets", [])
+            if isinstance(bet, dict)
+        }
+        bets_after = {
+            (bet.get("type"), bet.get("number")): float(bet.get("amount", 0.0))
+            for bet in after.get("bets", [])
+            if isinstance(bet, dict)
+        }
+
+        removed_amount = sum(
+            amount for key, amount in bets_before.items() if key not in bets_after
+        )
+
+        if removed_amount > 0 and abs(bankroll_delta - removed_amount) <= tolerance:
+            return True
+
+        return False
 
     @property
     def table(self) -> Table:

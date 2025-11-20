@@ -63,3 +63,17 @@ class EffectSummary(TypedDict, total=False):
 class ApplyActionResponse(TypedDict, total=False):
     effect_summary: EffectSummary
     snapshot: Dict[str, Any]
+
+
+class RollSnapshot(TypedDict, total=False):
+    session_id: str
+    hand_id: int
+    roll_seq: int
+    dice: List[int]
+    puck: str
+    point: Optional[int]
+    bankroll_after: str
+    events: List[Dict[str, Any]]
+    identity: Dict[str, Any]
+    bets: List[Dict[str, Any]]
+    is_push: bool

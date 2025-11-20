@@ -584,12 +584,13 @@ def apply_action(req: dict):
                 mgmt_result.get("error_code") or ApiErrorCode.BAD_ARGS.value
             )
             hint = mgmt_result.get("error_hint", "bet management action failed")
-            try:
-                error_code = ApiErrorCode(error_code_value)  # type: ignore[arg-type]
-            except ValueError:  # pragma: no cover - defensive
-                error_code = ApiErrorCode.BAD_ARGS
+            context = mgmt_result.get("error_context")
+            context_value = context if isinstance(context, dict) else {}
             raise ApiError(
-                error_code, hint, at_state=_at_state(session_id, session_state)
+                error_code_value,
+                hint,
+                at_state=_at_state(session_id, session_state),
+                context=context_value,
             )
 
         bankroll_after = float(mgmt_result["bankroll_after"])
@@ -713,6 +714,8 @@ def step_roll(req: StepRollRequest):
             {"mode": req.mode},
         )
     )
+    is_push = bool(event.get("is_push", False))
+
     events.append(
         build_event(
             session_id,
@@ -721,7 +724,7 @@ def step_roll(req: StepRollRequest):
             "roll_completed",
             bankroll_before,
             bankroll_after,
-            {"dice": dice_values},
+            {"dice": dice_values, "is_push": is_push},
         )
     )
 
@@ -790,6 +793,7 @@ def step_roll(req: StepRollRequest):
             "capabilities_schema_version": CAPABILITIES_SCHEMA_VERSION,
         },
         "bets": after_snapshot.get("bets", []),
+        "is_push": is_push,
     }
     return snapshot
 
