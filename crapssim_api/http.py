@@ -180,6 +180,16 @@ BASE_CAPABILITIES: Capabilities = {
     },
     "working_flags": {"comeout_odds_work": False, "place_work_comeout": False},
     "why_unsupported": {},
+    "bet_management": [
+        "remove_bet",
+        "reduce_bet",
+        "clear_all_bets",
+        "clear_center_bets",
+        "clear_place_buy_lay",
+        "clear_ats_bets",
+        "clear_fire_bets",
+        "set_odds_working",
+    ],
 }
 
 

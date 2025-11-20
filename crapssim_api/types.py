@@ -19,6 +19,8 @@ class Capabilities(TypedDict):
     vig: Dict[str, VigRule]
     working_flags: Dict[str, bool]
     why_unsupported: Dict[str, str]
+    verbs: Dict[str, Dict[str, Any]]
+    bet_management: List[str]
 
 
 class TableSpec(TypedDict, total=False):
