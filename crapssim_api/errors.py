@@ -9,6 +9,7 @@ except Exception:  # pragma: no cover
     class Request:  # minimal stub
         pass
 
+
 try:
     from fastapi.responses import JSONResponse
 except Exception:  # pragma: no cover
@@ -32,11 +33,26 @@ class ApiErrorCode(str, Enum):
 
 
 class ApiError(Exception):
-    def __init__(self, code: ApiErrorCode, hint: str, at_state: Optional[Dict[str, Any]] = None):
+    def __init__(
+        self,
+        code: ApiErrorCode | str,
+        hint: str,
+        at_state: Optional[Dict[str, Any]] = None,
+        *,
+        context: Optional[Dict[str, Any]] = None,
+    ):
         super().__init__(hint)
-        self.code = code
+        if isinstance(code, str) and code in ApiErrorCode._value2member_map_:
+            self.code = ApiErrorCode(code)
+        else:
+            self.code = code
         self.hint = hint
-        self.at_state = at_state or {"session_id": None, "hand_id": None, "roll_seq": None}
+        self.context = context or {}
+        self.at_state = at_state or {
+            "session_id": None,
+            "hand_id": None,
+            "roll_seq": None,
+        }
 
 
 def bad_args(hint: str) -> ApiError:
@@ -53,22 +69,23 @@ def unsupported_bet(hint: str) -> ApiError:
 
 async def api_error_handler(request: Request, exc: ApiError):
     status_map = {
-        ApiErrorCode.BAD_ARGS: 400,
-        ApiErrorCode.TABLE_RULE_BLOCK: 409,
-        ApiErrorCode.INSUFFICIENT_FUNDS: 409,
-        ApiErrorCode.ILLEGAL_TIMING: 409,
-        ApiErrorCode.ILLEGAL_AMOUNT: 422,
-        ApiErrorCode.LIMIT_BREACH: 422,
-        ApiErrorCode.UNSUPPORTED_BET: 422,
-        ApiErrorCode.INTERNAL: 500,
+        ApiErrorCode.BAD_ARGS.value: 400,
+        ApiErrorCode.TABLE_RULE_BLOCK.value: 409,
+        ApiErrorCode.INSUFFICIENT_FUNDS.value: 409,
+        ApiErrorCode.ILLEGAL_TIMING.value: 409,
+        ApiErrorCode.ILLEGAL_AMOUNT.value: 422,
+        ApiErrorCode.LIMIT_BREACH.value: 422,
+        ApiErrorCode.UNSUPPORTED_BET.value: 422,
+        ApiErrorCode.INTERNAL.value: 500,
     }
-    if not isinstance(exc.code, ApiErrorCode):
-        status_code = 500
-        code = "INTERNAL"
-    else:
-        status_code = status_map.get(exc.code, 500)
-        code = exc.code
+    code_value = exc.code.value if isinstance(exc.code, ApiErrorCode) else str(exc.code)
+    status_code = status_map.get(code_value, 500)
     return JSONResponse(
         status_code=status_code,
-        content={"code": code, "hint": exc.hint, "at_state": exc.at_state},
+        content={
+            "code": code_value,
+            "hint": exc.hint,
+            "at_state": exc.at_state,
+            "context": exc.context,
+        },
     )
