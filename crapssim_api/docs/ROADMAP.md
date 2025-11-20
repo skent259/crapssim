@@ -9,3 +9,7 @@ remains the authoritative source of truth.
 
 Error handling has also been aligned with CrapsSim v4.0 semantics, ensuring all
 API error codes faithfully mirror core engine behavior.
+
+**Status:** Phase 2 implementation is complete. The API now runs clean under
+Python 3.10–3.13, forwards engine error codes faithfully, and reports pushes
+without embedding any craps rules in the API layer.

@@ -1,5 +1,7 @@
 ## v0.2.0 — Compatibility & Push Semantics
 
+This release finalizes Phase 2 of the CrapsSim Engine API roadmap.
+
 - Added Python 3.11, 3.12, 3.13 support via metadata + typing_extensions.
 - Added optional `api` dependency group for FastAPI deployments.
 - Implemented push-aware API reporting with no game logic.

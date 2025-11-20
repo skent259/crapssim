@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "crapssim-api"
-version = "0.4.0-api-p5"
+version = "0.2.0"
 description = "CrapsSim HTTP API adapter"
 readme = "../README.md"
 requires-python = ">=3.10"
