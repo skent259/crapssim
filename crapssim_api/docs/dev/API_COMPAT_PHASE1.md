@@ -85,3 +85,9 @@
 - Added a `verbs.py` adapter that re-exports the actual verb handlers from `actions.py`, matching the upstream naming expectations noted in Phase 1-A.
 - Updated the base capabilities surface to include `big6` and `big8`, reflecting the supported bet classes already wired through the API verbs.
 - Documented the verb-to-engine mappings and error surfaces in `docs/API_VERB_INDEX.md` to track the aligned surface.
+
+## Phase 1-C — Error Surface & Capability Truth Pass
+
+- Normalized BAD_ARGS coverage for malformed or zero/negative amounts, invalid box numbers, and missing bet matches on bet-management verbs such as `remove_bet`, `reduce_bet`, and `set_odds_working`.
+- Recorded table-rule driven blocks (for example, odds without an established point) as TABLE_RULE_BLOCK while leaving core engine behaviors untouched for backward compatibility.
+- Capabilities JSON now lists the full verb set (including big6/big8 and bet-management verbs) with their argument shapes so clients can discover exactly what the HTTP adapter supports.

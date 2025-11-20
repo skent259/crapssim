@@ -27,7 +27,7 @@ Responses include the effect summary and an updated snapshot:
 }
 ```
 
-Unless otherwise stated, `amount` values are in dollars and must respect the table limits enforced by the vanilla engine. Bets that require a `number` expect standard box numbers (4,5,6,8,9,10). Management verbs never accept `amount` and only take the arguments listed below.
+Unless otherwise stated, `amount` values are in dollars and must respect the table limits enforced by the vanilla engine. Providing a non-numeric or non-positive `amount` returns `BAD_ARGS`. Bets that require a `number` expect standard box numbers (4,5,6,8,9,10) unless noted per-verb below. Management verbs never accept `amount` and only take the arguments listed below.
 
 ## Core line bets
 
@@ -38,7 +38,7 @@ Unless otherwise stated, `amount` values are in dollars and must respect the tab
 | `come` | `{"amount": int}` | Moves to the rolled number as a point. |
 | `dont_come` | `{"amount": int}` | Travels to the rolled number as a lay. |
 | `put` | `{"amount": int, "number": int}` | Places a direct line bet on the specified box number. |
-| `odds` | `{"base": "pass_line"/"dont_pass"/"come"/"dont_come", "amount": int}` | Adds odds behind an existing base bet. |
+| `odds` | `{"amount": int, "base": "pass_line"/"dont_pass"/"come"/"dont_come"/"put", "number?": int, "working?": bool}` | Adds odds behind an existing base bet; come/don't/put odds require a resolved `number`, pass/don't infer the point. |
 
 ### Example
 
@@ -88,7 +88,7 @@ Unless otherwise stated, `amount` values are in dollars and must respect the tab
 | Verb | Required args | Notes |
 | --- | --- | --- |
 | `hardway` | `{"number": 4/6/8/10, "amount": int}` | Wins on the hard combination, loses on easy or seven. |
-| `hop` | `{"dice": [int, int], "amount": int}` | One-roll hop bet on exact dice. |
+| `hop` | `{"result": [int, int], "amount": int}` | One-roll hop bet on exact dice; dice must be integers 1–6. |
 
 ### Example
 
@@ -115,14 +115,14 @@ Unless otherwise stated, `amount` values are in dollars and must respect the tab
 
 | Verb | Required args | Notes |
 | --- | --- | --- |
-| `remove_bet` | `{"bet_id": str}` | Removes a single bet by identifier returned in snapshots. |
-| `reduce_bet` | `{"bet_id": str, "amount": int}` | Reduce an existing bet while keeping it active. |
+| `remove_bet` | `{"type": str, "number?": int}` | Removes matching removable bets of the given type/number. Returns `BAD_ARGS` if nothing matches. |
+| `reduce_bet` | `{"type": str, "number?": int, "new_amount": int}` | Replace an existing bet with `new_amount`; returns `BAD_ARGS` when no matching bet exists. |
 | `clear_all_bets` | `{}` | Removes every removable bet from the layout. |
 | `clear_center_bets` | `{}` | Clears horn/prop/field wagers. |
 | `clear_place_buy_lay` | `{}` | Clears place/buy/lay bets. |
 | `clear_ats_bets` | `{}` | Clears All/Tall/Small wagers. |
 | `clear_fire_bets` | `{}` | Clears Fire bets. |
-| `set_odds_working` | `{"working": bool}` | Toggles whether odds work on the come-out. |
+| `set_odds_working` | `{"base": str, "number": int, "working": bool}` | Toggles whether odds work on the come-out for a specific base/number. Returns `BAD_ARGS` if no matching odds are present. |
 
 ### Example
 

@@ -29,9 +29,16 @@ def test_capabilities_contract() -> None:
     assert "supported" in caps["bets"]
     assert isinstance(caps["bets"]["supported"], list)
     assert "PassLine" in caps["bets"]["supported"]
+    assert "Big6" in caps["bets"]["supported"]
 
     assert "table" in caps
     table = caps["table"]
     assert "buy_vig_on_win" in table
     assert "vig_rounding" in table
     assert "vig_floor" in table
+
+    verbs = caps.get("verbs", {})
+    assert "big6" in verbs
+    assert "big8" in verbs
+    for management in ["remove_bet", "reduce_bet", "set_odds_working"]:
+        assert management in verbs
