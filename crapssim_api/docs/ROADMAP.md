@@ -1,87 +1,31 @@
-## Phase 2 — Compatibility & Semantics
+# CrapsSim Engine API — Roadmap & Phase Narrative
 
-This phase introduces Python 3.11–3.13 compatibility, dependency cleanup,
-and correct API-side push detection without introducing any game logic.
+## Phase 1 — HTTP Surface & Verbs
+- Established FastAPI surface for creating sessions, applying actions, and rolling dice.
+- Mirrored CrapsSim bet semantics without adding business logic in the API.
 
-The API now reflects engine push outcomes either through explicit engine signals
-or through lifecycle-based detection logic. No rules are inferred and the engine
-remains the authoritative source of truth.
+## Phase 2 — Compatibility & Semantics (Complete)
+- Added Python 3.11–3.13 compatibility and dependency cleanup.
+- Corrected API-side push detection while deferring all rulings to the engine.
+- Aligned error handling with CrapsSim v4.0 codes to keep the API a transparent transport layer.
 
-Error handling has also been aligned with CrapsSim v4.0 semantics, ensuring all
-API error codes faithfully mirror core engine behavior.
+## Phase 3 — Packaging & Extras (Complete)
+- Declared supported Python versions and extras in `pyproject.toml` / `setup.cfg` under `crapssim_api/`.
+- Documented engine-only vs. engine+API installs; kept HTTP dependencies optional via `[api]`, `[dev]`, and `[gauntlet]` extras.
+- Ensured CI installs and exercises the API without impacting core engine users.
 
-**Status:** Phase 2 implementation is complete. The API now runs clean under
-Python 3.10–3.13, forwards engine error codes faithfully, and reports pushes
-without embedding any craps rules in the API layer.
+## Phase 4 — Session Determinism & Replay Tape (Complete)
+- Documented determinism contract and added replay tape export/import for full-session reproduction.
+- Validated deterministic parity across supported Python versions via stress and replay suites.
+- Kept the API logic-free: tapes record engine outputs and are re-applied without altering decisions.
 
-## Phase 3 — Python Support & Packaging Hardening
+## Phase 5 — Session State & Metrics Surfaces (Complete)
+- Exposed read-only session snapshots and metrics tailored for CSC/Evo and research workflows.
+- Versioned state/metrics schemas so clients can track changes without guessing.
+- Ensured snapshots serialize engine truth only—no inference or reconciliation in the API layer.
 
-**Goal:** Make the CrapsSim Engine API installable and honest about its environment. Clearly document supported Python versions, dependency groups, and how to install and use the API as an optional extension to CrapsSim.
+## Future Ideas
+- Optional auth and rate-limiting for shared deployments (not planned yet).
+- Additional observability hooks if researchers request more granular traces.
 
-### P3·A — Design & Documentation Plan (this phase)
-
-- Clarify the intended Python version support window (targeting 3.10–3.13).
-- Describe the separation between:
-  - Core CrapsSim engine users (no API required).
-  - Engine + API users (`crapssim_api` as an optional wrapper).
-- Define dependency groups conceptually:
-  - Core engine dependencies (unchanged).
-  - API runtime dependencies (FastAPI, Pydantic, uvicorn, typing-extensions).
-  - Future dev/test extras (pytest, HTTP client libraries, etc.).
-- Document the intended installation story:
-  - Engine-only installs should not be forced to pull API dependencies.
-  - API should be installable via an extra or clearly documented instructions.
-- Avoid any code or CI changes in this phase; this is planning and documentation only.
-
-### P3·B — Metadata & INSTALLING Wiring (planned)
-
-- Update packaging metadata (`pyproject.toml` / `setup.cfg` under `crapssim_api/`) so that:
-  - Supported Python versions are explicitly declared.
-  - API dependencies are grouped under a clearly named extra (e.g. `api`).
-- Add or refine an INSTALLING guide that explains:
-  - Engine-only vs engine+API installation paths.
-  - How to run API tests locally using the same install method as CI.
-
-### P3·C — CI Alignment & Sanity Checks (planned)
-
-- Ensure CI runs a minimal API test suite across the declared Python versions.
-- Align the manual “gauntlet” workflow with the documented install flow.
-- Confirm that documentation, metadata, and CI behavior all match the same Python support and dependency story.
-
-### Phase 3·B — Packaging & Extras Implemented
-
-- Added pyproject.toml / setup.cfg under crapssim_api/.
-- Declared Python support for 3.10–3.13.
-- Added API runtime dependencies.
-- Added `[api]`, `[dev]`, and `[gauntlet]` extras.
-- Updated INSTALLING guide with real commands.
-- Ensured the Engine API is fully optional and does not affect core engine users.
-
-### Phase 4 — Session State & Determinism Contracts ✔ COMPLETE
-
-**One-liner:** Guarantee deterministic, replay-safe sessions (seed → dice → outcomes) across API and vanilla engines, including replay-tape export/import and cross-Python reproducibility.
-
-**Highlights:**
-- Determinism contract documented and versioned.
-- Replay tape export/import implemented and validated for full-session replays.
-- CI verifies deterministic behavior across supported Python versions (3.11–3.13) using stress and replay suites.
-
-**Non-goals:**
-- No new betting logic in the API.
-- No changes to engine rules or payouts.
-- No strategy or policy logic; the API remains a thin wrapper around CrapsSim.
-
-## Phase 5 — Session State & Metrics Surface (Design)
-
-**One-liner:** Expose authoritative, read-only session state and metrics from the engine in a stable, versioned API surface for CSC/Evo and research consumers.
-
-**Highlights (planned):**
-- Session snapshot endpoint (read-only, no logic).
-- Metrics endpoint (read-only, no logic).
-- Schema + versioning for state/metrics.
-- CI checks for parity between API snapshot and engine internals.
-- Strict “no business logic in API” reminder.
-
-**Builds on:**
-- Phase 3 — ensuring packaging and environment consistency for deterministic installs.
-- Phase 4 — determinism contract + replay tapes, so snapshots and metrics align with the same replayable truth.
+For deeper design artifacts and historical reports, see [`dev/`](dev/README.md).

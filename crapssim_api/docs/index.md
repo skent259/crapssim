@@ -1,33 +1,25 @@
-# CrapsSim HTTP API
+# CrapsSim Engine API Docs
 
-The `crapssim_api` package exposes the vanilla CrapsSim engine over HTTP. It ships as a light-weight sidecar that keeps all game logic inside the core `crapssim` package while providing JSON endpoints for automation and tooling.
+The `crapssim_api` package wraps the CrapsSim engine with an optional FastAPI surface. It keeps all craps rules and payouts inside the engine while exposing deterministic HTTP verbs that automation tools, CSC/Evo pipelines, or research notebooks can drive.
 
-## Who this is for
+## Table of Contents
+- [Quickstart](quickstart.md)
+- [Installation](INSTALLING_ENGINE_API.md)
+- [API verbs and contracts](API_VERB_INDEX.md) with supporting [error semantics](API_ERRORS_AND_CONTRACT.md)
+- [Determinism & replay](DETERMINISM.md)
+- [Session state and metrics surfaces](session_state.md) and [metrics overview](metrics_surface.md)
+- [Developer stress and gauntlet tests](dev/testing.md)
+- [Roadmap / design notes](ROADMAP.md)
 
-- Developers who need a deterministic craps engine reachable over HTTP on a local network.
-- Test harnesses that want to drive the full bet surface without embedding the Python engine.
-- Integrators building dashboards or bots that rely on CrapsSim for rules and outcomes.
+## Getting Started
 
-## Getting started
+Start with the [Quickstart](quickstart.md) for a minimal session→bet→roll walkthrough, then review the [API verb index](API_VERB_INDEX.md) to see the full bet surface. Installation details for the optional HTTP extras live in [INSTALLING_ENGINE_API.md](INSTALLING_ENGINE_API.md).
 
-1. [Install the optional API extra](installation.md) to bring in FastAPI and uvicorn.
-2. Start the app with `uvicorn crapssim_api.http:app --reload`.
-3. Review the [verb reference](API_VERBS.md) for supported bets and management actions.
-4. Run the minimal [API client example](../examples/api_client_min.py) to see an end-to-end flow.
+## For Developers & Maintainers
 
-## Capabilities & Non-Goals
+- Stress suites and gauntlet workflow: [dev/testing.md](dev/testing.md)
+- Deep design references and reports: [dev/](dev/README.md)
 
-**Capabilities**
+## Determinism & Replay
 
-- Full craps bet surface matching the vanilla engine (Pass/Don’t, Come/Don’t, Odds, Place/Buy/Lay/Big6/Big8, Field, Hardways, Horn/World, Any7/AnyCraps/2/3/11/12, Hop, Fire, All/Tall/Small).
-- Bet-management verbs covering removal, reduction, layout clears, and toggling odds working.
-
-**Non-Goals**
-
-- Built-in authentication, rate limiting, or multi-tenant isolation.
-- Persistence layers or bankroll analytics beyond the engine’s core snapshot.
-- Exposure as an internet-facing service; it is intended to run as a local sidecar.
-
-## Related documentation
-
-Additional design notes and diagnostic reports live under [`dev/`](dev/README.md) for engine/API maintainers.
+Seeded runs and replay tapes enable reproducible sequences for parity checks and research. See [DETERMINISM.md](DETERMINISM.md) for how seeds, dice injection, and tapes interact with the engine’s authoritative outcomes.
