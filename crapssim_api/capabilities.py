@@ -34,6 +34,7 @@ from crapssim.bet import (
 from crapssim.table import Table, TableSettings
 
 from .actions import SUPPORTED_VERBS
+
 _VERB_CAPABILITIES: Dict[str, Dict[str, Any]] = {
     "pass_line": {"args": ["amount"]},
     "dont_pass": {"args": ["amount"]},

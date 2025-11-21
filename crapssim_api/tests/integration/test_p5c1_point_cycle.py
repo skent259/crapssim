@@ -25,7 +25,9 @@ client = TestClient(app)
 
 
 def _roll(session_id, dice):
-    r = client.post("/step_roll", json={"session_id": session_id, "mode": "inject", "dice": dice})
+    r = client.post(
+        "/step_roll", json={"session_id": session_id, "mode": "inject", "dice": dice}
+    )
     assert r.status_code == 200
     return r.json()
 

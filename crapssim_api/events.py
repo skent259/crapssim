@@ -119,13 +119,8 @@ def roll_event(roll_id: int, dice: list[int], before: dict, after: dict) -> dict
 
 
 def bet_event(kind: str, payload: dict) -> dict:
-    return {
-        "type": kind,
-        **payload
-    }
+    return {"type": kind, **payload}
 
 
 def run_event(kind: str) -> dict:
     return {"type": kind}
-
-

@@ -96,6 +96,8 @@ class DeterminismHarness:
             else:
                 raise AssertionError(f"Unknown method in tape at #{idx}: {m}")
             if got != expected:
-                raise AssertionError(f"Tape mismatch at #{idx}: expected {expected}, got {got}")
+                raise AssertionError(
+                    f"Tape mismatch at #{idx}: expected {expected}, got {got}"
+                )
         # Hash must be stable
         assert tape.get("run_hash") == compute_hash({"seed": seed, "entries": entries})

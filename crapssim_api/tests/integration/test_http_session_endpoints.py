@@ -6,6 +6,7 @@ pytest.importorskip("pydantic")
 try:
     from crapssim_api.http import app
     from fastapi.testclient import TestClient
+
     fast = True
 except Exception:
     fast = False
@@ -20,7 +21,7 @@ def test_http_session_endpoints():
     session_id = payload["session_id"]
     assert payload["snapshot"]["identity"]["seed"] == 314
 
-    r2 = client.post("/session/roll", json={"session_id": session_id, "dice":[4,3]})
+    r2 = client.post("/session/roll", json={"session_id": session_id, "dice": [4, 3]})
     assert r2.status_code == 200
     assert r2.json()["snapshot"]["dice"] == [4, 3]
 
@@ -29,5 +30,3 @@ def test_http_session_endpoints():
     snap = r3.json()["snapshot"]
     assert snap["session_id"] == session_id
     assert snap["roll_seq"] == 2
-
-

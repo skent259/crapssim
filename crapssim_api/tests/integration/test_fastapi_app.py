@@ -1,4 +1,5 @@
 """Tests for the optional FastAPI application wrapper."""
+
 from __future__ import annotations
 
 import builtins
@@ -11,7 +12,9 @@ import pytest
 from crapssim_api.fastapi_app import create_app
 
 
-def test_import_fastapi_app_without_fastapi_is_safe(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_import_fastapi_app_without_fastapi_is_safe(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     """Importing without FastAPI should not crash and raises RuntimeError lazily."""
     sys.modules.pop("fastapi", None)
     sys.modules.pop("crapssim_api.fastapi_app", None)

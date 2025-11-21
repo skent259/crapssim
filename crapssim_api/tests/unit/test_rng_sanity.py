@@ -11,7 +11,9 @@ except Exception:  # pragma: no cover
 
 from crapssim_api.http import router
 
-if FastAPI is None or TestClient is None or router is None:  # pragma: no cover - optional deps
+if (
+    FastAPI is None or TestClient is None or router is None
+):  # pragma: no cover - optional deps
     pytest.skip("fastapi not installed", allow_module_level=True)
 
 app = FastAPI()

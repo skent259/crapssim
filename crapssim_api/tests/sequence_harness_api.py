@@ -1,4 +1,5 @@
 """API-backed sequence harness for CrapsSim."""
+
 from __future__ import annotations
 
 from typing import Any, Dict, List, Tuple
@@ -82,7 +83,12 @@ def _apply_action(client: Any, session_id: str, action: Dict[str, Any]) -> Actio
         error_code = response.json().get("code")
     except ValueError:  # pragma: no cover - defensive
         error_code = None
-    return {"verb": verb, "args": dict(args), "result": "error", "error_code": error_code}
+    return {
+        "verb": verb,
+        "args": dict(args),
+        "result": "error",
+        "error_code": error_code,
+    }
 
 
 def _inject_roll(client: Any, session_id: str, dice: Tuple[int, int]) -> None:
@@ -91,7 +97,9 @@ def _inject_roll(client: Any, session_id: str, dice: Tuple[int, int]) -> None:
     response.raise_for_status()
 
 
-def run_api_sequence_harness(config: SequenceRunConfig | None = None) -> List[SequenceJournalEntry]:
+def run_api_sequence_harness(
+    config: SequenceRunConfig | None = None,
+) -> List[SequenceJournalEntry]:
     pytest.importorskip("fastapi")
     pytest.importorskip("pydantic")
     TestClient = _require_test_client()

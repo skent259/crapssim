@@ -26,14 +26,18 @@ def vanilla_sequence_journal() -> List[SequenceJournalEntry]:
 
 
 @pytest.fixture(scope="session")
-def api_sequence_json(api_sequence_journal: List[SequenceJournalEntry]) -> List[SequenceJournalEntry]:
+def api_sequence_json(
+    api_sequence_journal: List[SequenceJournalEntry],
+) -> List[SequenceJournalEntry]:
     data = json.loads(Path(API_JSON_PATH).read_text(encoding="utf-8"))
     assert data == api_sequence_journal
     return data
 
 
 @pytest.fixture(scope="session")
-def vanilla_sequence_json(vanilla_sequence_journal: List[SequenceJournalEntry]) -> List[SequenceJournalEntry]:
+def vanilla_sequence_json(
+    vanilla_sequence_journal: List[SequenceJournalEntry],
+) -> List[SequenceJournalEntry]:
     data = json.loads(Path(VANILLA_JSON_PATH).read_text(encoding="utf-8"))
     assert data == vanilla_sequence_journal
     return data

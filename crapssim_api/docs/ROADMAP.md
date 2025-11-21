@@ -57,14 +57,14 @@ without embedding any craps rules in the API layer.
 - Updated INSTALLING guide with real commands.
 - Ensured the Engine API is fully optional and does not affect core engine users.
 
-## Phase 4 — Session State & Determinism Contracts
+### Phase 4 — Session State & Determinism Contracts ✔ COMPLETE
 
 **One-liner:** Guarantee deterministic, replay-safe sessions (seed → dice → outcomes) across API and vanilla engines, including replay-tape export/import and cross-Python reproducibility.
 
-**Goals:**
-- Define and document the determinism contract: given the same seed and same dice sequence, the API and vanilla engine must produce the same outcomes.
-- Introduce a replay tape concept (export/import) so sessions can be captured and replayed exactly.
-- Validate determinism across supported Python versions via CI (3.10, 3.11, 3.12, 3.13).
+**Highlights:**
+- Determinism contract documented and versioned.
+- Replay tape export/import implemented and validated for full-session replays.
+- CI verifies deterministic behavior across supported Python versions (3.11–3.13) using stress and replay suites.
 
 **Non-goals:**
 - No new betting logic in the API.

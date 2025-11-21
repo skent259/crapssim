@@ -1,4 +1,5 @@
 """Compare API and vanilla engine journals for parity."""
+
 from __future__ import annotations
 
 import json
@@ -22,7 +23,13 @@ class Mismatch:
 
 
 class ParityResult:
-    def __init__(self, matches: List[str], mismatches: List[Mismatch], missing_api: List[str], missing_vanilla: List[str]):
+    def __init__(
+        self,
+        matches: List[str],
+        mismatches: List[Mismatch],
+        missing_api: List[str],
+        missing_vanilla: List[str],
+    ):
         self.matches = matches
         self.mismatches = mismatches
         self.missing_api = missing_api
@@ -46,7 +53,14 @@ def _load_json(path: Path) -> list[dict]:
 def _compare_entries(api_entry: dict, vanilla_entry: dict) -> list[Mismatch]:
     mismatches: list[Mismatch] = []
     if api_entry.get("result") != vanilla_entry.get("result"):
-        mismatches.append(Mismatch(api_entry["scenario"], "result", api_entry.get("result"), vanilla_entry.get("result")))
+        mismatches.append(
+            Mismatch(
+                api_entry["scenario"],
+                "result",
+                api_entry.get("result"),
+                vanilla_entry.get("result"),
+            )
+        )
 
     if (api_entry.get("error_code") or "") != (vanilla_entry.get("error_code") or ""):
         mismatches.append(
@@ -114,8 +128,16 @@ def _render_markdown(
                 "| {scenario} | {field} | {api} | {engine} |".format(
                     scenario=mismatch.scenario,
                     field=mismatch.field,
-                    api=json.dumps(mismatch.api_value, sort_keys=True) if isinstance(mismatch.api_value, (dict, list)) else mismatch.api_value,
-                    engine=json.dumps(mismatch.vanilla_value, sort_keys=True) if isinstance(mismatch.vanilla_value, (dict, list)) else mismatch.vanilla_value,
+                    api=(
+                        json.dumps(mismatch.api_value, sort_keys=True)
+                        if isinstance(mismatch.api_value, (dict, list))
+                        else mismatch.api_value
+                    ),
+                    engine=(
+                        json.dumps(mismatch.vanilla_value, sort_keys=True)
+                        if isinstance(mismatch.vanilla_value, (dict, list))
+                        else mismatch.vanilla_value
+                    ),
                 )
             )
     else:
@@ -150,12 +172,20 @@ def _render_markdown(
             lines.append("")
             lines.append("#### API Entry")
             lines.append("```json")
-            lines.append(json.dumps(api_index.get(mismatch.scenario, {}), indent=2, sort_keys=True))
+            lines.append(
+                json.dumps(
+                    api_index.get(mismatch.scenario, {}), indent=2, sort_keys=True
+                )
+            )
             lines.append("```")
             lines.append("")
             lines.append("#### Engine Entry")
             lines.append("```json")
-            lines.append(json.dumps(vanilla_index.get(mismatch.scenario, {}), indent=2, sort_keys=True))
+            lines.append(
+                json.dumps(
+                    vanilla_index.get(mismatch.scenario, {}), indent=2, sort_keys=True
+                )
+            )
             lines.append("```")
             lines.append("")
 
@@ -203,15 +233,29 @@ def main() -> None:
     import argparse
     import sys
 
-    parser = argparse.ArgumentParser(description="Compare API and vanilla engine journals for parity")
-    parser.add_argument("--api", type=Path, default=API_JSON, help="Path to the API JSON journal")
-    parser.add_argument("--vanilla", type=Path, default=VANILLA_JSON, help="Path to the vanilla JSON journal")
+    parser = argparse.ArgumentParser(
+        description="Compare API and vanilla engine journals for parity"
+    )
     parser.add_argument(
-        "--markdown", type=Path, default=PARITY_MARKDOWN, help="Path to write the markdown parity report"
+        "--api", type=Path, default=API_JSON, help="Path to the API JSON journal"
+    )
+    parser.add_argument(
+        "--vanilla",
+        type=Path,
+        default=VANILLA_JSON,
+        help="Path to the vanilla JSON journal",
+    )
+    parser.add_argument(
+        "--markdown",
+        type=Path,
+        default=PARITY_MARKDOWN,
+        help="Path to write the markdown parity report",
     )
     args = parser.parse_args()
 
-    parity = compare(api_path=args.api, vanilla_path=args.vanilla, markdown_path=args.markdown)
+    parity = compare(
+        api_path=args.api, vanilla_path=args.vanilla, markdown_path=args.markdown
+    )
     if parity.has_mismatch:
         sys.exit(1)
 

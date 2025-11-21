@@ -1,7 +1,9 @@
 import pytest
 
 
-@pytest.mark.skip(reason="Determinism contract tests will be implemented in Phase 4-B/4-C.")
+@pytest.mark.skip(
+    reason="Determinism contract tests will be implemented in Phase 4-B/4-C."
+)
 def test_seed_based_determinism_contract_documented():
     """
     Placeholder for seed-based determinism tests.

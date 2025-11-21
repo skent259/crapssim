@@ -1,4 +1,5 @@
 """Optional FastAPI application for the CrapsSim API."""
+
 from __future__ import annotations
 
 from importlib import reload

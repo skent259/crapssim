@@ -101,3 +101,11 @@ External tools (CSC, Evo, notebooks, etc.) should:
    - demonstrate reproducibility in research and analysis.
 
 Later phases will define the concrete JSON schemas for tapes and endpoints to export/import them. This document captures the contract and expectations that those endpoints must satisfy.
+
+## Replay Tape Determinism — Phase 4 Completion
+
+The API now guarantees deterministic behavior across Python versions when seeds are consistent and replay tapes are enabled. A replay tape logs every inbound command and outbound event, allowing bit-for-bit reproduction of an entire session.
+
+Replaying a tape bypasses randomness entirely. If a tape is loaded, the API issues events exactly as recorded, ensuring stable comparison across engine releases.
+
+Tapes remain optional for end users. Only developers and researchers need them. Standard sessions use the seed-based RNG path.

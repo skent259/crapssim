@@ -41,7 +41,9 @@ def _print_bets(bets: list[Dict[str, Any]]) -> None:
         print("    - " + ", ".join(parts))
 
 
-def _print_transition(label: str, before: float, after: float, bets: list[Dict[str, Any]]) -> float:
+def _print_transition(
+    label: str, before: float, after: float, bets: list[Dict[str, Any]]
+) -> float:
     _print_header(label)
     print(f"  Bankroll: before ${before:0.2f} → after ${after:0.2f}")
     _print_bets(bets)
@@ -60,10 +62,15 @@ def start_session(client: requests.Session, *, seed: int = 4242) -> tuple[str, f
 
 
 def apply_action(
-    client: requests.Session, session_id: str, verb: str, args: Dict[str, Any], bankroll: float
+    client: requests.Session,
+    session_id: str,
+    verb: str,
+    args: Dict[str, Any],
+    bankroll: float,
 ) -> tuple[float, Dict[str, Any]]:
     resp = client.post(
-        f"{BASE_URL}/apply_action", json={"session_id": session_id, "verb": verb, "args": args}
+        f"{BASE_URL}/apply_action",
+        json={"session_id": session_id, "verb": verb, "args": args},
     )
     resp.raise_for_status()
     payload = resp.json()
@@ -76,7 +83,11 @@ def apply_action(
 
 
 def roll_once(
-    client: requests.Session, session_id: str, dice: list[int], bankroll: float, label: str
+    client: requests.Session,
+    session_id: str,
+    dice: list[int],
+    bankroll: float,
+    label: str,
 ) -> float:
     resp = client.post(
         f"{BASE_URL}/session/roll", json={"session_id": session_id, "dice": dice}
@@ -93,7 +104,9 @@ def main() -> None:
 
         session_id, bankroll = start_session(client, seed=2025)
 
-        bankroll, _ = apply_action(client, session_id, "pass_line", {"amount": 10}, bankroll)
+        bankroll, _ = apply_action(
+            client, session_id, "pass_line", {"amount": 10}, bankroll
+        )
 
         bankroll = roll_once(
             client,
@@ -124,7 +137,11 @@ def main() -> None:
         # Demonstrate structured error payloads.
         error_resp = client.post(
             f"{BASE_URL}/apply_action",
-            json={"session_id": session_id, "verb": "pass_line", "args": {"amount": 5000}},
+            json={
+                "session_id": session_id,
+                "verb": "pass_line",
+                "args": {"amount": 5000},
+            },
         )
         _print_header("Intentional error")
         print(f"  HTTP status: {error_resp.status_code}")
