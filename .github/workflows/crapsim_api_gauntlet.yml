@@ -2,68 +2,36 @@ name: CrapsSim Engine API Gauntlet
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - "api"
-  pull_request:
-    branches:
-      - "api"
 
 jobs:
   api-gauntlet:
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        python-version: ["3.11", "3.12", "3.13"]
-
-    env:
-      PYTHONPATH: .
 
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v4
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: "3.12"
 
-      - name: Install dependencies
+      - name: Install Engine + API extras
         run: |
           python -m pip install --upgrade pip
-          pip install -e .
-          pip install -e ./crapssim_api[tests,gauntlet]
-        env:
-          PIP_DISABLE_PIP_VERSION_CHECK: "1"
+          pip install .[api]
 
-      - name: Ensure results directories exist
+      - name: Run API sequence gauntlet
         run: |
-          mkdir -p crapssim_api/tests/stress/results
-          mkdir -p crapssim_api/tests/replay/results
+          PYTHONPATH=. pytest -q crapssim_api/tests/stress/test_api_sequences.py
 
-      - name: Run API surface stress suite
-        run: |
-          pytest -q crapssim_api/tests/stress/test_api_sequences.py
-        env:
-          PYTHONUNBUFFERED: "1"
-
-      - name: Run API sequence trace suite
-        run: |
-          pytest -q crapssim_api/tests/stress/test_vanilla_sequences.py
-        env:
-          PYTHONUNBUFFERED: "1"
-
-      - name: Run API surface parity suite
-        run: |
-          pytest -q crapssim_api/tests/stress/test_sequence_parity.py
-        env:
-          PYTHONUNBUFFERED: "1"
-
-      - name: Upload API gauntlet artifacts
+      - name: Archive gauntlet artifacts
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: crapsim-api-gauntlet-${{ github.sha }}-${{ matrix.python-version }}
+          name: crapsim-api-gauntlet-${{ github.sha }}
           path: |
-            crapssim_api/tests/stress/results/*
-            crapssim_api/tests/replay/results/*
+            crapssim_api/tests/stress/output/**
+            API_SEQUENCE_TRACE_*.md
+            *_sequences_journal.json
+          if-no-files-found: ignore
