@@ -2,15 +2,19 @@ from __future__ import annotations
 
 import json
 import uuid
-from typing import Any, Dict
+from typing import Any, Dict, List, Optional, Tuple
 
 try:
-    from fastapi import APIRouter, FastAPI, Body
+    from fastapi import APIRouter, FastAPI, Body, HTTPException
     from fastapi.responses import Response as FastAPIResponse
 except ModuleNotFoundError:  # pragma: no cover - environment without fastapi
     APIRouter = None  # type: ignore[assignment]
     FastAPI = None  # type: ignore[assignment]
     FastAPIResponse = None  # type: ignore[assignment]
+    HTTPException = Exception  # type: ignore[assignment]
+
+    def Body(default: Any = ..., **_: Any) -> Any:  # type: ignore[override]
+        return default
 
     class Response:  # minimal stub
         def __init__(self, content: str, media_type: str):
@@ -99,7 +103,16 @@ from .events import (
 )
 from .session_store import SESSION_STORE
 from .session import Session
-from .types import Capabilities, StartSessionRequest, StartSessionResponse, TableSpec
+from .types import (
+    Capabilities,
+    ReplayResult,
+    SessionTape,
+    SessionTapeMetadata,
+    SessionTapeStep,
+    StartSessionRequest,
+    StartSessionResponse,
+    TableSpec,
+)
 from .verbs import (
     SUPPORTED_VERBS,
     apply_bet_management,
@@ -127,6 +140,9 @@ if APIRouter is not None:
     router = APIRouter()
 else:  # pragma: no cover - FastAPI optional
     router = None
+
+ENGINE_VERSION_STRING = ENGINE_API_VERSION
+API_VERSION_STRING = ENGINE_API_VERSION
 
 DEFAULT_VIG_SETTINGS: Dict[str, Any] = {
     "vig_rounding": "nearest_dollar",
@@ -243,6 +259,43 @@ def _json_response(payload: Any) -> Response:
     return Response(content=_json_dumps(payload), media_type="application/json")
 
 
+def _normalize_action_payload(action_payload: Dict[str, Any], session_id: str) -> Dict[str, Any]:
+    if not isinstance(action_payload, dict):
+        raise bad_args("each action must be a mapping")
+
+    payload = dict(action_payload)
+    payload.setdefault("session_id", session_id)
+    payload.setdefault("args", {})
+
+    if "args" not in action_payload:
+        args = {
+            k: v for k, v in payload.items() if k not in ("verb", "session_id", "args")
+        }
+        payload["args"] = args
+
+    return payload
+
+
+def _record_tape_step(session_data: Dict[str, Any], dice: Tuple[int, int], actions: List[dict]) -> None:
+    steps: List[SessionTapeStep] = list(session_data.get("tape_steps", []))
+    step_index = len(steps)
+    steps.append({"step_index": step_index, "dice": dice, "actions": list(actions)})
+    session_data["tape_steps"] = steps
+
+
+def _normalize_state_for_tape(state: dict, session_id: Optional[str] = None) -> dict:
+    normalized = dict(state or {})
+    if session_id is not None:
+        normalized["session_id"] = session_id
+    events = []
+    for ev in normalized.get("events", []):
+        if isinstance(ev, dict):
+            ev_copy = {k: v for k, v in ev.items() if k not in ("id", "ts")}
+            events.append(ev_copy)
+    normalized["events"] = events
+    return normalized
+
+
 def _capabilities_dict() -> Dict[str, Any]:
     resp = get_capabilities()
     return json.loads(resp.body.decode())
@@ -347,7 +400,7 @@ def start_session(
     """Core callable used by tests and the FastAPI layer."""
 
     request_data = _coerce_start_session_payload(payload)
-    spec_value = request_data.get("spec", {})
+    spec_value = request_data.get("spec", request_data.get("table_spec", {}))
     if not isinstance(spec_value, dict):
         raise bad_args("spec must be a mapping")
     spec: TableSpec = spec_value
@@ -356,6 +409,16 @@ def start_session(
     if isinstance(seed_value, bool) or not isinstance(seed_value, int):
         raise bad_args("seed must be int")
     seed = seed_value
+
+    initial_bankroll_value = request_data.get("initial_bankroll")
+    if initial_bankroll_value is None:
+        initial_bankroll = 1000.0
+    elif isinstance(initial_bankroll_value, (int, float)):
+        initial_bankroll = float(initial_bankroll_value)
+    else:  # pragma: no cover - invalid bankroll type
+        raise bad_args("initial_bankroll must be numeric")
+
+    record_tape = bool(request_data.get("record_tape", False))
 
     vig_settings = _resolve_vig_settings(spec)
     caps = _apply_vig_settings_to_caps(dict(BASE_CAPABILITIES), vig_settings)
@@ -375,9 +438,27 @@ def start_session(
     session_id = str(uuid.uuid4())[:8]
     session_state = SESSION_STORE.create(session_id, seed=seed)
     session_state["settings"] = dict(vig_settings)
+    session_state["table_spec"] = dict(spec)
+    session_state["initial_bankroll"] = initial_bankroll
+    session_state["record_tape"] = record_tape
+    session_state["tape_steps"] = []  # type: ignore[assignment]
+    session_state["tape_metadata"] = {
+        "engine_version": ENGINE_VERSION_STRING,
+        "api_version": API_VERSION_STRING,
+        "seed": seed,
+        "table_spec": dict(spec),
+        "initial_bankroll": initial_bankroll,
+    }
     hand = session_state["hand"]
     hand_fields = hand.to_snapshot_fields()
     session_obj = session_state["session"]
+    table = session_state.get("table")
+    player = session_obj.player()
+    if player is None and table is not None:
+        table.add_player(bankroll=initial_bankroll, strategy=None, name="API Player")
+        player = session_obj.player()
+    if player is not None:
+        player.bankroll = float(initial_bankroll)
     snapshot_state = session_obj.snapshot()
     bankroll_after = float(snapshot_state.get("bankroll", 0.0))
 
@@ -798,8 +879,259 @@ def step_roll(req: StepRollRequest):
     return snapshot
 
 
+def session_step(session_id: str, body: Dict[str, Any] = Body(...)) -> Response:
+    payload = dict(body or {})
+    actions_value = payload.get("actions", [])
+    if actions_value is None:
+        actions_value = []
+    if not isinstance(actions_value, list):
+        raise bad_args("actions must be a list")
+
+    normalized_actions: List[Dict[str, Any]] = []
+    for action_payload in actions_value:
+        normalized = _normalize_action_payload(action_payload, session_id)
+        normalized_actions.append(normalized)
+        apply_action(normalized)
+
+    dice_value = payload.get("dice")
+    roll_payload: Dict[str, Any] = {
+        "session_id": session_id,
+        "mode": "inject" if dice_value is not None else "auto",
+    }
+    if dice_value is not None:
+        roll_payload["dice"] = dice_value
+
+    roll_req = StepRollRequest(**roll_payload)
+    state = step_roll(roll_req)
+
+    sess = SESSION_STORE.ensure(session_id)
+    actions_for_tape = [dict(a) for a in actions_value]
+    if sess.get("record_tape"):
+        dice_tuple = (
+            int(dice_value[0]),
+            int(dice_value[1]),
+        ) if dice_value is not None else (
+            int(state["dice"][0]),
+            int(state["dice"][1]),
+        )
+        _record_tape_step(sess, dice_tuple, actions_for_tape)
+
+    sess["final_state"] = dict(state)
+    sess["last_snapshot"] = dict(state)
+
+    return _json_response({"state": state})
+
+
+def _state_signature(state: Dict[str, Any]) -> Tuple[str, Tuple[Tuple[str | None, int | None, float], ...]]:
+    bankroll = str(state.get("bankroll_after") or state.get("bankroll") or "")
+    bets = []
+    for bet in state.get("bets", []):
+        if isinstance(bet, dict):
+            bets.append(
+                (
+                    bet.get("type"),
+                    bet.get("number"),
+                    float(bet.get("amount", 0.0)),
+                )
+            )
+    bets_signature = tuple(sorted(bets))
+    return bankroll, bets_signature
+
+
+def _create_table_from_spec(
+    *,
+    table_spec: dict,
+    seed: Optional[int],
+    initial_bankroll: Optional[float] = None,
+    session_label: Optional[str] = None,
+) -> Tuple[str, Any]:
+    session_id = session_label or str(uuid.uuid4())[:8]
+    if session_label is not None:
+        try:
+            getattr(SESSION_STORE, "_s", {}).pop(session_id, None)
+        except Exception:  # pragma: no cover - defensive
+            pass
+    session_state = SESSION_STORE.create(session_id, seed=seed if seed is not None else 0)
+    session_state["settings"] = dict(_resolve_vig_settings(table_spec))
+    session_state["table_spec"] = dict(table_spec)
+    session_state["initial_bankroll"] = (
+        float(initial_bankroll)
+        if initial_bankroll is not None
+        else float(session_state.get("initial_bankroll", 1000.0))
+    )
+    session_state["record_tape"] = False
+    session_state["tape_steps"] = []  # type: ignore[assignment]
+    table = session_state["table"]
+    setattr(table, "_api_session_id", session_id)
+
+    session_obj: Session = session_state["session"]
+    player = session_obj.player()
+    if player is None:
+        table.add_player(bankroll=session_state["initial_bankroll"], strategy=None, name="API Player")
+        player = session_obj.player()
+    if player is not None:
+        player.bankroll = float(session_state["initial_bankroll"])
+
+    return session_id, table
+
+
+def _apply_action(table: Any, action_payload: Dict[str, Any]) -> Dict[str, Any]:
+    session_id = getattr(table, "_api_session_id", None)
+    if session_id is None:
+        raise bad_args("table missing session context")
+    normalized = _normalize_action_payload(action_payload, session_id)
+    return apply_action(normalized)
+
+
+def _roll_dice(table: Any, d1: int, d2: int) -> Dict[str, Any]:
+    session_id = getattr(table, "_api_session_id", None)
+    req = StepRollRequest(session_id=session_id, mode="inject", dice=[int(d1), int(d2)])
+    snapshot = step_roll(req)
+    sess = SESSION_STORE.ensure(session_id)
+    sess["last_snapshot"] = dict(snapshot)
+    sess["final_state"] = dict(snapshot)
+    return snapshot
+
+
+def _summarize_table_state(table: Any) -> dict:
+    session_id = getattr(table, "_api_session_id", None)
+    if session_id is None:
+        return {}
+    sess = SESSION_STORE.ensure(session_id)
+    if "final_state" in sess:
+        return dict(sess.get("final_state") or {})
+    last_snapshot = sess.get("last_snapshot")
+    if isinstance(last_snapshot, dict):
+        return dict(last_snapshot)
+
+    hand = sess.get("hand")
+    session_obj: Session | None = sess.get("session")
+    if hand is None or session_obj is None:
+        return {}
+    snap_state = hand.to_snapshot_fields()
+    snapshot_state = session_obj.snapshot()
+    bankroll_after = f"{float(snapshot_state.get('bankroll', 0.0)):.2f}"
+    dice_values = list(sess.get("last_dice") or [])
+    return {
+        "session_id": session_id,
+        "hand_id": snap_state.get("hand_id"),
+        "roll_seq": sess.get("roll_seq"),
+        "dice": dice_values,
+        "puck": snap_state.get("puck"),
+        "point": snap_state.get("point"),
+        "bankroll_after": bankroll_after,
+        "events": [],
+        "identity": {
+            "engine_api_version": ENGINE_API_VERSION,
+            "capabilities_schema_version": CAPABILITIES_SCHEMA_VERSION,
+        },
+        "bets": snapshot_state.get("bets", []),
+        "is_push": False,
+    }
+
+
+def _find_first_mismatch_step(
+    tape: SessionTape, table_spec: dict, seed: Optional[int], original_final_state: dict
+) -> Optional[int]:
+    initial_bankroll = tape.get("metadata", {}).get("initial_bankroll")
+    session_id, table = _create_table_from_spec(
+        table_spec=table_spec,
+        seed=seed,
+        initial_bankroll=initial_bankroll,
+        session_label=f"{tape.get('session_id', 'tape')}-mismatch",
+    )
+    _ = session_id
+    target_signature = _state_signature(original_final_state)
+    last_step_index: Optional[int] = None
+    last_signature: Optional[Tuple[str, Tuple[Tuple[str | None, int | None, float], ...]]] = None
+    for step in tape.get("steps", []):
+        for action_payload in step.get("actions", []):
+            _apply_action(table, action_payload)
+        snapshot = _roll_dice(table, step["dice"][0], step["dice"][1])
+        last_signature = _state_signature(snapshot)
+        last_step_index = int(step.get("step_index", step["step_index"]))
+    if last_signature is not None and last_signature != target_signature:
+        return last_step_index
+    return None
+
+
+def export_session_tape(session_id: str) -> SessionTape:
+    session = getattr(SESSION_STORE, "_s", {}).get(session_id)
+    if session is None:
+        raise HTTPException(status_code=404, detail="Unknown session_id")
+
+    if not session.get("record_tape"):
+        raise HTTPException(
+            status_code=400, detail="Tape recording was not enabled for this session"
+        )
+
+    metadata: SessionTapeMetadata = {**session.get("tape_metadata", {})}
+    steps: list[SessionTapeStep] = list(session.get("tape_steps", []))
+    final_state: dict = dict(session.get("final_state") or {})
+
+    return {
+        "session_id": session_id,
+        "metadata": metadata,
+        "steps": steps,
+        "final_state": final_state,
+    }
+
+
+def replay_session_tape(tape: SessionTape) -> ReplayResult:
+    meta = tape.get("metadata", {})
+    table_spec = meta.get("table_spec", {})
+    seed = meta.get("seed")
+    initial_bankroll = meta.get("initial_bankroll")
+
+    _, table = _create_table_from_spec(
+        table_spec=table_spec,
+        seed=seed,
+        initial_bankroll=initial_bankroll,
+        session_label=tape.get("session_id"),
+    )
+
+    last_snapshot: dict = {}
+    for step in tape.get("steps", []):
+        for action_payload in step.get("actions", []):
+            _apply_action(table, action_payload)
+        d1, d2 = step.get("dice", (0, 0))
+        last_snapshot = _roll_dice(table, d1, d2)
+
+    if not last_snapshot:
+        last_snapshot = _summarize_table_state(table)
+
+    replay_state = dict(last_snapshot)
+
+    original_final = dict(tape.get("final_state") or {})
+    normalized_original = _normalize_state_for_tape(original_final, tape.get("session_id"))
+    normalized_replay = _normalize_state_for_tape(replay_state, tape.get("session_id"))
+
+    deterministic = normalized_replay == normalized_original
+    mismatch_step: Optional[int] = None
+
+    if not deterministic:
+        mismatch_step = _find_first_mismatch_step(tape, table_spec, seed, normalized_original)
+
+    replay_return_state = dict(replay_state)
+    if tape.get("session_id"):
+        replay_return_state["session_id"] = tape["session_id"]
+    if deterministic and original_final.get("events"):
+        replay_return_state["events"] = original_final.get("events", [])
+    original_return_state = original_final if original_final else normalized_original
+
+    return {
+        "deterministic": deterministic,
+        "mismatch_step": mismatch_step,
+        "original_final_state": original_return_state,
+        "replay_final_state": replay_return_state,
+    }
+
+
 if router is not None:  # pragma: no cover - FastAPI optional
     router.post("/step_roll")(step_roll)
+    router.post("/session/{session_id}/step")(session_step)
+    router.get("/session/{session_id}/tape")(export_session_tape)
+    router.post("/session/replay")(replay_session_tape)
 
 
 try:  # pragma: no cover - FastAPI optional
