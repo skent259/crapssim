@@ -3,9 +3,9 @@
 The CrapsSim Engine API wraps the core CrapsSim engine with a stable HTTP surface powered by FastAPI. It keeps all craps rules and payout truth inside CrapsSim, exposing structured endpoints that are easy to integrate with CSC, Evo, or other automation tooling. The API ships as an optional package under `crapssim_api/` so core engine users are never forced to install HTTP dependencies.
 
 ## Quick Links
-- Docs index and table of contents: [docs/index.md](docs/index.md)
+- Docs index and table of contents: [docs/README.md](docs/README.md)
 - Minimal HTTP walk-through: [docs/quickstart.md](docs/quickstart.md)
-- Determinism and replay overview: [docs/DETERMINISM.md](docs/DETERMINISM.md)
+- Determinism and replay overview: [docs/determinism.md](docs/determinism.md)
 - Stress and gauntlet tests for parity checks: [docs/dev/testing.md](docs/dev/testing.md)
 - Minimal client example (Python): [examples/api_client_min.py](examples/api_client_min.py)
 

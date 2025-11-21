@@ -6,7 +6,7 @@
 
 - Core package (`setup.cfg`): `python_requires >=3.10`; classifiers only declare generic "Python :: 3" with no per-version specificity.【F:setup.cfg†L12-L22】
 - Engine API (`crapssim_api/pyproject.toml`): classifiers list Python 3.10, 3.11, 3.12, and 3.13 with `requires-python >=3.10`; mirrored in `crapssim_api/setup.cfg` extras metadata.【F:crapssim_api/pyproject.toml†L1-L36】【F:crapssim_api/setup.cfg†L1-L27】
-- Top-level docs (e.g., `crapssim_api/docs/INSTALLING_ENGINE_API.md`) already state API support for Python 3.10–3.13.【F:crapssim_api/docs/INSTALLING_ENGINE_API.md†L22-L32】
+- Top-level docs (e.g., `crapssim_api/docs/installation.md`) state API support for Python 3.10–3.13.【F:crapssim_api/docs/installation.md†L5-L19】
 
 ### 1.2 CI Python Matrix
 
@@ -69,7 +69,7 @@
 - Should `typing-extensions` remain an unconditional dependency for API users, or be conditional based on Python version to reduce overhead?
 - Do we need to align core package classifiers with the Engine API’s explicit 3.10–3.13 listing, or keep core broader until CI coverage is updated?
 - How should the stubbed Pydantic behavior be handled when Pydantic is absent—should imports fail fast to avoid silent validation gaps?
-- Are there additional docs that should advertise the API extra once wired at the root level, or is the existing `INSTALLING_ENGINE_API` sufficient after alignment?
+- Are there additional docs that should advertise the API extra once wired at the root level, or is the canonical install doc sufficient after alignment?
 
 ## 6. Implementation Notes (Phase 6·B Completed)
 

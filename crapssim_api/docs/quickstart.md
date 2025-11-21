@@ -44,7 +44,7 @@ curl -X POST http://127.0.0.1:8000/session/apply_action \
   -d '{"session_id": "<session-id>", "verb": "pass_line", "args": {"amount": 10}}'
 ```
 
-The API responds with an `effect_summary` and a snapshot of bankroll, bets, and puck/point. Bet legality and error codes are emitted by CrapsSim; see [`API_VERB_INDEX.md`](API_VERB_INDEX.md) and [`API_ERRORS_AND_CONTRACT.md`](API_ERRORS_AND_CONTRACT.md) for the full catalog.
+The API responds with an `effect_summary` and a snapshot of bankroll, bets, and puck/point. Bet legality and error codes are emitted by CrapsSim; see [`verbs.md`](verbs.md) and [`errors.md`](errors.md) for the full catalog.
 
 ## 5. Roll the dice
 

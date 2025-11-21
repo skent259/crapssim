@@ -187,7 +187,9 @@ crapssim_api/tools/vanilla_surface_stress.py
 # VScode
 .vscode
 # === Generated Reports (do not commit) ===
+# Allow doc reports to live under the Engine API docs tree
 **/reports/
+!crapssim_api/docs/dev/reports/
 # End reports ignore
 
 
@@ -198,3 +200,11 @@ crapssim_api/tests/results/*.csv
 crapssim_api/tests/results/**/*.md
 crapssim_api/tests/results/**/*.json
 crapssim_api/tests/results/**/*.csv
+
+# API gauntlet ephemeral artifacts
+*.tape.json
+*_journal.json
+*_trace*.md
+gauntlet_output/
+artifacts/
+*.zip

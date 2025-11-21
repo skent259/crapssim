@@ -84,7 +84,7 @@
 
 - Added a `verbs.py` adapter that re-exports the actual verb handlers from `actions.py`, matching the upstream naming expectations noted in Phase 1-A.
 - Updated the base capabilities surface to include `big6` and `big8`, reflecting the supported bet classes already wired through the API verbs.
-- Documented the verb-to-engine mappings and error surfaces in `docs/API_VERB_INDEX.md` to track the aligned surface.
+- Documented the verb-to-engine mappings and error surfaces in `docs/verbs.md` to track the aligned surface.
 
 ## Phase 1-C — Error Surface & Capability Truth Pass
 
