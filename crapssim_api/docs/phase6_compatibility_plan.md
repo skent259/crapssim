@@ -70,3 +70,11 @@
 - Do we need to align core package classifiers with the Engine API’s explicit 3.10–3.13 listing, or keep core broader until CI coverage is updated?
 - How should the stubbed Pydantic behavior be handled when Pydantic is absent—should imports fail fast to avoid silent validation gaps?
 - Are there additional docs that should advertise the API extra once wired at the root level, or is the existing `INSTALLING_ENGINE_API` sufficient after alignment?
+
+## 6. Implementation Notes (Phase 6·B Completed)
+
+- Added `[options.extras_require]` with `api = fastapi, uvicorn, pydantic, typing_extensions`.
+- Ensured core CrapsSim install has zero HTTP dependencies.
+- Added import guards around FastAPI to prevent import-time failures.
+- Added version-safe TypedDict import pattern.
+- Confirmed that API-only functionality activates only when installed via `pip install crapssim[api]`.
