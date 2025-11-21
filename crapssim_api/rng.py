@@ -1,8 +1,8 @@
-# NOTE:
-# This module is reserved for future determinism / snapshot tooling.
-# It is currently not imported by the HTTP surface or session management code,
-# and changes here should not affect runtime behavior until a determinism
-# design is finalized and wired in intentionally.
+# Deterministic RNG wrapper used by the API's recording and replay helpers.
+#
+# RNG calls are funneled through this module so determinism tooling
+# can seed and optionally record each draw without leaking engine-specific
+# state into the HTTP surface.
 
 from __future__ import annotations
 import random
