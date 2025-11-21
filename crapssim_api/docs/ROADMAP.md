@@ -70,3 +70,18 @@ without embedding any craps rules in the API layer.
 - No new betting logic in the API.
 - No changes to engine rules or payouts.
 - No strategy or policy logic; the API remains a thin wrapper around CrapsSim.
+
+## Phase 5 — Session State & Metrics Surface (Design)
+
+**One-liner:** Expose authoritative, read-only session state and metrics from the engine in a stable, versioned API surface for CSC/Evo and research consumers.
+
+**Highlights (planned):**
+- Session snapshot endpoint (read-only, no logic).
+- Metrics endpoint (read-only, no logic).
+- Schema + versioning for state/metrics.
+- CI checks for parity between API snapshot and engine internals.
+- Strict “no business logic in API” reminder.
+
+**Builds on:**
+- Phase 3 — ensuring packaging and environment consistency for deterministic installs.
+- Phase 4 — determinism contract + replay tapes, so snapshots and metrics align with the same replayable truth.

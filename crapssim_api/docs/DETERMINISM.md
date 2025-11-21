@@ -109,3 +109,13 @@ The API now guarantees deterministic behavior across Python versions when seeds 
 Replaying a tape bypasses randomness entirely. If a tape is loaded, the API issues events exactly as recorded, ensuring stable comparison across engine releases.
 
 Tapes remain optional for end users. Only developers and researchers need them. Standard sessions use the seed-based RNG path.
+
+## How Session Snapshots and Metrics Fit In (Phase 5 Design)
+
+- **Seed vs. tape precedence:** A session started with a seed and no tape is deterministic within a specific engine/API version. Loading a replay tape overrides RNG entirely and must reproduce the recorded dice and outcomes, even across engine updates so long as the tape format remains compatible.
+- **Read-only views:** Session state snapshots and metrics surfaces serialize the engine’s live truth. They do not introduce inference, policy, or reconciliation logic.
+- **Consistency expectations:**
+  - With a seed-only session, snapshots and metrics are stable for a given engine version but can change if engine behavior legitimately evolves.
+  - With a loaded tape, snapshots and metrics must match the recorded sequence and outcomes exactly, enabling cross-version regression checks as long as tape compatibility holds.
+- **Capture points:** Snapshots and metrics may be taken at any time during a session. They should align with the determinism contract: exporting a tape and replaying it should yield identical snapshot/metric outputs at the same roll/hand indices.
+- **Source-of-truth reminder:** The core engine remains authoritative. The API is a transport/serialization layer that must not attempt to “fix” or recalculate anything during snapshot or metric emission.
