@@ -31,10 +31,7 @@ jobs:
       - name: Install dependencies (engine + API)
         run: |
           python -m pip install --upgrade pip
-          # Core engine in editable mode
-          pip install -e .
-          # Engine API + dev/gauntlet extras (defined under crapssim_api/)
-          pip install -e ./crapssim_api[api,dev,gauntlet]
+          pip install .[api]
 
       - name: Run API unit tests
         run: |

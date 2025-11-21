@@ -43,6 +43,7 @@ def test_engine_version_tag():
         "-api-p3-sync",
         "-api-p4",
         "-api-p5",
+        "-api-p6",
     )
     assert any(v.endswith(s) for s in suffixes), f"unexpected tag {v}"
 

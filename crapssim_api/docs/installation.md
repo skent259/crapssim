@@ -22,6 +22,8 @@ Install the FastAPI-powered layer via the published extra:
 pip install "crapssim[api]"
 ```
 
+The `[api]` extra pulls in FastAPI, Uvicorn, Pydantic, `typing_extensions`, and the HTTP client `httpx` required by the Starlette/FastAPI test client.
+
 ### Editable checkout for contributors
 From a local clone, install both the engine and API extras in editable mode:
 

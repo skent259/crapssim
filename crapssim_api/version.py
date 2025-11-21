@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-__version__ = "0.2.0-api-p5"
+__version__ = "0.2.1-api-p6"
 ENGINE_API_VERSION = __version__
 CAPABILITIES_SCHEMA_VERSION = 1
 
