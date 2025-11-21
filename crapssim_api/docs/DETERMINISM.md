@@ -1,41 +1,24 @@
 # CrapsSim Engine API — Determinism & Replay Contract
 
-This document describes how determinism works for the CrapsSim Engine API and how external tools (for example CSC, Evo, or research notebooks) can rely on it.
+This document outlines how determinism works for the CrapsSim Engine API and how external tools (CSC, Evo, research notebooks) can rely on it.
 
-## What “Deterministic” Means Here
+## Seed-Based Determinism vs. Replay Tapes
 
-Given:
+- **Seeded sessions**: A client provides a seed (or accepts a default). The engine’s RNG produces dice in a deterministic order. Given the same engine/API version, table configuration, bankroll, and seed, you should see the same rolls, outcomes, and bankroll trajectory. This is the default path for day-to-day use.
+- **Replay tapes**: A recorded sequence of inputs and engine-emitted events. Loading a tape bypasses RNG entirely and replays the captured dice and outcomes. Tapes are optional and aimed at research, debugging, and compatibility audits.
 
-- the same CrapsSim engine version,
-- the same initial table configuration,
-- the same initial bankroll,
-- the same seed, and
-- the same sequence of dice rolls,
-
-the API must produce the same sequence of game events and the same final bankroll and layout every time.
-
-The Engine API does **not** introduce its own game logic. It only forwards requests to CrapsSim and returns structured responses. CrapsSim remains the single source of truth for rules, payouts, and push/lose/win semantics.
+The Engine API never injects game logic; it forwards requests to CrapsSim and returns its structured responses. CrapsSim remains the single source of truth for rules, payouts, and push/lose/win semantics. Tapes simply record and reapply those engine decisions.
 
 ## Seed Lifecycle (High-Level)
 
-At a high level:
-
 1. A client starts a session with a seed (or a default if none is provided).
-2. CrapsSim uses that seed to drive its RNG for dice rolls (or for any internal random decisions, if applicable).
+2. CrapsSim uses that seed to drive its RNG for dice rolls (or any internal randomness).
 3. Each roll is derived deterministically from the RNG state.
 4. The Engine API exposes those rolls and outcomes but never mutates them.
 
-Phase 4 will clarify:
-
-- how seeds are accepted and recorded,
-- how roll sequences are exposed for replay, and
-- what parts of the response are guaranteed stable versus “implementation detail” metadata.
-
 ## Replay Tapes (Concept)
 
-A **replay tape** is a minimal, portable representation of a session that can be used later to reproduce the same results.
-
-Conceptually, a tape looks like:
+A **replay tape** is a portable representation of a session that can be used later to reproduce the same results.
 
 ```json
 {
@@ -47,31 +30,22 @@ Conceptually, a tape looks like:
 }
 ```
 
-Future phases will add endpoints that:
-- export the tape for a finished or in-progress session, and
-- import a tape for deterministic replay with no additional randomness.
-
-The Engine API will only marshal this data; CrapsSim remains responsible for applying the rolls and determining outcomes.
+Exporting a tape captures the recorded dice and outcomes; importing a tape drives a fresh engine instance with no additional randomness. When a tape is present, it takes precedence over seeds for reproduction.
 
 ## Guaranteed vs. Non-Guaranteed Fields
 
-The following are expected to be stable under a fixed version of CrapsSim and the Engine API:
+Stable under a fixed engine/API version:
 - per-roll dice results (order and values),
 - per-roll outcome classification (win/lose/push as defined by CrapsSim),
 - bankroll trajectory over the session,
 - final bankroll and layout, including which bets remain.
 
-The following are not guaranteed to be stable and may evolve over time:
+Not guaranteed to be stable and may evolve over time:
 - human-readable status strings or error messages,
 - ordering of non-critical metadata fields,
 - internal identifiers that are not part of the public API schema.
 
-Consumers who need determinism should base their comparisons on:
-- bankroll,
-- bets and amounts,
-- dice sequences,
-- result codes (OK / error + error code),
-- and any explicit, versioned fields in the API types.
+Consumers who need determinism should base comparisons on bankroll, bets/amounts, dice sequences, result codes, and versioned API fields.
 
 ## Cross-Version Considerations
 
@@ -80,42 +54,24 @@ Determinism is guaranteed within a compatible version band:
 - Same CrapsSim Engine API version,
 - Same Python minor version (validated via CI).
 
-A future-breaking engine change may alter edge-case behavior or payout details. When that happens:
-- The engine version will change.
-- The API will surface that version so clients can gate against it.
-- Deterministic replay is expected only when the original and replay environments match in version and configuration.
-
-## How External Tools Should Use This
-
-External tools (CSC, Evo, notebooks, etc.) should:
-1. Record:
-   - engine and API version,
-   - seed,
-   - table configuration,
-   - initial bankroll,
-   - roll sequence (or tape).
-2. Treat the Engine API as a deterministic function given those inputs.
-3. Use replay tapes to:
-   - debug specific runs,
-   - compare engine behavior across environments,
-   - demonstrate reproducibility in research and analysis.
-
-Later phases will define the concrete JSON schemas for tapes and endpoints to export/import them. This document captures the contract and expectations that those endpoints must satisfy.
+When the engine changes, expect deterministic parity only when the original and replay environments match in version and configuration.
 
 ## Replay Tape Determinism — Phase 4 Completion
 
-The API now guarantees deterministic behavior across Python versions when seeds are consistent and replay tapes are enabled. A replay tape logs every inbound command and outbound event, allowing bit-for-bit reproduction of an entire session.
-
-Replaying a tape bypasses randomness entirely. If a tape is loaded, the API issues events exactly as recorded, ensuring stable comparison across engine releases.
+The API guarantees deterministic behavior across supported Python versions when seeds are consistent and replay tapes are enabled. A replay tape logs every inbound command and outbound event, allowing bit-for-bit reproduction of an entire session. Loading a tape issues events exactly as recorded, ensuring stable comparisons across engine releases so long as tape compatibility holds.
 
 Tapes remain optional for end users. Only developers and researchers need them. Standard sessions use the seed-based RNG path.
 
 ## How Session Snapshots and Metrics Fit In (Phase 5 Design)
 
-- **Seed vs. tape precedence:** A session started with a seed and no tape is deterministic within a specific engine/API version. Loading a replay tape overrides RNG entirely and must reproduce the recorded dice and outcomes, even across engine updates so long as the tape format remains compatible.
+- **Seed vs. tape precedence:** A session started with a seed and no tape is deterministic within a specific engine/API version. Loading a replay tape overrides RNG entirely and must reproduce the recorded dice and outcomes, even across engine updates as long as the tape format remains compatible.
 - **Read-only views:** Session state snapshots and metrics surfaces serialize the engine’s live truth. They do not introduce inference, policy, or reconciliation logic.
 - **Consistency expectations:**
   - With a seed-only session, snapshots and metrics are stable for a given engine version but can change if engine behavior legitimately evolves.
   - With a loaded tape, snapshots and metrics must match the recorded sequence and outcomes exactly, enabling cross-version regression checks as long as tape compatibility holds.
-- **Capture points:** Snapshots and metrics may be taken at any time during a session. They should align with the determinism contract: exporting a tape and replaying it should yield identical snapshot/metric outputs at the same roll/hand indices.
+- **Capture points:** Snapshots and metrics may be taken at any time during a session. Exporting a tape and replaying it should yield identical snapshot/metric outputs at the same roll/hand indices.
 - **Source-of-truth reminder:** The core engine remains authoritative. The API is a transport/serialization layer that must not attempt to “fix” or recalculate anything during snapshot or metric emission.
+
+## See also
+- [Docs index](index.md)
+- [Developer stress and gauntlet tests](dev/testing.md)

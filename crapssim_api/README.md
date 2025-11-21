@@ -1,28 +1,16 @@
 # CrapsSim Engine API
 
-Optional HTTP API wrapper for the CrapsSim engine. This package exposes the engine via FastAPI while keeping the core engine untouched.
+The CrapsSim Engine API wraps the core CrapsSim engine with a stable HTTP surface powered by FastAPI. It keeps all craps rules and payout truth inside CrapsSim, exposing structured endpoints that are easy to integrate with CSC, Evo, or other automation tooling. The API ships as an optional package under `crapssim_api/` so core engine users are never forced to install HTTP dependencies.
 
-## Installation
+## Quick Links
+- Docs index and table of contents: [docs/index.md](docs/index.md)
+- Minimal HTTP walk-through: [docs/quickstart.md](docs/quickstart.md)
+- Determinism and replay overview: [docs/DETERMINISM.md](docs/DETERMINISM.md)
+- Stress and gauntlet tests for parity checks: [docs/dev/testing.md](docs/dev/testing.md)
+- Minimal client example (Python): [examples/api_client_min.py](examples/api_client_min.py)
 
-To install the Engine API:
+## Who is this for?
+- Developers integrating CrapsSim with external systems (CSC, Node-RED, Evo) who want a deterministic HTTP endpoint without reimplementing craps rules.
+- Researchers who need a reproducible engine surface they can drive from Python, R, or any HTTP-capable environment.
 
-```bash
-pip install crapssim[api]
-```
-
-For contributors:
-
-```bash
-pip install -e .[api]
-```
-
-## Session State & Metrics (Phase 5)
-
-The Engine API now exposes read-only session snapshots and metrics surfaces designed for CSC/Evo tools and research consumers. These views serialize the engine’s truth without adding business logic:
-
-- `GET /session/{id}/state` returns the current bankroll, point, bets, and determinism metadata without mutating the engine.
-- `GET /session/{id}/metrics` reports bankroll deltas and lightweight counters backed by engine state and API bookkeeping.
-
-- [Session state snapshot design](docs/session_state.md)
-- [Metrics surface design](docs/metrics_surface.md)
-- [Determinism & replay contract](docs/DETERMINISM.md)
+The API does not implement game logic. Every decision, error code, and payout comes from the CrapsSim engine; the API only transports requests and responses.
