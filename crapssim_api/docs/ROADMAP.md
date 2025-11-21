@@ -56,3 +56,17 @@ without embedding any craps rules in the API layer.
 - Added `[api]`, `[dev]`, and `[gauntlet]` extras.
 - Updated INSTALLING guide with real commands.
 - Ensured the Engine API is fully optional and does not affect core engine users.
+
+## Phase 4 — Session State & Determinism Contracts
+
+**One-liner:** Guarantee deterministic, replay-safe sessions (seed → dice → outcomes) across API and vanilla engines, including replay-tape export/import and cross-Python reproducibility.
+
+**Goals:**
+- Define and document the determinism contract: given the same seed and same dice sequence, the API and vanilla engine must produce the same outcomes.
+- Introduce a replay tape concept (export/import) so sessions can be captured and replayed exactly.
+- Validate determinism across supported Python versions via CI (3.10, 3.11, 3.12, 3.13).
+
+**Non-goals:**
+- No new betting logic in the API.
+- No changes to engine rules or payouts.
+- No strategy or policy logic; the API remains a thin wrapper around CrapsSim.

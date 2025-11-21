@@ -7,3 +7,10 @@ This release finalizes Phase 2 of the CrapsSim Engine API roadmap.
 - Implemented push-aware API reporting with no game logic.
 - Synchronized error codes with CrapsSim v4.0.
 - Minor fixes to import paths and type definitions.
+
+## Planned (Phase 4 — Session State & Determinism Contracts)
+
+- Document determinism contract (seed → dice → outcomes) for Engine API consumers.
+- Introduce replay tape concept for exporting/importing deterministic sessions.
+- Add CI scaffolding to validate determinism across supported Python versions (3.10–3.13).
+- Provide high-level guidance for CSC/Evo and research clients on how to rely on the Engine API for reproducible simulations.
