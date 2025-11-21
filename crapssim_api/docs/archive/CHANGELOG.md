@@ -1,3 +1,9 @@
+## v0.2.1 — Engine API CI/packaging alignment (Phase 6-B)
+
+- Added `httpx` to the `[api]` extra to satisfy FastAPI/Starlette test client requirements.
+- Confirmed packaging metadata for Python 3.10–3.13 via classifiers and `python_requires`.
+- Updated CI workflows (`api-engine-ci.yml`, `crapsim_api_gauntlet.yml`) to exercise 3.10–3.13 with consistent `pip install "crapssim[api]"` setup.
+
 ## v0.2.0 — Compatibility & Push Semantics
 
 This release finalizes Phase 2 of the CrapsSim Engine API roadmap.
