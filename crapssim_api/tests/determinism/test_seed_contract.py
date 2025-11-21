@@ -14,6 +14,6 @@ def test_seed_based_determinism_contract_documented():
     - Capture the resulting bankroll and layout.
     - Assert stability of those results across repeated runs and Python versions.
 
-    The actual behavior and expectations are documented in `crapssim_api/docs/DETERMINISM.md`.
+    The actual behavior and expectations are documented in `crapssim_api/docs/determinism.md`.
     """
     assert True

@@ -22,3 +22,8 @@
 - Consolidated public docs under `crapssim_api/docs/` with a canonical README, overview, quickstart, install guide, verbs, determinism, and error contracts.
 - Merged roadmap/bible/CI/gauntlet references into the `dev/` tree; archived legacy duplicates.
 - Segregated generated stress/gauntlet reports under `dev/reports/` and tightened .gitignore to block ephemeral artifacts.
+
+## Phase 7 — Docs Reorg & Cleanup
+- Finalized the canonical doc layout split between public guides and maintainer notes under `docs/dev/`.
+- Updated internal links to reference the new filenames (install, verbs, determinism, CI, testing) instead of legacy paths.
+- Treated gauntlet and stress outputs as CI artifacts with `.gitignore` rules and cleaned the repo of committed runs.
