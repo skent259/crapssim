@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import json
 import uuid
+
+# ruff: noqa: E402
 from typing import Any, Dict, List, Optional, Tuple
 
 try:
@@ -64,9 +66,6 @@ except ImportError:  # pragma: no cover - pydantic optional or v1 fallback
                 return func
 
             return decorator
-
-
-from crapssim.bet import _compute_vig, _vig_policy
 
 
 class RollRequest(BaseModel):
@@ -259,7 +258,9 @@ def _json_response(payload: Any) -> Response:
     return Response(content=_json_dumps(payload), media_type="application/json")
 
 
-def _normalize_action_payload(action_payload: Dict[str, Any], session_id: str) -> Dict[str, Any]:
+def _normalize_action_payload(
+    action_payload: Dict[str, Any], session_id: str
+) -> Dict[str, Any]:
     if not isinstance(action_payload, dict):
         raise bad_args("each action must be a mapping")
 
@@ -276,7 +277,9 @@ def _normalize_action_payload(action_payload: Dict[str, Any], session_id: str) -
     return payload
 
 
-def _record_tape_step(session_data: Dict[str, Any], dice: Tuple[int, int], actions: List[dict]) -> None:
+def _record_tape_step(
+    session_data: Dict[str, Any], dice: Tuple[int, int], actions: List[dict]
+) -> None:
     steps: List[SessionTapeStep] = list(session_data.get("tape_steps", []))
     step_index = len(steps)
     steps.append({"step_index": step_index, "dice": dice, "actions": list(actions)})
@@ -908,11 +911,15 @@ def session_step(session_id: str, body: Dict[str, Any] = Body(...)) -> Response:
     actions_for_tape = [dict(a) for a in actions_value]
     if sess.get("record_tape"):
         dice_tuple = (
-            int(dice_value[0]),
-            int(dice_value[1]),
-        ) if dice_value is not None else (
-            int(state["dice"][0]),
-            int(state["dice"][1]),
+            (
+                int(dice_value[0]),
+                int(dice_value[1]),
+            )
+            if dice_value is not None
+            else (
+                int(state["dice"][0]),
+                int(state["dice"][1]),
+            )
         )
         _record_tape_step(sess, dice_tuple, actions_for_tape)
 
@@ -922,7 +929,9 @@ def session_step(session_id: str, body: Dict[str, Any] = Body(...)) -> Response:
     return _json_response({"state": state})
 
 
-def _state_signature(state: Dict[str, Any]) -> Tuple[str, Tuple[Tuple[str | None, int | None, float], ...]]:
+def _state_signature(
+    state: Dict[str, Any],
+) -> Tuple[str, Tuple[Tuple[str | None, int | None, float], ...]]:
     bankroll = str(state.get("bankroll_after") or state.get("bankroll") or "")
     bets = []
     for bet in state.get("bets", []):
@@ -951,7 +960,9 @@ def _create_table_from_spec(
             getattr(SESSION_STORE, "_s", {}).pop(session_id, None)
         except Exception:  # pragma: no cover - defensive
             pass
-    session_state = SESSION_STORE.create(session_id, seed=seed if seed is not None else 0)
+    session_state = SESSION_STORE.create(
+        session_id, seed=seed if seed is not None else 0
+    )
     session_state["settings"] = dict(_resolve_vig_settings(table_spec))
     session_state["table_spec"] = dict(table_spec)
     session_state["initial_bankroll"] = (
@@ -967,7 +978,9 @@ def _create_table_from_spec(
     session_obj: Session = session_state["session"]
     player = session_obj.player()
     if player is None:
-        table.add_player(bankroll=session_state["initial_bankroll"], strategy=None, name="API Player")
+        table.add_player(
+            bankroll=session_state["initial_bankroll"], strategy=None, name="API Player"
+        )
         player = session_obj.player()
     if player is not None:
         player.bankroll = float(session_state["initial_bankroll"])
@@ -1043,7 +1056,9 @@ def _find_first_mismatch_step(
     _ = session_id
     target_signature = _state_signature(original_final_state)
     last_step_index: Optional[int] = None
-    last_signature: Optional[Tuple[str, Tuple[Tuple[str | None, int | None, float], ...]]] = None
+    last_signature: Optional[
+        Tuple[str, Tuple[Tuple[str | None, int | None, float], ...]]
+    ] = None
     for step in tape.get("steps", []):
         for action_payload in step.get("actions", []):
             _apply_action(table, action_payload)
@@ -1103,14 +1118,18 @@ def replay_session_tape(tape: SessionTape) -> ReplayResult:
     replay_state = dict(last_snapshot)
 
     original_final = dict(tape.get("final_state") or {})
-    normalized_original = _normalize_state_for_tape(original_final, tape.get("session_id"))
+    normalized_original = _normalize_state_for_tape(
+        original_final, tape.get("session_id")
+    )
     normalized_replay = _normalize_state_for_tape(replay_state, tape.get("session_id"))
 
     deterministic = normalized_replay == normalized_original
     mismatch_step: Optional[int] = None
 
     if not deterministic:
-        mismatch_step = _find_first_mismatch_step(tape, table_spec, seed, normalized_original)
+        mismatch_step = _find_first_mismatch_step(
+            tape, table_spec, seed, normalized_original
+        )
 
     replay_return_state = dict(replay_state)
     if tape.get("session_id"):

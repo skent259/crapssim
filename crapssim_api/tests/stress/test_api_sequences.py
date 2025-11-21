@@ -16,7 +16,9 @@ def _scenario_lookup() -> Dict[str, dict]:
 
 
 @pytest.mark.usefixtures("api_sequence_journal")
-def test_api_sequences_expectations(api_sequence_journal: list[SequenceJournalEntry]) -> None:
+def test_api_sequences_expectations(
+    api_sequence_journal: list[SequenceJournalEntry],
+) -> None:
     lookup = _scenario_lookup()
     assert api_sequence_journal, "sequence journal should not be empty"
 
@@ -39,7 +41,10 @@ def test_api_sequences_expectations(api_sequence_journal: list[SequenceJournalEn
 
         expected_bankroll = expect.get("final_bankroll")
         if expected_bankroll is not None:
-            assert pytest.approx(expected_bankroll, rel=1e-9, abs=1e-9) == final_state["bankroll"]
+            assert (
+                pytest.approx(expected_bankroll, rel=1e-9, abs=1e-9)
+                == final_state["bankroll"]
+            )
 
         expected_bets = expect.get("bets_after")
         if expected_bets is not None:

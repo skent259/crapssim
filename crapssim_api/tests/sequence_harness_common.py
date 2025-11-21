@@ -1,12 +1,22 @@
 """Common utilities for sequence harness tests."""
+
 from __future__ import annotations
 
 import json
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, Iterable, List, Mapping, MutableMapping, Sequence, TypedDict
+from typing import (
+    Any,
+    Dict,
+    Iterable,
+    List,
+    Mapping,
+    MutableMapping,
+    Sequence,
+    TypedDict,
+)
 
-from .sequence_scenarios import NormalizedBet, SEQUENCE_SCENARIOS
+from .sequence_scenarios import NormalizedBet
 
 
 RESULTS_DIR = Path(__file__).parent / "results"
@@ -114,7 +124,11 @@ def _format_bet_summary(bets: Sequence[NormalizedBet]) -> str:
     fragments: List[str] = []
     for bet in bets:
         amount_value = float(bet["amount"])
-        amount = f"${amount_value:.0f}" if amount_value.is_integer() else f"${amount_value:.2f}"
+        amount = (
+            f"${amount_value:.0f}"
+            if amount_value.is_integer()
+            else f"${amount_value:.2f}"
+        )
         number = bet.get("number")
         number_part = f" {number}" if number is not None else ""
         fragments.append(f"{bet['type']}{number_part}: {amount}")
@@ -133,7 +147,9 @@ def _format_action(action: ActionResult) -> str:
         pieces.append(str(amount))
     if base is not None:
         pieces.append(str(base))
-    extra_keys = [key for key in sorted(args) if key not in {"number", "amount", "base"}]
+    extra_keys = [
+        key for key in sorted(args) if key not in {"number", "amount", "base"}
+    ]
     for key in extra_keys:
         pieces.append(f"{key}={args[key]}")
 
@@ -154,8 +170,12 @@ def _render_step_rows(entry: SequenceJournalEntry) -> List[str]:
     for step in entry["steps"]:
         dice = step["dice"]
         dice_display = "—" if dice is None else f"{dice[0]}+{dice[1]}"
-        actions_display = "; ".join(_format_action(action) for action in step["actions"]) or "(none)"
-        bankroll_display = f"{step['before_bankroll']:.2f} → {step['after_bankroll']:.2f}"
+        actions_display = (
+            "; ".join(_format_action(action) for action in step["actions"]) or "(none)"
+        )
+        bankroll_display = (
+            f"{step['before_bankroll']:.2f} → {step['after_bankroll']:.2f}"
+        )
         bets_display = _format_bet_summary(step["bets_after"])
         lines.append(
             "| {index} | {label} | {dice} | {actions} | {bankroll} | {bets} |".format(
@@ -171,7 +191,9 @@ def _render_step_rows(entry: SequenceJournalEntry) -> List[str]:
     return lines
 
 
-def write_sequence_report(path: Path, journal: Sequence[SequenceJournalEntry], *, title: str) -> None:
+def write_sequence_report(
+    path: Path, journal: Sequence[SequenceJournalEntry], *, title: str
+) -> None:
     """Write a human-friendly markdown trace report for the provided journal."""
 
     ensure_results_dir()
@@ -192,7 +214,9 @@ def write_sequence_report(path: Path, journal: Sequence[SequenceJournalEntry], *
         lines.append("")
         lines.extend(_render_step_rows(entry))
         lines.append("```json")
-        lines.append(json.dumps({"final_state": entry["final_state"]}, indent=2, sort_keys=True))
+        lines.append(
+            json.dumps({"final_state": entry["final_state"]}, indent=2, sort_keys=True)
+        )
         lines.append("```")
         lines.append("")
 
@@ -243,14 +267,18 @@ def _build_parity_summary(
             abs(api_final["bankroll"] - vanilla_final["bankroll"]) <= epsilon
         )
         record["bets_match"] = api_final["bets"] == vanilla_final["bets"]
-        record["status"] = "✅" if all(
-            (
-                record["result_match"],
-                record["error_match"],
-                record["bankroll_match"],
-                record["bets_match"],
+        record["status"] = (
+            "✅"
+            if all(
+                (
+                    record["result_match"],
+                    record["error_match"],
+                    record["bankroll_match"],
+                    record["bets_match"],
+                )
             )
-        ) else "❌"
+            else "❌"
+        )
         summary[label] = record
 
     for vanilla_entry in vanilla_journal:
@@ -281,12 +309,15 @@ def compare_journals(
     mismatches: List[str] = []
     vanilla_lookup = {entry["scenario"]: entry for entry in vanilla_journal}
 
-    parity_summary = _build_parity_summary(api_journal, vanilla_journal, epsilon=epsilon)
+    parity_summary = _build_parity_summary(
+        api_journal, vanilla_journal, epsilon=epsilon
+    )
     for record in parity_summary.values():
         if not record["result_match"]:
             mismatches.append(
                 f"{record['scenario']}: result mismatch"
-                if record["vanilla_final"] is not None and record["api_final"] is not None
+                if record["vanilla_final"] is not None
+                and record["api_final"] is not None
                 else f"{record['scenario']}: scenario mismatch"
             )
         if record["vanilla_final"] is None or record["api_final"] is None:
@@ -322,11 +353,17 @@ def compare_journals(
                 mismatches.append(
                     f"{label} step {idx}: dice mismatch ({api_step['dice']} vs {vanilla_step['dice']})"
                 )
-            if abs(api_step["before_bankroll"] - vanilla_step["before_bankroll"]) > epsilon:
+            if (
+                abs(api_step["before_bankroll"] - vanilla_step["before_bankroll"])
+                > epsilon
+            ):
                 mismatches.append(
                     f"{label} step {idx}: before bankroll mismatch ({api_step['before_bankroll']:.2f} vs {vanilla_step['before_bankroll']:.2f})"
                 )
-            if abs(api_step["after_bankroll"] - vanilla_step["after_bankroll"]) > epsilon:
+            if (
+                abs(api_step["after_bankroll"] - vanilla_step["after_bankroll"])
+                > epsilon
+            ):
                 mismatches.append(
                     f"{label} step {idx}: after bankroll mismatch ({api_step['after_bankroll']:.2f} vs {vanilla_step['after_bankroll']:.2f})"
                 )
@@ -368,7 +405,9 @@ def write_parity_report(
     parity_summary = _build_parity_summary(api_journal, vanilla_journal, epsilon=1e-6)
 
     total = len(parity_summary)
-    perfect_matches = sum(1 for record in parity_summary.values() if record["status"] == "✅")
+    perfect_matches = sum(
+        1 for record in parity_summary.values() if record["status"] == "✅"
+    )
     mismatch_count = total - perfect_matches
 
     lines: List[str] = ["# CrapsSim API — Sequence Trace Parity (API vs Vanilla)", ""]
@@ -395,7 +434,9 @@ def write_parity_report(
                 result=result,
                 error=error_code or "",
                 api_bankroll=f"{api_final['bankroll']:.2f}" if api_final else "—",
-                vanilla_bankroll=f"{vanilla_final['bankroll']:.2f}" if vanilla_final else "—",
+                vanilla_bankroll=(
+                    f"{vanilla_final['bankroll']:.2f}" if vanilla_final else "—"
+                ),
                 bets_match="✅" if record.get("bets_match") else "❌",
                 status=record["status"],
             )

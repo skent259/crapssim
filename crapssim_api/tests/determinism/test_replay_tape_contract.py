@@ -1,7 +1,9 @@
 import pytest
 
 
-@pytest.mark.skip(reason="Replay tape contract tests will be implemented in Phase 4-B/4-C.")
+@pytest.mark.skip(
+    reason="Replay tape contract tests will be implemented in Phase 4-B/4-C."
+)
 def test_replay_tape_round_trips_consistently():
     """
     Placeholder for replay-tape round-trip tests.

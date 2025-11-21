@@ -26,5 +26,3 @@ class TapeReader:
                 if not line.strip():
                     continue
                 yield json.loads(line)
-
-

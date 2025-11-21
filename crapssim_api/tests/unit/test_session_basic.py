@@ -17,7 +17,5 @@ def test_session_start_and_snapshot():
 def test_forced_dice_roll():
     s = Session()
     s.start()
-    evt = s.step_roll(dice=[3,4])
-    assert evt["dice"] == [3,4]
-
-
+    evt = s.step_roll(dice=[3, 4])
+    assert evt["dice"] == [3, 4]

@@ -12,7 +12,9 @@ except Exception:  # pragma: no cover
 from crapssim_api.http import router  # reuse the existing router
 
 
-@pytest.mark.skipif(FastAPI is None or TestClient is None, reason="FastAPI not installed")
+@pytest.mark.skipif(
+    FastAPI is None or TestClient is None, reason="FastAPI not installed"
+)
 def test_replay_tape_round_trip():
     app = FastAPI()
     app.include_router(router)

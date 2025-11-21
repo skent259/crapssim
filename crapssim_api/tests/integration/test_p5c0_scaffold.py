@@ -35,8 +35,12 @@ def test_step_roll_snapshot_contains_hand_fields():
 
 
 def test_p5c0_does_not_change_prior_behavior():
-    first = client.post("/step_roll", json={"session_id": "hsc2", "mode": "auto"}).json()
-    second = client.post("/step_roll", json={"session_id": "hsc2", "mode": "auto"}).json()
+    first = client.post(
+        "/step_roll", json={"session_id": "hsc2", "mode": "auto"}
+    ).json()
+    second = client.post(
+        "/step_roll", json={"session_id": "hsc2", "mode": "auto"}
+    ).json()
 
     if first["puck"] == "ON":
         assert first["point"] == sum(first["dice"])
