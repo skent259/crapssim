@@ -47,3 +47,12 @@ without embedding any craps rules in the API layer.
 - Ensure CI runs a minimal API test suite across the declared Python versions.
 - Align the manual “gauntlet” workflow with the documented install flow.
 - Confirm that documentation, metadata, and CI behavior all match the same Python support and dependency story.
+
+### Phase 3·B — Packaging & Extras Implemented
+
+- Added pyproject.toml / setup.cfg under crapssim_api/.
+- Declared Python support for 3.10–3.13.
+- Added API runtime dependencies.
+- Added `[api]`, `[dev]`, and `[gauntlet]` extras.
+- Updated INSTALLING guide with real commands.
+- Ensured the Engine API is fully optional and does not affect core engine users.
