@@ -78,3 +78,10 @@
 - Added import guards around FastAPI to prevent import-time failures.
 - Added version-safe TypedDict import pattern.
 - Confirmed that API-only functionality activates only when installed via `pip install crapssim[api]`.
+
+## 7. CI & Compatibility Status (Phase 6·C Completed)
+
+- Main CI now tests against Python 3.10, 3.11, 3.12, and 3.13.
+- Core installs (`pip install .`) are validated via an import sanity job that confirms the API HTTP layer fails gracefully without extras.
+- The API gauntlet workflow is preserved as a `workflow_dispatch` job and runs the stress sequence suite with artifacts for post-hoc analysis.
+- When installed with extras (`pip install crapssim[api]`), the HTTP Engine API is fully exercised in CI.
