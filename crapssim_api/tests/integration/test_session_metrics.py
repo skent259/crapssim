@@ -13,7 +13,9 @@ def client():
 
 
 def _start_session(client: TestClient, bankroll: float = 1000.0) -> str:
-    resp = client.post("/session/start", json={"initial_bankroll": bankroll, "seed": 111})
+    resp = client.post(
+        "/session/start", json={"initial_bankroll": bankroll, "seed": 111}
+    )
     assert resp.status_code == 200
     payload = resp.json()
     return payload["session_id"]
@@ -22,7 +24,11 @@ def _start_session(client: TestClient, bankroll: float = 1000.0) -> str:
 def _place_pass_line(client: TestClient, session_id: str, amount: float = 10.0) -> None:
     resp = client.post(
         "/apply_action",
-        json={"session_id": session_id, "verb": "pass_line", "args": {"amount": amount}},
+        json={
+            "session_id": session_id,
+            "verb": "pass_line",
+            "args": {"amount": amount},
+        },
     )
     assert resp.status_code == 200
 
