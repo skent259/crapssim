@@ -105,6 +105,8 @@ from .session import Session
 from .types import (
     Capabilities,
     ReplayResult,
+    SessionMetricsResponse,
+    SessionStateResponse,
     SessionTape,
     SessionTapeMetadata,
     SessionTapeStep,
@@ -142,6 +144,9 @@ else:  # pragma: no cover - FastAPI optional
 
 ENGINE_VERSION_STRING = ENGINE_API_VERSION
 API_VERSION_STRING = ENGINE_API_VERSION
+DETERMINISM_CONTRACT_VERSION = "v1.0"
+STATE_SCHEMA_VERSION = "1.0"
+METRICS_SCHEMA_VERSION = "1.0"
 
 DEFAULT_VIG_SETTINGS: Dict[str, Any] = {
     "vig_rounding": "nearest_dollar",
@@ -256,6 +261,13 @@ def _json_dumps(value: Any) -> str:
 
 def _json_response(payload: Any) -> Response:
     return Response(content=_json_dumps(payload), media_type="application/json")
+
+
+def _get_session_or_404(session_id: str) -> Dict[str, Any]:
+    session = getattr(SESSION_STORE, "_s", {}).get(session_id)
+    if session is None:
+        raise HTTPException(status_code=404, detail="Unknown session_id")
+    return session
 
 
 def _normalize_action_payload(
@@ -517,6 +529,89 @@ def roll(
     return {"snapshot": snapshot}
 
 
+def _build_session_state_response(session_id: str) -> SessionStateResponse:
+    session_state = _get_session_or_404(session_id)
+    session_obj: Session | None = session_state.get("session")
+    table = session_state.get("table")
+    hand = session_state.get("hand")
+
+    if session_obj is None:
+        session_obj = Session(table=session_state.get("table"))
+        session_state["session"] = session_obj
+    if table is None and session_obj is not None:
+        table = session_obj.table
+        session_state["table"] = table
+
+    player = session_obj.player() if session_obj is not None else None
+
+    point_value = None
+    if table is not None:
+        point_value = getattr(getattr(table, "point", None), "number", None)
+
+    table_settings = getattr(table, "settings", {}) if table is not None else {}
+    table_section = None
+    if isinstance(table_settings, dict):
+        max_odds = table_settings.get("max_odds")
+        if max_odds is not None:
+            table_section = {"max_odds": max_odds}
+
+    response: SessionStateResponse = {
+        "state_schema": STATE_SCHEMA_VERSION,
+        "session_id": session_id,
+        "seed": session_state.get("seed"),
+        "determinism_contract": DETERMINISM_CONTRACT_VERSION,
+        "tape_loaded": bool(session_state.get("tape_steps")),
+        "bankroll": float(getattr(player, "bankroll", 0.0)) if player else 0.0,
+        "point": point_value,
+        "roll_index": session_state.get("roll_seq"),
+        "hand_index": getattr(hand, "hand_id", None),
+        "last_roll": _serialize_last_roll(session_state, table) if table else None,
+        "bets": _serialize_bets(player) if player else [],
+        "ats": None,
+        "fire": None,
+        "table": table_section,
+    }
+
+    return response
+
+
+def _build_session_metrics_response(session_id: str) -> SessionMetricsResponse:
+    session_state = _get_session_or_404(session_id)
+    session_obj: Session | None = session_state.get("session")
+    player = session_obj.player() if session_obj is not None else None
+    hand = session_state.get("hand")
+
+    start_bankroll = float(session_state.get("initial_bankroll", 0.0))
+    current_bankroll = float(getattr(player, "bankroll", 0.0)) if player else 0.0
+    net = current_bankroll - start_bankroll
+    roi = net / start_bankroll if start_bankroll else None
+
+    roll_total = session_state.get("roll_seq")
+    hand_total = getattr(hand, "hand_id", None)
+
+    response: SessionMetricsResponse = {
+        "metrics_schema": METRICS_SCHEMA_VERSION,
+        "session_id": session_id,
+        "bankroll": {
+            "start": start_bankroll,
+            "current": current_bankroll,
+            "net": net,
+            "roi": roi,
+        },
+        "rolls": {"total": roll_total, "comeout": None, "point_resolutions": None},
+        "hands": {
+            "total": hand_total,
+            "completed": (hand_total - 1) if isinstance(hand_total, int) else None,
+        },
+        "outcomes": {"wins": None, "losses": None, "pushes": None},
+        "points": {"made": None, "seven_outs": None, "pso_count": None},
+        "by_bet_type": [],
+        "determinism_contract": DETERMINISM_CONTRACT_VERSION,
+    }
+
+    return response
+
+
 if router is not None:  # pragma: no cover - FastAPI optional
 
     def _start_session_http(body: Dict[str, Any] = Body(...)) -> Response:
@@ -529,6 +624,16 @@ if router is not None:  # pragma: no cover - FastAPI optional
         return _json_response(roll(body))
 
     router.post("/session/roll")(_roll_http)
+
+    def _session_state_http(session_id: str) -> Response:
+        return _json_response(_build_session_state_response(session_id))
+
+    router.get("/session/{session_id}/state")(_session_state_http)
+
+    def _session_metrics_http(session_id: str) -> Response:
+        return _json_response(_build_session_metrics_response(session_id))
+
+    router.get("/session/{session_id}/metrics")(_session_metrics_http)
 
 
 def end_session():
@@ -560,6 +665,50 @@ def _player_signature(player: Any) -> list[tuple[str, int | None, float]]:
             )
         )
     return signature
+
+
+def _serialize_bets(player: Any) -> list[dict]:
+    bets: list[dict] = []
+    for bet in getattr(player, "bets", []):
+        entry: dict[str, Any] = {
+            "type": bet.__class__.__name__,
+            "number": getattr(bet, "number", None),
+            "amount": float(getattr(bet, "amount", 0.0)),
+        }
+
+        working = getattr(bet, "working", None)
+        if working is not None:
+            entry["working"] = bool(working)
+
+        odds = getattr(bet, "odds", None)
+        if odds is not None:
+            try:
+                entry["odds_amount"] = float(getattr(odds, "amount", odds))
+            except Exception:  # pragma: no cover - defensive
+                pass
+
+        bets.append(entry)
+    return bets
+
+
+def _serialize_last_roll(session_state: Dict[str, Any], table: Any) -> dict | None:
+    last_roll_value = getattr(table, "last_roll", None)
+    last_dice_value = session_state.get("last_dice")
+    dice_values = None
+    if last_dice_value is not None:
+        try:
+            dice_values = [int(last_dice_value[0]), int(last_dice_value[1])]
+        except Exception:  # pragma: no cover - defensive
+            dice_values = None
+
+    if last_roll_value is None and dice_values is None:
+        return None
+
+    return {
+        "total": last_roll_value,
+        "dice": dice_values,
+        "resolved": None,
+    }
 
 
 def apply_action(req: dict):
