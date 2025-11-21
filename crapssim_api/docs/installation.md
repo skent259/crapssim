@@ -1,38 +1,53 @@
 # Installation
 
-The HTTP API ships as an optional extra so that core `crapssim` users do not need to install web dependencies unless they want them.
+The CrapsSim Engine API is an optional HTTP wrapper around the core `crapssim` engine. You can keep the engine lightweight or add the API extras when you want the FastAPI surface.
 
-## Install with the API extra
+## Supported Python versions
+- Python 3.10–3.13 are explicitly supported and exercised in CI.
+- Older versions may work but are not validated; newer versions are adopted after CI coverage lands.
+
+## Install options
+
+### Engine only
+Keep dependencies minimal when you only need the simulator:
+
+```bash
+pip install crapssim
+```
+
+### Engine + API
+Install the FastAPI-powered layer via the published extra:
 
 ```bash
 pip install "crapssim[api]"
 ```
 
-For local development you can install the editable checkout:
+### Editable checkout for contributors
+From a local clone, install both the engine and API extras in editable mode:
 
 ```bash
 python -m pip install -e ".[api]"
 ```
 
-## Run the server
+This matches the packaging metadata and keeps the API optional for core engine users.
 
-Use uvicorn to expose the packaged FastAPI application:
+## Run the server
+Expose the packaged FastAPI application with uvicorn:
 
 ```bash
 uvicorn crapssim_api.http:app --reload
 ```
 
-The default port is 8000. The `app` object is created at import time so the command above works without extra glue code. The `api` extra also installs `requests` so the bundled example client can run without additional packages.
+The default port is 8000. The `app` object is created at import time, so the command above works without extra glue code.
 
 ## Quick health check
-
 With the server running, verify the `/health` endpoint:
 
 ```bash
 curl http://127.0.0.1:8000/health
 ```
 
-Expected response:
+Expected response shape:
 
 ```json
 {"status": "ok"}
