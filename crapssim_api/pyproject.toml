@@ -1,14 +1,15 @@
-[build-system]
-requires = ["setuptools>=64", "wheel"]
-build-backend = "setuptools.build_meta"
-
 [project]
-name = "crapssim-api"
-version = "0.2.0"
-description = "CrapsSim HTTP API adapter"
-readme = "../README.md"
+name = "crapssim-engine-api"
+version = "0.1.0"
+description = "Optional HTTP API wrapper for the CrapsSim engine"
 requires-python = ">=3.10"
-license = {text = "MIT"}
+readme = "README.md"
+license = { text = "MIT" }
+authors = [
+  { name="Rey", email="rey@example.com" },
+  { name="Nova", email="nova@example.com" }
+]
+
 classifiers = [
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
@@ -19,18 +20,31 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
 ]
+
 dependencies = [
-    "crapssim>=0.4.0",
-    "typing_extensions",
-    "fastapi",
-    "pydantic",
-    "uvicorn",
+  "fastapi>=0.100",
+  "pydantic>=2.0",
+  "uvicorn>=0.23",
+  "typing-extensions>=4.5"
 ]
 
 [project.optional-dependencies]
 api = [
-    "fastapi",
-    "pydantic",
-    "uvicorn",
-    "typing_extensions",
+  "fastapi>=0.100",
+  "pydantic>=2.0",
+  "uvicorn>=0.23",
+  "typing-extensions>=4.5"
 ]
+dev = [
+  "pytest>=7.0",
+  "httpx>=0.25",
+]
+
+gauntlet = [
+  "pytest>=7.0",
+  "httpx>=0.25",
+]
+
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"

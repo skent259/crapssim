@@ -2,7 +2,7 @@
 
 This document explains how to install and use the CrapsSim Engine API as an **optional** extension on top of the core CrapsSim engine.
 
-> **Status:** Draft for Phase 3. The intent and structure are defined here; exact package names, extras, and examples will be finalized in Phase 3·B and 3·C once metadata and CI are wired up.
+> **Status:** Phase 3·B wiring in place. Package names, extras, and install commands are now live.
 
 ---
 
@@ -24,15 +24,13 @@ The goal of this document is to spell out how to install each layer cleanly.
 
 ---
 
-## 2. Python Version Support (Design Intent)
+## 2. Python Version Support (Declared)
 
-The Engine API is being designed with the following Python versions in mind:
+The Engine API advertises support for:
 
-- Target support window: **3.10, 3.11, 3.12, 3.13**
+- **Python 3.10, 3.11, 3.12, 3.13**
 - Older versions are not guaranteed to work.
-- Newer future versions may work but will not be claimed until CI verifies them.
-
-Exact metadata (`python_requires`, classifiers) will be updated in Phase 3·B so that the packaging configuration matches this intent.
+- Newer versions may work but are not declared until CI verifies them.
 
 ---
 
@@ -62,22 +60,16 @@ Phase 3·B will wire these concepts into the actual packaging configuration (e.g
 
 ---
 
-## 4. Installation Patterns (To Be Finalized)
-
-This section will be filled in concretely in Phase 3·B and 3·C. The expected patterns are:
+## 4. Installation Patterns (Live Commands)
 
 - **Engine-only install (no API):**
-  - Something equivalent to:
-    - `pip install crapssim`
+  - `pip install crapssim`
 - **Engine + API in one environment:**
-  - Something equivalent to:
-    - `pip install crapssim[api]`
+  - `pip install crapssim[api]`
 - **Editable install for contributors:**
-  - From a local clone, something equivalent to:
-    - `pip install -e .[api]`
-  - Then run the test suite and manual gauntlet workflows.
-
-Once the packaging metadata and CI are updated, this section will be revised with exact commands and any caveats discovered during testing.
+  - From a local clone, run `pip install -e .[api]`
+- **CI / manual gauntlet setup:**
+  - From a local clone, run `pip install -e .[gauntlet]`
 
 ---
 
