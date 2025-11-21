@@ -142,3 +142,89 @@ class ReplayResult(TypedDict):
     mismatch_step: Optional[int]
     original_final_state: dict
     replay_final_state: dict
+
+
+class BetState(TypedDict, total=False):
+    type: str
+    number: int | None
+    amount: float
+    working: bool | None
+    odds_amount: float | None
+
+
+class LastRollState(TypedDict, total=False):
+    total: int | None
+    dice: list[int] | None
+    resolved: bool | None
+
+
+class SessionStateResponse(TypedDict, total=False):
+    state_schema: str
+    session_id: str
+    seed: int | None
+    determinism_contract: str | None
+    tape_loaded: bool
+
+    bankroll: float
+    point: int | None
+    roll_index: int | None
+    hand_index: int | None
+
+    last_roll: LastRollState | None
+    bets: list[BetState]
+
+    ats: dict[str, Any] | None
+    fire: dict[str, Any] | None
+    table: dict[str, Any] | None
+
+
+class BankrollMetrics(TypedDict, total=False):
+    start: float
+    current: float
+    net: float
+    roi: float | None
+
+
+class RollMetrics(TypedDict, total=False):
+    total: int | None
+    comeout: int | None
+    point_resolutions: int | None
+
+
+class HandMetrics(TypedDict, total=False):
+    total: int | None
+    completed: int | None
+
+
+class OutcomeMetrics(TypedDict, total=False):
+    wins: int | None
+    losses: int | None
+    pushes: int | None
+
+
+class PointMetrics(TypedDict, total=False):
+    made: int | None
+    seven_outs: int | None
+    pso_count: int | None
+
+
+class BetTypeMetrics(TypedDict, total=False):
+    type: str
+    wins: int | None
+    losses: int | None
+    pushes: int | None
+    net: float | None
+
+
+class SessionMetricsResponse(TypedDict, total=False):
+    metrics_schema: str
+    session_id: str
+
+    bankroll: BankrollMetrics
+    rolls: RollMetrics
+    hands: HandMetrics
+    outcomes: OutcomeMetrics
+    points: PointMetrics
+    by_bet_type: list[BetTypeMetrics]
+
+    determinism_contract: str | None

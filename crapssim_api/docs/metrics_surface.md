@@ -1,6 +1,6 @@
-# Metrics Surface (Design)
+# Metrics Surface (Design + Phase 5·B implementation)
 
-Phase 5 also introduces a read-only metrics endpoint that exposes authoritative bankroll and performance statistics. As with the session snapshot, the API is a serializer only; all numbers originate from the engine’s native counters.
+Phase 5 also introduces a read-only metrics endpoint that exposes authoritative bankroll and performance statistics. As with the session snapshot, the API is a serializer only; all numbers originate from the engine’s native counters. Phase 5·B implements this surface using the counters available today.
 
 ## Endpoint Concept
 
@@ -13,7 +13,7 @@ Phase 5 also introduces a read-only metrics endpoint that exposes authoritative 
 
 ## Target Schema
 
-Fields marked as **future extension** require additional engine tracking; they remain optional until the engine provides them.
+Fields marked as **future extension** require additional engine tracking; they remain optional until the engine provides them. Outcome, point-detail, and per-bet metrics remain `null`/empty in Phase 5·B until the engine surfaces the raw values.
 
 ```yaml
 metrics_schema: "1.0"
@@ -56,10 +56,10 @@ determinism_contract: "v1.0"
 
 ## Source of Truth
 
-- **Bankroll and ROI:** pulled from the engine’s bankroll ledger. `roi` is only populated when start bankroll is non-zero; no API-side guard rails beyond the engine’s math.
-- **Roll and hand counters:** surfaced from existing session/hand tracking. If the engine does not distinguish come-out rolls, `comeout` remains zero until the engine exposes it in a future phase.
-- **Outcome counters and points:** forwarded from engine-provided tallies. If PSO tracking is absent, `pso_count` is deferred as a future extension rather than inferred.
-- **Per-bet metrics:** enumerated from engine-maintained statistics by bet type. The API must not cluster or re-label bet families; it forwards the engine’s identifiers.
+- **Bankroll and ROI:** pulled from the engine’s bankroll ledger alongside the API-recorded `initial_bankroll`. `roi` is only populated when start bankroll is non-zero.
+- **Roll and hand counters:** surfaced from existing session/hand tracking. With the current engine, only roll totals and the current hand index are available; come-out and point-resolution counts stay `null` until the engine exposes them.
+- **Outcome counters and points:** deferred until the engine provides explicit tallies; these fields remain `null`.
+- **Per-bet metrics:** deferred; the API returns an empty list rather than inferring results.
 - **Determinism metadata:** mirrors the determinism contract version associated with the session so metrics snapshots align with replay tapes and seeds.
 
 ## Non-ownership of Rules
@@ -74,8 +74,18 @@ determinism_contract: "v1.0"
 - **Additive change model.** New metrics are appended; existing fields keep their meaning. Renames or semantic shifts require a schema version bump and clear release notes.
 - **Compatibility expectations.** Deterministic runs (seed or tape) should yield identical metrics for a given engine version. Replay tapes override RNG to ensure metrics reproduce across upgrades so long as tape format compatibility holds.
 
-## Future Implementation Notes (Phase 5·B/5·C)
+## Example (Phase 5·B)
 
-- Add serializers that emit these counters directly from engine state without computation in the API layer.
-- Back metrics with CI checks comparing serialized output to engine-reported statistics for the same session/tape.
-- Expand schemas only when the engine supplies the necessary counters; avoid API-side aggregation beyond the engine’s native reporting.
+```json
+{
+  "metrics_schema": "1.0",
+  "session_id": "abc12345",
+  "bankroll": {"start": 1000.0, "current": 1010.0, "net": 10.0, "roi": 0.01},
+  "rolls": {"total": 2, "comeout": null, "point_resolutions": null},
+  "hands": {"total": 1, "completed": 0},
+  "outcomes": {"wins": null, "losses": null, "pushes": null},
+  "points": {"made": null, "seven_outs": null, "pso_count": null},
+  "by_bet_type": [],
+  "determinism_contract": "v1.0"
+}
+```
