@@ -7,13 +7,20 @@ import uuid
 from typing import Any, Dict, List, Optional, Tuple
 
 try:
-    from fastapi import APIRouter, FastAPI, Body, HTTPException
-    from fastapi.responses import Response as FastAPIResponse
-except ModuleNotFoundError:  # pragma: no cover - environment without fastapi
+    from fastapi import APIRouter, Body, FastAPI, HTTPException
+    from fastapi.responses import JSONResponse, Response as FastAPIResponse
+
+    HAVE_FASTAPI = True
+except Exception:  # pragma: no cover - environment without fastapi
+    HAVE_FASTAPI = False
     APIRouter = None  # type: ignore[assignment]
     FastAPI = None  # type: ignore[assignment]
-    FastAPIResponse = None  # type: ignore[assignment]
-    HTTPException = Exception  # type: ignore[assignment]
+
+    class HTTPException(Exception):  # type: ignore[override]
+        def __init__(self, status_code: int, detail: str):
+            super().__init__(detail)
+            self.status_code = status_code
+            self.detail = detail
 
     def Body(default: Any = ..., **_: Any) -> Any:  # type: ignore[override]
         return default
@@ -23,12 +30,17 @@ except ModuleNotFoundError:  # pragma: no cover - environment without fastapi
             self.body = content.encode()
             self.media_type = media_type
 
-else:  # pragma: no cover - FastAPI available
+    class JSONResponse(Response):  # minimal stub
+        def __init__(self, content: Any, media_type: str = "application/json"):
+            super().__init__(json.dumps(content), media_type)
+
+
+if HAVE_FASTAPI:
     Response = FastAPIResponse  # type: ignore[assignment]
 
 
 def _ensure_fastapi() -> None:
-    if FastAPI is None or APIRouter is None:
+    if not HAVE_FASTAPI:
         raise RuntimeError(
             "FastAPI is not installed. Install the optional extras with "
             '`pip install "crapssim[api]"` to enable the HTTP API.'
@@ -125,19 +137,7 @@ from .verbs import (
 )
 from .version import CAPABILITIES_SCHEMA_VERSION, ENGINE_API_VERSION, get_identity
 
-if FastAPI is None:  # pragma: no cover - FastAPI optional
-
-    class _StubApp:  # minimal ASGI fallback
-        def __call__(
-            self, scope: Any, receive: Any, send: Any
-        ) -> None:  # pragma: no cover
-            raise RuntimeError("FastAPI is not installed")
-
-    _stub_app = _StubApp()
-else:
-    _stub_app = None
-
-if APIRouter is not None:
+if HAVE_FASTAPI:
     router = APIRouter()
 else:  # pragma: no cover - FastAPI optional
     router = None
@@ -317,11 +317,11 @@ def _capabilities_dict() -> Dict[str, Any]:
 
 
 def create_app(*, strict: bool = False):
-    if FastAPI is None or router is None:  # pragma: no cover - FastAPI optional
-        if strict:
-            _ensure_fastapi()
-        assert _stub_app is not None
-        return _stub_app  # type: ignore[return-value]
+    if not HAVE_FASTAPI or router is None:  # pragma: no cover - FastAPI optional
+        raise RuntimeError(
+            "FastAPI is not installed. Install CrapsSim with the API extra: "
+            "pip install crapssim[api]"
+        )
 
     app = FastAPI(title="CrapsSim API")
     app.add_exception_handler(ApiError, api_error_handler)

@@ -1,7 +1,14 @@
 from __future__ import annotations
 
+import sys
 from typing import Any, Dict, List, Literal, Optional, Tuple, Union
-from typing_extensions import TypedDict
+
+try:
+    from typing import TypedDict  # py3.11+
+    if sys.version_info < (3, 12):
+        from typing_extensions import TypedDict  # type: ignore[no-redef]
+except Exception:
+    from typing_extensions import TypedDict
 
 
 class VigRule(TypedDict, total=False):
