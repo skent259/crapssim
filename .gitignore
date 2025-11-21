@@ -151,13 +151,6 @@ dmypy.json
 # pytype static type analyzer
 .pytype/
 
-# CrapsSim-API generated test artifacts
-crapssim_api/tests/results/*
-crapssim_api/tests/results/**/*.json
-crapssim_api/tests/results/**/*.md
-crapssim_api/tests/results_*/**
-crapssim_api/docs/dev/API_SEQUENCE_TRACE_*.md
-
 # Cython debug symbols
 cython_debug/
 
@@ -175,10 +168,6 @@ reports/
 **/vxp_gauntlet/**/journal.csv
  build/api_surface_api.json
  build/api_surface_vanilla.json
-crapssim_api/docs/dev/API_SURFACE_STRESS_API.md
-crapssim_api/docs/dev/API_SURFACE_STRESS_PARITY.md
-crapssim_api/docs/dev/API_SURFACE_STRESS_VANILLA.md
-crapssim_api/docs/dev/API_TEST_REPORT.md
 crapssim_api/tests/integration/test_api_bet_flow.py
 crapssim_api/tests/integration/test_api_surface_smoke.py
 crapssim_api/tools/api_surface_scenarios.py
@@ -192,19 +181,20 @@ crapssim_api/tools/vanilla_surface_stress.py
 !crapssim_api/docs/dev/reports/
 # End reports ignore
 
+# CrapsSim-API generated test artifacts
+crapssim_api/tests/results/**
+crapssim_api/tests/results_*/**
 
-# CrapsSim Engine API gauntlet outputs
-crapssim_api/tests/results/*.md
-crapssim_api/tests/results/*.json
-crapssim_api/tests/results/*.csv
-crapssim_api/tests/results/**/*.md
-crapssim_api/tests/results/**/*.json
-crapssim_api/tests/results/**/*.csv
-
-# API gauntlet ephemeral artifacts
-*.tape.json
+# Engine API / gauntlet ephemeral artifacts
+crapssim_api/docs/dev/reports/
+!crapssim_api/docs/dev/reports/
 *_journal.json
+*.tape.json
 *_trace*.md
+API_SURFACE_STRESS_*.md
+API_SEQUENCE_TRACE_*.md
+*_PARITY.md
 gauntlet_output/
 artifacts/
 *.zip
+!crapssim_api/docs/dev/reports/DOCS_REORG_STATUS.md

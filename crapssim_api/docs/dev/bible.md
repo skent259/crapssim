@@ -20,3 +20,7 @@ This living note captures the intent behind the `crapssim_api` package so future
 
 ## Docs consolidation note
 Phase 7-B reorganized docs to keep public guidance small and canonical, archived legacy duplicates, and moved deep design artifacts into `crapssim_api/docs/dev/` for maintainers.
+
+Public docs stay minimal and user-friendly while noisy maintainer guidance remains under `docs/dev/`.
+Gauntlet outputs and stress traces are treated as transient artifacts rather than long-lived documentation.
+Use the canonical filenames (`installation.md`, `verbs.md`, `determinism.md`, etc.) for any references to Engine API docs.
