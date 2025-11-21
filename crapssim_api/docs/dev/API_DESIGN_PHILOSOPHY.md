@@ -79,8 +79,8 @@ Breaking changes to endpoints, payload shapes, or version tags should be deliber
 - `version.py`  
   Central authority for engine API version tags and schema version IDs. Tests rely on these values; they should not be changed casually.
 
-- `determinism.py`, `rng.py`, `state.py`  
-  Reserved for **future determinism and snapshot tooling**. At present, they are not wired into the HTTP surface and must not be imported from runtime paths until they are fully designed and tested.
+- `determinism.py`, `rng.py`
+  Support the API's determinism helpers by centralising seeded RNG calls and recording utilities. They are kept thin to avoid importing engine internals into the HTTP surface.
 
 ---
 
