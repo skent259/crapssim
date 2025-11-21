@@ -22,7 +22,11 @@ def _start_session(client: TestClient, seed: int = 1234) -> str:
 def _place_pass_line(client: TestClient, session_id: str, amount: float = 15.0) -> None:
     resp = client.post(
         "/apply_action",
-        json={"session_id": session_id, "verb": "pass_line", "args": {"amount": amount}},
+        json={
+            "session_id": session_id,
+            "verb": "pass_line",
+            "args": {"amount": amount},
+        },
     )
     assert resp.status_code == 200
 
