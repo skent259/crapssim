@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Dict, List, Literal, Optional, Union
+from typing import Any, Dict, List, Literal, Optional, Tuple, Union
 from typing_extensions import TypedDict
 
 
@@ -77,3 +77,68 @@ class RollSnapshot(TypedDict, total=False):
     identity: Dict[str, Any]
     bets: List[Dict[str, Any]]
     is_push: bool
+
+
+class SessionTapeStep(TypedDict):
+    """
+    One deterministic step in a recorded session.
+
+    - step_index: monotonically increasing, 0-based.
+    - dice: the rolled dice for this step (d1, d2).
+    - actions: list of action payloads sent between the previous roll and this roll.
+      These should be exactly the JSON payloads the API received.
+    """
+
+    step_index: int
+    dice: Tuple[int, int]
+    actions: List[dict]
+
+
+class SessionTapeMetadata(TypedDict, total=False):
+    """
+    Minimal metadata needed to reconstitute a session deterministically.
+
+    - engine_version: version string of CrapsSim engine that produced this tape.
+    - api_version: version string of the Engine API that produced this tape.
+    - seed: RNG seed used to start the session (if any).
+    - table_spec: Table spec that was passed to the engine.
+    - initial_bankroll: bankroll at session start.
+    """
+
+    engine_version: str
+    api_version: str
+    seed: Optional[int]
+    table_spec: dict
+    initial_bankroll: float
+
+
+class SessionTape(TypedDict):
+    """
+    Deterministic replay tape for a single session.
+
+    - session_id: ID of the original session, for reference only.
+    - metadata: session configuration and versions.
+    - steps: ordered list of dice + action bundles.
+    - final_state: optional summary of the final engine state as seen by the API.
+    """
+
+    session_id: str
+    metadata: SessionTapeMetadata
+    steps: List[SessionTapeStep]
+    final_state: dict
+
+
+class ReplayResult(TypedDict):
+    """
+    Result of replaying a SessionTape.
+
+    - deterministic: True if the replayed session produced the same final_state.
+    - mismatch_step: first step index where a mismatch was detected, or None.
+    - original_final_state: final_state as recorded on the tape.
+    - replay_final_state: final_state returned by the replay run.
+    """
+
+    deterministic: bool
+    mismatch_step: Optional[int]
+    original_final_state: dict
+    replay_final_state: dict
