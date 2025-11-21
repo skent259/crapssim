@@ -5,6 +5,7 @@ from typing import Any, Dict, List, Literal, Optional, Tuple, Union
 
 try:
     from typing import TypedDict  # py3.11+
+
     if sys.version_info < (3, 12):
         from typing_extensions import TypedDict  # type: ignore[no-redef]
 except Exception:
