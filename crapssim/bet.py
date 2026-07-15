@@ -1,3 +1,5 @@
+"""Bet models and payout logic for the craps simulation engine."""
+
 import copy
 import math
 from abc import ABC, ABCMeta, abstractmethod
@@ -13,6 +15,7 @@ __all__ = [
     "Bet",
     "_WinningLosingNumbersBet",
     "_SimpleBet",
+    "_BoxNumberBet",
     "PassLine",
     "Come",
     "DontPass",
@@ -58,9 +61,25 @@ class TableSettings(TypedDict, total=False):
     vig_rounding: Literal["none", "ceil_dollar", "nearest_dollar"]
     vig_floor: float
     vig_paid_on_win: bool
+    come_out_working_policy: Literal["legacy", "real_casino"]
+
+
+def _come_out_working_policy(
+    settings: TableSettings,
+) -> Literal["legacy", "real_casino"]:
+    """Return the default working policy for bets when the point is off."""
+
+    default_policy = "real_casino"
+    policy = settings.get("come_out_working_policy", default_policy)
+
+    if policy not in {"legacy", "real_casino"}:
+        return default_policy
+    return cast(Literal["legacy", "real_casino"], policy)
 
 
 class Table(Protocol):
+    """Table data required by bet implementations."""
+
     dice: Dice
     point: Point
     settings: TableSettings
@@ -68,6 +87,8 @@ class Table(Protocol):
 
 
 class Player(Protocol):
+    """Player data required by bet implementations."""
+
     bets: list["Bet"]
 
     @property
@@ -92,9 +113,44 @@ class BetResult:
     remove: bool
     """Flag indicating whether this bet result should be removed from table."""
     bet_amount: float = 0
-    """The monetary value of the original bet size. Needed only for bets that 
-    push and return the wager to the player. Default is zero for quick 
+    """The monetary value of the original bet size. Needed only for bets that
+    push and return the wager to the player. Default is zero for quick
     results that can define wins and losses by comparing against zero."""
+
+    @classmethod
+    def win(cls, *, profit: float, bet_amount: float, remove: bool) -> "BetResult":
+        """A winning bet.
+
+        Args:
+            profit: Winnings above the wager (payout only, principal excluded).
+            bet_amount: The original wager.
+            remove: Whether the wager comes off the table (True) or keeps
+                working (False). This flag alone decides whether the returned
+                principal is credited to the bankroll; see
+                :attr:`bankroll_change`.
+        """
+        return cls(amount=profit + bet_amount, remove=remove, bet_amount=bet_amount)
+
+    @classmethod
+    def lose(cls, *, cost: float, bet_amount: float) -> "BetResult":
+        """A losing bet, removed from the table.
+
+        Args:
+            cost: Amount lost. Equal to the wager for most bets, but may exceed
+                it when an upfront vig was paid.
+            bet_amount: The original wager.
+        """
+        return cls(amount=-cost, remove=True, bet_amount=bet_amount)
+
+    @classmethod
+    def push(cls, bet_amount: float) -> "BetResult":
+        """A tie: the wager is returned to the player and the bet removed."""
+        return cls(amount=bet_amount, remove=True, bet_amount=bet_amount)
+
+    @classmethod
+    def no_change(cls, bet_amount: float) -> "BetResult":
+        """No action this roll: the bet does nothing and stays on the table."""
+        return cls(amount=0, remove=False, bet_amount=bet_amount)
 
     @property
     def won(self) -> bool:
@@ -113,8 +169,21 @@ class BetResult:
 
     @property
     def bankroll_change(self) -> float:
-        """Calculates the change to the bankroll (amount if bet won, zero otherwise)."""
-        return self.amount if self.amount > 0 else 0
+        """Cash credited to the bankroll for this result.
+
+        The wager was already deducted when the bet was placed, so:
+
+        - loss or no-action (``amount <= 0``): nothing is credited.
+        - non-removing win: the wager stays working on the table, so only the
+          net profit is credited.
+        - removing win or push: the wager comes off the table, so the full
+          returned amount (principal plus any winnings) is credited.
+        """
+        if self.amount <= 0:
+            return 0
+        if not self.remove:
+            return self.amount - self.bet_amount
+        return self.amount
 
 
 class _MetaBetABC(ABCMeta):
@@ -261,21 +330,25 @@ class _WinningLosingNumbersBet(Bet, ABC):
         happen when dice total is in the losing numbers, which result
         in a loss of the original bet amount. Otherwise the bet stays
         on the table.
-        """
-        if table.dice.total in self.get_winning_numbers(table):
-            result_amount = self.get_payout_ratio(table) * self.amount + self.amount
-            should_remove = True
-        elif table.dice.total in self.get_losing_numbers(table):
-            result_amount = -1 * self.amount
-            should_remove = True
-        elif table.dice.total in self.get_push_numbers(table):
-            result_amount = self.amount
-            should_remove = True
-        else:
-            result_amount = 0
-            should_remove = False
 
-        return BetResult(result_amount, should_remove, self.amount)
+        This is the hot path of the simulator: it runs for every bet on
+        every roll, so it deliberately avoids come-out ("working") handling.
+        Bets that can be off on the come-out (Odds, Place/Buy/Lay/Put) apply
+        that guard in their own ``get_result`` before delegating here.
+        """
+        total = table.dice.total
+        if total in self.get_winning_numbers(table):
+            return BetResult.win(
+                profit=self.get_payout_ratio(table) * self.amount,
+                bet_amount=self.amount,
+                remove=True,
+            )
+        elif total in self.get_losing_numbers(table):
+            return BetResult.lose(cost=self.amount, bet_amount=self.amount)
+        elif total in self.get_push_numbers(table):
+            return BetResult.push(self.amount)
+        else:
+            return BetResult.no_change(self.amount)
 
     @abstractmethod
     def get_winning_numbers(self, table: Table) -> list[int]:
@@ -332,9 +405,10 @@ class PassLine(_WinningLosingNumbersBet):
     """
     Pass Line bet in craps.
 
-    A bet where the player wins if the first roll is a come-out winner for the active ruleset,
-    loses if the first roll is a come-out loser for the active ruleset, and establishes a point number
-    for subsequent rolls. Once a point is set, the player wins by rolling
+    A bet where the player wins if the first roll is a come-out winner for
+    the active ruleset, loses if the first roll is a come-out loser for the
+    active ruleset, and establishes a point number for subsequent rolls.
+    Once a point is set, the player wins by rolling
     the point number again before rolling a 7. Pays 1 to 1.
     """
 
@@ -602,12 +676,28 @@ class Odds(_WinningLosingNumbersBet):
     or "dark side" (Don't Pass/Don't Come) bet.
     """
 
+    light_ratios = {
+        2: 6,
+        3: 3,
+        4: 2,
+        5: 3 / 2,
+        6: 6 / 5,
+        8: 6 / 5,
+        9: 3 / 2,
+        10: 2,
+        11: 3,
+        12: 6,
+    }
+    """True-odds payouts (X to 1) for light-side (Pass/Come/Put) odds."""
+    dark_ratios = {n: 1 / x for n, x in light_ratios.items()}
+    """True-odds payouts (X to 1) for dark-side (Don't Pass/Don't Come) odds."""
+
     def __init__(
         self,
         base_type: type["PassLine | DontPass | Come | DontCome | Put"],
         number: int,
         amount: float,
-        always_working: bool = False,
+        always_working: bool | None = None,
     ):
         super().__init__(amount)
         self.base_type = base_type
@@ -616,24 +706,34 @@ class Odds(_WinningLosingNumbersBet):
 
     @property
     def light_side(self) -> bool:
+        """Whether this odds bet follows pass/come-style winning logic."""
         return issubclass(self.base_type, (PassLine, Come, Put))
 
     @property
     def dark_side(self) -> bool:
+        """Whether this odds bet follows dont-pass/dont-come logic."""
         return issubclass(self.base_type, (DontPass, DontCome))
 
+    def is_working_on_come_out(self) -> bool:
+        """Whether the bet resolves while the point is off.
+
+        Defaults to false for all base_type bets except DontCome, but an explicit
+        ``always_working`` set on the bet overrides it.
+        """
+        if self.always_working is not None:
+            return self.always_working
+        return issubclass(self.base_type, DontCome)
+
     def get_result(self, table: Table) -> BetResult:
-
-        if table.point.status == "Off" and not self.always_working:
-
-            if table.dice.total in (
-                self.get_losing_numbers(table) + self.get_winning_numbers(table)
-            ):
-                # Bet "pushes" and returns to the player
-                return BetResult(
-                    amount=self.amount, remove=True, bet_amount=self.amount
-                )
-
+        if (
+            table.point.status == "Off"
+            and not self.is_working_on_come_out()
+            and table.dice.total
+            in self.get_winning_numbers(table) + self.get_losing_numbers(table)
+        ):
+            # Odds come down with their parent bet when the point is off and the
+            # base bet resolves, so the wager is returned to the player.
+            return BetResult.push(self.amount)
         return super().get_result(table)
 
     def get_winning_numbers(self, table: Table) -> list[int]:
@@ -653,24 +753,10 @@ class Odds(_WinningLosingNumbersBet):
             raise NotImplementedError(f"Unsupported odds base type: {self.base_type}")
 
     def get_payout_ratio(self, table: Table) -> float:
-        light_ratios = {
-            2: 6,
-            3: 3,
-            4: 2,
-            5: 3 / 2,
-            6: 6 / 5,
-            8: 6 / 5,
-            9: 3 / 2,
-            10: 2,
-            11: 3,
-            12: 6,
-        }
-        dark_ratios = {n: 1 / x for n, x in light_ratios.items()}
-
         if self.light_side:
-            return light_ratios[self.number]
+            return self.light_ratios[self.number]
         elif self.dark_side:
-            return dark_ratios[self.number]
+            return self.dark_ratios[self.number]
         else:
             raise NotImplementedError(f"Unsupported odds base type: {self.base_type}")
 
@@ -690,6 +776,7 @@ class Odds(_WinningLosingNumbersBet):
         return allowed
 
     def get_max_odds(self, table: Table) -> float:
+        """Return table-specific maximum odds multiple for this point."""
         if self.light_side:
             return table.settings["max_odds"][self.number]
         elif self.dark_side:
@@ -697,7 +784,8 @@ class Odds(_WinningLosingNumbersBet):
         else:
             raise NotImplementedError(f"Unsupported odds base type: {self.base_type}")
 
-    def base_amount(self, player: Player):
+    def base_amount(self, player: Player) -> float:
+        """Return total base-bet amount this odds bet is attached to."""
         base_bets = [
             x
             for x in player.bets
@@ -715,9 +803,11 @@ class Odds(_WinningLosingNumbersBet):
         return new_bet
 
     def _get_always_working_repr(self) -> str:
-        """Since the default is false, only need to print when True"""
+        """Since the default is None, only need to print when explicitly set."""
         return (
-            f", always_working={self.always_working})" if self.always_working else ")"
+            f", always_working={self.always_working})"
+            if self.always_working is not None
+            else ")"
         )
 
     @property
@@ -742,39 +832,94 @@ class Odds(_WinningLosingNumbersBet):
             raise NotImplementedError(f"Unsupported odds base type: {self.base_type}")
 
 
-class Put(_SimpleBet):
-    """Flat line bet on a box number; point must be ON and odds obey table policy."""
+# Box-number bets (Place / Buy / Lay / Put) ----------------------------------
 
-    losing_numbers: list[int] = [7]
 
-    def __init__(self, number: int, amount: SupportsFloat) -> None:
-        # Allow all crapless points on init, but only allow bet for extremes in CraplessRules
+class _BoxNumberBet(_SimpleBet, ABC):
+    """Shared logic for single box-number bets (Place, Buy, Lay, Put).
+
+    Each is a wager on a box number (or against it, for Lay) that may be
+    working or off on the come-out, controlled by the table's come-out working
+    policy or an explicit ``always_working`` override on the bet.
+    """
+
+    def __init__(
+        self,
+        number: int,
+        amount: SupportsFloat,
+        always_working: bool | None = None,
+    ) -> None:
+        # Allow all crapless points on init, but only allow the bet for extremes
+        # in CraplessRules (enforced by is_allowed).
         if number not in CRAPLESS_POINTS:
             raise ValueError(f"Invalid {self.__class__} number: {number}")
         super().__init__(amount)
         self.number = number
-        self.winning_numbers = [number]
+        self.always_working = always_working
+        self._set_payout()
+
+    @abstractmethod
+    def _set_payout(self) -> None:
+        """Set ``payout_ratio`` and the number-based winning/losing numbers."""
+
+    def is_allowed(self, player: "Player") -> bool:
+        """Return whether this bet's number is valid for the active ruleset."""
+        return self.number in player.table.rules.point_numbers()
+
+    def is_working_on_come_out(self, table: Table) -> bool:
+        """Whether the bet resolves while the point is off.
+
+        Defaults to the table's come-out working policy, but an explicit
+        ``always_working`` set on the bet overrides it.
+        """
+        if self.always_working is not None:
+            return self.always_working
+        return _come_out_working_policy(table.settings) == "legacy"
+
+    def _off_come_out(self, table: Table) -> bool:
+        """True when the point is off and the bet is not working, so a roll of
+        its number or 7 leaves it inactive instead of resolving."""
+        return (
+            table.point.status == "Off"
+            and not self.is_working_on_come_out(table)
+            and table.dice.total in (self.number, 7)
+        )
+
+    def copy(self) -> "Bet":
+        """Create a fresh copy of this bet."""
+        return self.__class__(
+            self.number,
+            self.amount,
+            always_working=self.always_working,
+        )
+
+    @property
+    def _placed_key(self) -> Hashable:
+        return type(self), self.number
+
+
+class Put(_BoxNumberBet):
+    """Flat line bet on a box number; point must be ON and odds obey table policy."""
+
+    losing_numbers: list[int] = [7]
+
+    def _set_payout(self) -> None:
+        self.winning_numbers = [self.number]
         self.payout_ratio = 1.0
 
     def is_allowed(self, player: "Player") -> bool:
-        """Return whether this Put bet number is legal and can be placed
-        for the current table state.
-
-        Returns:
-            bool: True when the point is on and this bet number is valid
-            for the active ruleset.
+        """Return whether this Put bet is legal: the point must be on and the
+        number valid for the active ruleset.
         """
         return (
             player.table.point.status == "On"
             and self.number in player.table.rules.point_numbers()
         )
 
-    def copy(self) -> "Put":
-        return self.__class__(self.number, self.amount)
-
-    @property
-    def _placed_key(self) -> Hashable:
-        return type(self), self.number
+    def get_result(self, table: "Table") -> BetResult:
+        if self._off_come_out(table):
+            return BetResult.no_change(self.amount)
+        return super().get_result(table)
 
     def __repr__(self) -> str:
         return f"Put({self.number}, amount={self.amount})"
@@ -786,7 +931,7 @@ class Put(_SimpleBet):
 # Place bets ------------------------------------------------------------------
 
 
-class Place(_SimpleBet):
+class Place(_BoxNumberBet):
     """
     A bet on a specific number being rolled before a 7.
     Each number has a different payout ratio reflecting its probability of being rolled.
@@ -812,33 +957,30 @@ class Place(_SimpleBet):
       9 to 5 on (4, 10), 7 to 5 on (5, 9), and 7 to 6 on (6, 8)."""
     losing_numbers: list[int] = [7]
 
-    def __init__(self, number: int, amount: SupportsFloat):
-        # Allow all crapless points on init, but only allow bet for extremes in CraplessRules
-        if number not in CRAPLESS_POINTS:
-            raise ValueError(f"Invalid {self.__class__} number: {number}")
-        super().__init__(amount)
-        self.number = number
-        """The placed number, which determines payout ratio"""
-        self.payout_ratio = self.payout_ratios[number]
-        self.winning_numbers = [number]
+    def _set_payout(self) -> None:
+        self.winning_numbers = [self.number]
+        self.payout_ratio = self.payout_ratios[self.number]
 
-    def is_allowed(self, player: "Player") -> bool:
-        """Return whether this Place bet number is legal and can be placed
-        for the current table state.
+    def get_result(self, table: "Table") -> BetResult:
+        if self._off_come_out(table):
+            return BetResult.no_change(self.amount)
 
-        Returns:
-            bool: True when this bet number is valid for the active ruleset.
-        """
-        return self.number in player.table.rules.point_numbers()
+        if _come_out_working_policy(table.settings) == "legacy":
+            # legacy support, tons of bets integration tests rely on old behavior
+            return super().get_result(table)
 
-    def copy(self) -> "Bet":
-        """Create a fresh copy of this bet"""
-        new_bet = self.__class__(self.number, self.amount)
-        return new_bet
-
-    @property
-    def _placed_key(self) -> Hashable:
-        return type(self), self.number
+        if table.dice.total == self.number:
+            # Place wins leave the wager working on the table (remove=False), so
+            # only the profit is credited to the bankroll.
+            return BetResult.win(
+                profit=self.payout_ratio * self.amount,
+                bet_amount=self.amount,
+                remove=False,
+            )
+        elif table.dice.total == 7:
+            return BetResult.lose(cost=self.amount, bet_amount=self.amount)
+        else:
+            return BetResult.no_change(self.amount)
 
     def __repr__(self) -> str:
         return f"Place({self.winning_numbers[0]}, amount={self.amount})"
@@ -881,7 +1023,7 @@ def _vig_policy(
     )
 
 
-class Buy(_SimpleBet):
+class Buy(_BoxNumberBet):
     """True-odds bet on 2/3/4/5/6/8/9/10/11/12 that charges vig per table policy.
 
     Vig (commission) may be taken on the win or upfront based on ``vig_paid_on_win``.
@@ -901,17 +1043,12 @@ class Buy(_SimpleBet):
     }
     losing_numbers: list[int] = [7]
 
-    def __init__(self, number: int, amount: SupportsFloat) -> None:
-        # Allow all crapless points on init, but only allow bet for extremes in CraplessRules
-        if number not in CRAPLESS_POINTS:
-            raise ValueError(f"Invalid {self.__class__} number: {number}")
-        super().__init__(amount)
-        self.number = number
-        self.payout_ratio = self.true_odds[number]
-        self.winning_numbers = [number]
-        """Base amount that determines true-odds payouts."""
+    def _set_payout(self) -> None:
+        self.winning_numbers = [self.number]
+        self.payout_ratio = self.true_odds[self.number]
 
     def vig(self, table: "Table") -> float:
+        """Compute buy-bet commission based on table vig policy."""
         rounding, floor = _vig_policy(table.settings)
         return _compute_vig(self.amount, rounding=rounding, floor=floor)
 
@@ -921,35 +1058,18 @@ class Buy(_SimpleBet):
         return self.amount + self.vig(table)
 
     def get_result(self, table: "Table") -> BetResult:
+        if self._off_come_out(table):
+            return BetResult.no_change(self.amount)
+
         if table.dice.total == self.number:
-            result_amount = self.payout_ratio * self.amount + self.amount
+            profit = self.payout_ratio * self.amount
             if table.settings.get("vig_paid_on_win", True):
-                result_amount -= self.vig(table)
-            remove = True
+                profit -= self.vig(table)
+            return BetResult.win(profit=profit, bet_amount=self.amount, remove=True)
         elif table.dice.total == 7:
-            result_amount = -self.cost(table)
-            remove = True
+            return BetResult.lose(cost=self.cost(table), bet_amount=self.amount)
         else:
-            result_amount = 0
-            remove = False
-        return BetResult(result_amount, remove, self.amount)
-
-    def is_allowed(self, player: "Player") -> bool:
-        """Return whether this Buy bet number is legal and can be placed for
-        the current table state.
-
-        Returns:
-            bool: True when this number is allowed by the active ruleset.
-        """
-        return self.number in player.table.rules.point_numbers()
-
-    def copy(self) -> "Buy":
-        new_bet = self.__class__(self.number, self.amount)
-        return new_bet
-
-    @property
-    def _placed_key(self) -> Hashable:
-        return type(self), self.number
+            return BetResult.no_change(self.amount)
 
     def __repr__(self) -> str:
         return f"Buy({self.number}, amount={self.amount})"
@@ -958,7 +1078,7 @@ class Buy(_SimpleBet):
         return f"{super().__str__()}({self.number})"
 
 
-class Lay(_SimpleBet):
+class Lay(_BoxNumberBet):
     """True-odds bet against 2/3/4/5/6/8/9/10/11/12, paying if 7 arrives first.
 
     Commission may be taken on the win or upfront based on ``vig_paid_on_win``.
@@ -981,17 +1101,12 @@ class Lay(_SimpleBet):
     }
     winning_numbers: list[int] = [7]
 
-    def __init__(self, number: int, amount: SupportsFloat) -> None:
-        # Allow all crapless points on init, but only allow bet for extremes in CraplessRules
-        if number not in CRAPLESS_POINTS:
-            raise ValueError(f"Invalid {self.__class__} number: {number}")
-        super().__init__(amount)
-        self.number = number
-        self.payout_ratio = self.true_odds[number]
-        self.losing_numbers = [number]
-        """Base amount risked against the box number."""
+    def _set_payout(self) -> None:
+        self.losing_numbers = [self.number]
+        self.payout_ratio = self.true_odds[self.number]
 
     def vig(self, table: "Table") -> float:
+        """Compute lay-bet commission based on potential gross win."""
         rounding, floor = _vig_policy(table.settings)
         gross_win = self.amount * self.payout_ratio
         return _compute_vig(gross_win, rounding=rounding, floor=floor)
@@ -1002,35 +1117,18 @@ class Lay(_SimpleBet):
         return self.amount + self.vig(table)
 
     def get_result(self, table: "Table") -> BetResult:
+        if self._off_come_out(table):
+            return BetResult.no_change(self.amount)
+
         if table.dice.total == 7:
-            result_amount = self.payout_ratio * self.amount + self.amount
+            profit = self.payout_ratio * self.amount
             if table.settings.get("vig_paid_on_win", True):
-                result_amount -= self.vig(table)
-            remove = True
+                profit -= self.vig(table)
+            return BetResult.win(profit=profit, bet_amount=self.amount, remove=True)
         elif table.dice.total == self.number:
-            result_amount = -self.cost(table)
-            remove = True
+            return BetResult.lose(cost=self.cost(table), bet_amount=self.amount)
         else:
-            result_amount = 0
-            remove = False
-        return BetResult(result_amount, remove, self.amount)
-
-    def is_allowed(self, player: "Player") -> bool:
-        """Return whether this Lay bet number is legal and can be placed for
-        the current table state.
-
-        Returns:
-            bool: True when this number is allowed by the active ruleset.
-        """
-        return self.number in player.table.rules.point_numbers()
-
-    def copy(self) -> "Lay":
-        new_bet = self.__class__(self.number, self.amount)
-        return new_bet
-
-    @property
-    def _placed_key(self) -> Hashable:
-        return type(self), self.number
+            return BetResult.no_change(self.amount)
 
     def __repr__(self) -> str:
         return f"Lay({self.number}, amount={self.amount})"
@@ -1039,7 +1137,7 @@ class Lay(_SimpleBet):
         return f"{super().__str__()}({self.number})"
 
 
-# _WinningLosingNumbersBets with variable payouts -----------------------------------------------------------------
+# _WinningLosingNumbersBets with variable payouts ------------------------------------------------
 
 
 class Field(_WinningLosingNumbersBet):
@@ -1317,15 +1415,15 @@ class HardWay(Bet):
 
     def get_result(self, table: Table) -> BetResult:
         if table.dice.result == self.winning_result:
-            result_amount = self.payout_ratio * self.amount + self.amount
-            should_remove = True
+            return BetResult.win(
+                profit=self.payout_ratio * self.amount,
+                bet_amount=self.amount,
+                remove=True,
+            )
         elif table.dice.total in (7, self.number):
-            result_amount = -1 * self.amount
-            should_remove = True
+            return BetResult.lose(cost=self.amount, bet_amount=self.amount)
         else:
-            result_amount = 0
-            should_remove = False
-        return BetResult(result_amount, should_remove, self.amount)
+            return BetResult.no_change(self.amount)
 
     @property
     def winning_result(self) -> tuple[int, int]:
@@ -1372,25 +1470,28 @@ class Hop(Bet):
 
     def get_result(self, table: Table) -> BetResult:
         if table.dice.result in self.winning_results:
-            result_amount = self.payout_ratio(table) * self.amount + self.amount
-            should_remove = True
-        else:
-            result_amount = -1 * self.amount
-            should_remove = True
-        return BetResult(result_amount, should_remove, self.amount)
+            return BetResult.win(
+                profit=self.payout_ratio(table) * self.amount,
+                bet_amount=self.amount,
+                remove=True,
+            )
+        return BetResult.lose(cost=self.amount, bet_amount=self.amount)
 
     @property
     def is_easy(self) -> bool:
+        """Whether this hop result uses two different dice faces."""
         return self.result[0] != self.result[1]
 
     @property
     def winning_results(self) -> list[tuple[int, int]]:
+        """All dice orderings that qualify this hop bet as a winner."""
         if self.is_easy:
             return [self.result, self.result[::-1]]
         else:
             return [self.result]
 
     def payout_ratio(self, table: Table) -> int:
+        """Return table-configured payout multiple for this hop type."""
         payout_type = "easy" if self.is_easy else "hard"
         return table.settings["hop_payouts"][payout_type]
 
@@ -1437,7 +1538,7 @@ class Fire(Bet):
     def get_result(self, table: Table) -> BetResult:
 
         if table.point.status == "Off":
-            return BetResult(amount=0, remove=False, bet_amount=self.amount)
+            return BetResult.no_change(self.amount)
 
         if table.dice.total == table.point.number:
             self.points_made.add(table.point.number)
@@ -1447,15 +1548,16 @@ class Fire(Bet):
         n_points_made = len(self.points_made)
         ended = table.dice.total == 7 or len(self.points_made) == 6
 
-        if ended and n_points_made in table.settings["fire_payouts"]:
+        if not ended:
+            return BetResult.no_change(self.amount)
+        if n_points_made in table.settings["fire_payouts"]:
             payout_ratio = table.settings["fire_payouts"][n_points_made]
-            result_amount = payout_ratio * self.amount + self.amount
-        elif ended and n_points_made not in table.settings["fire_payouts"]:
-            result_amount = -1 * self.amount
-        else:
-            result_amount = 0
-
-        return BetResult(result_amount, remove=ended, bet_amount=self.amount)
+            return BetResult.win(
+                profit=payout_ratio * self.amount,
+                bet_amount=self.amount,
+                remove=True,
+            )
+        return BetResult.lose(cost=self.amount, bet_amount=self.amount)
 
     def is_removable(self, table: Table) -> bool:
         """Fire bet is removable only if there is a new shooter.
@@ -1494,16 +1596,15 @@ class _ATSBet(Bet):
 
         if self.numbers == list(self.rolled_numbers):
             payout_ratio = table.settings["ATS_payouts"][self.type]
-            result_amount = payout_ratio * self.amount + self.amount
-            should_remove = True
+            return BetResult.win(
+                profit=payout_ratio * self.amount,
+                bet_amount=self.amount,
+                remove=True,
+            )
         elif table.dice.total == 7:
-            result_amount = -1 * self.amount
-            should_remove = True
+            return BetResult.lose(cost=self.amount, bet_amount=self.amount)
         else:
-            result_amount = 0
-            should_remove = False
-
-        return BetResult(result_amount, should_remove, self.amount)
+            return BetResult.no_change(self.amount)
 
     def is_removable(self, table: Table) -> bool:
         """All/Tall/Small bets are removable only if the last roll was a 7

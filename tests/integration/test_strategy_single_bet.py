@@ -7,14 +7,9 @@ from crapssim.bet import (
     Bet,
     Boxcars,
     Come,
-    DontCome,
-    DontPass,
-    Field,
     Fire,
     HardWay,
     Hop,
-    Odds,
-    PassLine,
     Place,
     Small,
     Tall,
@@ -25,10 +20,15 @@ from crapssim.bet import (
 from crapssim.strategy.single_bet import (
     BetAll,
     BetAny7,
+    BetBuy,
     BetBoxcars,
+    BetCome,
+    BetDontCome,
     BetFire,
     BetHardWay,
     BetHop,
+    BetLay,
+    BetPlace,
     BetSmall,
     BetTall,
     BetThree,
@@ -36,6 +36,7 @@ from crapssim.strategy.single_bet import (
     BetYo,
     StrategyMode,
 )
+from crapssim.strategy.tools import NullStrategy
 from crapssim.table import TableUpdate
 
 
@@ -110,3 +111,107 @@ def test_bet_point_on_special_cases(
     bets = table.players[0].bets
 
     assert set(bets) == set(correct_bets)
+
+
+def test_betplace_always_working_passthrough_controls_comeout_resolution():
+    table_push = Table()
+    table_push.settings["come_out_working_policy"] = "real_casino"
+    table_push.add_player(
+        strategy=BetPlace(
+            {6: 6},
+            mode=StrategyMode.ADD_IF_NOT_BET,
+            always_working=False,
+        )
+    )
+    table_push.fixed_run([(3, 3)], verbose=False)
+
+    assert table_push.players[0].bankroll == pytest.approx(94)
+    assert len(table_push.players[0].bets) == 1
+
+    table_working = Table()
+    table_working.settings["come_out_working_policy"] = "real_casino"
+    table_working.add_player(
+        strategy=BetPlace(
+            {6: 6},
+            mode=StrategyMode.ADD_IF_NOT_BET,
+            always_working=True,
+        )
+    )
+    table_working.fixed_run([(3, 3)], verbose=False)
+
+    assert table_working.players[0].bankroll == pytest.approx(101)
+    assert len(table_working.players[0].bets) == 1
+
+
+def test_betplace_skip_come_skips_matching_number_only():
+    table = Table()
+    strategy = BetPlace(
+        {5: 10, 6: 12},
+        mode=StrategyMode.ADD_IF_NOT_BET,
+        skip_point=False,
+        skip_come=True,
+    )
+    player = table.add_player(strategy=strategy)
+
+    # Simulate an established Come bet on 5 so skip_come excludes only that number.
+    player.bets.append(Come(10, number=5))
+
+    TableUpdate().run_strategies(table)
+
+    assert not any(isinstance(bet, Place) and bet.number == 5 for bet in player.bets)
+    assert any(
+        isinstance(bet, Place) and bet.number == 6 and bet.amount == 12
+        for bet in player.bets
+    )
+
+
+@pytest.mark.parametrize(
+    "strategy, expected_bankroll",
+    [
+        (BetBuy(4, 10, always_working=False), 90),
+        (BetLay(5, 10, always_working=False), 90),
+    ],
+)
+def test_betbuy_betlay_always_working_false_stays_inactive_on_comeout(
+    strategy, expected_bankroll
+):
+    table = Table()
+    table.settings["come_out_working_policy"] = "real_casino"
+    table.settings["vig_paid_on_win"] = True
+    table.add_player(strategy=strategy)
+    table.fixed_run([(4, 3)], verbose=False)
+
+    assert table.players[0].bankroll == pytest.approx(expected_bankroll)
+    assert len(table.players[0].bets) == 1
+
+
+def test_betcome_contract_bet_stays_working_on_comeout():
+    table = Table()
+    table.settings["come_out_working_policy"] = "real_casino"
+    table.add_player(strategy=BetCome(10))
+    player = table.players[0]
+
+    # Start with point on so BetCome strategy can place the bet.
+    table.point.number = 4
+    table.fixed_run([(3, 3)], verbose=False)  # travel Come to 6
+    player.strategy = NullStrategy()
+    table.fixed_run([(2, 2), (3, 3)], verbose=False)  # point hit, then come-out 6
+
+    assert player.bankroll == pytest.approx(110)
+    assert len(player.bets) == 0
+
+
+def test_betdontcome_contract_bet_stays_working_on_comeout():
+    table = Table()
+    table.settings["come_out_working_policy"] = "real_casino"
+    table.add_player(strategy=BetDontCome(10))
+    player = table.players[0]
+
+    # Start with point on so BetDontCome strategy can place the bet.
+    table.point.number = 4
+    table.fixed_run([(2, 3)], verbose=False)  # travel Don't Come to 5
+    player.strategy = NullStrategy()
+    table.fixed_run([(2, 2), (3, 4)], verbose=False)  # point hit, then come-out 7
+
+    assert player.bankroll == pytest.approx(110)
+    assert len(player.bets) == 0

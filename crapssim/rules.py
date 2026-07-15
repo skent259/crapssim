@@ -1,10 +1,9 @@
+"""Rule variants and shared rule behavior for the craps table engine."""
+
 from __future__ import annotations
 
 from abc import ABC
 from typing import Protocol
-
-from .dice import Dice
-from .point import Point
 
 
 class Rules(Protocol):

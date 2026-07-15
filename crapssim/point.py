@@ -1,3 +1,5 @@
+"""Point state helpers for craps tables."""
+
 from crapssim import Dice
 
 
@@ -16,6 +18,7 @@ class Point:
 
     @property
     def status(self) -> str:
+        """Return whether the point is on or off."""
         if self.number is None:
             return "Off"
         else:

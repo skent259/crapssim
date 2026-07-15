@@ -1,3 +1,5 @@
+"""Table and player runtime state for craps simulations."""
+
 import copy
 from typing import Generator, Iterable, Literal, SupportsFloat, TypedDict
 
@@ -58,7 +60,8 @@ class TableUpdate:
         """
         if run_complete:
             # Stop adding/modifying bets when run end criteria are met
-            # NOTE: this will also stop strategies that pull bets down. Not ideal but workable for now
+            # NOTE: this also stops strategies that pull bets down.
+            # Not ideal, but workable for now.
             return
 
         for player in table.players:
@@ -81,10 +84,12 @@ class TableUpdate:
 
     @staticmethod
     def before_roll(table: "Table") -> None:
+        """Hook for rule variants to run logic immediately before each roll."""
         pass
 
     @staticmethod
     def update_table_stats(table: "Table") -> None:
+        """Update roll counters and reset pass-roll streak after point resolves."""
         table.pass_rolls += 1
         if table.point == "On" and (
             table.dice.total == 7 or table.dice.total == table.point.number
@@ -123,6 +128,7 @@ class TableUpdate:
 
     @staticmethod
     def after_roll(table: "Table") -> None:
+        """Run post-roll hooks for each player's strategy."""
         for player in table.players:
             player.strategy.after_roll(player)
 
@@ -138,6 +144,7 @@ class TableUpdate:
 
     @staticmethod
     def set_new_shooter(table: "Table") -> None:
+        """Mark shooter transitions after seven-out events."""
         if table.point.status == "On" and table.dice.total == 7:
             table.new_shooter = True
             table.n_shooters += 1
@@ -180,6 +187,7 @@ class TableSettings(TypedDict, total=False):
     vig_rounding: Literal["none", "ceil_dollar", "nearest_dollar"]
     vig_floor: float
     vig_paid_on_win: bool
+    come_out_working_policy: Literal["legacy", "real_casino"]
 
 
 class Table:
@@ -207,6 +215,7 @@ class Table:
             "vig_rounding": "nearest_dollar",
             "vig_floor": 0,
             "vig_paid_on_win": False,
+            "come_out_working_policy": "real_casino",
         }
         self.pass_rolls: int = 0
         self.last_roll: int | None = None
@@ -214,6 +223,7 @@ class Table:
         self.new_shooter: bool = True
 
     def yield_player_bets(self) -> Generator[tuple["Player", "Bet"], None, None]:
+        """Yield `(player, bet)` pairs for all active bets on the table."""
         for player in self.players:
             for bet in player.bets:
                 yield player, bet
@@ -361,12 +371,12 @@ class Table:
     @property
     def player_has_bets(self) -> bool:
         """Whether any player currently has active bets."""
-        return sum([len(p.bets) for p in self.players]) > 0
+        return sum(len(p.bets) for p in self.players) > 0
 
     @property
     def total_player_cash(self) -> float:
         """Total bankroll plus outstanding bet amounts across all players."""
-        return sum([p.total_player_cash for p in self.players])
+        return sum(p.total_player_cash for p in self.players)
 
 
 class Player:

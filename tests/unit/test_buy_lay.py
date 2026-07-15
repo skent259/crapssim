@@ -54,7 +54,7 @@ def test_buy_upfront_vig_loss_is_principal_plus_vig():
     player = table.add_player(bankroll=100)
 
     starting_bankroll = player.bankroll
-    player.add_bet(Buy(4, 20))
+    player.add_bet(Buy(4, 20, always_working=True))
     assert player.bankroll == pytest.approx(starting_bankroll - 21)
 
     TableUpdate.roll(table, fixed_outcome=(3, 4))
@@ -69,7 +69,7 @@ def test_vig_paid_on_win_does_not_charge_at_placement():
     table.settings["vig_paid_on_win"] = True
     player = table.add_player(bankroll=100)
 
-    player.add_bet(Buy(4, 20))
+    player.add_bet(Buy(4, 20, always_working=True))
     assert player.bankroll == pytest.approx(80)
     active_bet = player.bets[0]
 
@@ -88,7 +88,7 @@ def test_vig_for_lay_is_on_win_amount():
     table.settings["vig_rounding"] = "none"
     player = table.add_player(bankroll=100)
 
-    player.add_bet(Lay(4, 40))
+    player.add_bet(Lay(4, 40, always_working=True))
     assert player.bankroll == pytest.approx(60)
     active_bet = player.bets[0]
 

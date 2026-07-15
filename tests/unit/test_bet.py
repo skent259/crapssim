@@ -1,4 +1,5 @@
 import math
+import copy
 
 import numpy as np
 import pytest
@@ -13,10 +14,12 @@ from crapssim.bet import (
     Boxcars,
     CAndE,
     Come,
+    Buy,
     DontCome,
     Hop,
     Horn,
     Lay,
+    Place,
     Put,
     Odds,
     PassLine,
@@ -110,7 +113,7 @@ def test_ev_oneroll(bet, ev):
         (crapssim.bet.DontCome(1), "DontCome(amount=1.0, number=None)"),
         (
             crapssim.bet.Odds(crapssim.bet.PassLine, 6, 1, False),
-            "Odds(base_type=crapssim.bet.PassLine, number=6, amount=1.0)",
+            "Odds(base_type=crapssim.bet.PassLine, number=6, amount=1.0, always_working=False)",
         ),
         (
             crapssim.bet.Odds(crapssim.bet.Come, 8, 1),
@@ -697,6 +700,533 @@ def test_vig_policy_invalid_rounding_defaults_to_nearest_dollar():
 
     assert rounding == "nearest_dollar"
     assert floor == 2.5
+
+
+def test_place_is_active_on_comeout_in_legacy_rules_mode():
+    table = Table()
+    table.settings["come_out_working_policy"] = "legacy"
+    bet = Place(6, 12)
+
+    table.dice.fixed_roll((3, 3))
+    result = bet.get_result(table)
+
+    assert result.amount == 26
+    assert result.won is True
+    assert result.remove is True
+
+
+def test_place_follows_real_casino_rules_mode_if_come_out_working_policy_is_invalid():
+    table = Table()
+    table.settings["come_out_working_policy"] = "invalid"
+    bet = Place(6, 12)
+
+    table.dice.fixed_roll((3, 3))
+    result = bet.get_result(table)
+
+    assert result.amount == 0
+    assert result.won is False
+    assert result.remove is False
+
+
+def test_place_stays_inactive_on_comeout_in_real_casino_mode():
+    table = Table()
+    table.settings["come_out_working_policy"] = "real_casino"
+    bet = Place(6, 10)
+
+    table.dice.fixed_roll((3, 3))
+    result = bet.get_result(table)
+
+    assert result.amount == 0
+    assert result.remove is False
+
+
+@pytest.mark.parametrize(
+    "bet, roll",
+    [
+        (Place(6, 10, always_working=False), (3, 3)),
+        (Buy(6, 10, always_working=False), (3, 3)),
+        (Lay(6, 10, always_working=False), (3, 4)),
+        (Put(6, 10, always_working=False), (3, 3)),
+    ],
+)
+def test_explicit_false_overrides_legacy_comeout_behavior(bet, roll):
+    table = Table()
+    table.settings["come_out_working_policy"] = "legacy"
+
+    table.dice.fixed_roll(roll)
+    result = bet.get_result(table)
+
+    assert result.amount == 0
+    assert result.remove is False
+    assert result.bankroll_change == 0
+
+
+def test_place_always_working_overrides_real_casino_mode_win():
+    table = Table()
+    table.settings["come_out_working_policy"] = "real_casino"
+    bet = Place(6, 10, always_working=True)
+
+    table.dice.fixed_roll((3, 3))
+    result = bet.get_result(table)
+
+    assert result.won
+    assert result.remove is False
+
+
+def test_place_always_working_overrides_real_casino_mode_loss():
+    table = Table()
+    table.settings["come_out_working_policy"] = "real_casino"
+    bet = Place(6, 10, always_working=True)
+
+    table.dice.fixed_roll((3, 4))
+    result = bet.get_result(table)
+
+    assert result.lost
+    assert result.won is False
+    assert result.remove is True
+
+
+def test_place_always_working_overrides_real_casino_mode_no_action():
+    table = Table()
+    table.settings["come_out_working_policy"] = "real_casino"
+    bet = Place(6, 10, always_working=True)
+
+    table.dice.fixed_roll((3, 5))
+    result = bet.get_result(table)
+
+    assert result.lost is False
+    assert result.won is False
+    assert result.pushed is False
+    assert result.amount == 0
+    assert result.remove is False
+
+
+def test_place_non_removing_win_credits_profit_only_to_bankroll():
+    table = Table()
+    table.settings["come_out_working_policy"] = "real_casino"
+    bet = Place(6, 6, always_working=True)
+
+    table.dice.fixed_roll((3, 3))
+    result = bet.get_result(table)
+
+    assert result.amount == pytest.approx(13)
+    assert result.remove is False
+    assert result.bankroll_change == pytest.approx(7)
+
+
+def test_place_point_on_win_keeps_bet_and_credits_profit_only():
+    table = Table()
+    table.settings["come_out_working_policy"] = "real_casino"
+    table.point.number = 4
+    bet = Place(6, 6)
+
+    table.dice.fixed_roll((3, 3))
+    result = bet.get_result(table)
+
+    assert result.won is True
+    assert result.remove is False
+    assert result.amount == pytest.approx(13)
+    assert result.bankroll_change == pytest.approx(7)
+
+
+def test_place_point_on_loss_removes_stake():
+    table = Table()
+    table.settings["come_out_working_policy"] = "real_casino"
+    table.point.number = 4
+    bet = Place(6, 12)
+
+    table.dice.fixed_roll((3, 4))
+    result = bet.get_result(table)
+
+    assert result.lost is True
+    assert result.won is False
+    assert result.remove is True
+    assert result.bankroll_change == 0
+
+
+@pytest.mark.parametrize(
+    "bet, win_roll, loss_roll",
+    [
+        (Buy(4, 10), (2, 2), (3, 4)),
+        (Lay(4, 10), (3, 4), (2, 2)),
+        (Put(6, 10), (3, 3), (3, 4)),
+    ],
+)
+def test_number_bets_point_on_win_and_loss(bet, win_roll, loss_roll):
+    """Point On Win → payout, REMOVE; Point On Loss → lose stake, REMOVE."""
+    # Win case
+    table_win = Table()
+    table_win.settings["come_out_working_policy"] = "real_casino"
+    table_win.settings["vig_paid_on_win"] = True
+    table_win.point.number = 8
+    table_win.dice.fixed_roll(win_roll)
+    win_result = bet.get_result(table_win)
+
+    assert win_result.won is True
+    assert win_result.remove is True
+    assert win_result.bankroll_change > 0
+
+    # Loss case
+    table_loss = Table()
+    table_loss.settings["come_out_working_policy"] = "real_casino"
+    table_loss.settings["vig_paid_on_win"] = True
+    table_loss.point.number = 8
+    table_loss.dice.fixed_roll(loss_roll)
+    loss_result = bet.get_result(table_loss)
+
+    assert loss_result.lost is True
+    assert loss_result.remove is True
+    assert loss_result.bankroll_change == 0
+
+
+@pytest.mark.parametrize(
+    "bet, roll",
+    [
+        (Buy(6, 10, always_working=True), (3, 4)),
+        (Lay(6, 10, always_working=True), (3, 3)),
+        (Put(6, 10, always_working=True), (3, 4)),
+    ],
+)
+def test_removing_number_bets_lose_on_comeout_when_always_working(bet, roll):
+    table = Table()
+    table.settings["come_out_working_policy"] = "real_casino"
+
+    table.dice.fixed_roll(roll)
+    result = bet.get_result(table)
+
+    assert result.lost is True
+    assert result.won is False
+    assert result.remove is True
+    assert result.bankroll_change == 0
+
+
+def test_buy_stays_inactive_on_comeout_in_real_casino_mode():
+    table = Table()
+    table.settings["come_out_working_policy"] = "real_casino"
+    bet = Buy(6, 10)
+
+    table.dice.fixed_roll((3, 3))
+    result = bet.get_result(table)
+
+    assert result.amount == 0
+    assert result.remove is False
+
+
+def test_buy_always_working_overrides_real_casino_mode():
+    table = Table()
+    table.settings["come_out_working_policy"] = "real_casino"
+    bet = Buy(6, 10, always_working=True)
+
+    table.dice.fixed_roll((3, 3))
+    result = bet.get_result(table)
+
+    assert result.won
+    assert result.remove is True
+
+
+def test_lay_stays_inactive_on_comeout_in_real_casino_mode():
+    table = Table()
+    table.settings["come_out_working_policy"] = "real_casino"
+    bet = Lay(6, 10)
+
+    table.dice.fixed_roll((3, 3))
+    result = bet.get_result(table)
+
+    assert result.amount == 0
+    assert result.remove is False
+
+
+def test_lay_always_working_overrides_real_casino_mode():
+    table = Table()
+    table.settings["come_out_working_policy"] = "real_casino"
+    bet = Lay(6, 10, always_working=True)
+
+    table.dice.fixed_roll((3, 4))
+    result = bet.get_result(table)
+
+    assert result.won
+    assert result.remove is True
+
+
+def test_put_stays_inactive_on_comeout_in_real_casino_mode():
+    table = Table()
+    table.settings["come_out_working_policy"] = "real_casino"
+    bet = Put(6, 10)
+
+    table.dice.fixed_roll((3, 3))
+    result = bet.get_result(table)
+
+    assert result.amount == 0
+    assert result.remove is False
+
+
+def test_put_always_working_overrides_real_casino_mode():
+    table = Table()
+    table.settings["come_out_working_policy"] = "real_casino"
+    bet = Put(6, 10, always_working=True)
+
+    table.dice.fixed_roll((3, 3))
+    result = bet.get_result(table)
+
+    assert result.won
+    assert result.remove is True
+
+
+def test_dontcome_odds_work_on_comeout_in_real_casino_mode():
+    table = Table()
+    table.settings["come_out_working_policy"] = "real_casino"
+    bet = Odds(DontCome, 6, 10)
+
+    table.dice.fixed_roll((3, 4))
+    result = bet.get_result(table)
+
+    assert result.won
+    assert result.remove is True
+
+
+def test_dontcome_odds_work_on_comeout_in_legacy_mode():
+    table = Table()
+    table.settings["come_out_working_policy"] = "legacy"
+    bet = Odds(DontCome, 6, 10)
+
+    table.dice.fixed_roll((3, 4))
+    result = bet.get_result(table)
+
+    assert result.won
+    assert result.remove is True
+
+
+def test_dontcome_odds_work_on_comeout_by_default():
+    table = Table()
+    bet = Odds(DontCome, 6, 10)
+
+    table.dice.fixed_roll((3, 4))
+    result = bet.get_result(table)
+
+    assert result.won
+    assert result.remove is True
+
+
+@pytest.mark.parametrize(
+    "bet_factory, roll",
+    [
+        (lambda: Place(6, 10), (3, 3)),
+        (lambda: Buy(6, 10), (3, 3)),
+        (lambda: Lay(6, 10), (3, 4)),
+        (lambda: Put(6, 10), (3, 3)),
+    ],
+)
+def test_invalid_comeout_policy_falls_back_to_legacy_for_number_bets(bet_factory, roll):
+    table = Table()
+    table.settings["come_out_working_policy"] = "invalid"
+    bet = bet_factory()
+
+    table.dice.fixed_roll(roll)
+
+    result = bet.get_result(table)
+
+    assert result.won is False
+    assert result.remove is False
+    assert result.amount == 0
+
+
+@pytest.mark.parametrize(
+    "bet_factory, roll",
+    [
+        (lambda aw: Place(6, 10, always_working=aw), (3, 3)),
+        (lambda aw: Buy(6, 10, always_working=aw), (3, 3)),
+        (lambda aw: Lay(6, 10, always_working=aw), (3, 4)),
+        (lambda aw: Put(6, 10, always_working=aw), (3, 3)),
+        (lambda aw: Odds(Put, 6, 10, always_working=aw), (3, 3)),
+    ],
+)
+def test_explicit_true_overrides_real_casino_comeout_behavior(bet_factory, roll):
+    table = Table()
+    table.settings["come_out_working_policy"] = "real_casino"
+    bet = bet_factory(True)
+
+    table.dice.fixed_roll(roll)
+    result = bet.get_result(table)
+
+    assert result.won is True
+
+
+@pytest.mark.parametrize(
+    "bet_factory, roll",
+    [
+        (lambda aw: Place(6, 10, always_working=aw), (3, 3)),
+        (lambda aw: Buy(6, 10, always_working=aw), (3, 3)),
+        (lambda aw: Lay(6, 10, always_working=aw), (3, 4)),
+        (lambda aw: Put(6, 10, always_working=aw), (3, 3)),
+        (lambda aw: Odds(Put, 6, 10, always_working=aw), (3, 3)),
+    ],
+)
+def test_explicit_false_overrides_legacy_comeout_behavior_across_number_bets(
+    bet_factory, roll
+):
+    table = Table()
+    table.settings["come_out_working_policy"] = "legacy"
+    bet = bet_factory(False)
+
+    table.dice.fixed_roll(roll)
+    result = bet.get_result(table)
+
+    assert result.won is False
+    assert result.lost is False
+
+
+@pytest.mark.parametrize(
+    "bet_factory, roll",
+    [
+        (lambda aw: Place(6, 10, always_working=aw), (3, 3)),
+        (lambda aw: Buy(6, 10, always_working=aw), (3, 3)),
+        (lambda aw: Lay(6, 10, always_working=aw), (3, 4)),
+        (lambda aw: Put(6, 10, always_working=aw), (3, 3)),
+    ],
+)
+@pytest.mark.parametrize(
+    "policy, expected_working",
+    [("legacy", True), ("real_casino", False)],
+)
+def test_always_working_none_defers_to_table_policy_for_number_bets(
+    bet_factory, roll, policy, expected_working
+):
+    table = Table()
+    table.settings["come_out_working_policy"] = policy
+    bet = bet_factory(None)
+
+    table.dice.fixed_roll(roll)
+    result = bet.get_result(table)
+
+    if expected_working:
+        assert result.won is True
+    else:
+        assert result.won is False
+        assert result.lost is False
+
+
+@pytest.mark.parametrize(
+    "bet_factory, roll",
+    [
+        (lambda: Place(6, 10), (3, 3)),
+        (lambda: Buy(6, 10), (3, 3)),
+        (lambda: Lay(6, 10), (3, 4)),
+        (lambda: Put(6, 10), (3, 3)),
+    ],
+)
+def test_missing_come_out_working_policy_defaults_to_real_casino_behavior(
+    bet_factory, roll
+):
+    table = Table()
+    table.settings.pop("come_out_working_policy")
+    bet = bet_factory()
+
+    table.dice.fixed_roll(roll)
+    result = bet.get_result(table)
+
+    assert result.won is False
+    assert result.remove is False
+    assert result.amount == 0
+
+
+@pytest.mark.parametrize("always_working", [None, True, False])
+@pytest.mark.parametrize(
+    "bet_factory",
+    [
+        lambda aw: Place(6, 10, always_working=aw),
+        lambda aw: Buy(6, 10, always_working=aw),
+        lambda aw: Lay(6, 10, always_working=aw),
+        lambda aw: Put(6, 10, always_working=aw),
+        lambda aw: Odds(Put, 6, 10, always_working=aw),
+    ],
+)
+def test_copy_and_deepcopy_preserve_always_working_state(bet_factory, always_working):
+    bet = bet_factory(always_working)
+
+    copied = bet.copy()
+    deep_copied = copy.deepcopy(bet)
+
+    assert copied is not bet
+    assert deep_copied is not bet
+    assert copied.always_working is always_working
+    assert deep_copied.always_working is always_working
+
+
+@pytest.mark.parametrize(
+    "roll, expected_amount, expected_remove",
+    [
+        ((3, 3), 10, True),
+        ((3, 4), 10, True),
+        ((2, 3), 0, False),
+    ],
+)
+def test_light_side_odds_not_working_on_comeout_only_ignores_resolving_totals(
+    roll, expected_amount, expected_remove
+):
+    table = Table()
+    table.settings["come_out_working_policy"] = "real_casino"
+    bet = Odds(Come, 6, 10)
+
+    table.dice.fixed_roll(roll)
+    result = bet.get_result(table)
+
+    assert result.amount == expected_amount
+    assert result.remove is expected_remove
+    if expected_remove:
+        assert result.pushed
+
+
+@pytest.mark.parametrize(
+    "roll, expected_won, expected_lost",
+    [
+        ((3, 3), True, False),
+        ((3, 4), False, True),
+    ],
+)
+def test_come_odds_always_working_resolves_on_comeout(
+    roll, expected_won, expected_lost
+):
+    table = Table()
+    table.settings["come_out_working_policy"] = "real_casino"
+    bet = Odds(Come, 6, 10, always_working=True)
+
+    table.dice.fixed_roll(roll)
+    result = bet.get_result(table)
+
+    assert result.won is expected_won
+    assert result.lost is expected_lost
+    assert result.remove is True
+    if expected_won:
+        assert result.bankroll_change > bet.amount
+    else:
+        assert result.bankroll_change == 0
+
+
+@pytest.mark.parametrize(
+    "roll, expected_amount, expected_remove",
+    [
+        ((3, 3), 10, True),
+        ((3, 4), 10, True),
+        ((2, 3), 0, False),
+    ],
+)
+def test_dontcome_odds_can_be_off_on_comeout_and_push_on_triggers(
+    roll, expected_amount, expected_remove
+):
+    table = Table()
+    table.settings["come_out_working_policy"] = "real_casino"
+    bet = Odds(DontCome, 6, 10, always_working=False)
+
+    table.dice.fixed_roll(roll)
+    result = bet.get_result(table)
+
+    assert result.amount == expected_amount
+    assert result.remove is expected_remove
+    if expected_remove:
+        assert result.pushed is True
+        assert result.bankroll_change == bet.amount
+    else:
+        assert result.bankroll_change == 0
 
 
 def test_put_odds_allowed_when_point_on():

@@ -1,5 +1,5 @@
 Welcome to the Craps Table!
-Player 0: Strategy=BetPassLine(bet_amount=5.0, mode=StrategyMode.ADD_IF_POINT_OFF) + PassLineOddsMultiplier(odds_multiplier=2), Bankroll=100.0
+Player 0: Strategy=BetPassLine(bet_amount=5.0, mode=StrategyMode.ADD_IF_POINT_OFF) + PassLineOddsMultiplier(odds_multiplier=2, always_working=False), Bankroll=100.0
 Player 1: Strategy=BetPlace(place_bet_amounts={5: 10, 6: 12, 8: 12, 4: 10}, mode=StrategyMode.BET_IF_POINT_ON, skip_point=True, skip_come=False), Bankroll=1000.0
 
 
@@ -117,21 +117,21 @@ Shooter rolled 8 (5, 3)
 Player 1 won $14.0 on $12 Place(8)!
 Point is On (5)
 Player 0: Bankroll=72.0, Bet amount=15.0, Bets=[$5 PassLine, $10 Odds(PassLine)]
-Player 1: Bankroll=952.0, Bet amount=34.0, Bets=[$12 Place(6), $10 Place(4), $12 Place(8)]
+Player 1: Bankroll=952.0, Bet amount=34.0, Bets=[$12 Place(6), $12 Place(8), $10 Place(4)]
 
 Dice out! (roll 17, shooter 3)
 Shooter rolled 3 (1, 2)
 Point is On (5)
 Player 0: Bankroll=72.0, Bet amount=15.0, Bets=[$5 PassLine, $10 Odds(PassLine)]
-Player 1: Bankroll=952.0, Bet amount=34.0, Bets=[$12 Place(6), $10 Place(4), $12 Place(8)]
+Player 1: Bankroll=952.0, Bet amount=34.0, Bets=[$12 Place(6), $12 Place(8), $10 Place(4)]
 
 Dice out! (roll 18, shooter 3)
 Shooter rolled 7 (3, 4)
 Player 0 lost $5.0 on $5 PassLine.
 Player 0 lost $10.0 on $10 Odds(PassLine).
 Player 1 lost $12.0 on $12 Place(6).
-Player 1 lost $10.0 on $10 Place(4).
 Player 1 lost $12.0 on $12 Place(8).
+Player 1 lost $10.0 on $10 Place(4).
 Point is Off (None)
 Player 0: Bankroll=67.0, Bet amount=5.0, Bets=[$5 PassLine]
 Player 1: Bankroll=952.0, Bet amount=0, Bets=[]

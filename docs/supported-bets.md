@@ -25,6 +25,22 @@ Place bet on the 8).
 
 Some bets have options that can be specified in the {py:class}`~crapssim.table.TableSettings`, which is unique to each Table. 
 
+### Come-out working policy
+
+Use `TableSettings["come_out_working_policy"]` to control default bet behavior
+when the point is off:
+
+- `"legacy"`: preserves prior simulator behavior.
+- `"real_casino"` (default): uses table-convention defaults for working/not-working status.
+
+In `"real_casino"` mode:
+
+- `Place`, `Buy`, `Lay`, and `Put` are off on come-out by default.
+- `Odds` are off on come-out by default, except `DontCome` odds are on.
+
+For supported bet types, passing `always_working=True/False` on the bet
+instance overrides the table-level default.
+
 
 ### Odds bets
 

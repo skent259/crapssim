@@ -1,3 +1,5 @@
+"""Strategies that add odds bets to supported base bets."""
+
 from typing import SupportsFloat, TypeAlias
 
 from crapssim.bet import Bet, Come, DontCome, DontPass, Odds, PassLine, Put
@@ -81,9 +83,11 @@ class OddsAmount(Strategy):
                 player.add_bet(bet)
 
     def _get_always_working_repr(self) -> str:
-        """Since the default is false, only need to print when True"""
+        """Since the default is None, only need to print when explicitly set."""
         return (
-            f", always_working={self.always_working})" if self.always_working else f")"
+            f", always_working={self.always_working})"
+            if self.always_working is not None
+            else ")"
         )
 
     def __repr__(self):
@@ -119,8 +123,8 @@ class _BaseOddsAmount(OddsAmount):
 
     def __repr__(self) -> str:
         return (
-            f"{self.__class__.__name__}(bet_amount={self.bet_amount}, numbers={self.numbers}"
-            f"{self._get_always_working_repr()}"
+            f"{self.__class__.__name__}(bet_amount={self.bet_amount}, "
+            f"numbers={self.numbers}{self._get_always_working_repr()}"
         )
 
 
@@ -159,7 +163,8 @@ class OddsMultiplier(Strategy):
 
     Args:
         base_type: The bet that odds will be added to.
-        odds_multiplier: If odds_multiplier is a float, adds multiplier * base_bets amount to the odds.
+        odds_multiplier: If odds_multiplier is a float,
+            adds multiplier * base_bets amount to the odds.
             If the odds multiplier is a dictionary of floats, looks at the dictionary to
             determine what odds multiplier to use depending on the given point.
         always_working (bool): Whether the odds are working when the point is off.
@@ -177,6 +182,7 @@ class OddsMultiplier(Strategy):
 
     @staticmethod
     def get_point_number(bet: Bet, table: "Table"):
+        """Return the point number associated with the base bet."""
         if isinstance(bet, (PassLine, DontPass)):
             return table.point.number
         elif isinstance(bet, (Come, Put, DontCome)):
@@ -220,9 +226,11 @@ class OddsMultiplier(Strategy):
         return len([x for x in player.bets if isinstance(x, self.base_type)]) == 0
 
     def _get_always_working_repr(self) -> str:
-        """Since the default is false, only need to print when True"""
+        """Since the default is None, only need to print when explicitly set."""
         return (
-            f", always_working={self.always_working})" if self.always_working else f")"
+            f", always_working={self.always_working})"
+            if self.always_working is not None
+            else ")"
         )
 
     def __repr__(self) -> str:

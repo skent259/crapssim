@@ -32,16 +32,18 @@ class Dice:
         """Random number generated used when rolling"""
 
     @property
-    def total(self) -> int:
+    def total(self) -> int | None:
         """Sum of dice outcome, e.g. 8 for (2, 6)"""
         if self._result is not None:
             return sum(self.result)
+        return None
 
     @property
-    def result(self) -> DicePair:
+    def result(self) -> DicePair | None:
         """Most recent outcome of the roll of two dice, e.g. (2, 6)"""
         if self._result is not None:
             return tuple(self._result)
+        return None
 
     @result.setter
     def result(self, value: DicePairInput) -> DicePair:

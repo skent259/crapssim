@@ -7,6 +7,7 @@ from crapssim.bet import (
     All,
     Any7,
     AnyCraps,
+    Buy,
     Boxcars,
     CAndE,
     Come,
@@ -15,9 +16,11 @@ from crapssim.bet import (
     Field,
     Fire,
     HardWay,
+    Lay,
     Odds,
     PassLine,
     Place,
+    Put,
     Small,
     Tall,
     Three,
@@ -25,6 +28,7 @@ from crapssim.bet import (
     Yo,
 )
 from crapssim.point import Point
+from crapssim.rules import ClassicRules, CraplessRules
 from crapssim.strategy.odds import ComeOddsMultiplier
 from crapssim.strategy.single_bet import BetCome, BetPassLine
 from crapssim.strategy.tools import NullStrategy
@@ -829,3 +833,177 @@ def test_odds_inactive_when_point_off_unless_always_working():
 
     assert table.players[0].bankroll == 190
     assert table.players[1].bankroll == 110
+
+
+def test_come_out_policy_changes_place_buy_lay_resolution():
+    legacy = Table()
+    legacy.settings["vig_paid_on_win"] = True
+    legacy.settings["come_out_working_policy"] = "legacy"
+    real_casino = Table()
+    real_casino.settings["come_out_working_policy"] = "real_casino"
+    real_casino.settings["vig_paid_on_win"] = True
+
+    for table in (legacy, real_casino):
+        player = table.add_player(bankroll=200, strategy=NullStrategy())
+        player.add_bet(Place(6, 12))
+        player.add_bet(Buy(4, 10))
+        player.add_bet(Lay(5, 12))
+        table.fixed_run(dice_outcomes=[(4, 3)], verbose=True)
+
+    assert legacy.players[0].bankroll == 186.0
+    assert legacy.players[0].has_bets(Place) is False
+    assert legacy.players[0].has_bets(Buy) is False
+    assert legacy.players[0].has_bets(Lay) is False
+    assert legacy.players[0].total_bet_amount == 0.0
+    assert real_casino.players[0].bankroll == 166.0
+    assert real_casino.players[0].has_bets(Place) is True
+    assert real_casino.players[0].has_bets(Buy) is True
+    assert real_casino.players[0].has_bets(Lay) is True
+    assert real_casino.players[0].total_bet_amount == 34.0
+
+
+@pytest.mark.parametrize(
+    "policy, expected_bankroll",
+    [
+        ("legacy", 206.66666666666666),
+        ("real_casino", 206.66666666666666),
+    ],
+)
+def test_policy_changes_traveled_come_dontcome_and_odds_on_come_out(
+    policy, expected_bankroll
+):
+    table = Table()
+    table.settings["come_out_working_policy"] = policy
+    table.add_player(bankroll=200, strategy=NullStrategy())
+    player = table.players[0]
+
+    table.point.number = 4
+    player.add_bet(Come(10, 6))
+    player.add_bet(DontCome(10, 5))
+    player.add_bet(Odds(Come, 6, 10))
+    player.add_bet(Odds(DontCome, 5, 10))
+
+    # Roll point then a come-out 7 for policy-sensitive bet resolution.
+    table.fixed_run(dice_outcomes=[(2, 2), (3, 4)], verbose=True)
+
+    assert player.bankroll == pytest.approx(expected_bankroll)
+    assert len(player.bets) == 0
+
+
+@pytest.mark.parametrize(
+    "rules, number, roll, bet_type",
+    [
+        (ClassicRules(), 4, (2, 2), Place),
+        (ClassicRules(), 4, (2, 2), Buy),
+        (CraplessRules(), 2, (1, 1), Place),
+        (CraplessRules(), 2, (1, 1), Buy),
+    ],
+)
+def test_real_casino_policy_keeps_place_and_buy_inactive_on_come_out(
+    rules, number, roll, bet_type
+):
+    table = Table(rules=rules)
+    table.settings["come_out_working_policy"] = "real_casino"
+    table.settings["vig_paid_on_win"] = True
+    table.add_player(bankroll=100, strategy=NullStrategy())
+    player = table.players[0]
+
+    player.add_bet(bet_type(number, 10))
+    table.fixed_run([roll], verbose=True)
+
+    assert player.bankroll == pytest.approx(90)
+    assert len(player.bets) == 1
+
+
+@pytest.mark.parametrize("rules", [ClassicRules(), CraplessRules()])
+def test_real_casino_policy_keeps_lay_inactive_on_come_out(rules):
+    table = Table(rules=rules)
+    table.settings["come_out_working_policy"] = "real_casino"
+    table.settings["vig_paid_on_win"] = True
+    table.add_player(bankroll=100, strategy=NullStrategy())
+    player = table.players[0]
+
+    player.add_bet(Lay(4, 10))
+    table.fixed_run([(4, 3)], verbose=True)
+
+    assert player.bankroll == pytest.approx(90)
+    assert len(player.bets) == 1
+
+
+@pytest.mark.parametrize(
+    "rules, put_number, come_number, second_roll",
+    [
+        (ClassicRules(), 6, 6, (3, 3)),
+        (CraplessRules(), 2, 2, (1, 1)),
+    ],
+)
+def test_real_casino_policy_keeps_put_inactive_but_keeps_traveled_come_working(
+    rules, put_number, come_number, second_roll
+):
+    table = Table(rules=rules)
+    table.settings["come_out_working_policy"] = "real_casino"
+    table.add_player(bankroll=200, strategy=NullStrategy())
+    player = table.players[0]
+
+    table.point.number = 4
+    player.add_bet(Put(put_number, 10))
+    player.add_bet(Come(10, come_number))
+
+    # Resolve the current point, then roll a matching come-out total.
+    table.fixed_run([(2, 2), second_roll], verbose=True)
+
+    assert player.bankroll == pytest.approx(200)
+    assert len(player.bets) == 1
+
+
+def test_real_casino_policy_keeps_traveled_dontcome_working_on_come_out_classic():
+    table = Table(rules=ClassicRules())
+    table.settings["come_out_working_policy"] = "real_casino"
+    table.add_player(bankroll=100, strategy=NullStrategy())
+    player = table.players[0]
+
+    table.point.number = 4
+    player.add_bet(DontCome(10, 5))
+
+    table.fixed_run([(2, 2), (3, 4)], verbose=True)
+
+    assert player.bankroll == pytest.approx(110)
+    assert len(player.bets) == 0
+
+
+@pytest.mark.parametrize(
+    "comeout_roll, expected_bankroll",
+    [
+        ((3, 3), 90),
+        ((3, 4), 110),
+    ],
+)
+def test_dontcome_odds_always_working_false_pushes_on_comeout_triggers(
+    comeout_roll, expected_bankroll
+):
+    table = Table(rules=ClassicRules())
+    table.settings["come_out_working_policy"] = "real_casino"
+    table.add_player(bankroll=100, strategy=NullStrategy())
+    player = table.players[0]
+
+    table.point.number = 4
+    player.add_bet(DontCome(10, 6))
+    player.add_bet(Odds(DontCome, 6, 10, always_working=False))
+
+    table.fixed_run([(2, 2), comeout_roll], verbose=True)
+
+    assert player.bankroll == pytest.approx(expected_bankroll)
+    assert len(player.bets) == 0
+
+
+def test_dontcome_not_allowed_in_crapless_integration_even_with_policy_enabled():
+    table = Table(rules=CraplessRules())
+    table.settings["come_out_working_policy"] = "real_casino"
+    table.add_player(bankroll=100, strategy=NullStrategy())
+    player = table.players[0]
+
+    table.point.number = 4
+    player.add_bet(DontCome(10))
+
+    assert player.bankroll == pytest.approx(100)
+    assert len(player.bets) == 0

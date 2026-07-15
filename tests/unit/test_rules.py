@@ -1,6 +1,5 @@
 import pytest
 
-from crapssim.point import Point
 from crapssim.rules import AbstractRules, ClassicRules, CraplessRules
 
 

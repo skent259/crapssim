@@ -465,13 +465,17 @@ class HammerLock(Strategy):
         DontPassOddsMultiplier(self.odds_multiplier).update_bets(player)
 
     def pass_and_dontpass(self, player: Player) -> None:
-        """Update bets when point is Off: add a PassLine and a DontPass bet if they don't already exist."""
+        """Update bets when point is Off: add a PassLine and
+        a DontPass bet if they don't already exist.
+        """
         RemoveByType(Place).update_bets(player)
         BetPassLine(self.base_amount, StrategyMode.ADD_IF_NOT_BET).update_bets(player)
         BetDontPass(self.base_amount, StrategyMode.ADD_IF_NOT_BET).update_bets(player)
 
     def place68(self, player: Player) -> None:
-        """Update bets to Place the 6 and 8 (regardless of the point) and then lay odds on DontPass bets."""
+        """Update bets to Place the 6 and 8 (regardless of the point)
+        and then lay odds on DontPass bets.
+        """
         place_amounts = {
             6: self.start_six_eight_amount,
             8: self.start_six_eight_amount,
@@ -504,6 +508,9 @@ class Risk12(Strategy):
         """
         super().__init__()
         self.base_amount = float(base_amount)
+        self.min_bankroll = float(
+            base_amount
+        )  # pylint W0201 (attribute-defined-outside-init)
 
     def completed(self, player: Player) -> bool:
         """The strategy is completed if the Player can no longer make the initial PassLine bet, and
@@ -618,13 +625,14 @@ class DiceDoctor(WinProgression):
 
 class Place68PR(Strategy):
     """Place 6 and 8 with a "Press and Regress" approach. Strategy that places the 6 and 8.
-    If either of those bets win, the bet is pressed to 2 * the bet amount. If the bet is won again,
-    it is reduced to the original bet amount.
+    If either of those bets win, the bet is pressed to 2 * the bet amount.
+    If the bet is won again, it is reduced to the original bet amount.
     """
 
     def __init__(self, base_amount: float = 6) -> None:
-        """If point is on place the 6 & 8 of the amount. If you win press the bet to double. If you win
-        again reduce the bet back to starting amount.
+        """If point is on place the 6 & 8 of the amount.
+        If you win press the bet to double.
+        If you win again reduce the bet back to starting amount.
 
         Parameters
         ----------
@@ -709,6 +717,21 @@ class Place68PR(Strategy):
         if self.eight_winnings == self.win_one_amount:
             player.add_bet(Place(8, self.starting_amount))
 
+    def regress(self, player: Player) -> None:
+        """Reduce pressed place bets back to the starting amount after the second hit.
+
+        Parameters
+        ----------
+        player
+            The player to make the bets for.
+        """
+        if self.six_winnings == self.win_two_amount:
+            player.remove_bet(Place(6, self.press_amount))
+            player.add_bet(Place(6, self.starting_amount))
+        if self.eight_winnings == self.win_two_amount:
+            player.remove_bet(Place(8, self.press_amount))
+            player.add_bet(Place(8, self.starting_amount))
+
     def update_bets(self, player: Player) -> None:
         """Ensure that a Place6 and Place8 bet always exist for the player of base amount.
         Press the bet if you win and haven't pressed the bet yet.
@@ -719,6 +742,7 @@ class Place68PR(Strategy):
             The player to place the bets for.
         """
         self.ensure_bets_exist(player)
+        self.regress(player)
         self.press(player)
 
     def __repr__(self) -> str:
@@ -962,7 +986,14 @@ class SqueezePlay(PlaceHitProgression):
     _INSIDE_INITIAL = {5: 15.0, 6: 18.0, 8: 18.0, 9: 15.0}  # $66 inside
     _INSIDE_PRESSED = {5: 20.0, 6: 24.0, 8: 24.0, 9: 20.0}  # $88 inside
     _OUTSIDE = {4: 10.0, 10: 10.0}
-    _ACROSS_FINAL = {4: 10.0, 5: 10.0, 6: 12.0, 8: 12.0, 9: 10.0, 10: 10.0}  # $64 across
+    _ACROSS_FINAL = {
+        4: 10.0,
+        5: 10.0,
+        6: 12.0,
+        8: 12.0,
+        9: 10.0,
+        10: 10.0,
+    }  # $64 across
 
     def __init__(self) -> None:
         """Build the fixed four-stage squeeze progression."""
@@ -1015,7 +1046,7 @@ class DoubleTap(AggregateStrategy):
         """Build one independent double-tap progression per place number."""
         self.base_amount = float(base_amount)
         # 6 and 8 pay 7:6, so their bets must be multiples of $6.
-        six_eight_base = 6/5 * self.base_amount
+        six_eight_base = 6 / 5 * self.base_amount
 
         progressions = []
         for number in (6, 8):

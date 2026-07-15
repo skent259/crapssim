@@ -36,7 +36,6 @@ from crapssim.strategy.tools import (
     AddIfNotBet,
     AddIfPointOff,
     AddIfPointOn,
-    AddIfTrue,
     Player,
     RemoveIfPointOff,
     RemoveIfTrue,
@@ -73,6 +72,8 @@ __all__ = [
 
 
 class StrategyMode(enum.Enum):
+    """Modes controlling how a single-bet strategy applies its bet."""
+
     ADD_IF_NOT_BET = enum.auto()
     ADD_IF_POINT_OFF = enum.auto()
     ADD_IF_POINT_ON = enum.auto()
@@ -154,8 +155,12 @@ class BetSingleNumber(_BaseSingleBet):
         number: int,
         bet_amount: SupportsFloat,
         mode: StrategyMode = StrategyMode.ADD_IF_NOT_BET,
+        always_working: bool | None = None,
     ) -> None:
-        super().__init__(self.bet_type(number, bet_amount), mode=mode)
+        super().__init__(
+            self.bet_type(number, bet_amount, always_working=always_working),
+            mode=mode,
+        )
 
 
 class BetPlace(Strategy):
@@ -168,6 +173,7 @@ class BetPlace(Strategy):
         mode: StrategyMode = StrategyMode.BET_IF_POINT_ON,
         skip_point: bool = True,
         skip_come: bool = False,
+        always_working: bool | None = None,
     ):
         """Strategy for making multiple place bets.
 
@@ -188,6 +194,7 @@ class BetPlace(Strategy):
         self.mode = mode
         self.skip_point = skip_point
         self.skip_come = skip_come
+        self.always_working = always_working
 
     def completed(self, player: Player) -> bool:
         """The strategy is completed if the player can no longer make any of the place bets in the
@@ -223,12 +230,13 @@ class BetPlace(Strategy):
             if self.skip_point and number == player.table.point.number:
                 continue
             if self.skip_come:
-                come_numbers = [
-                    x.point.number for x in player.bets if isinstance(x, Come)
-                ]
+                come_numbers = [x.number for x in player.bets if isinstance(x, Come)]
                 if number in come_numbers:
                     continue
-            _BaseSingleBet(Place(number, amount), mode=self.mode).update_bets(player)
+            _BaseSingleBet(
+                Place(number, amount, always_working=self.always_working),
+                mode=self.mode,
+            ).update_bets(player)
 
     @staticmethod
     def remove_point_bet(player: Player) -> None:
@@ -254,6 +262,8 @@ class BetPlace(Strategy):
 
 
 class BetPassLine(_BaseSingleBet):
+    """Place a Pass Line bet when the configured mode allows it."""
+
     def __init__(
         self,
         bet_amount: SupportsFloat,
@@ -263,6 +273,8 @@ class BetPassLine(_BaseSingleBet):
 
 
 class BetDontPass(_BaseSingleBet):
+    """Place a Dont Pass bet when the configured mode allows it."""
+
     def __init__(
         self,
         bet_amount: SupportsFloat,
@@ -272,6 +284,8 @@ class BetDontPass(_BaseSingleBet):
 
 
 class BetCome(_BaseSingleBet):
+    """Place a Come bet when the configured mode allows it."""
+
     def __init__(
         self,
         bet_amount: SupportsFloat,
@@ -281,6 +295,8 @@ class BetCome(_BaseSingleBet):
 
 
 class BetDontCome(_BaseSingleBet):
+    """Place a Dont Come bet when the configured mode allows it."""
+
     def __init__(
         self,
         bet_amount: SupportsFloat,
@@ -290,6 +306,8 @@ class BetDontCome(_BaseSingleBet):
 
 
 class BetHardWay(_BaseSingleBet):
+    """Place a Hard Way bet on one of the supported hard totals."""
+
     def __init__(
         self,
         number: tuple[int],
@@ -309,6 +327,8 @@ class BetHardWay(_BaseSingleBet):
 
 
 class BetHop(_BaseSingleBet):
+    """Place a Hop bet for a specific dice result pair."""
+
     def __init__(
         self,
         result: tuple[int, int],
@@ -328,6 +348,8 @@ class BetHop(_BaseSingleBet):
 
 
 class BetField(_BaseSingleBet):
+    """Place a Field bet when the configured mode allows it."""
+
     def __init__(
         self,
         bet_amount: SupportsFloat,
@@ -337,6 +359,8 @@ class BetField(_BaseSingleBet):
 
 
 class BetAny7(_BaseSingleBet):
+    """Place an Any Seven bet when the configured mode allows it."""
+
     def __init__(
         self,
         bet_amount: SupportsFloat,

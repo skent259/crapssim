@@ -6,7 +6,7 @@ from crapssim.strategy.examples import (
     ThreePointDolly,
     ThreePointMolly,
 )
-from crapssim.table import Table, TableUpdate
+from crapssim.table import Table
 
 
 def _run(strategy, rolls):

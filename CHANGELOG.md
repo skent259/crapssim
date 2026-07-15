@@ -12,14 +12,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added 
 
 * Support for Crapless craps via new `rules` module, with corresponding updates across table and bet from [@tyemerick88] in [#86]
-* Expanded the test suite with new unit and integration tests to improve coverage from [@tyemerick88] in [#86]
+* Expanded the test suite with new unit and integration tests to improve coverage from [@tyemerick88] in [#86], [#87]
 * `PlaceHitProgression` strategy tool: For strategies built from place bets that change after each hit in predictable stages from [@skent259] in [#87]
   * `SqueezePlay` strategy example: $66 inside -> add 4/10 -> Press inside -> Regress to $64 across
   * `DoubleTap` strategy example: presses each place number twice then regresses, with every number progressing independently on its own hits
 
+
+### Changed 
+
+* Bet behavior during comeout phase (working vs not) updated by [@tyemerick88] in [#88]
+  * `Buy`, `Lay`, and `Put` bets now have `always_working` argument
+  * `always_working` bet option can now also be None (inherits from new `TableSettings` policy)
+  * Add internal `_BoxNumberBet` to cover logic for `Place`, `Buy`, `Lay`, and `Put` bets
+* `Place` bets now default to staying on the table on a win ([#88])
+
 ### Fixed
 
 * `AggregateStrategy` now forwards `after_roll` to its substrategies, so composed strategies that count wins or detect a seven-out in `after_roll` observe the roll [#87]
+* DC bet odds are now working on the comeout by default ([#88], [#80])
+* `Place68PR` strategy now appropriately regresses after 2nd hit ([#88])
+* `WinProgression` can be aggregated with strategies that have other bet types ([#88]) 
+
 
 
 ## [0.4.0] - 2025-11-18
@@ -161,6 +174,8 @@ Initial version
 [#83]: https://github.com/skent259/crapssim/pull/71
 [#86]: https://github.com/skent259/crapssim/pull/86
 [#87]: https://github.com/skent259/crapssim/pull/87
+[#88]: https://github.com/skent259/crapssim/pull/88
 
 [#48]: https://github.com/skent259/crapssim/issues/48
 [#53]: https://github.com/skent259/crapssim/issues/53
+[#80]: https://github.com/skent259/crapssim/issues/80
