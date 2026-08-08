@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.1] - 2026-08-07
+
 ### Added 
 
 * Support for Crapless craps via new `rules` module, with corresponding updates across table and bet from [@tyemerick88] in [#86]
@@ -28,7 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-* `AggregateStrategy` now forwards `after_roll` to its substrategies, so composed strategies that count wins or detect a seven-out in `after_roll` observe the roll [#87]
+* `AggregateStrategy` now forwards `after_roll` to its substrategies, so composed strategies appropriately capture anything after a roll ([#87])
 * DC bet odds are now working on the comeout by default ([#88], [#80])
 * `Place68PR` strategy now appropriately regresses after 2nd hit ([#88])
 * `WinProgression` can be aggregated with strategies that have other bet types ([#88]) 
@@ -123,7 +125,8 @@ This is a major update with breaking changes throughout the package. The changes
 Initial version 
 
 
-[unreleased]: https://github.com/skent259/crapssim/compare/v0.4.0...HEAD
+[unreleased]: https://github.com/skent259/crapssim/compare/v0.4.1...HEAD
+[0.4.1]: https://github.com/skent259/crapssim/compare/v0.4.0...v0.4.1
 [0.4.0]: https://github.com/skent259/crapssim/compare/v0.3.2...v0.4.0
 [0.3.2]: https://github.com/skent259/crapssim/compare/v0.3.1...v0.3.2
 [0.3.1]: https://github.com/skent259/crapssim/compare/v0.3.0...v0.3.1
