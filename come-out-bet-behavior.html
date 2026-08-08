@@ -1,0 +1,504 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Come-Out Bet Behavior in Craps &mdash; crapssim 0.4.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+      <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=c87aa342"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            crapssim
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Examples and Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="tutorial-strategy-01.html">Strategy Tutorial 1: Starting off</a></li>
+<li class="toctree-l1"><a class="reference internal" href="crapssim_sandbox.html">Sandbox</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Change Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="supported-bets.html">Supported Bets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="autoapi/index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">crapssim</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Come-Out Bet Behavior in Craps</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/come-out-bet-behavior.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="come-out-bet-behavior-in-craps">
+<h1>Come-Out Bet Behavior in Craps<a class="headerlink" href="#come-out-bet-behavior-in-craps" title="Link to this heading"></a></h1>
+<p>This document summarizes the standard behavior of common craps bets during the <strong>come-out roll</strong> (when the puck is OFF).</p>
+<p>It was prepared while researching <a class="reference external" href="https://github.com/skent259/crapssim/issues/80">GitHub Issue #80</a> for the <code class="docutils literal notranslate"><span class="pre">crapssim</span></code> project.</p>
+<p>For the simulator’s implementation-level behavior matrix, see <code class="docutils literal notranslate"><span class="pre">docs/internal/BET_BEHAVIOR_MATRIX.md</span></code>.</p>
+<blockquote>
+<div><p><strong>Important:</strong> Craps table rules are not completely standardized across all casinos. Some behaviors are universal, while others are house rules. Where casino practices differ, this document notes the uncertainty.</p>
+</div></blockquote>
+</section>
+<hr class="docutils" />
+<section id="summary-table">
+<h1>Summary Table<a class="headerlink" href="#summary-table" title="Link to this heading"></a></h1>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Bet</p></th>
+<th class="head"><p>Default During Come-Out</p></th>
+<th class="head"><p>Player Can Override?</p></th>
+<th class="head"><p>Notes</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Come Bet</p></td>
+<td><p>✅ Working</p></td>
+<td><p>No</p></td>
+<td><p>The contract bet always remains active.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Come Odds</p></td>
+<td><p>❌ Off</p></td>
+<td><p>Yes (“Working”)</p></td>
+<td><p>Standard casino default.</p></td>
+</tr>
+<tr class="row-even"><td><p>Don’t Come Bet</p></td>
+<td><p>✅ Working</p></td>
+<td><p>No</p></td>
+<td><p>Contract bet always remains active.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Don’t Come Odds</p></td>
+<td><p>✅ Working</p></td>
+<td><p>Yes (“Off”)</p></td>
+<td><p>Industry standard; this is the behavior described in GitHub Issue #80.</p></td>
+</tr>
+<tr class="row-even"><td><p>Place Bet</p></td>
+<td><p>❌ Off</p></td>
+<td><p>Yes (“Working”)</p></td>
+<td><p>Typically follows the puck unless instructed otherwise.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Buy Bet</p></td>
+<td><p>❌ Off</p></td>
+<td><p>Yes (“Working”)</p></td>
+<td><p>Generally treated the same as Place bets.</p></td>
+</tr>
+<tr class="row-even"><td><p>Lay Bet</p></td>
+<td><p>⚠ Usually Off (house rule)</p></td>
+<td><p>Yes</p></td>
+<td><p>Casino rules vary more than other bet types.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Put Bet</p></td>
+<td><p>⚠ House Rule</p></td>
+<td><p>Yes</p></td>
+<td><p>No widely documented industry standard.</p></td>
+</tr>
+</tbody>
+</table>
+<section id="bet-removability-vs-working-state">
+<h2>Bet Removability vs. Working State<a class="headerlink" href="#bet-removability-vs-working-state" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Bet Type</p></th>
+<th class="head text-center"><p>Can Be Turned Off?</p></th>
+<th class="head text-center"><p>Can Be Removed?</p></th>
+<th class="head"><p>Notes</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Come Bet</p></td>
+<td class="text-center"><p>❌ No</p></td>
+<td class="text-center"><p>❌ No</p></td>
+<td><p>Contract bet once established. Always working until resolved.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Come Odds</p></td>
+<td class="text-center"><p>✅ Yes</p></td>
+<td class="text-center"><p>✅ Yes</p></td>
+<td><p>Default OFF during the come-out. May also be reduced.</p></td>
+</tr>
+<tr class="row-even"><td><p>Don’t Come Bet</p></td>
+<td class="text-center"><p>❌ No</p></td>
+<td class="text-center"><p>✅ Yes</p></td>
+<td><p>Not a contract bet. May be removed or reduced, but cannot simply be turned OFF while remaining on the layout.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Don’t Come Odds</p></td>
+<td class="text-center"><p>✅ Yes</p></td>
+<td class="text-center"><p>✅ Yes</p></td>
+<td><p>Default ON during the come-out. May be turned OFF, removed, or reduced.</p></td>
+</tr>
+<tr class="row-even"><td><p>Place Bet</p></td>
+<td class="text-center"><p>✅ Yes</p></td>
+<td class="text-center"><p>✅ Yes</p></td>
+<td><p>Typically OFF during the come-out unless called “working.”</p></td>
+</tr>
+<tr class="row-odd"><td><p>Buy Bet</p></td>
+<td class="text-center"><p>✅ Yes</p></td>
+<td class="text-center"><p>✅ Yes</p></td>
+<td><p>Typically treated the same as Place bets. May be turned OFF or removed.</p></td>
+</tr>
+<tr class="row-even"><td><p>Lay Bet</p></td>
+<td class="text-center"><p>✅ Yes*</p></td>
+<td class="text-center"><p>✅ Yes</p></td>
+<td><p>Most casinos allow both, but the default come-out behavior is house-dependent.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Put Bet</p></td>
+<td class="text-center"><p>✅ Yes*</p></td>
+<td class="text-center"><p>✅ Yes</p></td>
+<td><p>House rules vary. Generally treated similarly to Place or Buy bets.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<hr class="docutils" />
+<section id="come-bet">
+<h1>1. Come Bet<a class="headerlink" href="#come-bet" title="Link to this heading"></a></h1>
+<section id="how-it-works">
+<h2>How it works<a class="headerlink" href="#how-it-works" title="Link to this heading"></a></h2>
+<p>A Come bet is essentially a Pass Line bet made after a point has already been established.</p>
+<p>Example:</p>
+<ul class="simple">
+<li><p>Table point is 8.</p></li>
+<li><p>You make a $10 Come bet.</p></li>
+<li><p>Next roll is 5.</p></li>
+<li><p>Your Come bet moves onto the 5.</p></li>
+</ul>
+<p>From that point forward, it behaves exactly like a Pass Line bet on the 5.</p>
+<p>You win if:</p>
+<ul class="simple">
+<li><p>5 rolls before 7.</p></li>
+</ul>
+<p>You lose if:</p>
+<ul class="simple">
+<li><p>7 rolls before 5.</p></li>
+</ul>
+</section>
+<hr class="docutils" />
+<section id="during-the-come-out">
+<h2>During the Come-Out<a class="headerlink" href="#during-the-come-out" title="Link to this heading"></a></h2>
+<p>Suppose:</p>
+<ul class="simple">
+<li><p>Your Come bet is sitting on the 5.</p></li>
+<li><p>The shooter makes the table point.</p></li>
+<li><p>The puck turns OFF.</p></li>
+</ul>
+<p>The Come bet itself <strong>remains working</strong>.</p>
+<p>If the come-out roll is another 5:</p>
+<ul class="simple">
+<li><p>The Come bet wins immediately.</p></li>
+</ul>
+<p>This is because the contract portion of the Come bet is always active.</p>
+<section id="odds-are-different">
+<h3>Odds are different<a class="headerlink" href="#odds-are-different" title="Link to this heading"></a></h3>
+<p>Only the <strong>odds behind the Come bet</strong> are OFF by default.</p>
+</section>
+</section>
+</section>
+<hr class="docutils" />
+<section id="come-odds">
+<h1>2. Come Odds<a class="headerlink" href="#come-odds" title="Link to this heading"></a></h1>
+<p>Come odds are an optional wager placed behind an established Come bet.</p>
+<p>Example:</p>
+<ul class="simple">
+<li><p>Come bet travels to 6.</p></li>
+<li><p>You add $60 odds.</p></li>
+</ul>
+<p>When the puck turns OFF:</p>
+<p>Default behavior:</p>
+<p><strong>OFF</strong></p>
+<p>If the come-out roll is 6:</p>
+<ul class="simple">
+<li><p>The Come bet wins.</p></li>
+<li><p>The odds are simply returned without winning or losing.</p></li>
+</ul>
+<p>If you want the odds active, tell the dealer:</p>
+<blockquote>
+<div><p>“Working.”</p>
+</div></blockquote>
+<p>The dealer will usually place an ON lammer behind the odds.</p>
+</section>
+<hr class="docutils" />
+<section id="don-t-come-bet">
+<h1>3. Don’t Come Bet<a class="headerlink" href="#don-t-come-bet" title="Link to this heading"></a></h1>
+<p>A Don’t Come bet is the opposite of a Come bet.</p>
+<p>Example:</p>
+<ul class="simple">
+<li><p>Table point is 9.</p></li>
+<li><p>You make a Don’t Come bet.</p></li>
+<li><p>Next roll is 4.</p></li>
+</ul>
+<p>The bet moves behind the 4.</p>
+<p>You now win if:</p>
+<ul class="simple">
+<li><p>7 rolls before 4.</p></li>
+</ul>
+<p>You lose if:</p>
+<ul class="simple">
+<li><p>4 rolls before 7.</p></li>
+</ul>
+<hr class="docutils" />
+<section id="id1">
+<h2>During the Come-Out<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
+<p>Suppose:</p>
+<ul class="simple">
+<li><p>Your Don’t Come bet is behind the 4.</p></li>
+<li><p>The shooter sevens out.</p></li>
+<li><p>A new shooter begins.</p></li>
+</ul>
+<p>The Don’t Come contract remains active.</p>
+<p>If the come-out roll is:</p>
+<ul class="simple">
+<li><p>4 → Lose</p></li>
+<li><p>7 → Win</p></li>
+</ul>
+<p>The contract bet itself does not automatically turn OFF.</p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="don-t-come-odds">
+<h1>4. Don’t Come Odds<a class="headerlink" href="#don-t-come-odds" title="Link to this heading"></a></h1>
+<p>This is the subject of <a class="reference external" href="https://github.com/skent259/crapssim/issues/80">GitHub Issue #80</a>.</p>
+<p>Suppose:</p>
+<ul class="simple">
+<li><p>Your Don’t Come bet is behind the 4.</p></li>
+<li><p>You have laid odds behind it.</p></li>
+<li><p>A new shooter begins.</p></li>
+</ul>
+<p>Industry-standard behavior:</p>
+<p><strong>The odds remain WORKING during the come-out roll.</strong></p>
+<p>Unlike Come odds, Don’t Come odds are active unless the player specifically requests they be OFF.</p>
+<p>This is intentionally the opposite of Come odds.</p>
+</section>
+<hr class="docutils" />
+<section id="place-bets">
+<h1>5. Place Bets<a class="headerlink" href="#place-bets" title="Link to this heading"></a></h1>
+<p>A Place bet is a wager that a particular box number will roll before a 7.</p>
+<p>Example:</p>
+<p>Place the 6.</p>
+<p>You win if:</p>
+<ul class="simple">
+<li><p>6 rolls before 7.</p></li>
+</ul>
+<p>You lose if:</p>
+<ul class="simple">
+<li><p>7 rolls first.</p></li>
+</ul>
+<p>Unlike Pass or Come bets, Place bets are not contract bets and may be removed at any time.</p>
+<hr class="docutils" />
+<section id="id2">
+<h2>During the Come-Out<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<p>At most casinos:</p>
+<p><strong>Place bets are OFF by default.</strong></p>
+<p>Players often describe this as:</p>
+<blockquote>
+<div><p>“The Place bets follow the puck.”</p>
+</div></blockquote>
+<p>If you want them active during the come-out, you tell the dealer:</p>
+<blockquote>
+<div><p>“Place bets working.”</p>
+</div></blockquote>
+</section>
+</section>
+<hr class="docutils" />
+<section id="buy-bets">
+<h1>6. Buy Bets<a class="headerlink" href="#buy-bets" title="Link to this heading"></a></h1>
+<p>Buy bets work almost exactly like Place bets except they pay true odds and charge a commission (vig).</p>
+<p>Example:</p>
+<p>Buy the 4.</p>
+<p>You win if:</p>
+<ul class="simple">
+<li><p>4 rolls before 7.</p></li>
+</ul>
+<p>You lose if:</p>
+<ul class="simple">
+<li><p>7 rolls first.</p></li>
+</ul>
+<hr class="docutils" />
+<section id="id3">
+<h2>During the Come-Out<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
+<p>Standard behavior:</p>
+<p><strong>OFF</strong></p>
+<p>Players may request that Buy bets remain working.</p>
+<p>Most casinos handle Buy bets the same way they handle Place bets.</p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="lay-bets">
+<h1>7. Lay Bets<a class="headerlink" href="#lay-bets" title="Link to this heading"></a></h1>
+<p>Lay bets are the opposite of Buy bets.</p>
+<p>Example:</p>
+<p>Lay the 10.</p>
+<p>You win if:</p>
+<ul class="simple">
+<li><p>7 rolls before 10.</p></li>
+</ul>
+<p>You lose if:</p>
+<ul class="simple">
+<li><p>10 rolls before 7.</p></li>
+</ul>
+<hr class="docutils" />
+<section id="id4">
+<h2>During the Come-Out<a class="headerlink" href="#id4" title="Link to this heading"></a></h2>
+<p>This is less standardized.</p>
+<p>Many casinos default Lay bets to OFF unless instructed otherwise.</p>
+<p>Other casinos treat them differently because they are effectively bets on the 7.</p>
+<p>Published casino rules are less consistent on Lay bets than on Place or Buy bets.</p>
+<p>For simulation software, Lay bets will be OFF on the come-out roll.</p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="put-bets">
+<h1>8. Put Bets<a class="headerlink" href="#put-bets" title="Link to this heading"></a></h1>
+<p>A Put bet allows a player to place a Pass Line-style contract directly onto a point number without first making a Come bet.</p>
+<p>Example:</p>
+<p>The table point is 8.</p>
+<p>Instead of making a Come bet and waiting for it to travel, you simply Put $10 directly onto the 5.</p>
+<p>You may immediately take odds.</p>
+<p>You win if:</p>
+<ul class="simple">
+<li><p>5 rolls before 7.</p></li>
+</ul>
+<p>You lose if:</p>
+<ul class="simple">
+<li><p>7 rolls before 5.</p></li>
+</ul>
+<hr class="docutils" />
+<section id="id5">
+<h2>During the Come-Out<a class="headerlink" href="#id5" title="Link to this heading"></a></h2>
+<p>There is no widely documented industry standard.</p>
+<p>Many casinos appear to treat Put bets similarly to Place or Buy bets, allowing them to be either ON or OFF.</p>
+<p>However, unlike Come odds or Don’t Come odds, there is no authoritative published default that is consistently documented.</p>
+<p>For simulation software, Put bets will be OFF on the come-out roll.</p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="why-github-issue-80-suggests-an-always-working-property">
+<h1>Why GitHub Issue #80 Suggests an <code class="docutils literal notranslate"><span class="pre">always_working</span></code> Property<a class="headerlink" href="#why-github-issue-80-suggests-an-always-working-property" title="Link to this heading"></a></h1>
+<p>The discussion on Issue #80 suggests adding an <code class="docutils literal notranslate"><span class="pre">always_working</span></code> parameter to several bet classes:</p>
+<ul class="simple">
+<li><p>Place</p></li>
+<li><p>Buy</p></li>
+<li><p>Lay</p></li>
+<li><p>Put</p></li>
+</ul>
+<p>The motivation is to make come-out behavior consistent throughout the codebase while allowing each bet type to specify its default behavior.</p>
+<p>Example defaults might look like:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Bet</p></th>
+<th class="head"><p>Suggested Default</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Don’t Come Odds</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">always_working</span> <span class="pre">=</span> <span class="pre">True</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Place</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">always_working</span> <span class="pre">=</span> <span class="pre">False</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Buy</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">always_working</span> <span class="pre">=</span> <span class="pre">False</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Lay</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">always_working</span> <span class="pre">=</span> <span class="pre">False</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Put</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">always_working</span> <span class="pre">=</span> <span class="pre">False</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<p>This approach would centralize the “working” logic, reduce duplicated code, and make future casino rule variations easier to support.</p>
+</section>
+<hr class="docutils" />
+<section id="references">
+<h1>References<a class="headerlink" href="#references" title="Link to this heading"></a></h1>
+<ul class="simple">
+<li><p>Wikipedia: <em>Craps</em> – discussion of Come odds, Don’t Come odds, Place bets, and working bets.
+https://en.wikipedia.org/wiki/Craps</p></li>
+<li><p>Easy.Vegas – Come Bet rules and working odds.
+https://easy.vegas/games/craps-come</p></li>
+<li><p>Hard Rock Atlantic City – Craps rules discussing Place and Buy bets.
+https://casino.hardrock.com/atlantic-city/casino/table-games/craps-at-hard-rock-atlantic-city</p></li>
+<li><p>GitHub Issue #80 (<code class="docutils literal notranslate"><span class="pre">crapssim</span></code>)
+“DC odds should be working during the come-out by default.”
+https://github.com/skent259/crapssim/issues/80</p></li>
+</ul>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Sean Kent.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

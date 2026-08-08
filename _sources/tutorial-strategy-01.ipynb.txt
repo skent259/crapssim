@@ -1,0 +1,410 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# Tutorial 1: Starting off with strategies\n",
+    "\n",
+    "In the crapssim package, a strategy is just a set of rules to describe exactly how a player will bet under any table situation. Put another way, the strategies are the primary way that a `Player` object (with their bankroll and bets) interacts with the `Table` object (with the dice, point, and other table features). We can simulate how one or many sessions would play out with the selected strategy, to understand if it fits out playing style, objectives, and compares favorably to other strategies. \n",
+    "\n",
+    "In this first tutorial, the goal is to show how to use the pre-built strategies to easily simulate some realistic casino scenarios. The next tutorials will build on this by showing how to combine strategies, use available tools to define simple logical strategies, and finally how to write your own custom strategy that can handle any situation you can dream up. "
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Simple example to get started\n",
+    "\n",
+    "To show the basic interface, we use a strategy that bets the pass line (when the point is off, as usual). In this example, we create a `Table` that will keep track of the dice rolling, turning point on/off, and other measurements. Then we add a player to the table with the `BetPassLine` strategy, with a \\$10 bet. Then we run the table for 20 rolls to see how the bet will play out."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import crapssim as craps\n",
+    "from crapssim.strategy import BetPassLine\n",
+    "\n",
+    "table = craps.Table(seed=1234)\n",
+    "\n",
+    "your_strat = BetPassLine(bet_amount=10)\n",
+    "table.add_player(strategy=your_strat)\n",
+    "\n",
+    "table.run(max_rolls=20, verbose=True)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "We can see that the player lost the first pass line bet with an unlucky 12 roll, but after a few naturals and yo's, in addition to a win when the point was 6, they ended up ahead with \\$110. The pass line bet is always active throughout, as we can tell by the rolls and payouts. \n",
+    "\n",
+    "Note: We set a seed for the table with `craps.Table(seed=1234)` to ensure the same rolls happen each time. Try changing this number to see how another 20 rolls would work out!"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## List of all single bet strategies\n",
+    "\n",
+    "Now what if we want to use a different bet than the pass line? The crapssim package has strategies to implement any single bet, which you can easily swap out in the above code. They all start with `Bet` followed by the bet that the strategy uses. The table below shows these strategies and their location for importing. We can ignore the last two columns for now and come back to them later in the tutorial. "
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "| Name            | Location                     | Default mode        | Extra arguments                                |\n",
+    "|-----------------|------------------------------|---------------------|------------------------------------------------|\n",
+    "| `BetPassLine()` | crapssim.strategy            | ADD_IF_POINT_OFF    |                                                |\n",
+    "| `BetDontPass()` | crapssim.strategy            | ADD_IF_POINT_OFF    |                                                |\n",
+    "| `BetCome()`     | crapssim.strategy.single_bet | ADD_IF_POINT_ON     |                                                |\n",
+    "| `BetDontCome()` | crapssim.strategy.single_bet | ADD_IF_POINT_ON     |                                                |\n",
+    "| `BetPlace()`    | crapssim.strategy            | BET_IF_POINT_ON   | `place_bet_amounts`; `skip_point`; `skip_come` |\n",
+    "| `BetHardWay()`  | crapssim.strategy.single_bet | ADD_IF_NON_EXISTENT | `number`                                       |\n",
+    "| `BetField()`    | crapssim.strategy.single_bet | ADD_IF_NON_EXISTENT |                                                |\n",
+    "| `BetAny7()`     | crapssim.strategy.single_bet | ADD_IF_NON_EXISTENT |                                                |\n",
+    "| `BetTwo()`      | crapssim.strategy.single_bet | ADD_IF_NON_EXISTENT |                                                |\n",
+    "| `BetThree()`    | crapssim.strategy.single_bet | ADD_IF_NON_EXISTENT |                                                |\n",
+    "| `BetYo()`       | crapssim.strategy.single_bet | ADD_IF_NON_EXISTENT |                                                |\n",
+    "| `BetBoxcars()`  | crapssim.strategy.single_bet | ADD_IF_NON_EXISTENT |                                                |\n",
+    "| `BetFire()`     | crapssim.strategy.single_bet | ADD_IF_NON_EXISTENT |                                                |\n",
+    "| `BetAll()`      | crapssim.strategy.single_bet | ADD_IF_NON_EXISTENT |                                                |\n",
+    "| `BetTall()`     | crapssim.strategy.single_bet | ADD_IF_NON_EXISTENT |                                                |\n",
+    "| `BetSmall()`    | crapssim.strategy.single_bet | ADD_IF_NON_EXISTENT |                                                |"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "For example, if we want to switch out our `BetPassLine()` for a `BetCome()` approach, we can change the above example as follows. This strategy will add one come bet every round as long as the point is on."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from crapssim.strategy.single_bet import BetCome\n",
+    "\n",
+    "table = craps.Table(seed=1234)\n",
+    "\n",
+    "your_strat = BetCome(bet_amount=10)\n",
+    "table.add_player(strategy=your_strat)\n",
+    "\n",
+    "table.run(max_rolls=20, verbose=True)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "As we can see above, with a come bet strategy, we avoid the initial 12 craps but lose two come bets when the 3 is rolled. Two of them make it to the 8 and 5, but those also lose when the shooter sevens-out. The only saving grace is that our most recent come bet wins on a 7. The bad luck continues with the next shooter who sevens out while we have three come bets working (9, 10, and 6). Overall, we end this 20 roll session with only \\$60 on this come bet strategy. \n",
+    "\n",
+    "An important point is that the come bet is only placed when the point is on. This behavior is controlled by the `mode` argument, which we will discuss in more detail next. "
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## How to use strategy modes\n",
+    "\n",
+    "Strategy modes are an easy way to control when these single bets will be placed. For example, it makes sense to `BetPassLine()` when the point is off (`ADD_IF_POINT_OFF`), because otherwise we would be better off to place the point number. However, with the `BetYo()`, which wins on an 11, some players would only play this when the point is off while others might play more frequently. The full list of strategy modes is given below, and most are self-explanatory:\n",
+    "\n",
+    "`StrategyMode`:\n",
+    "- `ADD_IF_NON_EXISTENT`: Adds a bet if the current player doesn't already have it. This is essentially the same as playing the bet always.\n",
+    "- `ADD_IF_POINT_OFF`: Adds a bet only if the point is off\n",
+    "- `ADD_IF_POINT_ON`: Adds a bet only if the point is on\n",
+    "- `ADD_IF_NEW_SHOOTER`: Adds a bet only if there is a new shooter (i.e. the previous player has just seven-ed out)\n",
+    "- `ADD_OR_INCREASE`: After each roll of the dice, the bet will be added (if it doesn't exist) or the bet amount will be increased by one unit (if it already exists)\n",
+    "- `BET_IF_POINT_ON`: Player bets only if the point is on (i.e. also removes the bets when point is off, in contrast to `ADD_IF_POINT_ON`). Useful for place bets which typically are not working when the point is off. \n",
+    "- `REPLACE`: Will remove all bets of this type (when possible) before adding a new one. This mode is less useful, so don't worry if it's confusing now\n",
+    "\n",
+    "The following example shows how to change the strategy mode, by showing two different players at the table that both bet the Yo, but at different times. "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from crapssim.strategy.single_bet import BetYo, StrategyMode\n",
+    "\n",
+    "table = craps.Table(seed=1234)\n",
+    "\n",
+    "table.add_player(strategy=BetYo(1), name = \"Player Always\")\n",
+    "table.add_player(strategy=BetYo(1, mode=StrategyMode.ADD_IF_POINT_OFF), name = \"Player Sometimes\")\n",
+    "table.add_player(strategy=BetYo(1, mode=4), name = \"Player 3\")\n",
+    "\n",
+    "table.run(max_rolls=10, verbose=True)\n",
+    "\n",
+    "print(\"\\nFINAL RESULTS\")\n",
+    "for p in table.players:\n",
+    "    print(f\"  {p.name}: Bankroll=${p.bankroll}\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "In this case, both players lose a few Yo bets in the beginning, but \"Player Always\" loses more while the point is on. An 11 rolls after the first seven-out, so both players won that time, and at the end, \"Player Sometimes\" ends up with more total cash (though thankfully both were winners this time!). "
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Extra arguments for single bet strategies\n",
+    "\n",
+    "As we have seen so far, each of the single bet strategies has two primary arguments: \n",
+    "- `bet_amount`: The value wagered each time a bet is made\n",
+    "- `mode`: the `crapssim.strategy.single_bet.StrategyMode` value that specifies when the bets will be made\n",
+    "\n",
+    "However, some single bet strategies require a little bit of extra information.\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "\n",
+    "### BetPlace()\n",
+    "\n",
+    "For place bets, there are four arguments: \n",
+    "\n",
+    "- `place_bet_amounts`: Dictionary of the point to make the Place bet on and the amount of the place bet to make. Replaces `bet_amount` argument.\n",
+    "- `mode`: same as before. Defaults to `StrategyMode.BET_IF_POINT_ON`\n",
+    "- `skip_point`: If True don't make the bet on the given Place if that's the number the tables Point is on. Default is True.\n",
+    "- `skip_come`: If True don't make the bet on the given Place if there is a Come bet with that Point already on that number. Default is False.\n",
+    "\n",
+    "The `place_bet_amount` argument is a python dictionary, which can be specified as `{key: value, key2: value2}`. It's important to note that the `skip_point` argument defaults to `True`. \n",
+    "\n",
+    "For example, to place the 6 and 8 for \\$12 each when the point is on, we can use `BetPlace({6: 12, 8: 12}, skip_point=False)`. \n",
+    "\n",
+    "If we wanted to place the inside numbers (5, 6, 8, 9) except the number that the point is on (for example, if we covered that with a pass line bet already), we can use `BetPlace({5: 10, 6: 12, 8: 12, 9: 10}, skip_point=True)`.\n",
+    "\n",
+    "If we wanted to place all numbers the whole time (whether the point is on or off), with double values on the 8, 9 and 10, we can use `BetPlace({4: 10, 5: 10, 6: 12, 8: 24, 9: 20, 10: 20}, mode=StrategyMode.ADD_IF_NON_EXISTENT, skip_point=False)`. \n",
+    "\n",
+    "Comparing these three strategies on a few rolls (with a \\$200 bankroll this time) shows the differences:"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": []
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from crapssim.strategy.single_bet import BetPlace, StrategyMode\n",
+    "\n",
+    "table = craps.Table(seed=1234)\n",
+    "\n",
+    "strategies = [\n",
+    "    BetPlace({6: 12, 8: 12}, skip_point=False),\n",
+    "    BetPlace({5: 10, 6: 12, 8: 12, 9: 10}, skip_point=True),\n",
+    "    BetPlace({4: 10, 5: 10, 6: 12, 8: 24, 9: 20, 10: 20}, mode=StrategyMode.ADD_IF_NOT_BET, skip_point=False)\n",
+    "]\n",
+    "\n",
+    "for i, s in enumerate(strategies):\n",
+    "    table.add_player(strategy=s, bankroll=200, name = f\"Player {i+1}\")\n",
+    "    \n",
+    "table.run(max_rolls=10, verbose=True)\n",
+    "\n",
+    "print(\"\\nFINAL RESULTS\")\n",
+    "for p in table.players:\n",
+    "    print(f\"  {p.name}: Bankroll=${p.bankroll}\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Player 3's aggressive strategy didn't work out this time, as the early seven-out wiped out all of their bets. Player's 1 and 2 ended up closer to their initial bankroll with less betting. "
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### BetHardway()\n",
+    "\n",
+    "For hardway bets, there are three arguments: \n",
+    "\n",
+    "- `number`: One of 4, 6, 8, 10 to specify which hardway bet to use\n",
+    "- `bet_amount`: Same as before. \n",
+    "- `mode`: Same as before. Defaults to `StrategyMode.ADD_IF_NON_EXISTENT`\n",
+    "\n",
+    "For example, to bet the Hard 8 on every roll for \\$1, use `BetHardWay(8)`\n",
+    "\n",
+    "To bet the Hard 10 when the point is on for \\$2, use `BetHardWay(10, bet_amount=2, mode=StrategyMode.ADD_IF_NEW_SHOOTER).\n",
+    "\n",
+    "#### Exercise 1\n",
+    "\n",
+    "Modify the code example from place bets to have two players with the Hard way bets as above and try it out on a few rolls. \n",
+    "\n",
+    "```python\n",
+    "\n",
+    "from crapssim.strategy.single_bet import BetPlace, StrategyMode\n",
+    "\n",
+    "table = craps.Table(seed=1234)\n",
+    "\n",
+    "strategies = [\n",
+    "    # CHANGE THE CODE HERE\n",
+    "    ..., \n",
+    "    ...\n",
+    "]\n",
+    "\n",
+    "for i, s in enumerate(strategies):\n",
+    "    table.add_player(strategy=s, bankroll=200, name = f\"Player {i+1}\")\n",
+    "    \n",
+    "table.run(max_rolls=10, verbose=True)\n",
+    "\n",
+    "print(\"\\nFINAL RESULTS\")\n",
+    "for p in table.players:\n",
+    "    print(f\"  {p.name}: Bankroll=${p.bankroll}\")\n",
+    "```"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Detailed example strategies\n",
+    "\n",
+    "Now you should be getting a feel for the single bet strategies and how to use them. However, very few people play strategies with just a single bet. Good news---the crapssim package comes with many example strategies that can be used just as easily. And the list of these example strategies will hopefully expand in the future. \n",
+    "\n",
+    "Let's try the very famous Iron Cross strategy (though I should note that in my opinion, it's not a good strategy at all). This time, we will run the table with two shooters (ulimited number of rolls). The Iron Cross strategy bets the pass line for 1 unit (with 2x odds after the point is set), then bets 2 units each on the 5, 6, and 8 (with slightly more on 6/8 to get even payouts; skipping the point number if it's 5, 6, or 8) and then bets the field for 1 unit every roll that the point is on. We use \\$10 for our unit in the following example:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from crapssim.strategy.examples import IronCross\n",
+    "\n",
+    "table = craps.Table(seed=1234)\n",
+    "table.add_player(strategy=IronCross(base_amount=10), bankroll=200)\n",
+    "\n",
+    "table.run(max_shooter=2, max_rolls=float(\"inf\"), verbose=True)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "The point of the IronCross strategy is to win on every roll (after the passline) except a seven-out. We can see the player's cash increasing with each roll, some more than others, but it drops dramatically on the two seven outs. At the end of two shooters, we've lost over half of our starting bankroll in this session. "
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## List of all example strategies\n",
+    "\n",
+    "The following example strategies, and a brief description, can be found in the `crapssim.strategy.examples` module. \n",
+    "\n",
+    "| Strategy | Description |\n",
+    "|----------|-------------|\n",
+    "| `Pass2Come()` | • Places a Pass Line bet<br>• Adds two Come bets |\n",
+    "| `PassLinePlace68()` | • Places a Pass Line bet<br>• Places bets on both 6 and 8<br>• Can optionally skip place bets on point number |\n",
+    "| `PlaceInside()` | • Places bets on all \"inside\" numbers (5, 6, 8, 9)<br>• Adjusts 6 and 8 bet amounts using 6/5 multiplier |\n",
+    "| `Place68Move59()` | • Initially places bets on 6 and 8<br>• Moves place bet to 5 or 9 if Pass Line or Come bet ends up on 6 or 8 |\n",
+    "| `PassLinePlace68Move59()` | • Combines Pass Line betting with Place68Move59 strategy |\n",
+    "| `Place682Come()` | • Places Pass Line bet when point is off<br>• Places 6 and 8 when point is on<br>• Makes up to 2 Come bets<br>• Maintains less than 4 total bets |\n",
+    "| `IronCross()` | • Places Pass Line bet with 2x odds<br>• Places bets on 5, 6, and 8<br>• Adds Field bet when point is on |\n",
+    "| `HammerLock()` | • Places both Pass Line and Don't Pass bets when point is off<br>• Adds lay odds to Don't Pass when point is on<br>• Places 6 and 8<br>• Shifts to 5, 6, 8, and 9 after 6/8 place wins<br>• Takes all place bets down on another win |\n",
+    "| `Risk12()` | • Places Pass Line and Field bets before point<br>• Places 6 and/or 8 after point<br>• Uses pre-point winnings to fund subsequent place bets<br>• Only risks \\$12 on a \\$5 table |\n",
+    "| `Knockout()` | • Places Pass Line and Don't Pass bets before point<br>• Adds 3-4-5x odds on Pass Line after point |\n",
+    "| `DiceDoctor()` | • Field bet progression strategy<br>• Uses progressive increases and decreases<br>• Follows specific progression sequence:<br>&nbsp;&nbsp;&nbsp;&nbsp;10-20-15-30-25-50-35-70-50-100-75-150 |\n",
+    "| `Place68PR()` | • Places bets on 6 and 8<br>• Doubles (presses) the winning bet after first win<br>• Reduces (regresses) back to original bet amount after second win<br>• Maintains press/regress cycle |\n",
+    "| `Place68DontCome2Odds()` | • Adds a single Don't Come bet <br>• Places bets on 6 and 8<br>• Applies 2x odds to Don't Come bets<br> |\n",
+    "\n",
+    "Each strategy has it's own arguments that you will need to explore through the documentation. \n",
+    "\n",
+    "If you saw a strategy online or in a book, and have implemented with \"crapssim\", then it most likely makes a great addition to the package. Please mention in [a new discussion](https://github.com/skent259/crapssim/discussions/new), file [an issue](https://github.com/skent259/crapssim/issues/new), or open [a pull request](https://github.com/skent259/crapssim/pulls) and we can work together to make sure it fits well."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "To give a feel for how to compare different example strategies across many different table sessions, you can use the following code. In this case, we start with \\$300 bankroll, and test the strategy across 10 different shooters. At the end, we print out the result of 20 simulations. "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "\n",
+    "n_sim = 20\n",
+    "bankroll = 300\n",
+    "strategies = {\n",
+    "    \"place68\": craps.strategy.examples.PassLinePlace68(10),\n",
+    "    \"ironcross\": craps.strategy.examples.IronCross(10),\n",
+    "    \"dicedoctor\": craps.strategy.examples.DiceDoctor(10)\n",
+    "}\n",
+    "\n",
+    "for i in range(n_sim):\n",
+    "    table = craps.Table()\n",
+    "    for s in strategies:\n",
+    "        table.add_player(bankroll, strategy=strategies[s], name=s)\n",
+    "\n",
+    "    table.run(max_rolls=float(\"inf\"), max_shooter=10, verbose=False)\n",
+    "\n",
+    "    for p in table.players:\n",
+    "        print(f\"{i}, {p.name}, {p.bankroll}, {bankroll}, {table.dice.n_rolls}\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Conclusion \n",
+    "\n",
+    "In this tutorial, we've seen how to use the out-of-the-box strategies from the crapssim package, including `single_bet` and more detailed `examples`. We've seen how to look at the strategies on a small number of rolls, which is great for testing or getting a feel for the strategy. We've also seen how to compare multiple strategies across several sessions, which creates the basis for determining which we might want to use. \n",
+    "\n",
+    "The best way to get more comfortable with this is to try it out for yourself! See if you can install the package and test these available strategies.\n",
+    "\n",
+    "Quickly, you may find that you want to put together more detailed strategies of your own. The next tutorial will show you how to use these building blocks to make more complicated strategies, and to incorporate some core logic if needed. "
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "craps-310-with-crapssim",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.10.4"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 2
+}

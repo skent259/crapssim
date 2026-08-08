@@ -1,0 +1,261 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bet Behavior Matrix &mdash; crapssim 0.4.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=c87aa342"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            crapssim
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Examples and Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial-strategy-01.html">Strategy Tutorial 1: Starting off</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../crapssim_sandbox.html">Sandbox</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Change Log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../supported-bets.html">Supported Bets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../autoapi/index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">crapssim</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Bet Behavior Matrix</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/internal/BET_BEHAVIOR_MATRIX.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="bet-behavior-matrix">
+<h1>Bet Behavior Matrix<a class="headerlink" href="#bet-behavior-matrix" title="Link to this heading"></a></h1>
+<p>This document defines the intended bet-resolution behavior in crapssim.</p>
+<p>It is the implementation-focused reference for how bets resolve, whether they remain on the table, and how bankroll changes are applied.</p>
+<section id="scope">
+<h2>Scope<a class="headerlink" href="#scope" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>This matrix captures current simulator behavior.</p></li>
+<li><p>Real-world casino rules vary by property.</p></li>
+<li><p>Where casinos vary, this project chooses explicit, testable defaults.</p></li>
+</ul>
+</section>
+<section id="terms">
+<h2>Terms<a class="headerlink" href="#terms" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>WORKING</strong> - Bet can resolve on this roll.</p></li>
+<li><p><strong>OFF</strong> - Bet is temporarily inactive for this roll.</p></li>
+<li><p><strong>REMOVE</strong> - Bet is taken off the table after resolution.</p></li>
+<li><p><strong>KEEP</strong> - Bet remains active on the table after resolution.</p></li>
+</ul>
+</section>
+<section id="come-out-defaults-point-off">
+<h2>Come-Out Defaults (Point Off)<a class="headerlink" href="#come-out-defaults-point-off" title="Link to this heading"></a></h2>
+<p>Policy setting: come_out_working_policy</p>
+<ul class="simple">
+<li><p>legacy: Place/Buy/Lay/Put are working by default.</p></li>
+<li><p>real_casino: Place/Buy/Lay/Put are off by default.</p></li>
+</ul>
+<p>Per-bet always_working overrides the policy for Place/Buy/Lay/Put.</p>
+</section>
+<section id="core-resolution-matrix">
+<h2>Core Resolution Matrix<a class="headerlink" href="#core-resolution-matrix" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Bet Type</p></th>
+<th class="head"><p>Point Off + OFF Bet + Trigger Number Hits</p></th>
+<th class="head"><p>Point Off + WORKING Bet Wins</p></th>
+<th class="head"><p>Point Off + WORKING Bet Loses</p></th>
+<th class="head"><p>Point On Win</p></th>
+<th class="head"><p>Point On Loss</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Place</p></td>
+<td><p>No action, KEEP</p></td>
+<td><p>Pay profit, KEEP</p></td>
+<td><p>Lose stake, REMOVE</p></td>
+<td><p>Pay profit, KEEP</p></td>
+<td><p>Lose stake, REMOVE</p></td>
+</tr>
+<tr class="row-odd"><td><p>Buy</p></td>
+<td><p>No action, KEEP</p></td>
+<td><p>Win payout (with vig policy), REMOVE</p></td>
+<td><p>Lose stake (and vig when applicable), REMOVE</p></td>
+<td><p>Win payout (with vig policy), REMOVE</p></td>
+<td><p>Lose stake (and vig when applicable), REMOVE</p></td>
+</tr>
+<tr class="row-even"><td><p>Lay</p></td>
+<td><p>No action, KEEP</p></td>
+<td><p>Win payout (with vig policy), REMOVE</p></td>
+<td><p>Lose stake (and vig when applicable), REMOVE</p></td>
+<td><p>Win payout (with vig policy), REMOVE</p></td>
+<td><p>Lose stake (and vig when applicable), REMOVE</p></td>
+</tr>
+<tr class="row-odd"><td><p>Put</p></td>
+<td><p>No action, KEEP</p></td>
+<td><p>Win payout, REMOVE</p></td>
+<td><p>Lose stake, REMOVE</p></td>
+<td><p>Win payout, REMOVE</p></td>
+<td><p>Lose stake, REMOVE</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="contract-bets-and-odds">
+<h2>Contract Bets and Odds<a class="headerlink" href="#contract-bets-and-odds" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Bet Type</p></th>
+<th class="head"><p>Come-Out Default</p></th>
+<th class="head"><p>Notes</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Come (traveled)</p></td>
+<td><p>WORKING</p></td>
+<td><p>Contract behavior; remains active on come-out.</p></td>
+</tr>
+<tr class="row-odd"><td><p>DontCome (traveled)</p></td>
+<td><p>WORKING</p></td>
+<td><p>Contract behavior; remains active on come-out.</p></td>
+</tr>
+<tr class="row-even"><td><p>Odds on Come</p></td>
+<td><p>OFF by default</p></td>
+<td><p>Can be set to working via always_working on odds bet. If OFF and a trigger number (base number or 7) rolls on come-out, odds push and are removed (stake returned).</p></td>
+</tr>
+<tr class="row-odd"><td><p>Odds on DontCome</p></td>
+<td><p>WORKING by default</p></td>
+<td><p>Can be set off by always_working=False on odds bet. If OFF and a trigger number (base number or 7) rolls on come-out, odds push and are removed (stake returned).</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="bankroll-accounting-rules">
+<h2>Bankroll Accounting Rules<a class="headerlink" href="#bankroll-accounting-rules" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Wins with REMOVE credit full returned amount (principal + winnings).</p></li>
+<li><p>Wins with KEEP credit profit only (principal stays on table).</p></li>
+<li><p>Losses never credit bankroll.</p></li>
+<li><p>OFF/no-action results do not change bankroll and do not remove the bet.</p></li>
+<li><p>Exception: OFF odds that hit a trigger on come-out push and are removed, returning principal.</p></li>
+</ul>
+</section>
+<section id="example-outcomes">
+<h2>Example Outcomes<a class="headerlink" href="#example-outcomes" title="Link to this heading"></a></h2>
+<section id="place-6-amount-12-real-casino-mode-always-working-unset">
+<h3>Place 6, amount 12, real_casino mode, always_working unset<a class="headerlink" href="#place-6-amount-12-real-casino-mode-always-working-unset" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Come-out roll of 6: no action, bet stays on table.</p></li>
+<li><p>Point-on roll of 6: pays 14 profit, bet stays up at 12.</p></li>
+<li><p>Roll of 7 while working: loses 12 and is removed.</p></li>
+</ul>
+</section>
+<section id="buy-4-amount-10-real-casino-mode-always-working-unset">
+<h3>Buy 4, amount 10, real_casino mode, always_working unset<a class="headerlink" href="#buy-4-amount-10-real-casino-mode-always-working-unset" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Come-out roll of 4 or 7: no action, bet stays on table.</p></li>
+<li><p>WORKING roll of 4: win resolves and bet is removed.</p></li>
+<li><p>WORKING roll of 7: loss resolves and bet is removed.</p></li>
+</ul>
+</section>
+<section id="put-6-with-traveled-come-6-on-come-out">
+<h3>Put 6 with traveled Come 6 on come-out<a class="headerlink" href="#put-6-with-traveled-come-6-on-come-out" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Put (off in real_casino): no action, stays on table.</p></li>
+<li><p>Traveled Come (contract): resolves as working.</p></li>
+</ul>
+</section>
+</section>
+<section id="related-files">
+<h2>Related Files<a class="headerlink" href="#related-files" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Settlement logic: crapssim/bet.py</p></li>
+<li><p>Bet update loop: crapssim/table.py</p></li>
+<li><p>Unit coverage: tests/unit/test_bet.py</p></li>
+<li><p>Integration coverage: tests/integration/test_bet.py, tests/integration/test_strategy.py, tests/integration/test_strategy_single_bet.py</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Sean Kent.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

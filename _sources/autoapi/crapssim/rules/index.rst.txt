@@ -1,0 +1,217 @@
+crapssim.rules
+==============
+
+.. py:module:: crapssim.rules
+
+.. autoapi-nested-parse::
+
+   Rule variants and shared rule behavior for the craps table engine.
+
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   crapssim.rules.Rules
+   crapssim.rules.AbstractRules
+   crapssim.rules.ClassicRules
+   crapssim.rules.CraplessRules
+
+
+Module Contents
+---------------
+
+.. py:class:: Rules
+
+   Bases: :py:obj:`Protocol`
+
+
+   Protocol for game-rule variants used by the table engine.
+
+
+   .. py:method:: point_numbers() -> list[int]
+
+      Return all numbers that can become a table point.
+
+
+
+   .. py:method:: come_out_winners() -> list[int]
+
+      Return come-out roll totals that win for pass/come-style bets.
+
+
+
+   .. py:method:: come_out_losers() -> list[int]
+
+      Return come-out roll totals that lose for pass/come-style bets.
+
+
+
+   .. py:method:: point_winners(point: int | None) -> list[int]
+
+      Return winning totals while a point is established.
+
+      :param point: Current point number, or None when point is off.
+
+
+
+   .. py:method:: point_losers(point: int | None) -> list[int]
+
+      Return losing totals while a point is established.
+
+      :param point: Current point number, or None when point is off.
+
+
+
+   .. py:method:: allow_dont_pass() -> bool
+
+      Return True when Dont Pass bets are allowed for this ruleset.
+
+
+
+   .. py:method:: allow_dont_come() -> bool
+
+      Return True when Dont Come bets are allowed for this ruleset.
+
+
+
+.. py:class:: AbstractRules
+
+   Bases: :py:obj:`abc.ABC`
+
+
+   Shared default behaviors for craps rule variants.
+
+
+   .. py:method:: point_numbers() -> list[int]
+
+      Return point numbers for the ruleset.
+
+      :returns: Empty list by default; subclasses define concrete values.
+      :rtype: list[int]
+
+
+
+   .. py:method:: point_winners(point: int | None) -> list[int]
+
+      Return winning totals after a point is established.
+
+      :param point: Current point number, or None when point is off.
+
+      :returns: The current point number when set, otherwise an empty list.
+      :rtype: list[int]
+
+
+
+   .. py:method:: point_losers(point: int | None) -> list[int]
+
+      Return losing totals after a point is established.
+
+      :param point: Current point number, or None when point is off.
+
+      :returns: Seven, the default point-out total.
+      :rtype: list[int]
+
+
+
+   .. py:method:: allow_dont_pass() -> bool
+
+      Return whether Dont Pass bets are legal in this ruleset.
+
+
+
+   .. py:method:: allow_dont_come() -> bool
+
+      Return whether Dont Come bets are legal in this ruleset.
+
+
+
+.. py:class:: ClassicRules
+
+   Bases: :py:obj:`AbstractRules`
+
+
+   Traditional craps rules.
+
+   Uses six point numbers (4, 5, 6, 8, 9, and 10) and standard come-out outcomes.
+
+
+   .. py:method:: point_numbers() -> list[int]
+
+      Return standard point numbers used in classic craps.
+
+      :returns: Valid point numbers: 4, 5, 6, 8, 9, and 10.
+      :rtype: list[int]
+
+
+
+   .. py:method:: come_out_winners() -> list[int]
+
+      Return classic pass-line winners on the come-out roll.
+
+      :returns: 7 and 11, the classic come-out winners.
+      :rtype: list[int]
+
+
+
+   .. py:method:: come_out_losers() -> list[int]
+
+      Return classic pass-line losers on the come-out roll.
+
+      :returns: 2, 3, and 12, the classic come-out losers.
+      :rtype: list[int]
+
+
+
+.. py:class:: CraplessRules
+
+   Bases: :py:obj:`AbstractRules`
+
+
+   Crapless craps rules.
+
+   In this variant, 2, 3, 11 and 12 are treated as points rather than immediate losses
+   for the pass line and come family bets.
+
+
+   .. py:method:: point_numbers() -> list[int]
+
+      Return Crapless point numbers, including 2, 3, 11, and 12.
+
+      :returns: Valid point numbers: 2, 3, 4, 5, 6, 8, 9, 10, 11, and 12.
+      :rtype: list[int]
+
+
+
+   .. py:method:: come_out_winners() -> list[int]
+
+      Return come-out winners for Crapless rules.
+
+      :returns: 7, the only come-out winner in Crapless craps.
+      :rtype: list[int]
+
+
+
+   .. py:method:: come_out_losers() -> list[int]
+
+      Return come-out losers for Crapless rules.
+
+      :returns: No come-out losers in Crapless craps.
+      :rtype: list[int]
+
+
+
+   .. py:method:: allow_dont_pass() -> bool
+
+      Return False because Don't Pass is not supported in Crapless rules.
+
+
+
+   .. py:method:: allow_dont_come() -> bool
+
+      Return False because Dont Come is not supported in Crapless rules.
+
+
+
